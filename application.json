@@ -1,0 +1,36 @@
+{
+  "pages": [
+    {
+      "id": "Domains",
+      "isDefault": true
+    }
+  ],
+  "viewMode": false,
+  "appIsExample": false,
+  "unreadCommentThreads": 0,
+  "unpublishedApplicationDetail": {
+    "appPositioning": {
+      "type": "FIXED"
+    },
+    "navigationSetting": {
+      "showNavbar": true,
+      "orientation": "side",
+      "navStyle": "sidebar",
+      "position": "static",
+      "itemStyle": "text",
+      "colorStyle": "light",
+      "logoAssetId": "",
+      "logoConfiguration": "logoAndApplicationTitle",
+      "showSignIn": true
+    }
+  },
+  "color": "#C7F3F0",
+  "icon": "file",
+  "unpublishedCustomJSLibs": [],
+  "publishedCustomJSLibs": [],
+  "evaluationVersion": 2,
+  "applicationVersion": 2,
+  "collapseInvisibleWidgets": true,
+  "isManualUpdate": false,
+  "deleted": false
+}
