@@ -1,0 +1,11 @@
+{
+  "name": "dcodeIO",
+  "uidString": "dcodeIO_https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js",
+  "accessor": [
+    "dcodeIO"
+  ],
+  "url": "https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js",
+  "version": "2.4.3",
+  "defs": "{\"!name\":\"LIB/dcodeIO\",\"dcodeIO\":{\"bcrypt\":{\"setRandomFallback\":{\"!type\":\"fn()\",\"prototype\":{}},\"genSaltSync\":{\"!type\":\"fn()\",\"prototype\":{}},\"genSalt\":{\"!type\":\"fn()\",\"prototype\":{}},\"hashSync\":{\"!type\":\"fn()\",\"prototype\":{}},\"hash\":{\"!type\":\"fn()\",\"prototype\":{}},\"compareSync\":{\"!type\":\"fn()\",\"prototype\":{}},\"compare\":{\"!type\":\"fn()\",\"prototype\":{}},\"getRounds\":{\"!type\":\"fn()\",\"prototype\":{}},\"getSalt\":{\"!type\":\"fn()\",\"prototype\":{}},\"encodeBase64\":{\"!type\":\"fn()\",\"prototype\":{}},\"decodeBase64\":{\"!type\":\"fn()\",\"prototype\":{}}}}}",
+  "deleted": false
+}

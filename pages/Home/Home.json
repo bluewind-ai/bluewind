@@ -1,27 +1,26 @@
 {
   "unpublishedPage": {
-    "name": "Domains",
-    "slug": "domains",
+    "name": "Home",
+    "slug": "home",
     "layouts": [
       {
         "viewMode": false,
         "dsl": {
           "widgetName": "MainContainer",
           "backgroundColor": "none",
-          "rightColumn": 4896,
+          "rightColumn": 1224,
           "snapColumns": 64,
           "detachFromLayout": true,
           "widgetId": "0",
           "topRow": 0,
-          "bottomRow": 490,
+          "bottomRow": 560,
           "containerStyle": "none",
-          "snapRows": 124,
+          "snapRows": 128,
           "parentRowSpace": 1,
           "type": "CANVAS_WIDGET",
           "canExtend": true,
           "version": 89,
-          "minHeight": 1292,
-          "dynamicTriggerPathList": [],
+          "minHeight": 1300,
           "parentColumnSpace": 1,
           "dynamicBindingPathList": [],
           "leftColumn": 0
@@ -29,18 +28,21 @@
         "layoutOnLoadActions": [
           [
             {
-              "id": "Domains_get_domains",
-              "name": "get_domains",
+              "id": "Home_functions.getUserFromToken",
+              "name": "functions.getUserFromToken",
+              "collectionId": "Home_functions",
               "confirmBeforeExecute": false,
-              "pluginType": "DB",
-              "jsonPathKeys": [],
+              "pluginType": "JS",
+              "jsonPathKeys": [
+                "async () => {\n  const token = appsmith.store.token;\n  const user = jsonwebtoken.decode(token, 'secret');\n  functions.setActiveUser(user);\n}"
+              ],
               "timeoutInMillisecond": 10000
             }
           ]
         ],
         "layoutOnLoadActionErrors": [],
         "validOnPageLoadActions": true,
-        "id": "Domains",
+        "id": "Home",
         "deleted": false,
         "policies": [],
         "userPermissions": []
@@ -51,5 +53,5 @@
     "isHidden": false
   },
   "deleted": false,
-  "gitSyncId": "661196444fe62a357c04279b_661196444fe62a357c04279d"
+  "gitSyncId": "6612a2f09c54ee6461304b95_661327589c54ee6461304f65"
 }

@@ -1,0 +1,1 @@
+SELECT * FROM user_auth WHERE email = {{inp_email.text}};
