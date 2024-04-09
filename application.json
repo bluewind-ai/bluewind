@@ -3,6 +3,10 @@
     {
       "id": "Domains",
       "isDefault": true
+    },
+    {
+      "id": "waalaxy",
+      "isDefault": false
     }
   ],
   "viewMode": false,
