@@ -17,12 +17,13 @@
     "hideCard": false,
     "mobileRightColumn": 62,
     "animateLoading": true,
+    "dynamicTriggerPathList": [],
     "leftColumn": 46,
     "dynamicBindingPathList": [
         {"key": "buttonColor"},
         {"key": "borderRadius"}
     ],
-    "text": "Submit",
+    "text": "/",
     "isDisabled": false,
     "key": "k0xw0c5h85",
     "isDeprecated": false,
