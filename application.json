@@ -5,6 +5,10 @@
       "isDefault": true
     },
     {
+      "id": "Domains",
+      "isDefault": true
+    },
+    {
       "id": "waalaxy",
       "isDefault": false
     }
