@@ -50,7 +50,7 @@
     "rightColumn": 56,
     "widgetId": "29exrinv1o",
     "minWidth": 450,
-    "label": "Clouflare email address",
+    "label": "Clouflare API key",
     "parentId": "8qls7wz013",
     "labelAlignment": "left",
     "renderMode": "CANVAS",
