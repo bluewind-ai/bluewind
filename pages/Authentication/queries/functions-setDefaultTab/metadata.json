@@ -2,8 +2,8 @@
   "pluginType": "JS",
   "pluginId": "js-plugin",
   "unpublishedAction": {
-    "name": "signOut",
-    "fullyQualifiedName": "functions.signOut",
+    "name": "setDefaultTab",
+    "fullyQualifiedName": "functions.setDefaultTab",
     "datasource": {
       "name": "UNUSED_DATASOURCE",
       "pluginId": "js-plugin",
@@ -13,14 +13,18 @@
       "policies": [],
       "userPermissions": []
     },
-    "pageId": "Home",
-    "collectionId": "Home_functions",
+    "pageId": "Authentication",
+    "collectionId": "Authentication_functions",
     "actionConfiguration": {
       "timeoutInMillisecond": 10000,
       "paginationType": "NONE",
       "encodeParamsToggle": true,
       "selfReferencingDataPaths": [],
-      "jsArguments": []
+      "jsArguments": [
+        {
+          "name": "newTab"
+        }
+      ]
     },
     "executeOnLoad": false,
     "dynamicBindingPathList": [
@@ -35,9 +39,9 @@
     "confirmBeforeExecute": false,
     "policies": [],
     "userPermissions": [],
-    "createdAt": "2024-04-07T23:08:08Z"
+    "createdAt": "2024-04-09T15:06:45Z"
   },
-  "id": "Home_functions.signOut",
+  "id": "Authentication_functions.setDefaultTab",
   "deleted": false,
-  "gitSyncId": "6612a2f09c54ee6461304b95_661327589c54ee6461304f82"
+  "gitSyncId": "66155964f9f2083ab68dcffd_6615598596afb80abba0f586"
 }
