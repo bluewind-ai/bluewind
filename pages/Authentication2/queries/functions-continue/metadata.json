@@ -2,8 +2,8 @@
   "pluginType": "JS",
   "pluginId": "js-plugin",
   "unpublishedAction": {
-    "name": "signOut",
-    "fullyQualifiedName": "functions.signOut",
+    "name": "continue",
+    "fullyQualifiedName": "functions.continue",
     "datasource": {
       "name": "UNUSED_DATASOURCE",
       "pluginId": "js-plugin",
@@ -13,8 +13,8 @@
       "policies": [],
       "userPermissions": []
     },
-    "pageId": "Home",
-    "collectionId": "Home_functions",
+    "pageId": "Authentication2",
+    "collectionId": "Authentication2_functions",
     "actionConfiguration": {
       "timeoutInMillisecond": 10000,
       "paginationType": "NONE",
@@ -28,16 +28,18 @@
         "key": "body"
       }
     ],
-    "isValid": true,
-    "invalids": [],
+    "isValid": false,
+    "invalids": [
+      "Appsmith expects all entities to follow Javascript variable naming conventions. It must be a single word containing alphabets, numbers, or \"_\". Any other special characters like hyphens (\"-\"), comma (\",\"), hash (\"#\") etc. are not allowed. Please change the name."
+    ],
     "messages": [],
     "userSetOnLoad": false,
     "confirmBeforeExecute": false,
     "policies": [],
     "userPermissions": [],
-    "createdAt": "2024-04-09T15:25:13Z"
+    "createdAt": "2024-04-10T04:22:50Z"
   },
-  "id": "Home_functions.signOut",
+  "id": "Authentication2_functions.continue",
   "deleted": false,
-  "gitSyncId": "66155ce5f8417458c3950e81_66155dd9f9f2083ab68dd07d"
+  "gitSyncId": "66155ce5f8417458c3950e81_6616141af8417458c3951565"
 }

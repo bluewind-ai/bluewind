@@ -2,7 +2,7 @@
     "resetFormOnClick": false,
     "boxShadow": "none",
     "widgetName": "btn_signInCopy",
-    "onClick": "{{reset_password.run()}}",
+    "onClick": "{{reset_password.run().then(() => {\n  showAlert('Email sent', 'success');\n}).catch(() => {\n  showAlert('An error happened', 'error');\n});}}",
     "buttonColor": "{{appsmith.theme.colors.primaryColor}}",
     "displayName": "Button",
     "iconSVG": "/static/media/icon.cca026338f1c8eb6df8ba03d084c2fca.svg",

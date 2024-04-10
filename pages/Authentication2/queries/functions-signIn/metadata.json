@@ -2,8 +2,8 @@
   "pluginType": "JS",
   "pluginId": "js-plugin",
   "unpublishedAction": {
-    "name": "setActiveUser",
-    "fullyQualifiedName": "functions.setActiveUser",
+    "name": "signIn",
+    "fullyQualifiedName": "functions.signIn",
     "datasource": {
       "name": "UNUSED_DATASOURCE",
       "pluginId": "js-plugin",
@@ -13,18 +13,14 @@
       "policies": [],
       "userPermissions": []
     },
-    "pageId": "Home",
-    "collectionId": "Home_functions",
+    "pageId": "Authentication2",
+    "collectionId": "Authentication2_functions",
     "actionConfiguration": {
       "timeoutInMillisecond": 10000,
       "paginationType": "NONE",
       "encodeParamsToggle": true,
       "selfReferencingDataPaths": [],
-      "jsArguments": [
-        {
-          "name": "user"
-        }
-      ]
+      "jsArguments": []
     },
     "executeOnLoad": false,
     "dynamicBindingPathList": [
@@ -39,9 +35,9 @@
     "confirmBeforeExecute": false,
     "policies": [],
     "userPermissions": [],
-    "createdAt": "2024-04-09T15:25:13Z"
+    "createdAt": "2024-04-10T04:13:00Z"
   },
-  "id": "Home_functions.setActiveUser",
+  "id": "Authentication2_functions.signIn",
   "deleted": false,
-  "gitSyncId": "66155ce5f8417458c3950e81_66155dd9f9f2083ab68dd07b"
+  "gitSyncId": "66155ce5f8417458c3950e81_661611ccf8417458c3951563"
 }
