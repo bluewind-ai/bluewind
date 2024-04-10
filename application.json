@@ -1,8 +1,8 @@
 {
   "pages": [
     {
-      "id": "Authentication",
-      "isDefault": true
+      "id": "Authentication2",
+      "isDefault": false
     },
     {
       "id": "Domains",
@@ -21,7 +21,7 @@
       "type": "FIXED"
     },
     "navigationSetting": {
-      "showNavbar": true,
+      "showNavbar": false,
       "orientation": "side",
       "navStyle": "sidebar",
       "position": "static",

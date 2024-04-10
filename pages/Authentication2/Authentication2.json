@@ -1,7 +1,7 @@
 {
   "unpublishedPage": {
-    "name": "Domains",
-    "slug": "domains",
+    "name": "Authentication2",
+    "slug": "authentication2",
     "layouts": [
       {
         "viewMode": false,
@@ -13,7 +13,7 @@
           "detachFromLayout": true,
           "widgetId": "0",
           "topRow": 0,
-          "bottomRow": 980,
+          "bottomRow": 1292,
           "containerStyle": "none",
           "snapRows": 124,
           "parentRowSpace": 1,
@@ -26,21 +26,10 @@
           "dynamicBindingPathList": [],
           "leftColumn": 0
         },
-        "layoutOnLoadActions": [
-          [
-            {
-              "id": "Domains_get_domains",
-              "name": "get_domains",
-              "confirmBeforeExecute": false,
-              "pluginType": "DB",
-              "jsonPathKeys": [],
-              "timeoutInMillisecond": 10000
-            }
-          ]
-        ],
+        "layoutOnLoadActions": [],
         "layoutOnLoadActionErrors": [],
         "validOnPageLoadActions": true,
-        "id": "Domains",
+        "id": "Authentication2",
         "deleted": false,
         "policies": [],
         "userPermissions": []
@@ -51,5 +40,5 @@
     "isHidden": false
   },
   "deleted": false,
-  "gitSyncId": "661196444fe62a357c04279b_661196444fe62a357c04279d"
+  "gitSyncId": "66155ce5f8417458c3950e81_66155dd9f9f2083ab68dd060"
 }

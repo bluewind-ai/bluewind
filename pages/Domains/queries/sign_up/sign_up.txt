@@ -1,4 +1,0 @@
-{
-  "email": "{{inp}}",
-  "password": "UJIAwHcscajCzcrLUVnD"
-}
