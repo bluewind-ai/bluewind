@@ -2,8 +2,8 @@
   "pluginType": "JS",
   "pluginId": "js-plugin",
   "unpublishedAction": {
-    "name": "setDefaultTab",
-    "fullyQualifiedName": "functions.setDefaultTab",
+    "name": "setActiveUser",
+    "fullyQualifiedName": "functions.setActiveUser",
     "datasource": {
       "name": "UNUSED_DATASOURCE",
       "pluginId": "js-plugin",
@@ -13,8 +13,8 @@
       "policies": [],
       "userPermissions": []
     },
-    "pageId": "Authentication",
-    "collectionId": "Authentication_functions",
+    "pageId": "Home",
+    "collectionId": "Home_functions",
     "actionConfiguration": {
       "timeoutInMillisecond": 10000,
       "paginationType": "NONE",
@@ -22,7 +22,7 @@
       "selfReferencingDataPaths": [],
       "jsArguments": [
         {
-          "name": "newTab"
+          "name": "user"
         }
       ]
     },
@@ -39,9 +39,9 @@
     "confirmBeforeExecute": false,
     "policies": [],
     "userPermissions": [],
-    "createdAt": "2024-04-09T15:06:45Z"
+    "createdAt": "2024-04-09T15:25:13Z"
   },
-  "id": "Authentication_functions.setDefaultTab",
+  "id": "Home_functions.setActiveUser",
   "deleted": false,
-  "gitSyncId": "66155964f9f2083ab68dcffd_6615598596afb80abba0f586"
+  "gitSyncId": "66155ce5f8417458c3950e81_66155dd9f9f2083ab68dd07b"
 }

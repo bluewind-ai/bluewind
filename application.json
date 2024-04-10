@@ -1,6 +1,14 @@
 {
   "pages": [
     {
+      "id": "Authentication2",
+      "isDefault": false
+    },
+    {
+      "id": "Home",
+      "isDefault": false
+    },
+    {
       "id": "Authentication",
       "isDefault": true
     },
@@ -21,7 +29,7 @@
       "type": "FIXED"
     },
     "navigationSetting": {
-      "showNavbar": true,
+      "showNavbar": false,
       "orientation": "side",
       "navStyle": "sidebar",
       "position": "static",
