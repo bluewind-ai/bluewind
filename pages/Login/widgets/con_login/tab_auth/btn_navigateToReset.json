@@ -26,7 +26,7 @@
         {"key": "buttonColor"},
         {"key": "borderRadius"}
     ],
-    "text": "Reset",
+    "text": "Reset Password",
     "isDisabled": false,
     "key": "w5le6pkfax",
     "isDeprecated": false,
