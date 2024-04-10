@@ -2,11 +2,11 @@
   "pages": [
     {
       "id": "Authentication2",
-      "isDefault": false
+      "isDefault": true
     },
     {
       "id": "Domains",
-      "isDefault": true
+      "isDefault": false
     },
     {
       "id": "waalaxy",
