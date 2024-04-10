@@ -2,15 +2,15 @@
     "needsErrorInfo": false,
     "mobileBottomRow": 60,
     "widgetName": "Text1",
-    "displayName": "Text",
     "iconSVG": "https://appcdn.appsmith.com/static/media/icon.a47d6d5dbbb718c4dc4b2eb4f218c1b7.svg",
+    "displayName": "Text",
+    "topRow": 51.6,
     "searchTags": [
         "typography",
         "paragraph",
         "label"
     ],
-    "topRow": 56,
-    "bottomRow": 60,
+    "bottomRow": 55.6,
     "parentRowSpace": 10,
     "type": "TEXT_WIDGET",
     "hideCard": false,
@@ -20,7 +20,7 @@
     "fontFamily": "{{appsmith.theme.fontFamily.appFont}}",
     "parentColumnSpace": 12.765625,
     "dynamicTriggerPathList": [],
-    "leftColumn": 9,
+    "leftColumn": 0,
     "dynamicBindingPathList": [
         {"key": "truncateButtonColor"},
         {"key": "fontFamily"},
@@ -30,9 +30,10 @@
     "shouldTruncate": false,
     "truncateButtonColor": "{{appsmith.theme.colors.primaryColor}}",
     "text": "{{appsmith.store}}",
+    "flexVerticalAlignment": "end",
     "key": "hwouufo7op",
     "isDeprecated": false,
-    "rightColumn": 58,
+    "rightColumn": 64,
     "textAlign": "LEFT",
     "dynamicHeight": "AUTO_HEIGHT",
     "widgetId": "hn9w973ddn",
@@ -46,8 +47,8 @@
         "Suggested",
         "Content"
     ],
-    "renderMode": "CANVAS",
     "isLoading": false,
+    "renderMode": "CANVAS",
     "mobileTopRow": 56,
     "responsiveBehavior": "fill",
     "originalTopRow": 56,
@@ -56,5 +57,6 @@
     "maxDynamicHeight": 9000,
     "originalBottomRow": 60,
     "fontSize": "1rem",
+    "alignment": "center",
     "minDynamicHeight": 4
 }

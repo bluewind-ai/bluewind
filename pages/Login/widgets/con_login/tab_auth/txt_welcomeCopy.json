@@ -7,8 +7,8 @@
         "paragraph",
         "label"
     ],
-    "topRow": 12,
-    "bottomRow": 17,
+    "topRow": 11.4,
+    "bottomRow": 15.4,
     "parentRowSpace": 10,
     "type": "TEXT_WIDGET",
     "hideCard": false,
@@ -17,7 +17,7 @@
     "fontFamily": "{{appsmith.theme.fontFamily.appFont}}",
     "parentColumnSpace": 19.5,
     "dynamicTriggerPathList": [],
-    "leftColumn": 8,
+    "leftColumn": 0,
     "dynamicBindingPathList": [
         {"key": "truncateButtonColor"},
         {"key": "fontFamily"},
@@ -27,8 +27,9 @@
     "truncateButtonColor": "{{appsmith.theme.colors.primaryColor}}",
     "text": "Put your email so we can reset your password",
     "key": "kk7n75w0mq",
+    "flexVerticalAlignment": "end",
     "isDeprecated": false,
-    "rightColumn": 58,
+    "rightColumn": 64,
     "textAlign": "LEFT",
     "dynamicHeight": "AUTO_HEIGHT",
     "widgetId": "k7titj91bs",
@@ -46,5 +47,6 @@
     "maxDynamicHeight": 9000,
     "originalBottomRow": 17,
     "fontSize": "1rem",
+    "alignment": "center",
     "minDynamicHeight": 4
 }

@@ -18,7 +18,7 @@
   "unreadCommentThreads": 0,
   "unpublishedApplicationDetail": {
     "appPositioning": {
-      "type": "FIXED"
+      "type": "AUTO"
     },
     "navigationSetting": {
       "showNavbar": false,
@@ -34,6 +34,9 @@
   },
   "color": "#C7F3F0",
   "icon": "file",
+  "unpublishedAppLayout": {
+    "type": "DESKTOP"
+  },
   "unpublishedCustomJSLibs": [
     {
       "uidString": "jsonwebtoken_/libraries/jsonwebtoken@8.5.1.js"
