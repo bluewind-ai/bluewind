@@ -1,8 +1,10 @@
 {
     "boxShadow": "none",
     "widgetName": "inp_registerEmail",
+    "dynamicPropertyPathList": [{"key": "onSubmit"}],
     "displayName": "Input",
     "iconSVG": "/static/media/icon.9f505595da61a34f563dba82adeb06ec.svg",
+    "onSubmit": "{{wayne}}",
     "searchTags": [
         "form",
         "text input",
@@ -18,7 +20,7 @@
     "hideCard": false,
     "animateLoading": true,
     "parentColumnSpace": 18.1875,
-    "dynamicTriggerPathList": [],
+    "dynamicTriggerPathList": [{"key": "onSubmit"}],
     "resetOnSubmit": true,
     "leftColumn": 7,
     "dynamicBindingPathList": [
