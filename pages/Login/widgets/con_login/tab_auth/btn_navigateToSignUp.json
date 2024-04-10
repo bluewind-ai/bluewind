@@ -12,8 +12,8 @@
         "click",
         "submit"
     ],
-    "topRow": 47,
-    "bottomRow": 51,
+    "topRow": 36.8,
+    "bottomRow": 40.8,
     "parentRowSpace": 10,
     "type": "BUTTON_WIDGET",
     "hideCard": false,
@@ -21,7 +21,7 @@
     "animateLoading": true,
     "parentColumnSpace": 19.8125,
     "dynamicTriggerPathList": [{"key": "onClick"}],
-    "leftColumn": 16,
+    "leftColumn": 12.840639082343301,
     "dynamicBindingPathList": [
         {"key": "buttonColor"},
         {"key": "borderRadius"}
@@ -29,8 +29,9 @@
     "text": "Don't have an account? Sign Up",
     "isDisabled": false,
     "key": "w5le6pkfax",
+    "flexVerticalAlignment": "end",
     "isDeprecated": false,
-    "rightColumn": 52,
+    "rightColumn": 51.1593609176567,
     "isDefaultClickDisabled": true,
     "widgetId": "6mx5oq7on0",
     "minWidth": 120,
@@ -49,5 +50,6 @@
     "mobileLeftColumn": 41,
     "originalBottomRow": 51,
     "buttonVariant": "TERTIARY",
-    "placement": "CENTER"
+    "placement": "CENTER",
+    "alignment": "center"
 }

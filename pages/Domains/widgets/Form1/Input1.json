@@ -6,7 +6,7 @@
     "type": "INPUT_WIDGET_V2",
     "animateLoading": true,
     "resetOnSubmit": true,
-    "leftColumn": 1,
+    "leftColumn": 0,
     "dynamicBindingPathList": [
         {"key": "accentColor"},
         {"key": "borderRadius"}
@@ -14,6 +14,7 @@
     "labelStyle": "",
     "inputType": "TEXT",
     "isDisabled": false,
+    "flexVerticalAlignment": "end",
     "isRequired": true,
     "dynamicHeight": "FIXED",
     "accentColor": "{{appsmith.theme.colors.primaryColor}}",
@@ -26,6 +27,7 @@
     ],
     "isLoading": false,
     "borderRadius": "{{appsmith.theme.borderRadius.appBorderRadius}}",
+    "alignment": "start",
     "needsErrorInfo": false,
     "mobileBottomRow": 16,
     "widgetName": "Input1",
@@ -47,7 +49,7 @@
     "key": "hr9s59a090",
     "labelTextSize": "0.875rem",
     "isDeprecated": false,
-    "rightColumn": 48,
+    "rightColumn": 64,
     "widgetId": "29exrinv1o",
     "minWidth": 450,
     "label": "Clouflare API key",

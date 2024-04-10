@@ -7,8 +7,8 @@
         "paragraph",
         "label"
     ],
-    "topRow": 16,
-    "bottomRow": 21,
+    "topRow": 10.8,
+    "bottomRow": 14.8,
     "parentRowSpace": 10,
     "type": "TEXT_WIDGET",
     "hideCard": false,
@@ -17,7 +17,7 @@
     "fontFamily": "{{appsmith.theme.fontFamily.appFont}}",
     "parentColumnSpace": 19.5,
     "dynamicTriggerPathList": [],
-    "leftColumn": 8,
+    "leftColumn": 0,
     "dynamicBindingPathList": [
         {"key": "truncateButtonColor"},
         {"key": "fontFamily"},
@@ -27,8 +27,9 @@
     "truncateButtonColor": "{{appsmith.theme.colors.primaryColor}}",
     "text": "Welcome back! Please enter your details.",
     "key": "kk7n75w0mq",
+    "flexVerticalAlignment": "end",
     "isDeprecated": false,
-    "rightColumn": 58,
+    "rightColumn": 64,
     "textAlign": "LEFT",
     "dynamicHeight": "AUTO_HEIGHT",
     "widgetId": "63lky3oent",
@@ -46,5 +47,6 @@
     "maxDynamicHeight": 9000,
     "originalBottomRow": 21,
     "fontSize": "1rem",
+    "alignment": "center",
     "minDynamicHeight": 4
 }

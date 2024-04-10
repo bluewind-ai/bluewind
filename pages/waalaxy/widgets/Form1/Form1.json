@@ -8,8 +8,8 @@
     "displayName": "Form",
     "iconSVG": "https://appcdn.appsmith.com/static/media/icon.e17c486a34778f3bae299c9110e00cf6.svg",
     "searchTags": ["group"],
-    "topRow": 12,
-    "bottomRow": 51,
+    "topRow": 0,
+    "bottomRow": 11.200000000000001,
     "parentRowSpace": 10,
     "type": "FORM_WIDGET",
     "hideCard": false,
@@ -17,7 +17,7 @@
     "mobileRightColumn": 7,
     "animateLoading": true,
     "parentColumnSpace": 19.25,
-    "leftColumn": 6,
+    "leftColumn": 0,
     "dynamicBindingPathList": [
         {"key": "borderRadius"},
         {"key": "boxShadow"}
@@ -29,19 +29,21 @@
         "widgetName": "Canvas1",
         "displayName": "Canvas",
         "topRow": 0,
-        "bottomRow": 390,
+        "bottomRow": 112.00000000000001,
         "parentRowSpace": 1,
         "type": "CANVAS_WIDGET",
         "canExtend": false,
         "hideCard": true,
-        "minHeight": 400,
+        "minHeight": 100,
         "mobileRightColumn": 134.75,
+        "useAutoLayout": true,
         "parentColumnSpace": 1,
         "leftColumn": 0,
         "dynamicBindingPathList": [
             {"key": "borderRadius"},
             {"key": "boxShadow"}
         ],
+        "positioning": "vertical",
         "key": "qktgx68yc2",
         "isDeprecated": false,
         "rightColumn": 134.75,
@@ -61,7 +63,22 @@
         "mobileLeftColumn": 0,
         "maxDynamicHeight": 9000,
         "minDynamicHeight": 4,
-        "flexLayers": []
+        "flexLayers": [
+            {"children": [{
+                "id": "boh92v5ckq",
+                "align": "start"
+            }]},
+            {"children": [
+                {
+                    "id": "8eyqmu1gzr",
+                    "align": "end"
+                },
+                {
+                    "id": "yu8zi3t8jk",
+                    "align": "end"
+                }
+            ]}
+        ]
     }],
     "borderWidth": "1",
     "positioning": "fixed",
@@ -69,7 +86,7 @@
     "key": "vv59ecxo5o",
     "backgroundColor": "#FFFFFF",
     "isDeprecated": false,
-    "rightColumn": 30,
+    "rightColumn": 64,
     "dynamicHeight": "AUTO_HEIGHT",
     "widgetId": "e62lmoal2b",
     "minWidth": 450,
@@ -85,5 +102,6 @@
     "mobileLeftColumn": 0,
     "maxDynamicHeight": 9000,
     "originalBottomRow": 51,
+    "alignment": "start",
     "minDynamicHeight": 10
 }
