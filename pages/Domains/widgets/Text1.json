@@ -4,13 +4,13 @@
     "widgetName": "Text1",
     "iconSVG": "https://appcdn.appsmith.com/static/media/icon.a47d6d5dbbb718c4dc4b2eb4f218c1b7.svg",
     "displayName": "Text",
-    "topRow": 51.6,
+    "topRow": 51.2,
     "searchTags": [
         "typography",
         "paragraph",
         "label"
     ],
-    "bottomRow": 55.6,
+    "bottomRow": 55.2,
     "parentRowSpace": 10,
     "type": "TEXT_WIDGET",
     "hideCard": false,
