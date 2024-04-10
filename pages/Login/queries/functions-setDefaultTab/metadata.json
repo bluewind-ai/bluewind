@@ -13,8 +13,8 @@
       "policies": [],
       "userPermissions": []
     },
-    "pageId": "Authentication2",
-    "collectionId": "Authentication2_functions",
+    "pageId": "Login",
+    "collectionId": "Login_functions",
     "actionConfiguration": {
       "timeoutInMillisecond": 10000,
       "paginationType": "NONE",
@@ -41,7 +41,7 @@
     "userPermissions": [],
     "createdAt": "2024-04-09T15:25:13Z"
   },
-  "id": "Authentication2_functions.setDefaultTab",
+  "id": "Login_functions.setDefaultTab",
   "deleted": false,
   "gitSyncId": "66155ce5f8417458c3950e81_66155dd9f9f2083ab68dd071"
 }

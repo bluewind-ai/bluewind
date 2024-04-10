@@ -1,7 +1,7 @@
 {
   "unpublishedCollection": {
     "name": "functions",
-    "pageId": "Authentication2",
+    "pageId": "Login",
     "pluginId": "js-plugin",
     "pluginType": "JS",
     "actions": [],
@@ -14,7 +14,7 @@
     ],
     "userPermissions": []
   },
-  "id": "Authentication2_functions",
+  "id": "Login_functions",
   "deleted": false,
   "gitSyncId": "66155ce5f8417458c3950e81_66155dd9f9f2083ab68dd07f"
 }
