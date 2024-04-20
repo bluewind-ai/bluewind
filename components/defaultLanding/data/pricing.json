@@ -1,32 +1,42 @@
 [
   {
-    "amount": "30k",
-    "currency": "USD",
-    "duration": "month",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    "amount": "Free forever",
+    "currency": "",
+    "duration": "",
+    "description": "",
     "benefits": [
-      "Up to 20 users.",
-      "Free storage upto 1GB",
-      "Lifetime validity"
+      "Access to all workflows",
+      "Discord access",
+      "API access",
+      "Add your secrets to infisical"
     ]
   },
   {
-    "amount": "120k",
-    "currency": "USD",
-    "duration": "month",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-    "benefits": ["Up to 500 users.", "Storage upto 50GB", "24*7 support"]
+    "amount": "Lifetime deal: 199$",
+    "currency": "99$/month",
+    "duration": "",
+    "description": "",
+    "benefits": [
+      "one api key to manage all your expenses",
+      "access to expensive/private beta APIs",
+      "\"pro\" role on discord",
+      "invited to the daily office hours",
+      "discounts and limited offers from our partners"
+    ]
   },
   {
-    "amount": "350k",
-    "currency": "USD",
-    "duration": "month",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    "amount": "Custom",
+    "currency": "",
+    "duration": "",
+    "description": "Enterprise: Own your GTM engine",
     "benefits": [
-      "Up to 1000 users.",
-      "Storage upto 100GB",
-      "24*7 support",
-      "Data backups"
+      "Self-hosted",
+      "Audit logs",
+      "SAML support",
+      "Unlimited SSO users",
+      "Commercial licence",
+      "SLA & Priority Support 24/7.",
+      "Design partners for roadmap"
     ]
   }
 ]

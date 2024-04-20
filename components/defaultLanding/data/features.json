@@ -1,46 +1,12 @@
 [
   {
-    "name": "Create account",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+    "name": "Setup DNS records Clouflare/Gmail",
+    "description": "",
+    "uuid": "22a8b7403d21b256f99e78a184d739ad"
   },
   {
-    "name": "Sign in with Email and Password",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
-  },
-  {
-    "name": "Sign in with Magic link",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
-  },
-  {
-    "name": "Sign in with SAML SSO",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
-  },
-  {
-    "name": "Directory Sync (SCIM)",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
-  },
-  {
-    "name": "Update account",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
-  },
-  {
-    "name": "Invite users to the team",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
-  },
-  {
-    "name": "Manage team members",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
-  },
-  {
-    "name": "Update team settings",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
-  },
-  {
-    "name": "Webhooks & Events",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
-  },
-  {
-    "name": "Create team",
-    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+    "name": "Create your ICP using an Apollo link",
+    "description": "",
+    "uuid": "22a8b7403d21b256f99e78a184d739ad"
   }
 ]

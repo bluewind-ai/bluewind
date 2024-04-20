@@ -1,14 +1,14 @@
 [
   {
-    "question": "What is BoxyHQ?",
-    "answer": "Enterprise readiness for B2B SaaS, straight out of the box."
+    "question": "What is Bluewind?",
+    "answer": "It's a marketplace of AI automations that drive revenue."
   },
   {
-    "question": "What BoxyHQ offers?",
-    "answer": "At BoxyHQ we enable you to add plug-and-play enterprise-ready features to your SaaS product. Show enterprise customers and InfoSec teams you are ready to pass their processes with flying colors. We are open-source and free!"
+    "question": "What's Bluewind business model?",
+    "answer": "Most automations require to consume third party APIs. We buy API credits in bulk and generate a profit on top"
   },
   {
-    "question": "Is BoxyHQ offers developer security tools?",
-    "answer": "We have curated a list of awesome open-source developer security tools.It includes security principles and controls relevant to popular compliance certifications (like ISO27001, SOC2, MVSP, etc.)"
+    "question": "Why is it open-source?",
+    "answer": "We're tired of seeing thousands of companies reinventing their GTM. We want anyone to be able to go to market."
   }
 ]

@@ -4,7 +4,7 @@ spec:
     - name: web
       git:
         branch: main
-        repo_clone_url: https://github.com/boxyhq/saas-starter-kit.git
+        repo_clone_url: https://github.com/bluewind-ai/bluewind.git
       envs:
         - key: NEXTAUTH_URL
           value: ${APP_URL}

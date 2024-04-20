@@ -2,12 +2,13 @@ import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { NextPageWithLayout } from 'types';
 
-const Products: NextPageWithLayout = () => {
+const Products: NextPageWithLayout = (uuid) => {
+  const url = `https://app.windmill.dev/public/bluewind/${uuid}`;
   return (
     <div className="p-3">
       {/* Example iframe embedding a sample website */}
       <iframe
-        src="https://app.windmill.dev/public/bluewind/22a8b7403d21b256f99e78a184d739ad"
+        src={url}
         title="Product Frame"
         width="100%"
         height="500px"

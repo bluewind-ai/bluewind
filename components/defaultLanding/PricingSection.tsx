@@ -1,6 +1,6 @@
 import { CheckIcon } from '@heroicons/react/20/solid';
 import { useTranslation } from 'next-i18next';
-import { Button, Card } from 'react-daisyui';
+import { Button, Card, Link } from 'react-daisyui';
 
 import plans from './data/pricing.json';
 
@@ -12,10 +12,6 @@ const PricingSection = () => {
         <h2 className="text-center text-4xl font-bold normal-case">
           {t('pricing')}
         </h2>
-        <p className="text-center text-xl">
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.
-        </p>
         <div className="flex items-center justify-center">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             {plans.map((plan, index) => {
@@ -26,7 +22,7 @@ const PricingSection = () => {
                 >
                   <Card.Body>
                     <Card.Title tag="h2">
-                      {plan.currency} {plan.amount} / {plan.duration}
+                      <s>{plan.currency}</s> {plan.amount} {plan.duration}
                     </Card.Title>
                     <p>{plan.description}</p>
                     <div className="mt-5">
@@ -48,13 +44,15 @@ const PricingSection = () => {
                     </div>
                   </Card.Body>
                   <Card.Actions className="justify-center m-2">
-                    <Button
-                      color="primary"
-                      className="md:w-full w-3/4 rounded-md"
-                      size="md"
-                    >
-                      {t('buy-now')}
-                    </Button>
+                    <Link href="/buy-now">
+                      <Button
+                        color="primary"
+                        className="md:w-full w-3/4 rounded-md"
+                        size="md"
+                      >
+                        {t('buy-now')}
+                      </Button>
+                    </Link>
                   </Card.Actions>
                 </Card>
               );
