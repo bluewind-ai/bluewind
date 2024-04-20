@@ -17,6 +17,7 @@ const nextConfig = {
         hostname: 'files.stripe.com',
       },
     ],
+    path: '/', // <-- Add this line to set the path to '/'
   },
   i18n,
   rewrites: async () => {

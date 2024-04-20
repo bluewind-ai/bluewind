@@ -20,6 +20,8 @@ const unAuthenticatedRoutes = [
   '/terms-condition',
   '/unlock-account',
   '/login/saml',
+  '/automations',
+  '/test',
 ];
 
 export default async function middleware(req: NextRequest) {

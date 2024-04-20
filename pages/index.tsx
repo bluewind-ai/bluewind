@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { type ReactElement } from 'react';
+import { useEffect, type ReactElement } from 'react';
 import { useTranslation } from 'next-i18next';
 import type { NextPageWithLayout } from 'types';
 import { GetServerSidePropsContext } from 'next';
@@ -11,10 +11,25 @@ import PricingSection from '@/components/defaultLanding/PricingSection';
 import useTheme from 'hooks/useTheme';
 import env from '@/lib/env';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 const Home: NextPageWithLayout = () => {
   const { toggleTheme, selectedTheme } = useTheme();
   const { t } = useTranslation('common');
+  const router = useRouter();
+
+  useEffect(() => {
+    const url = new URL(router.asPath, window.location.href);
+    const hash = url.hash;
+    if (hash) {
+      const element = document.querySelector(hash);
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+        });
+      }
+    }
+  }, [router.asPath]);
 
   return (
     <>
@@ -60,7 +75,7 @@ const Home: NextPageWithLayout = () => {
             </ul>
           </div>
         </div>
-        <HeroSection />
+        <HeroSection id="get-started" />
         <div className="divider"></div>
         <FeatureSection />
         <div className="divider"></div>

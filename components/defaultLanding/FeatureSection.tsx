@@ -1,7 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import features from './data/features.json';
 import { Button, Card, Link } from 'react-daisyui';
-import Image from 'next/image';
 
 const FeatureSection = () => {
   const { t } = useTranslation('common');
@@ -24,7 +23,7 @@ const FeatureSection = () => {
                     <h2 className="card-title">{feature.name}</h2>
                     <div className="flex justify-center"></div>
                     <Card.Actions className="justify-center m-2">
-                      <Link href="/buy-now">
+                      <Link href="#get-started">
                         <Button
                           color="primary"
                           className="md:w-full w-3/4 rounded-md"

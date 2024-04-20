@@ -1,19 +1,18 @@
-import { GetServerSidePropsContext, NextPage } from 'next';
-import { Session } from 'next-auth';
+import { type ReactElement } from 'react';
+import type { NextPageWithLayout } from 'types';
+import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { AppProps } from 'next/app';
-import { env } from 'process';
-import { ReactElement, ReactNode } from 'react';
+import FeatureSection from '@/components/defaultLanding/FeatureSection';
+import env from '@/lib/env';
 
-export type AppPropsWithLayout = AppProps & {
-  Component: NextPageWithLayout;
-  pageProps: {
-    session?: Session;
-  };
-};
-
-export type NextPageWithLayout<P = Record<string, unknown>> = NextPage<P> & {
-  getLayout?: (page: ReactElement) => ReactNode;
+const Home: NextPageWithLayout = () => {
+  return (
+    <>
+      <div className="container mx-auto">
+        <FeatureSection />
+      </div>
+    </>
+  );
 };
 
 export const getServerSideProps = async (
@@ -37,3 +36,9 @@ export const getServerSideProps = async (
     },
   };
 };
+
+Home.getLayout = function getLayout(page: ReactElement) {
+  return <>{page}</>;
+};
+
+export default Home;

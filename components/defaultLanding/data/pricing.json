@@ -25,10 +25,10 @@
     ]
   },
   {
-    "amount": "Custom",
+    "amount": "Enterprise: Own your GTM engine",
     "currency": "",
     "duration": "",
-    "description": "Enterprise: Own your GTM engine",
+    "description": "",
     "benefits": [
       "Self-hosted",
       "Audit logs",
