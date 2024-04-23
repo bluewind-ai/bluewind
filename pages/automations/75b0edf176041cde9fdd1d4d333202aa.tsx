@@ -2,7 +2,6 @@ import { type ReactElement } from 'react';
 import type { NextPageWithLayout } from 'types';
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import FeatureSection from '@/components/defaultLanding/FeatureSection';
 import env from '@/lib/env';
 import { useRouter } from 'next/router';
 

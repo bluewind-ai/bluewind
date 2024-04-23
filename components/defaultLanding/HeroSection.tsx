@@ -1,8 +1,6 @@
 import { useTranslation } from 'next-i18next';
-import Link from 'next/link';
-import router from 'next/router';
-import { ReactElement, useState } from 'react';
 import FeatureSection from './FeatureSection';
+import { ReactElement } from 'react';
 
 type HeroSectionProps = {
   id?: string;
@@ -10,21 +8,21 @@ type HeroSectionProps = {
 
 const HeroSection = ({ id }: HeroSectionProps): ReactElement => {
   const { t } = useTranslation('common');
-  const [domainName, setDomainName] = useState('');
-  const [isError, setIsError] = useState(false);
+  // const [domainName] = useState('');
+  // const [isError, setIsError] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (domainName.trim() === '') {
-      setIsError(true);
-      return;
-    }
-    // Handle the submission of the domain name
-    console.log('Submitted domain name:', domainName);
-    router.push(`/test?domain-name=${encodeURIComponent(domainName)}`);
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (domainName.trim() === '') {
+  //     setIsError(true);
+  //     return;
+  //   }
+  //   // Handle the submission of the domain name
+  //   console.log('Submitted domain name:', domainName);
+  //   router.push(`/test?domain-name=${encodeURIComponent(domainName)}`);
 
-    // You can make an API call or perform any other necessary actions here
-  };
+  //   // You can make an API call or perform any other necessary actions here
+  // };
 
   return (
     <div id={id} className="hero py-52">

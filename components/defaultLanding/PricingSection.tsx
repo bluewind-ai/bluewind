@@ -72,7 +72,7 @@ const PricingSection = () => {
                     </li>
                     <li className="flex items-center">
                       <CheckIcon className="h-5 w-5" />
-                      <span className="ml-1">"pro" role on discord</span>
+                      <span className="ml-1">pro role on discord</span>
                     </li>
                     <li className="flex items-center">
                       <CheckIcon className="h-5 w-5" />
