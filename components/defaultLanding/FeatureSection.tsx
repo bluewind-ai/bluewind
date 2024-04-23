@@ -29,7 +29,7 @@ const FeatureSection = () => {
                           className="md:w-full w-3/4 rounded-md"
                           size="md"
                         >
-                          {t('buy-now')}
+                          {feature.cta}
                         </Button>
                       </Link>
                     </Card.Actions>
