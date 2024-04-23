@@ -1,6 +1,9 @@
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
+import router from 'next/router';
 import { ReactElement, useState } from 'react';
+import FeatureSection from './FeatureSection';
+
 type HeroSectionProps = {
   id?: string;
 };
@@ -8,22 +11,31 @@ type HeroSectionProps = {
 const HeroSection = ({ id }: HeroSectionProps): ReactElement => {
   const { t } = useTranslation('common');
   const [domainName, setDomainName] = useState('');
+  const [isError, setIsError] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (domainName.trim() === '') {
+      setIsError(true);
+      return;
+    }
     // Handle the submission of the domain name
     console.log('Submitted domain name:', domainName);
+    router.push(`/test?domain-name=${encodeURIComponent(domainName)}`);
+
     // You can make an API call or perform any other necessary actions here
   };
+
   return (
     <div id={id} className="hero py-52">
       <div className="hero-content text-center">
         <div className="max-w-7xl">
-          <h1 className="text-5xl font-bold"> {t('enterprise-saas-kit')}</h1>
+          <h1 className="text-5xl font-bold">{t('enterprise-saas-kit')}</h1>
           <p className="py-6 text-2xl font-normal">
             {t('kickstart-your-enterprise')}
           </p>
-          <div className="flex items-center justify-center gap-2 ">
+          <FeatureSection />
+          {/* <div className="flex items-center justify-center gap-2">
             <form
               onSubmit={handleSubmit}
               className="flex items-center justify-center gap-2"
@@ -32,8 +44,11 @@ const HeroSection = ({ id }: HeroSectionProps): ReactElement => {
                 type="text"
                 placeholder="your-company.com"
                 value={domainName}
-                onChange={(e) => setDomainName(e.target.value)}
-                className="input input-bordered"
+                onChange={(e) => {
+                  setDomainName(e.target.value);
+                  setIsError(false);
+                }}
+                className={`input input-bordered ${isError ? 'input-error' : ''}`}
               />
               <button
                 type="submit"
@@ -43,6 +58,9 @@ const HeroSection = ({ id }: HeroSectionProps): ReactElement => {
               </button>
             </form>
           </div>
+          {isError && (
+            <p className="text-error mt-2">{t('please-enter-domain-name')}</p>
+          )} */}
         </div>
       </div>
     </div>

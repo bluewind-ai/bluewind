@@ -9,7 +9,7 @@ const FeatureSection = () => {
     <section className="py-6 px-2">
       <div className="flex flex-col justify-center space-y-6">
         <h2 className="text-center text-4xl font-bold normal-case">
-          {t('features')}
+          {/* {t('features')} */}
         </h2>
         <div className="flex items-center justify-center">
           <div className="grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-2">
@@ -23,7 +23,7 @@ const FeatureSection = () => {
                     <h2 className="card-title">{feature.name}</h2>
                     <div className="flex justify-center"></div>
                     <Card.Actions className="justify-center m-2">
-                      <Link href="#get-started">
+                      <Link href={'/automations/' + feature.uuid}>
                         <Button
                           color="primary"
                           className="md:w-full w-3/4 rounded-md"

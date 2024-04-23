@@ -41,7 +41,7 @@ const Home: NextPageWithLayout = () => {
         <div className="navbar bg-base-100 px-0 sm:px-1">
           <div className="flex-1">
             <Link href="/" className="btn btn-ghost text-xl normal-case">
-              BoxyHQ
+              bluewind
             </Link>
           </div>
           <div className="flex-none">
@@ -56,7 +56,7 @@ const Home: NextPageWithLayout = () => {
                   </button>
                 </li>
               )}
-              <li>
+              {/* <li>
                 <Link
                   href="/auth/join"
                   className="btn btn-primary btn-md py-3 px-2 sm:px-4 text-white"
@@ -71,7 +71,7 @@ const Home: NextPageWithLayout = () => {
                 >
                   {t('sign-in')}
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
@@ -79,9 +79,9 @@ const Home: NextPageWithLayout = () => {
         <div className="divider"></div>
         <FeatureSection />
         <div className="divider"></div>
-        <PricingSection />
+        {/* <PricingSection />
         <div className="divider"></div>
-        <FAQSection />
+        <FAQSection /> */}
       </div>
     </>
   );

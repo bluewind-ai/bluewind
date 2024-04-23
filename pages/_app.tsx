@@ -38,10 +38,10 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <>
-      <Head>
+      {/* <Head>
         <title>{app.name}</title>
         <link rel="icon" href="https://boxyhq.com/img/favicon.ico" />
-      </Head>
+      </Head> */}
       <SessionProvider session={session}>
         <Toaster toastOptions={{ duration: 4000 }} />
         <Themer
