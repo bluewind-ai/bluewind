@@ -1,9 +1,9 @@
-import { useTranslation } from 'next-i18next';
+// import { useTranslation } from 'next-i18next';
 import features from './data/features.json';
 import { Button, Card, Link } from 'react-daisyui';
 
 const FeatureSection = () => {
-  const { t } = useTranslation('common');
+  // const { t } = useTranslation('common');
 
   return (
     <section className="py-6 px-2">

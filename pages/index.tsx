@@ -5,7 +5,6 @@ import type { NextPageWithLayout } from 'types';
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import HeroSection from '@/components/defaultLanding/HeroSection';
-import FeatureSection from '@/components/defaultLanding/FeatureSection';
 import useTheme from 'hooks/useTheme';
 import env from '@/lib/env';
 import Head from 'next/head';
