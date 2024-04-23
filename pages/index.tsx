@@ -73,10 +73,10 @@ const Home: NextPageWithLayout = () => {
             </ul>
           </div>
         </div>
-        <HeroSection id="get-started" />
-        <div className="divider"></div>
-        <FeatureSection />
-        <div className="divider"></div>
+        <HeroSection />
+        {/* <div className="divider"></div> */}
+        {/* <FeatureSection /> */}
+        {/* <div className="divider"></div> */}
         {/* <PricingSection />
         <div className="divider"></div>
         <FAQSection /> */}

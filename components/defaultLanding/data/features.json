@@ -1,7 +1,17 @@
 [
   {
     "name": "Find your ideal customers",
-    "description": "",
+    "cta": "Try now",
     "uuid": "75b0edf176041cde9fdd1d4d333202aa"
+  },
+  {
+    "name": "Put my ideal customers in hubspot",
+    "cta": "I want to build it!",
+    "uuid": ""
+  },
+  {
+    "name": "Start a campaign end to end, I don't want to lift a finger",
+    "cta": "I want to build it!",
+    "uuid": ""
   }
 ]
