@@ -8,7 +8,9 @@ import { useRouter } from 'next/router';
 const Home: NextPageWithLayout = () => {
   const router = useRouter();
   const { query } = router;
-  const [activeTab, setActiveTab] = useState<'video' | 'iframe'>('video');
+  const [activeTab, setActiveTab] = useState<'video' | 'iframe' | 'clay'>(
+    'video'
+  );
 
   // Construct the URL with query parameters
   const url = `https://app.windmill.dev/public/bluewind/75b0edf176041cde9fdd1d4d333202aa?${new URLSearchParams(
@@ -44,6 +46,18 @@ const Home: NextPageWithLayout = () => {
           >
             Try the automation
           </button>
+          <button
+            onClick={() => setActiveTab('clay')}
+            style={{
+              backgroundColor: activeTab === 'clay' ? 'lightblue' : 'white',
+              padding: '0.5rem 1rem',
+              border: 'none',
+              borderBottom: activeTab === 'clay' ? '2px solid blue' : 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Try on Clay
+          </button>
         </div>
       </div>
       {activeTab === 'video' && (
@@ -70,6 +84,18 @@ const Home: NextPageWithLayout = () => {
           height="100%"
           style={{ border: 'none' }}
         ></iframe>
+      )}
+      {activeTab === 'clay' && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          Coming soon...
+        </div>
       )}
     </div>
   );

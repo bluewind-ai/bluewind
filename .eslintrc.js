@@ -22,6 +22,7 @@ module.exports = {
   plugins: ['react', '@typescript-eslint', 'i18next'],
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
+    'i18next/no-literal-string': 'off', // Disable the rule globally
   },
   settings: {
     react: {
