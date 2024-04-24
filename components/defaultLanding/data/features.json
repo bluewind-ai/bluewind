@@ -7,11 +7,12 @@
   {
     "name": "Put my ideal customers in hubspot",
     "cta": "I want to build it!",
-    "uuid": ""
+    "uuid": "create",
+    "youtube_link": "https://www.youtube.com/watch?v=ys5SY_m4KJM"
   },
   {
     "name": "Generate leads for me, I don't want to lift a finger",
     "cta": "I want to build it!",
-    "uuid": ""
+    "uuid": "create"
   }
 ]

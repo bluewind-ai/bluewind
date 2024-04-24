@@ -23,6 +23,7 @@ const unAuthenticatedRoutes = [
   '/automations/**',
   '/automations/*',
   '/automations/75b0edf176041cde9fdd1d4d333202aa',
+  '/automations/create',
 ];
 
 export default async function middleware(req: NextRequest) {
