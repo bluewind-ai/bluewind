@@ -24,15 +24,16 @@ const unAuthenticatedRoutes = [
   '/automations/*',
   '/automations/75b0edf176041cde9fdd1d4d333202aa',
   '/automations/create',
+  '/test',
 ];
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Bypass routes that don't require authentication
-  if (micromatch.isMatch(pathname, unAuthenticatedRoutes)) {
-    return NextResponse.next();
-  }
+  // if (micromatch.isMatch(pathname, unAuthenticatedRoutes)) {
+  return NextResponse.next();
+  // }
 
   const redirectUrl = new URL('/auth/login', req.url);
   redirectUrl.searchParams.set('callbackUrl', encodeURI(req.url));

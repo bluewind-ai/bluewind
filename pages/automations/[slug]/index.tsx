@@ -1,102 +1,103 @@
-import { type ReactElement, useState } from 'react';
+import { type ReactElement } from 'react';
 import type { NextPageWithLayout } from 'types';
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import env from '@/lib/env';
 import { useRouter } from 'next/router';
+import features from 'components/defaultLanding/data/features.json';
 
 const Home: NextPageWithLayout = () => {
   const router = useRouter();
   const { query } = router;
-  const [activeTab, setActiveTab] = useState<'video' | 'iframe' | 'clay'>(
-    'video'
-  );
+  const feature = features.find((feature) => feature.uuid === query.slug);
+  console.log(feature);
+  console.log(query);
 
   // Construct the URL with query parameters
-  const url = `https://app.windmill.dev/public/bluewind/75b0edf176041cde9fdd1d4d333202aa?${new URLSearchParams(
+  const url = `https://bluewind.windmill.dev/public/bluewind/${feature.uuid}?${new URLSearchParams(
     query as Record<string, string>
   ).toString()}`;
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <div style={{ textAlign: 'center', margin: '1rem 0', padding: '2rem' }}>
-        <div>
-          <button
-            onClick={() => setActiveTab('video')}
-            style={{
-              backgroundColor: activeTab === 'video' ? 'lightblue' : 'white',
-              padding: '0.5rem 1rem',
-              border: 'none',
-              borderBottom: activeTab === 'video' ? '2px solid blue' : 'none',
-              cursor: 'pointer',
-              marginRight: '1rem',
-            }}
-          >
-            Info
-          </button>
-          <button
-            onClick={() => setActiveTab('iframe')}
-            style={{
-              backgroundColor: activeTab === 'iframe' ? 'lightblue' : 'white',
-              padding: '0.5rem 1rem',
-              border: 'none',
-              borderBottom: activeTab === 'iframe' ? '2px solid blue' : 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Try the automation
-          </button>
-          <button
-            onClick={() => setActiveTab('clay')}
-            style={{
-              backgroundColor: activeTab === 'clay' ? 'lightblue' : 'white',
-              padding: '0.5rem 1rem',
-              border: 'none',
-              borderBottom: activeTab === 'clay' ? '2px solid blue' : 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Try on Clay
-          </button>
-        </div>
-      </div>
-      {activeTab === 'video' && (
-        <div style={{ position: 'relative', paddingTop: '45%' }}>
-          <iframe
-            src="https://www.youtube.com/embed/HtK-UJXDli0"
-            title="YouTube Video"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-            }}
-            allowFullScreen
-          ></iframe>
-        </div>
-      )}
-      {activeTab === 'iframe' && (
+    <div className="grid grid-cols-8 w-full h-full">
+      <div className="col-span-7 h-full">
         <iframe
+          className="w-full h-full"
           src={url}
           title="Product Frame"
-          width="100%"
-          height="100%"
-          style={{ border: 'none' }}
         ></iframe>
-      )}
-      {activeTab === 'clay' && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-          }}
+      </div>
+      <div className="col-span-1 bg-gray-200">
+        <a
+          href={`https://youtube.com/watch?v=${feature?.youtube_link}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-blue-600 hover:text-blue-800"
         >
-          Coming soon...
-        </div>
-      )}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 mr-1"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M21.543 6.498C22 8.28 22 12 22 12s0 3.72-.457 5.502c-.254.985-.997 1.76-1.938 2.022C17.896 20 12 20 12 20s-5.893 0-7.605-.476c-.945-.266-1.687-1.04-1.938-2.022C2 15.72 2 12 2 12s0-3.72.457-5.502c.254-.985.997-1.76 1.938-2.022C6.107 4 12 4 12 4s5.896 0 7.605.476c.945.266 1.687 1.04 1.938 2.022zM10 15.5l6-3.5-6-3.5v7z" />
+          </svg>
+          How to use
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 ml-1"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+          </svg>
+        </a>
+        <a
+          href={feature?.clay_link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-blue-600 hover:text-blue-800"
+        >
+          <img
+            src="/clay.webp"
+            alt="Clay"
+            className="h-6 w-6 mr-1 object-cover"
+          />
+          Clay
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 ml-1"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+          </svg>
+        </a>
+        <a
+          href={feature?.persana_link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-blue-600 hover:text-blue-800"
+        >
+          <img
+            src="/persana.jpeg"
+            alt="Persana"
+            className="h-6 w-6 mr-1 object-cover"
+          />
+          Persana
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 ml-1"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+          </svg>
+        </a>
+      </div>
     </div>
   );
 };
