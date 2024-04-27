@@ -1,4 +1,3 @@
-import { useTranslation } from 'next-i18next';
 import { ReactElement } from 'react';
 
 type HeroSectionProps = {
@@ -6,8 +5,6 @@ type HeroSectionProps = {
 };
 
 const HeroSection = ({ id }: HeroSectionProps): ReactElement => {
-  const { t } = useTranslation('common');
-
   return (
     <div id={id} className="hero py-10">
       <div className="hero-content text-center">

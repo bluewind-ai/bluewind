@@ -8,7 +8,7 @@ const Tags = () => {
 
   useEffect(() => {
     const { tag } = router.query;
-    setSelectedTag(tag || 'all');
+    setSelectedTag(Array.isArray(tag) ? tag[0] || 'all' : tag || 'all');
   }, [router.query]);
 
   const handleTagClick = (tagId) => {

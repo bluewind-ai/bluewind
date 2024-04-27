@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import features from 'components/defaultLanding/data/features.json';
 
@@ -10,7 +10,7 @@ const AlbumCard = ({ feature }) => {
   };
 
   const [imageSrc, setImageSrc] = useState(
-    feature.image_format ? `${feature.uuid}.${feature.image_format}` : null
+    feature.image_format ? `${feature.uuid}.${feature.image_format}` : ''
   );
 
   const handleImageError = () => {
@@ -50,15 +50,19 @@ const AlbumCard = ({ feature }) => {
 
 const AlbumCardList = () => {
   const router = useRouter();
-  const { tag } = router.query;
+  const { tag } = router.query ?? '';
 
   const filteredFeatures = tag
-    ? features.filter((feature) => feature.tags.includes(tag))
+    ? features.filter((feature) =>
+        typeof tag === 'string'
+          ? feature.tags.includes(tag)
+          : feature.tags.some((t) => tag.includes(t))
+      )
     : features.filter((feature) => !feature.tags.includes('coming-soon'));
 
   return (
     <div
-      key={tag}
+      key={String(tag)} // Convert tag to a string
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
     >
       {filteredFeatures.map((feature) => (

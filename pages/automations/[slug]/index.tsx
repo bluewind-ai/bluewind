@@ -14,7 +14,7 @@ const Home: NextPageWithLayout = () => {
   console.log(query);
 
   // Construct the URL with query parameters
-  const url = `https://bluewind.windmill.dev/public/bluewind/${feature.uuid}?${new URLSearchParams(
+  const url = `https://bluewind.windmill.dev/public/bluewind/${feature?.uuid}?${new URLSearchParams(
     query as Record<string, string>
   ).toString()}`;
 
