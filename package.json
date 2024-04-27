@@ -38,6 +38,7 @@
     "@retracedhq/retraced": "0.7.9",
     "@sentry/nextjs": "7.111.0",
     "@tailwindcss/typography": "0.5.12",
+    "@vercel/analytics": "^1.2.2",
     "algoliasearch": "^4.23.3",
     "bcryptjs": "2.4.3",
     "classnames": "2.5.1",
