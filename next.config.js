@@ -1,10 +1,12 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
 const { i18n } = require('./next-i18next.config');
-const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: { esmExternals: false, webpackBuildWorker: true },
+  experimental: {
+    esmExternals: false,
+    webpackBuildWorker: true,
+  },
   reactStrictMode: true,
   images: {
     remotePatterns: [
@@ -32,9 +34,6 @@ const nextConfig = {
       },
     ];
   },
-  sentry: {
-    hideSourceMaps: true,
-  },
   async headers() {
     return [
       {
@@ -58,10 +57,4 @@ const nextConfig = {
   },
 };
 
-// Additional config options for the Sentry webpack plugin.
-// For all available options: https://github.com/getsentry/sentry-webpack-plugin#options.
-const sentryWebpackPluginOptions = {
-  silent: true,
-};
-
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+module.exports = nextConfig;
