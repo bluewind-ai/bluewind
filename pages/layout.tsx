@@ -1,4 +1,5 @@
 import { Analytics } from '@vercel/analytics/react';
+import Head from 'next/head';
 
 export default function RootLayout({
   children,
@@ -7,9 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
+      <Head>
         <title>Next.js</title>
-      </head>
+      </Head>
       <body>
         {children}
         <Analytics />
