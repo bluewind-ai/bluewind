@@ -149,12 +149,13 @@ export default function PricingTable2() {
                 Save money on your API costs and join our enterprise Windmill
                 workspace
               </div>
-              <a
+              <Link
                 className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 dark:focus-visible:ring-slate-600 transition-colors duration-150"
-                href="#0"
+                href="https://discord.gg/bTVVGyrA"
+                target="_blank"
               >
-                Purchase Plan
-              </a>
+                Let's talk on discord
+              </Link>
             </div>
             <ul className="text-slate-600 dark:text-slate-400 text-sm space-y-3 grow">
               <li className="flex items-center">
@@ -234,12 +235,13 @@ export default function PricingTable2() {
                 Join the professional community and grow your visibility +
                 network
               </div>
-              <a
+              <Link
                 className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 dark:focus-visible:ring-slate-600 transition-colors duration-150"
-                href="#0"
+                href="https://discord.gg/bTVVGyrA"
+                target="_blank"
               >
-                Purchase Plan
-              </a>
+                Let's talk on discord
+              </Link>
             </div>
             <ul className="text-slate-600 dark:text-slate-400 text-sm space-y-3 grow">
               <li className="flex items-center">
@@ -338,12 +340,13 @@ export default function PricingTable2() {
               <div className="text-sm text-slate-500 mb-5">
                 Consulting services for companies seeking expert advice.
               </div>
-              <a
+              <Link
                 className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 dark:focus-visible:ring-slate-600 transition-colors duration-150"
-                href="#0"
+                href="https://discord.gg/bTVVGyrA"
+                target="_blank"
               >
-                Purchase Plan
-              </a>
+                Let's talk on discord
+              </Link>
             </div>
             <ul className="text-slate-600 dark:text-slate-400 text-sm space-y-3 grow">
               <li className="flex items-center">
