@@ -9,6 +9,10 @@ export const Navbar = () => {
     router.push('/');
   };
 
+  const handlePricingClick = () => {
+    router.push('/pricing');
+  };
+
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -52,9 +56,18 @@ export const Navbar = () => {
             </li>
           </ul>
         </div>
-        <button onClick={handleClick} className="btn btn-ghost text-xl">
+        <a className="btn btn-ghost text-xl" onClick={handleClick}>
           Bluewind
-        </button>
+        </a>
+      </div>
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1">
+          <li>
+            <a onClick={handlePricingClick} className="text-xl">
+              Pricing
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   );

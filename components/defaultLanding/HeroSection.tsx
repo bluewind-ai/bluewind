@@ -10,11 +10,10 @@ const HeroSection = ({ id }: HeroSectionProps): ReactElement => {
       <div className="hero-content text-center">
         <div className="max-w-7xl">
           <h1 className="text-5xl font-bold">
-            Open-source AI automations to grow your business
+            The community of AI engineers growing businesses
           </h1>
           <p className="py-6 text-2xl font-normal">
-            Save time and money by reusing automations proven to generate
-            revenue.
+            Build AI automations focused on GTM and make yourself irreplaceable
           </p>
         </div>
       </div>

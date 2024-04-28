@@ -23,6 +23,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
     'i18next/no-literal-string': 'off', // Disable the rule globally
+    'react/no-unescaped-entities': 'off',
   },
   settings: {
     react: {

@@ -36,6 +36,9 @@ const Home: NextPageWithLayout = () => {
         <HeroSection />
         <Tags />
         <AlbumCard />
+        {/* <PricingTable /> */}
+        {/* <PricingTable2 />
+        <FAQ /> */}
         {/* <div className="divider"></div> */}
         {/* <FeatureSection /> */}
         {/* <div className="divider"></div> */}
