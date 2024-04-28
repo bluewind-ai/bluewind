@@ -1,6 +1,11 @@
 import { Analytics } from '@vercel/analytics/react';
 import Head from 'next/head';
+import { PHProvider } from './providers';
+import dynamic from 'next/dynamic';
 
+const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
+  ssr: false,
+});
 export default function RootLayout({
   children,
 }: {
@@ -11,10 +16,14 @@ export default function RootLayout({
       <Head>
         <title>Next.js</title>
       </Head>
-      <body>
-        {children}
-        <Analytics />
-      </body>
+      <PHProvider>
+        <body>
+          <PostHogPageView />
+
+          {children}
+          <Analytics />
+        </body>
+      </PHProvider>
     </html>
   );
 }
