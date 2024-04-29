@@ -2,14 +2,13 @@ import { useEffect, type ReactElement } from 'react';
 import type { NextPageWithLayout } from 'types';
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-
 import env from '@/lib/env';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import AlbumCard from '@/components/CardAutomation';
-import features from 'components/defaultLanding/data/features.json';
 
 import Tags from '@/components/defaultLanding/Tags';
+import contributors from 'components/defaultLanding/data/contributors.json';
 
 const Home: NextPageWithLayout = () => {
   const router = useRouter();
@@ -38,18 +37,16 @@ const Home: NextPageWithLayout = () => {
           <div className="hero-content text-center">
             <div className="max-w-7xl">
               <h1 className="text-5xl font-bold">
-                The community of AI engineers growing businesses
+                Hire the most talented GTM engineers
               </h1>
               <p className="py-6 text-2xl font-normal">
-                Build AI automations focused on GTM and make yourself
-                irreplaceable
+                Save money and time by hiring the best contributors of Bluewind
               </p>
             </div>
           </div>
         </div>
         <Tags />
-        <AlbumCard features={features} />
-
+        <AlbumCard features={contributors} />
         {/* <PricingTable /> */}
         {/* <PricingTable2 />
         <FAQ /> */}

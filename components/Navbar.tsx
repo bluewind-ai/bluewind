@@ -12,6 +12,12 @@ export const Navbar = () => {
   const handlePricingClick = () => {
     router.push('/pricing');
   };
+  const handleStatsClick = () => {
+    router.push('/community');
+  };
+  const handleContributorsClick = () => {
+    router.push('/contributors');
+  };
 
   return (
     <div className="navbar bg-base-100">
@@ -62,6 +68,21 @@ export const Navbar = () => {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
+          <li>
+            <a onClick={handleClick} className="text-xl">
+              Automations
+            </a>
+          </li>
+          <li>
+            <a onClick={handleContributorsClick} className="text-xl">
+              Contributors
+            </a>
+          </li>
+          <li>
+            <a onClick={handleStatsClick} className="text-xl">
+              Stats
+            </a>
+          </li>
           <li>
             <a onClick={handlePricingClick} className="text-xl">
               Pricing

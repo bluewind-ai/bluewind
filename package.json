@@ -36,6 +36,7 @@
     "@react-email/render": "0.0.12",
     "@retracedhq/logs-viewer": "2.7.2",
     "@retracedhq/retraced": "0.7.9",
+    "@rocktimsaikia/github-card": "^3.0.1",
     "@tailwindcss/typography": "0.5.12",
     "@vercel/analytics": "^1.2.2",
     "algoliasearch": "^4.23.3",

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import features from 'components/defaultLanding/data/features.json';
 
 const AlbumCard = ({ feature }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/automations/${feature.uuid}`);
+    if (feature.profile_view_link) {
+      window.open(feature.profile_view_link, '_blank', 'noopener,noreferrer');
+    } else {
+      router.push(`/automations/${feature.uuid}`);
+    }
   };
 
   const [imageSrc, setImageSrc] = useState(
@@ -48,7 +51,7 @@ const AlbumCard = ({ feature }) => {
   );
 };
 
-const AlbumCardList = () => {
+const AlbumCardList = ({ features }) => {
   const router = useRouter();
   const { tag } = router.query ?? '';
 
