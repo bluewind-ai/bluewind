@@ -18,5 +18,15 @@
     "youtube_link": "KHT9xlwi54U",
     "persana_link": "https://www.platform.persana.ai/table-preview?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0YWJsZUlkIjoiNjYyY2JkNjM3NGM3MTk0N2M3NjNhOWU3IiwiaWF0IjoxNzE0MjEyNDUyLCJleHAiOjE3NDU3NzAwNTJ9.jQj0rYTzAz52gT6c0PWmNfYF9GAlED93X-Sy0hQj-zQ",
     "clay_link": "https://app.clay.com/shared-table/share_TS1ge5BZlx8x"
+  },
+  {
+    "title": "Validate email",
+    "uuid": "67e6218b441443be0c8821fd0854556d",
+    "image_format": "png",
+    "description": "Validate emails using leadmagic",
+    "tags": ["leadmagic", "email_validation"],
+    "youtube_link": "",
+    "persana_link": "",
+    "clay_link": ""
   }
 ]
