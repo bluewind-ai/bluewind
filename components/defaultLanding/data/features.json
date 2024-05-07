@@ -28,5 +28,15 @@
     "youtube_link": "",
     "persana_link": "",
     "clay_link": ""
+  },
+  {
+    "title": "Clean one contact on hubspot",
+    "uuid": "1bf8eed77d29d1598f4716489aa9e799",
+    "image_format": "png",
+    "description": "Pick a random contact on hubspot whose email validity we don't know and clean it.",
+    "tags": ["leadmagic", "email_validation"],
+    "youtube_link": "",
+    "persana_link": "",
+    "clay_link": ""
   }
 ]
