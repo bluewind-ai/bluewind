@@ -4,11 +4,29 @@ import { useRouter } from 'next/router';
 const AlbumCard = ({ feature }) => {
   const router = useRouter();
 
-  const handleClick = () => {
-    if (feature.profile_view_link) {
-      window.open(feature.profile_view_link, '_blank', 'noopener,noreferrer');
+  const handleClick = (event) => {
+    if (event.metaKey || event.ctrlKey) {
+      // Command key (macOS) or Ctrl key (Windows) is pressed
+      event.preventDefault();
+      if (feature.profile_view_link) {
+        window.open(feature.profile_view_link, '_blank', 'noopener,noreferrer');
+      } else {
+        const newWindow = window.open(
+          `/automations/${feature.uuid}`,
+          '_blank',
+          'noopener,noreferrer'
+        );
+        if (newWindow) {
+          newWindow.opener = null;
+        }
+      }
     } else {
-      router.push(`/automations/${feature.uuid}`);
+      // Regular click without Command or Ctrl key
+      if (feature.profile_view_link) {
+        window.open(feature.profile_view_link, '_blank', 'noopener,noreferrer');
+      } else {
+        router.push(`/automations/${feature.uuid}`);
+      }
     }
   };
 
