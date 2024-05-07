@@ -34,7 +34,17 @@
     "uuid": "1bf8eed77d29d1598f4716489aa9e799",
     "image_format": "png",
     "description": "Pick a random contact on hubspot whose email validity we don't know and clean it.",
-    "tags": ["leadmagic", "email_validation"],
+    "tags": ["leadmagic", "email_validation", "hubspot"],
+    "youtube_link": "",
+    "persana_link": "",
+    "clay_link": ""
+  },
+  {
+    "title": "Clean many contacts on hubspot",
+    "uuid": "d0ad2bc03581ec06cfa45f4111897a91",
+    "image_format": "png",
+    "description": "Repeat this: Pick a random contact on hubspot whose email validity we don't know and clean it.",
+    "tags": ["leadmagic", "email_validation", "hubspot"],
     "youtube_link": "",
     "persana_link": "",
     "clay_link": ""
