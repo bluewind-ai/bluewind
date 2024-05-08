@@ -48,5 +48,15 @@
     "youtube_link": "",
     "persana_link": "",
     "clay_link": ""
+  },
+  {
+    "title": "Create smartlead campaign",
+    "uuid": "fe5a27464d0a4fe63bab8db287dc7a46",
+    "image_format": "webp",
+    "description": "Create a campaign smartlead following some basic conventions",
+    "tags": ["smartlead", "setup"],
+    "youtube_link": "",
+    "persana_link": "",
+    "clay_link": ""
   }
 ]
