@@ -78,5 +78,15 @@
     "youtube_link": "",
     "persana_link": "",
     "clay_link": ""
+  },
+  {
+    "title": "hi {{first_name}}",
+    "uuid": "851198aaed8f9878f595aba2b504983d",
+    "image_format": "png",
+    "description": "salutations spintax",
+    "tags": ["Copywriting"],
+    "youtube_link": "",
+    "persana_link": "",
+    "clay_link": ""
   }
 ]
