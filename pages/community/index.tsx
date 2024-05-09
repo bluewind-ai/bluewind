@@ -13,26 +13,10 @@ const FirstIframe = () => {
   );
 };
 
-const SecondIframe = () => {
-  return (
-    <div className="w-full h-screen">
-      <iframe
-        className="w-full h-full"
-        frameBorder="0"
-        allowFullScreen
-        allow="fullscreen"
-        title="Embedded Content"
-        src="https://us.posthog.com/embedded/gxjKcMCqwCoFGso_q-llXb376dvKDw"
-      ></iframe>
-    </div>
-  );
-};
-
 const Community = () => {
   return (
     <div>
       <FirstIframe />
-      {/* <SecondIframe /> */}
     </div>
   );
 };
