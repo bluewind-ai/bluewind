@@ -88,5 +88,15 @@
     "youtube_link": "",
     "persana_link": "",
     "clay_link": ""
+  },
+  {
+    "title": "Create basic email",
+    "uuid": "0fb60646eab4110e82aeb676cb8497e1",
+    "image_format": "png",
+    "description": "Create email following basic template",
+    "tags": ["Copywriting"],
+    "youtube_link": "",
+    "persana_link": "",
+    "clay_link": ""
   }
 ]
