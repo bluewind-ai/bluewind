@@ -84,7 +84,7 @@ const AlbumCardList = ({ features }) => {
   return (
     <div
       key={String(tag)} // Convert tag to a string
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      className="flex flex-wrap gap-4 justify-center"
     >
       {filteredFeatures.map((feature) => (
         <AlbumCard key={feature.uuid} feature={feature} />
