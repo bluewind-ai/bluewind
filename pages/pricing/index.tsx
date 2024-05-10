@@ -8,7 +8,7 @@ export default function Pricing() {
   // const [isAnnual, setIsAnnual] = useState<boolean>(true);
 
   return (
-    <div>
+    <div className="mx-auto w-full md:w-5/6 justify-between items-center pt-2 md:pt-4 px-4">
       <PricingTable2 />
       <FAQ />
     </div>

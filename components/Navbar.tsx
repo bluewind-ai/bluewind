@@ -1,96 +1,31 @@
 // Navbar.tsx
 import React from 'react';
+import NavigationLinks from './NavigationLinks';
 import { useRouter } from 'next/router';
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 
 export const Navbar = () => {
   const router = useRouter();
-
-  const handleClick = () => {
-    router.push('/');
-  };
-
-  const handlePricingClick = () => {
-    router.push('/pricing');
-  };
-  const handleStatsClick = () => {
-    router.push('/community');
-  };
-  const handleContributorsClick = () => {
-    router.push('/contributors');
-  };
-
   return (
-    <div className="navbar bg-base-100">
-      <div className="navbar-start">
-        <div className="dropdown">
-          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
-            </svg>
-          </div>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            <li>
-              <a onClick={handleClick} className="text-xl">
-                Automations
-              </a>
-            </li>
-            <li>
-              <a onClick={handleContributorsClick} className="text-xl">
-                Contributors
-              </a>
-            </li>
-            <li>
-              <a onClick={handleStatsClick} className="text-xl">
-                Stats
-              </a>
-            </li>
-            <li>
-              <a onClick={handlePricingClick} className="text-xl">
-                Pricing
-              </a>
-            </li>
-          </ul>
+    <div className="flex flex-row mx-auto w-full md:w-5/6 justify-between items-center pt-2 md:pt-4 px-4">
+      <a className="btn btn-ghost text-xl" onClick={() => router.push('/')}>
+        Bluewind
+      </a>
+
+      <div className="dropdown lg:hidden">
+        <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+          <HamburgerMenuIcon />
         </div>
-        <a className="btn btn-ghost text-xl" onClick={handleClick}>
-          Bluewind
-        </a>
+        <ul
+          tabIndex={0}
+          className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+        >
+          <NavigationLinks />
+        </ul>
       </div>
-      <div className="navbar-center hidden lg:flex">
+      <div className="hidden lg:block">
         <ul className="menu menu-horizontal px-1">
-          <li>
-            <a onClick={handleClick} className="text-xl">
-              Automations
-            </a>
-          </li>
-          <li>
-            <a onClick={handleContributorsClick} className="text-xl">
-              Contributors
-            </a>
-          </li>
-          <li>
-            <a onClick={handleStatsClick} className="text-xl">
-              Stats
-            </a>
-          </li>
-          <li>
-            <a onClick={handlePricingClick} className="text-xl">
-              Pricing
-            </a>
-          </li>
+          <NavigationLinks />
         </ul>
       </div>
     </div>
