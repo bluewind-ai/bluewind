@@ -33,7 +33,7 @@ const Home: NextPageWithLayout = () => {
         <title>Open-source AI automations to grow your business</title>
       </Head>
 
-      <div className="container mx-auto">
+      <div className=" mx-auto w-full md:w-5/6">
         <div id="hero" className="hero py-10">
           <div className="hero-content text-center">
             <div className="max-w-7xl">

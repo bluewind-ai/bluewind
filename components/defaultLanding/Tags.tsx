@@ -23,7 +23,7 @@ const Tags = () => {
   const sortedTags = tags.sort((a, b) => a.label.localeCompare(b.label));
 
   return (
-    <div className="tag-container">
+    <div className="flex flex-row justify-start mx-auto">
       {sortedTags.map((tag) => (
         <button
           key={tag.id}
@@ -35,8 +35,6 @@ const Tags = () => {
       ))}
       <style jsx>{`
         .tag-container {
-          display: flex;
-          flex-wrap: wrap;
           align-items: center;
           min-height: 50px;
         }
