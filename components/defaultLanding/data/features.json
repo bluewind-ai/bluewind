@@ -101,7 +101,7 @@
   },
   {
     "title": "Email verification tool to validate and generate verified email lists.",
-    "uuid": "9f9c84c6dfb833271b043e8d41e21d40",
+    "uuid": "54bd296457b65d6adcaedcfd566ae9cf",
     "image_format": "jpg",
     "description": "This app allows users to upload a Google Spreadsheet with email addresses, verifies them using the MillionVerifier API, and creates a new spreadsheet containing the verified emails.",
     "tags": ["gsheets"],
