@@ -118,5 +118,15 @@
     "youtube_link": "",
     "persana_link": "",
     "clay_link": ""
-  }
+  },
+  {
+  "title": "Benin Local Language Text-to-Image Generator",
+  "uuid": "14f64eb236c40ed2761959fa03341792",
+  "image_format": "webp",
+  "description": "A powerful tool that combines language translation and image generation capabilities.",
+  "tags": ["image_generation", "gtranslate"],
+  "youtube_link": "",
+  "persana_link": "",
+  "clay_link": ""
+}
 ]
