@@ -10,6 +10,7 @@ import AlbumCard from '@/components/CardAutomation';
 import features from 'components/defaultLanding/data/features.json';
 
 import Tags from '@/components/defaultLanding/Tags';
+import { Search } from '@/components/search/Search';
 
 const Home: NextPageWithLayout = () => {
   const router = useRouter();
@@ -44,6 +45,7 @@ const Home: NextPageWithLayout = () => {
                 Build AI automations focused on GTM and make yourself
                 irreplaceable
               </p>
+              <Search />
             </div>
           </div>
         </div>

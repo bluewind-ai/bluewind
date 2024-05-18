@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import { Highlight } from 'react-instantsearch';
 
-const AlbumCard = ({ feature }) => {
+export const AlbumCard = ({ feature }) => {
   const router = useRouter();
 
   const handleClick = (event) => {
@@ -44,10 +45,19 @@ const AlbumCard = ({ feature }) => {
       onClick={handleClick}
     >
       <div className="card-body">
-        <h2 className="card-title items-center justify-center h-14 overflow-hidden">
-          {feature.title}
-          {feature.isNew && <div className="badge badge-secondary">NEW</div>}
-        </h2>
+        {feature.title && (
+          <Highlight
+            className="card-title items-center justify-center h-14 overflow-hidden"
+            attribute="title"
+            hit={feature}
+          />
+        )}
+        {!feature.title && (
+          <h2 className="card-title items-center justify-center h-14 overflow-hidden">
+            {feature.title}
+            {feature.isNew && <div className="badge badge-secondary">NEW</div>}
+          </h2>
+        )}{' '}
         <figure className="w-full h-48 bg-gray-200">
           <img
             src={imageSrc}
@@ -58,18 +68,19 @@ const AlbumCard = ({ feature }) => {
         </figure>
         <p className="h-20 overflow-hidden">{feature.description}</p>
         <div className="card-actions justify-end">
-          {feature.tags.map((tag, index) => (
-            <div key={index} className="badge badge-outline">
-              {tag}
-            </div>
-          ))}
+          {feature.tags &&
+            feature.tags.map((tag, index) => (
+              <div key={index} className="badge badge-outline">
+                {tag}
+              </div>
+            ))}
         </div>
       </div>
     </div>
   );
 };
 
-const AlbumCardList = ({ features }) => {
+export const AlbumCardList = ({ features }) => {
   const router = useRouter();
   const { tag } = router.query ?? '';
 
