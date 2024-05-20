@@ -15,7 +15,7 @@ const Home: NextPageWithLayout = () => {
 
   // Construct the URL with query parameters
   const url =
-    feature.uuid === '67e6218b441443be0c8821fd0854556d'
+    feature?.uuid === '67e6218b441443be0c8821fd0854556d'
       ? `https://bluewind.windmill.dev/apps/get/u/merwanehamadi/interesting_app`
       : `https://bluewind.windmill.dev/public/bluewind/${feature?.uuid}?${new URLSearchParams(
           query as Record<string, string>
