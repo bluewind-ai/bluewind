@@ -1,0 +1,204 @@
+summary: useless app
+value:
+  fullscreen: false
+  grid:
+    - '12':
+        fixed: false
+        h: 3
+        w: 12
+        x: 0
+        y: 0
+      '3':
+        fixed: false
+        h: 1
+        w: 1
+        x: 0
+        y: 5
+      id: b
+      data:
+        id: b
+        type: buttoncomponent
+        actions: []
+        componentInput:
+          type: runnable
+          autoRefresh: false
+          fields: {}
+          fieldType: any
+          recomputeOnInputChanged: false
+          runnable:
+            type: runnableByPath
+            name: Master flow bis
+            path: u/admin/create_hubspot_campaign
+            runType: flow
+            schema:
+              $schema: 'https://json-schema.org/draft/2020-12/schema'
+              type: object
+              order: []
+              properties: {}
+              required: []
+        configuration:
+          afterIcon:
+            type: static
+            value: ''
+          beforeIcon:
+            type: static
+            value: ''
+          color:
+            type: static
+            value: blue
+          confirmationModal:
+            type: oneOf
+            configuration:
+              confirmationModal:
+                description:
+                  type: static
+                  value: Are you sure?
+                confirmationText:
+                  type: static
+                  value: Confirm
+                title:
+                  type: static
+                  value: Title
+              none: {}
+            selected: none
+          disabled:
+            type: static
+            value: false
+          fillContainer:
+            type: static
+            value: false
+          label:
+            type: static
+            value: Press me
+          onError:
+            type: oneOf
+            configuration:
+              close:
+                id:
+                  type: static
+                  value: ''
+              errorOverlay: {}
+              gotoUrl:
+                newTab:
+                  type: static
+                  value: true
+                url:
+                  type: static
+                  value: ''
+              open:
+                id:
+                  type: static
+                  value: ''
+              sendErrorToast:
+                appendError:
+                  type: static
+                  value: true
+                message:
+                  type: static
+                  value: An error occured
+              setTab:
+                setTab:
+                  type: static
+                  value: []
+            selected: errorOverlay
+          onSuccess:
+            type: oneOf
+            configuration:
+              clearFiles:
+                id:
+                  type: static
+                  value: ''
+              close:
+                id:
+                  type: static
+                  value: ''
+              closeModal:
+                modalId:
+                  type: static
+                  value: ''
+              gotoUrl:
+                newTab:
+                  type: static
+                  value: true
+                url:
+                  type: static
+                  value: ''
+              none: {}
+              open:
+                id:
+                  type: static
+                  value: ''
+              openModal:
+                modalId:
+                  type: static
+                  value: ''
+              sendToast:
+                message:
+                  type: static
+                  value: ''
+              setTab:
+                setTab:
+                  type: static
+                  value: []
+            selected: none
+          size:
+            type: static
+            value: xs
+          triggerOnAppLoad:
+            type: static
+            value: false
+        customCss:
+          button:
+            class: ''
+            style: ''
+          container:
+            class: ''
+            style: ''
+        horizontalAlignment: center
+        recomputeIds: []
+        verticalAlignment: center
+    - '12':
+        fixed: false
+        h: 10
+        w: 12
+        x: 0
+        y: 3
+      '3':
+        fixed: false
+        h: 8
+        w: 2
+        x: 1
+        y: 0
+      id: a
+      data:
+        id: a
+        type: jobidflowstatuscomponent
+        actions: []
+        configuration:
+          jobId:
+            type: evalv2
+            value: ''
+            connections:
+              - id: jobId
+                componentId: b
+            expr: b.jobId
+        customCss:
+          container:
+            class: ''
+            style: ''
+          header:
+            class: ''
+            style: ''
+  hiddenInlineScripts: []
+  norefreshbar: false
+  subgrids: {}
+  theme:
+    type: path
+    path: f/app_themes/theme_0
+  unusedInlineScripts: []
+policy:
+  execution_mode: anonymous
+  triggerables_v2:
+    'b:flow/u/admin/create_hubspot_campaign':
+      one_of_inputs: {}
+      static_inputs: {}

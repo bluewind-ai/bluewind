@@ -1,0 +1,72 @@
+summary: Generate signatures
+description: ''
+value:
+  modules:
+    - id: a
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          custom_taglines:
+            type: javascript
+            expr: flow_input.custom_taglines
+          domain_name:
+            type: javascript
+            expr: '`${flow_input.domain_name}`'
+          sender_company_name:
+            type: javascript
+            expr: '`${flow_input.company_name}`'
+          sender_first_name:
+            type: javascript
+            expr: '`${flow_input.sender_first_name}`'
+          sender_last_name:
+            type: javascript
+            expr: '`${flow_input.sender_last_name}`'
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - company_name
+    - domain_name
+    - sender_first_name
+    - sender_last_name
+    - custom_taglines
+  properties:
+    company_name:
+      type: string
+      description: ''
+      default: Bluewind
+      format: ''
+      password: false
+    custom_taglines:
+      type: array
+      description: ''
+      default:
+        - open-source automations to grow your business
+        - free automations to grow your business
+      format: ''
+      items:
+        type: string
+    domain_name:
+      type: string
+      description: ''
+      default: bluewind(.)ai
+      format: ''
+      password: false
+    sender_first_name:
+      type: string
+      description: ''
+      default: Wayne
+      format: ''
+    sender_last_name:
+      type: string
+      description: ''
+      default: Hamadi
+      format: ''
+      password: false
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

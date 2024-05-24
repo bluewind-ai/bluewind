@@ -1,0 +1,186 @@
+summary: ''
+value:
+  fullscreen: false
+  grid:
+    - '12':
+        fixed: false
+        h: 6
+        w: 12
+        x: 0
+        y: 0
+      '3':
+        fixed: false
+        h: 5
+        w: 3
+        x: 0
+        y: 0
+      id: a
+      data:
+        id: a
+        type: formcomponent
+        actions: []
+        componentInput:
+          type: runnable
+          autoRefresh: false
+          fields:
+            hubspot_access_token:
+              type: user
+              value: ''
+              fieldType: string
+              format: ''
+          fieldType: any
+          recomputeOnInputChanged: false
+          runnable:
+            type: runnableByPath
+            name: Master flow
+            path: u/admin/captivating_flow
+            runType: flow
+            schema:
+              $schema: 'https://json-schema.org/draft/2020-12/schema'
+              type: object
+              order:
+                - hubspot_access_token
+              properties:
+                hubspot_access_token:
+                  type: string
+                  description: ''
+                  default: ''
+                  format: ''
+                  password: true
+              required:
+                - hubspot_access_token
+        configuration:
+          color:
+            type: static
+            value: dark
+          label:
+            type: static
+            value: Submit
+          onError:
+            type: oneOf
+            configuration:
+              close:
+                id:
+                  type: static
+                  value: ''
+              errorOverlay: {}
+              gotoUrl:
+                newTab:
+                  type: static
+                  value: true
+                url:
+                  type: static
+                  value: ''
+              open:
+                id:
+                  type: static
+                  value: ''
+              sendErrorToast:
+                appendError:
+                  type: static
+                  value: true
+                message:
+                  type: static
+                  value: An error occured
+              setTab:
+                setTab:
+                  type: static
+                  value: []
+            selected: errorOverlay
+          onSuccess:
+            type: oneOf
+            configuration:
+              clearFiles:
+                id:
+                  type: static
+                  value: ''
+              close:
+                id:
+                  type: static
+                  value: ''
+              closeModal:
+                modalId:
+                  type: static
+                  value: ''
+              gotoUrl:
+                newTab:
+                  type: static
+                  value: true
+                url:
+                  type: static
+                  value: ''
+              none: {}
+              open:
+                id:
+                  type: static
+                  value: ''
+              openModal:
+                modalId:
+                  type: static
+                  value: ''
+              sendToast:
+                message:
+                  type: static
+                  value: ''
+              setTab:
+                setTab:
+                  type: static
+                  value: []
+            selected: none
+          size:
+            type: static
+            value: xs
+        customCss:
+          button:
+            class: ''
+            style: ''
+          container:
+            class: ''
+            style: ''
+        horizontalAlignment: center
+        recomputeIds: []
+    - '12':
+        fixed: false
+        h: 15
+        w: 12
+        x: 0
+        y: 6
+      '3':
+        fixed: false
+        h: 8
+        w: 2
+        x: 0
+        y: 5
+      id: b
+      data:
+        id: b
+        type: jobidflowstatuscomponent
+        actions: []
+        configuration:
+          jobId:
+            type: evalv2
+            value: ''
+            connections:
+              - id: jobId
+                componentId: a
+            expr: a.jobId
+        customCss:
+          container:
+            class: ''
+            style: ''
+          header:
+            class: ''
+            style: ''
+  hiddenInlineScripts: []
+  norefreshbar: false
+  subgrids: {}
+  theme:
+    type: path
+    path: f/app_themes/theme_0
+  unusedInlineScripts: []
+policy:
+  execution_mode: anonymous
+  triggerables_v2:
+    'a:flow/u/admin/captivating_flow':
+      one_of_inputs: {}
+      static_inputs: {}

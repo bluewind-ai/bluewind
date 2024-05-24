@@ -1,0 +1,61 @@
+summary: Script fetches job application and recruiter infos
+description: ''
+value:
+  modules:
+    - id: a
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          domain_name:
+            type: javascript
+            expr: '`${flow_input.domain_name}`'
+          superagent_api_key:
+            type: javascript
+            expr: variable('u/admin/secret_arg/McWUEBMfxU6N')
+        lock: ''
+        language: nativets
+        tag: ''
+      continue_on_error: false
+    - id: b
+      value:
+        type: flow
+        input_transforms:
+          linkedin_url:
+            type: javascript
+            expr: '`${results.a.recruiter_linkedin_url}`'
+        path: u/admin/sharp_flow
+      continue_on_error: false
+    - id: d
+      value:
+        type: flow
+        input_transforms:
+          linkedin_company_url:
+            type: javascript
+            expr: '`${results.b.experiences[0].companyLink1}`'
+        path: u/admin/sharp_flow_fork
+    - id: c
+      value:
+        type: rawscript
+        content: '!inline inline_script_1.inline_script.native.ts'
+        input_transforms:
+          first_name:
+            type: static
+            value: ''
+        lock: ''
+        language: nativets
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - domain_name
+  properties:
+    domain_name:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: false
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

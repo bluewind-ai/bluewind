@@ -1,0 +1,192 @@
+summary: enrichment pipeline
+description: ''
+value:
+  modules:
+    - id: r
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: If no email
+            modules:
+              - id: v
+                summary: Return empty object
+                value:
+                  type: rawscript
+                  content: '!inline return_empty_object.inline_script.native.ts'
+                  input_transforms: {}
+                  lock: ''
+                  language: nativets
+                  tag: ''
+            expr: flow_input.contact.email === ""
+          - summary: If email present
+            modules:
+              - id: s
+                summary: ''
+                value:
+                  type: branchone
+                  branches:
+                    - summary: if email status unknown
+                      modules:
+                        - id: aa
+                          value:
+                            type: flow
+                            input_transforms:
+                              email:
+                                type: javascript
+                                expr: '`${flow_input.contact.email}`'
+                            path: u/merwanehamadi/spellbinding_flow_fork
+                        - id: d
+                          summary: ''
+                          value:
+                            type: branchone
+                            branches:
+                              - summary: ''
+                                modules:
+                                  - id: e
+                                    summary: enrich is_email_valid true
+                                    value:
+                                      type: rawscript
+                                      content: >-
+                                        !inline
+                                        enrich_is_email_valid_true.inline_script.native.ts
+                                      input_transforms: {}
+                                      lock: ''
+                                      language: nativets
+                                      tag: ''
+                                expr: results.aa.email_status === "valid"
+                              - summary: ''
+                                modules:
+                                  - id: u
+                                    value:
+                                      type: rawscript
+                                      content: >-
+                                        !inline
+                                        inline_script_0.inline_script.native.ts
+                                      input_transforms: {}
+                                      lock: ''
+                                      language: nativets
+                                expr: >+
+                                  results.aa.email_status === "invalid" ||
+                                  results.aa.email_status === "unknown" 
+
+
+                              - summary: ''
+                                modules:
+                                  - id: t
+                                    summary: enrich is_catch_all
+                                    value:
+                                      type: rawscript
+                                      content: >-
+                                        !inline
+                                        enrich_is_catch_all.inline_script.native.ts
+                                      input_transforms: {}
+                                      lock: ''
+                                      language: nativets
+                                      tag: ''
+                                expr: |
+                                  results.aa.email_status === "catch_all"
+                            default:
+                              - id: ab
+                                value:
+                                  type: rawscript
+                                  content: >-
+                                    !inline
+                                    inline_script_1.inline_script.native.ts
+                                  input_transforms: {}
+                                  lock: ''
+                                  language: nativets
+                                  tag: ''
+                      expr: >-
+                        flow_input.contact.isEmailValid === null ||
+                        flow_input.contact.isEmailValid === ""  &&
+                        flow_input.contact.isEmailCatchAll === null ||
+                        flow_input.contact.isEmailCatchAll === ""
+                  default:
+                    - id: x
+                      summary: Return empty object
+                      value:
+                        type: rawscript
+                        content: '!inline return_empty_object_2.inline_script.native.ts'
+                        input_transforms: {}
+                        lock: ''
+                        language: nativets
+                        tag: ''
+            expr: flow_input.contact.email !== undefined
+        default:
+          - id: w
+            summary: Return empty object
+            value:
+              type: rawscript
+              content: '!inline return_empty_object_3.inline_script.native.ts'
+              input_transforms: {}
+              lock: ''
+              language: nativets
+              tag: ''
+    - id: f
+      summary: enrich is_email_valid false
+      value:
+        type: rawscript
+        content: '!inline enrich_is_email_valid_false.inline_script.native.ts'
+        input_transforms:
+          contact_id:
+            type: javascript
+            expr: '`${flow_input.contact.id}`'
+          data:
+            type: javascript
+            expr: results.r
+          twenty_api_key:
+            type: javascript
+            expr: '`${resource(''u/merwanehamadi/twenty'')}`'
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  type: object
+  additionalProperties: false
+  order:
+    - contact
+  properties:
+    contact:
+      type: object
+      description: ''
+      default:
+        id: d725b36c-e61e-4d90-8975-bb9e522abee6
+        activityTargets: []
+        name:
+          firstName: Muenif
+          lastName: Koz
+        attachments: []
+        avatarUrl: ''
+        calendarEventParticipants: []
+        campaignName: give a name to dcsdc your campaign
+        city: ''
+        company: null
+        companyId: null
+        companyName: ''
+        createdAt: '2024-05-22T21:44:43.628Z'
+        email: koz@bionluk.com
+        favorites: []
+        isEmailCatchAll: null
+        isEmailValid: null
+        isValid: false
+        jobTitle: Angel Investor
+        linkedinLink:
+          label: LinkedIn
+          url: 'http://www.linkedin.com/in/munifkoz'
+        messageParticipants: []
+        phone: ''
+        pointOfContactForOpportunities: []
+        position: 0.000003814697265625
+        timelineActivities: []
+        updatedAt: '2024-05-22T21:44:43.628Z'
+        xLink:
+          label: ''
+          url: ''
+      format: ''
+      properties: {}
+      required: []
+  required:
+    - contact
+visible_to_runner_only: false
+ws_error_handler_muted: false

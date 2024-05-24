@@ -1,0 +1,82 @@
+summary: iterate through hubspot contacts
+description: ''
+value:
+  modules:
+    - id: h
+      value:
+        type: forloopflow
+        modules:
+          - id: v
+            value:
+              type: flow
+              input_transforms:
+                hubspot_access_token:
+                  type: javascript
+                  expr: '`${flow_input.hubspot_access_token}`'
+                hubspot_contact:
+                  type: javascript
+                  expr: flow_input.iter.value
+                leadmagic_api_key:
+                  type: javascript
+                  expr: '`${flow_input.leadmagic_api_key}`'
+              path: u/admin/enrichment_pipeline
+        iterator:
+          type: javascript
+          expr: flow_input.hubspot_contacts
+        parallel: false
+        parallelism: 10
+        skip_failures: true
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - leadmagic_api_key
+    - hubspot_access_token
+    - hubspot_contacts
+  properties:
+    hubspot_access_token:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    hubspot_contacts:
+      type: array
+      description: ''
+      default:
+        - id: '21974040595'
+          archived: false
+          createdAt: '2024-05-16T17:47:42.133Z'
+          properties:
+            createdate: '2024-05-16T17:47:42.133Z'
+            email: jackie@retool.com
+            hs_object_id: '21974040595'
+            is_catch_all: null
+            is_email_valid: null
+            lastmodifieddate: '2024-05-16T17:47:58.883Z'
+            linkedin_url: 'http://www.linkedin.com/in/jackie-karmel-27358030'
+          updatedAt: '2024-05-16T17:47:58.883Z'
+        - id: '21971565664'
+          archived: false
+          createdAt: '2024-05-16T17:47:42.134Z'
+          properties:
+            createdate: '2024-05-16T17:47:42.134Z'
+            email: alvinberger@lifesenseproducts.com
+            hs_object_id: '21971565664'
+            is_catch_all: null
+            is_email_valid: null
+            lastmodifieddate: '2024-05-16T17:48:08.448Z'
+            linkedin_url: 'http://www.linkedin.com/in/alvin-berger-41a8211'
+          updatedAt: '2024-05-16T17:48:08.448Z'
+      format: ''
+      items:
+        type: object
+    leadmagic_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

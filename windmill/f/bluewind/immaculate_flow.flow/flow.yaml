@@ -1,0 +1,88 @@
+summary: Fetch all campaigns twenty
+description: ''
+value:
+  modules:
+    - id: a
+      summary: Attempt to fetch all campaigns
+      value:
+        type: rawscript
+        content: '!inline attempt_to_fetch_all_campaigns.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${flow_input.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: b
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: ''
+            modules:
+              - id: c
+                summary: Create campaign object
+                value:
+                  type: rawscript
+                  content: '!inline create_campaign_object.inline_script.native.ts'
+                  input_transforms:
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${flow_input.twenty_api_key}`'
+                  lock: ''
+                  language: nativets
+                  tag: ''
+              - id: d
+                summary: Create campaign
+                value:
+                  type: rawscript
+                  content: '!inline create_campaign.inline_script.native.ts'
+                  input_transforms:
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${flow_input.twenty_api_key}`'
+                  lock: ''
+                  language: nativets
+                  tag: ''
+              - id: e
+                summary: Attempt to fetch all campaigns
+                value:
+                  type: rawscript
+                  content: >-
+                    !inline
+                    attempt_to_fetch_all_campaigns_1.inline_script.native.ts
+                  input_transforms:
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${flow_input.twenty_api_key}`'
+                  lock: ''
+                  language: nativets
+                  tag: ''
+            expr: results.a.error !== undefined
+        default:
+          - id: f
+            value:
+              type: rawscript
+              content: '!inline inline_script_0.inline_script.native.ts'
+              input_transforms:
+                campaigns:
+                  type: javascript
+                  expr: results.a
+              lock: ''
+              language: nativets
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - twenty_api_key
+  properties:
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

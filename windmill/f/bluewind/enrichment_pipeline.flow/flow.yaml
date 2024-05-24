@@ -1,0 +1,186 @@
+summary: enrichment pipeline
+description: ''
+value:
+  modules:
+    - id: r
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: If no email
+            modules:
+              - id: v
+                summary: Return empty object
+                value:
+                  type: rawscript
+                  content: '!inline return_empty_object.inline_script.native.ts'
+                  input_transforms: {}
+                  lock: ''
+                  language: nativets
+            expr: flow_input.hubspot_contact.properties.email === undefined
+          - summary: If email present
+            modules:
+              - id: s
+                summary: ''
+                value:
+                  type: branchone
+                  branches:
+                    - summary: if email status unknown
+                      modules:
+                        - id: b
+                          summary: call leadmagic
+                          value:
+                            type: flow
+                            input_transforms:
+                              email:
+                                type: javascript
+                                expr: flow_input.hubspot_contact.properties.email
+                              leadmagic_api_key:
+                                type: javascript
+                                expr: '`${flow_input.leadmagic_api_key}`'
+                            path: u/admin/spellbinding_flow
+                          continue_on_error: false
+                        - id: d
+                          summary: ''
+                          value:
+                            type: branchone
+                            branches:
+                              - summary: ''
+                                modules:
+                                  - id: e
+                                    summary: enrich is_email_valid true
+                                    value:
+                                      type: rawscript
+                                      content: >-
+                                        !inline
+                                        enrich_is_email_valid_true.inline_script.native.ts
+                                      input_transforms:
+                                        apiKey:
+                                          type: javascript
+                                          expr: '`${flow_input.hubspot_access_token}`'
+                                        contactId:
+                                          type: javascript
+                                          expr: >-
+                                            `${flow_input.hubspot_contact.properties.id}`
+                                      lock: ''
+                                      language: nativets
+                                      tag: ''
+                                expr: results.b.email_status === "valid"
+                              - summary: ''
+                                modules:
+                                  - id: u
+                                    value:
+                                      type: identity
+                                expr: >+
+                                  results.b.email_status === "invalid" ||
+                                  results.b.email_status === "unknown" 
+
+
+                              - summary: ''
+                                modules:
+                                  - id: t
+                                    summary: enrich is_catch_all
+                                    value:
+                                      type: rawscript
+                                      content: >-
+                                        !inline
+                                        enrich_is_catch_all.inline_script.native.ts
+                                      input_transforms: {}
+                                      lock: ''
+                                      language: nativets
+                                expr: |
+                                  results.b.email_status === "catch_all"
+                            default: []
+                      expr: >-
+                        flow_input.hubspot_contact.properties.is_email_valid ===
+                        null ||
+                        flow_input.hubspot_contact.properties.is_email_valid ===
+                        ""  &&
+                        flow_input.hubspot_contact.properties.is_catch_all ===
+                        null ||
+                        flow_input.hubspot_contact.properties.is_catch_all ===
+                        ""
+                  default:
+                    - id: x
+                      summary: Return empty object
+                      value:
+                        type: rawscript
+                        content: '!inline return_empty_object_1.inline_script.native.ts'
+                        input_transforms: {}
+                        lock: ''
+                        language: nativets
+            expr: flow_input.hubspot_contact.properties.email !== undefined
+        default:
+          - id: w
+            summary: Return empty object
+            value:
+              type: rawscript
+              content: '!inline return_empty_object_2.inline_script.native.ts'
+              input_transforms: {}
+              lock: ''
+              language: nativets
+    - id: f
+      summary: enrich is_email_valid false
+      value:
+        type: rawscript
+        content: '!inline enrich_is_email_valid_false.inline_script.native.ts'
+        input_transforms:
+          apiKey:
+            type: javascript
+            expr: flow_input.hubspot_access_token
+          contactId:
+            type: javascript
+            expr: flow_input.hubspot_contact.id
+          properties_to_patch:
+            type: javascript
+            expr: results.r
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  type: object
+  additionalProperties: false
+  properties:
+    hubspot_access_token:
+      type: string
+    hubspot_contact:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        archived:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        properties:
+          type: object
+          additionalProperties: false
+          properties:
+            createdate:
+              type: string
+              format: date-time
+            email:
+              type: string
+              format: email
+            hs_object_id:
+              type: string
+            is_catch_all:
+              type: 'null'
+            is_email_valid:
+              type: 'null'
+            lastmodifieddate:
+              type: string
+              format: date-time
+            linkedin_url:
+              type: string
+              format: url
+        updatedAt:
+          type: string
+          format: date-time
+    leadmagic_api_key:
+      type: string
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

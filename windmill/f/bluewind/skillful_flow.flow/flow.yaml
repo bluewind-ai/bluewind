@@ -1,0 +1,50 @@
+summary: Function fetches email using LeadMagic API
+description: ''
+value:
+  modules:
+    - id: a
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          domain_name:
+            type: javascript
+            expr: '`${flow_input.domain_name}`'
+          first_name:
+            type: javascript
+            expr: '`${flow_input.first_name}`'
+          last_name:
+            type: javascript
+            expr: '`${flow_input.last_name}`'
+          leadmagic_api_key:
+            type: javascript
+            expr: '`${variable(''u/admin/secret_arg/HQvrA2MRsCgL'')}`'
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - first_name
+    - last_name
+    - domain_name
+  properties:
+    domain_name:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+    first_name:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+    last_name:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

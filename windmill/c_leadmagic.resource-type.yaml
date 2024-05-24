@@ -1,0 +1,13 @@
+description: leadmagic
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - leadmagic_api_key
+  properties:
+    leadmagic_api_key:
+      type: string
+      description: ''
+      default: '$var:u/admin/secret_arg/HQvrA2MRsCgL'
+      password: true
+  required: []

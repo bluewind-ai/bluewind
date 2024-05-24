@@ -1,0 +1,33 @@
+summary: Fetch LinkedIn profile data using LeadMagic API
+description: ''
+value:
+  modules:
+    - id: c
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          leadmagic_api_key:
+            type: javascript
+            expr: variable('u/admin/secret_arg/HQvrA2MRsCgL')
+          linkedin_url:
+            type: javascript
+            expr: '`${flow_input.linkedin_url}`'
+        lock: ''
+        language: nativets
+        tag: ''
+      continue_on_error: false
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - linkedin_url
+  properties:
+    linkedin_url:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

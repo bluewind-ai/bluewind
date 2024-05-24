@@ -1,0 +1,177 @@
+summary: Clean many emails hubspot v2
+description: ''
+value:
+  modules:
+    - id: k
+      summary: Get all contact properties
+      value:
+        type: rawscript
+        content: '!inline get_all_contact_properties.inline_script.native.ts'
+        input_transforms:
+          hubspot_access_token:
+            type: javascript
+            expr: '`${flow_input.hubspot_access_token}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: l
+      summary: Create a hash of all the property names
+      value:
+        type: rawscript
+        content: >-
+          !inline
+          create_a_hash_of_all_the_property_names.inline_script.native.ts
+        input_transforms:
+          data:
+            type: javascript
+            expr: results.k
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: j
+      summary: 'Constant: Fields to create'
+      value:
+        type: rawscript
+        content: '!inline constant:_fields_to_create.inline_script.native.ts'
+        input_transforms: {}
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: m
+      value:
+        type: forloopflow
+        modules:
+          - id: n
+            summary: Is expected property present in actual property?
+            value:
+              type: rawscript
+              content: >-
+                !inline
+                is_expected_property_present_in_actual_property?.inline_script.native.ts
+              input_transforms:
+                actual_properties:
+                  type: javascript
+                  expr: results.l
+                expected_property:
+                  type: javascript
+                  expr: flow_input.iter.value.name
+              lock: ''
+              language: nativets
+              tag: ''
+          - id: p
+            summary: ''
+            value:
+              type: branchone
+              branches:
+                - summary: The property doesn't exist yet
+                  modules:
+                    - id: o
+                      summary: Create property
+                      value:
+                        type: rawscript
+                        content: '!inline create_property.inline_script.native.ts'
+                        input_transforms:
+                          hubspot_access_token:
+                            type: javascript
+                            expr: '`${flow_input.hubspot_access_token}`'
+                          property:
+                            type: javascript
+                            expr: flow_input.iter.value
+                        lock: ''
+                        language: nativets
+                        tag: ''
+                  expr: results.n
+              default: []
+        iterator:
+          type: javascript
+          expr: results.j
+        parallel: false
+        skip_failures: true
+    - id: q
+      summary: Repeat until no more contact to fetch
+      value:
+        type: whileloopflow
+        modules:
+          - id: a
+            summary: Fetch all contacts in the list
+            value:
+              type: rawscript
+              content: '!inline fetch_all_contacts_in_the_list.inline_script.native.ts'
+              input_transforms:
+                apiKey:
+                  type: javascript
+                  expr: '`${flow_input.hubspot_access_token}`'
+                import_id:
+                  type: javascript
+                  expr: '`${flow_input.import_name}`'
+              language: nativets
+              tag: ''
+            continue_on_error: false
+          - id: h
+            value:
+              type: forloopflow
+              modules:
+                - id: w
+                  value:
+                    type: flow
+                    input_transforms:
+                      hubspot_access_token:
+                        type: static
+                        value: ''
+                      hubspot_contact:
+                        type: javascript
+                        expr: ''
+                      leadmagic_api_key:
+                        type: static
+                        value: ''
+                    path: u/admin/enrichment_pipeline
+                - id: v
+                  value:
+                    type: flow
+                    input_transforms:
+                      hubspot_access_token:
+                        type: static
+                        value: ''
+                      hubspot_contact:
+                        type: javascript
+                        expr: 'results.m[0].iter'
+                      leadmagic_api_key:
+                        type: static
+                        value: ''
+                    path: u/admin/enrichment_pipeline
+              iterator:
+                type: javascript
+                expr: results.a.results
+              parallel: false
+              parallelism: 10
+              skip_failures: true
+        skip_failures: false
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - leadmagic_api_key
+    - hubspot_access_token
+    - import_name
+  properties:
+    hubspot_access_token:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    import_name:
+      type: string
+      description: ''
+      default: '2024-05-16T17:47:36.430Z'
+      format: ''
+      password: false
+    leadmagic_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
