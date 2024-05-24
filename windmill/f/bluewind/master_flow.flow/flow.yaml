@@ -314,7 +314,7 @@ value:
       value:
         type: flow
         input_transforms: {}
-        path: u/bluewind/admirable_flow
+        path: u/bluewind/ask_leadmagic_api_key
     - id: bd
       summary: fetch leads that just got added
       value:
