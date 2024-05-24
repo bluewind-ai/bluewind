@@ -1,4 +1,4 @@
-summary: ''
+summary: New flow
 description: ''
 value:
   modules:
@@ -12,7 +12,7 @@ value:
       mock:
         enabled: true
         return_value:
-          valid_hubspot_access_token: 'valid_hubspot_access_token'
+          valid_hubspot_access_token: valid
     - id: ab
       summary: Create Hubspot campaign
       value:
