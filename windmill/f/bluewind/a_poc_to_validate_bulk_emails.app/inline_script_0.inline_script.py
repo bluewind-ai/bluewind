@@ -6,7 +6,7 @@ def extract_emails_from_spreadsheet(spreadsheet_url, token):
     spreadsheet_id = spreadsheet_url.split("/d/")[1].split("/")[0]
     range_name = 'Sheet1!A:A'
     GET_VALUES_URL = f"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}/values/{range_name}"
-    
+
     response = requests.get(
         GET_VALUES_URL,
         headers={
