@@ -1,0 +1,60 @@
+summary: Master flow bis
+description: ''
+value:
+  modules:
+    - id: n
+      summary: Ask Campaign Name
+      value:
+        type: rawscript
+        content: '!inline ask_campaign_name.inline_script.ts'
+        input_transforms: {}
+        lock: '!inline ask_campaign_name.inline_script.lock'
+        language: deno
+        path: hub/8713/windmill/default_arguments_in_approval_steps
+        tag: ''
+      continue_on_error: false
+      suspend:
+        hide_cancel: false
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - campaign_name
+            properties:
+              campaign_name:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
+    - id: g
+      summary: create campaign hubspot
+      value:
+        type: script
+        input_transforms:
+          hubspot_api_key:
+            type: javascript
+            expr: flow_input.hubspot_access_token
+          list_name:
+            type: javascript
+            expr: '`${resume.campaign_name}`'
+        hash: c27fd6678726f008
+        path: u/admin/captivating_flow_fork/g
+        tag_override: null
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - hubspot_access_token
+  properties:
+    hubspot_access_token:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

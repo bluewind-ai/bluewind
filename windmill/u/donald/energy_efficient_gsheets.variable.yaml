@@ -1,0 +1,6 @@
+account: null
+description: OAuth token for gsheets
+value: >-
+  1tj61yLkqOBRXdHy04nWNlEsMz7rdnH8HbmHfeDdlOrPIv646RDxX0vHy3zlJkwHFl4RPt8bupUU2oBASMxMRFDyijDXK/m4iOz0qbhpFeSJvFxEk1qXMpxvohypUvsLIml8u2/ywncrFNA0cLHPTwpV9qkRce/yd9p6obvDfw0UmUFgLx1IR4nsmWUmtcJpjGDnksGwW8c6sn8pvbpltlI8Y/RseuHT/ZCMLYhd6Y2unikoC/9iLn117dCD0LQN3Z0bk0oeV74vDegJg6OoESuaE9HDXNdNnbAu79rSPfI=
+is_oauth: false
+is_secret: true

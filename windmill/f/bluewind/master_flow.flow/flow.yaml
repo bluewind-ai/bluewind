@@ -1,0 +1,357 @@
+summary: Master flow
+description: ''
+value:
+  modules:
+    - id: al
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms: {}
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: am
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: if error
+            modules:
+              - id: ap
+                value:
+                  type: whileloopflow
+                  modules:
+                    - id: an
+                      value:
+                        type: rawscript
+                        content: '!inline inline_script_1.inline_script.bun.ts'
+                        input_transforms: {}
+                        language: bun
+                        path: hub/8712/windmill/approval_prompt
+                        tag: ''
+                      continue_on_error: false
+                      mock:
+                        enabled: false
+                      suspend:
+                        hide_cancel: false
+                        required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - twenty_api_key
+                            properties:
+                              twenty_api_key:
+                                type: string
+                                description: ''
+                                default: ''
+                                password: true
+                            required: []
+                        timeout: 1800
+                    - id: ao
+                      value:
+                        type: rawscript
+                        content: '!inline inline_script_2.inline_script.native.ts'
+                        input_transforms:
+                          twenty_api_key:
+                            type: javascript
+                            expr: resume.twenty_api_key
+                        concurrency_time_window_s: 0
+                        language: nativets
+                        tag: ''
+                      continue_on_error: false
+                      stop_after_if:
+                        expr: result.twenty_api_key !== undefined
+                        skip_if_stopped: false
+                  skip_failures: false
+              - id: aq
+                value:
+                  type: rawscript
+                  content: '!inline inline_script_3.inline_script.native.ts'
+                  input_transforms:
+                    all_attempts:
+                      type: javascript
+                      expr: results.ap
+                  lock: ''
+                  language: nativets
+                  tag: ''
+            expr: results.al.error_message
+        default:
+          - id: ar
+            value:
+              type: rawscript
+              content: '!inline inline_script_4.inline_script.native.ts'
+              input_transforms:
+                correct_api_key:
+                  type: javascript
+                  expr: results.al
+              lock: ''
+              language: nativets
+              tag: ''
+    - id: bo
+      summary: Fetch all campaigns twenty
+      value:
+        type: flow
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.am}`'
+        path: u/merwanehamadi/immaculate_flow
+    - id: bp
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: ''
+            modules:
+              - id: bf
+                summary: Prompt campaign name
+                value:
+                  type: rawscript
+                  content: '!inline prompt_campaign_name.inline_script.ts'
+                  input_transforms: {}
+                  lock: '!inline prompt_campaign_name.inline_script.lock'
+                  language: deno
+                  path: hub/8713/windmill/default_arguments_in_approval_steps
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - campaign_name
+                      properties:
+                        campaign_name:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: bn
+                summary: Get campaign name
+                value:
+                  type: rawscript
+                  content: '!inline get_campaign_name.inline_script.native.ts'
+                  input_transforms:
+                    campaign_name:
+                      type: javascript
+                      expr: resume.campaign_name
+                  lock: ''
+                  language: nativets
+                  tag: ''
+            expr: results.bo.data.campaigns.length === 0
+        default:
+          - id: bq
+            summary: Ask campaign to pick
+            value:
+              type: rawscript
+              content: '!inline ask_campaign_to_pick.inline_script.ts'
+              input_transforms:
+                campaigns:
+                  type: javascript
+                  expr: results.bo.data.campaigns
+              lock: '!inline ask_campaign_to_pick.inline_script.lock'
+              language: deno
+              path: hub/8713/windmill/default_arguments_in_approval_steps
+              tag: ''
+            continue_on_error: false
+            suspend:
+              hide_cancel: false
+              required_events: 1
+              resume_form:
+                schema:
+                  $schema: 'https://json-schema.org/draft/2020-12/schema'
+                  type: object
+                  order:
+                    - campaign_to_pick
+                  properties:
+                    campaign_to_pick:
+                      type: array
+                      description: ''
+                      default: []
+                      items:
+                        type: string
+                  required: []
+              timeout: 1800
+    - id: at
+      summary: Ask create apollo link
+      value:
+        type: rawscript
+        content: '!inline ask_create_apollo_link.inline_script.ts'
+        input_transforms: {}
+        lock: '!inline ask_create_apollo_link.inline_script.lock'
+        language: deno
+        tag: ''
+      continue_on_error: false
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - instructions
+              - go_to_link
+              - new_search_link
+            properties:
+              go_to_link:
+                type: string
+                description: ''
+                default: ''
+              instructions:
+                type: string
+                description: ''
+                default: ''
+              new_search_link:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
+    - id: av
+      summary: Ask buy apollo link
+      value:
+        type: rawscript
+        content: '!inline ask_buy_apollo_link.inline_script.ts'
+        input_transforms:
+          apollo_link:
+            type: javascript
+            expr: resume.new_search_link
+        lock: '!inline ask_buy_apollo_link.inline_script.lock'
+        language: deno
+        tag: ''
+      continue_on_error: false
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - instructions
+              - apollo_leads_link
+              - google_sheet_link
+            properties:
+              apollo_leads_link:
+                type: string
+                description: ''
+                default: ''
+              google_sheet_link:
+                type: string
+                description: ''
+                default: ''
+              instructions:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
+    - id: aw
+      summary: Convert spreadsheet to array of jsons
+      value:
+        type: rawscript
+        content: '!inline convert_spreadsheet_to_array_of_jsons.inline_script.native.ts'
+        input_transforms:
+          url:
+            type: javascript
+            expr: resume.google_sheet_link
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: ax
+      summary: Convert exportapollo.io to hubspot friendly format
+      value:
+        type: rawscript
+        content: >-
+          !inline
+          convert_exportapollo.io_to_hubspot_friendly_format.inline_script.native.ts
+        input_transforms:
+          campaign_name:
+            type: javascript
+            expr: results.bn.campaign_name
+          data:
+            type: javascript
+            expr: results.aw
+        lock: ''
+        language: nativets
+        tag: ''
+      continue_on_error: false
+    - id: ba
+      summary: ''
+      value:
+        type: branchall
+        branches:
+          - modules:
+              - id: az
+                summary: Create contacts
+                value:
+                  type: rawscript
+                  content: '!inline create_contacts.inline_script.native.ts'
+                  input_transforms:
+                    data:
+                      type: javascript
+                      expr: results.ax
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${resource(''u/merwanehamadi/twenty'')}`'
+                  lock: ''
+                  language: nativets
+                  tag: ''
+                continue_on_error: false
+            parallel: true
+            skip_failure: false
+          - summary: ''
+            modules: []
+            parallel: true
+            skip_failure: false
+        parallel: false
+    - id: bk
+      summary: Prompt leadmagic api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: u/merwanehamadi/admirable_flow
+    - id: bd
+      summary: fetch leads that just got added
+      value:
+        type: rawscript
+        content: '!inline fetch_leads_that_just_got_added.inline_script.native.ts'
+        input_transforms:
+          campaign_name:
+            type: javascript
+            expr: '`${results.bn.campaign_name}`'
+          twenty_api_key:
+            type: javascript
+            expr: '`${resource(''u/merwanehamadi/twenty'')}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: bl
+      value:
+        type: forloopflow
+        modules:
+          - id: bm
+            value:
+              type: flow
+              input_transforms:
+                contact:
+                  type: javascript
+                  expr: flow_input.iter.value
+              path: u/merwanehamadi/enrichment_pipeline_fork_v2
+        iterator:
+          type: javascript
+          expr: results.bd.data.people
+        parallel: false
+        skip_failures: true
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order: []
+  properties: {}
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

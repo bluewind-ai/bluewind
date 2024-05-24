@@ -1,0 +1,359 @@
+summary: Master flow bis
+description: ''
+value:
+  modules:
+    - id: ay
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: If Create new campaign
+            modules:
+              - id: n
+                summary: Ask Campaign Name
+                value:
+                  type: rawscript
+                  content: '!inline ask_campaign_name.inline_script.ts'
+                  input_transforms: {}
+                  lock: '!inline ask_campaign_name.inline_script.lock'
+                  language: deno
+                  path: hub/8713/windmill/default_arguments_in_approval_steps
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  hide_cancel: false
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - campaign_name
+                      properties:
+                        campaign_name:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: g
+                summary: create campaign hubspot
+                value:
+                  type: script
+                  input_transforms:
+                    hubspot_api_key:
+                      type: javascript
+                      expr: '`${flow_input.hubspot_access_token}`'
+                    list_name:
+                      type: javascript
+                      expr: '`${resume.campaign_name}`'
+                  hash: c27fd6678726f008
+                  path: u/admin/captivating_flow_fork/g
+                  tag_override: null
+            expr: flow_input.action_picked === "Create new campaign"
+          - summary: Continue a campaign
+            modules:
+              - id: b
+                summary: Fetch Campaigns Hubspot
+                value:
+                  type: rawscript
+                  content: '!inline fetch_campaigns_hubspot.inline_script.native.ts'
+                  input_transforms:
+                    hubspot_api_key:
+                      type: javascript
+                      expr: flow_input.hubspot_access_token
+                  lock: ''
+                  language: nativets
+                  tag: ''
+              - id: m
+                summary: Ask For Campaign to pick
+                value:
+                  type: rawscript
+                  content: '!inline ask_for_campaign_to_pick.inline_script.ts'
+                  input_transforms:
+                    lists:
+                      type: javascript
+                      expr: results.b.lists
+                  lock: '!inline ask_for_campaign_to_pick.inline_script.lock'
+                  language: deno
+                  path: hub/8714/windmill/dynamics_enums_in_approval_step
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  hide_cancel: false
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - campaign_name
+                      properties:
+                        campaign_name:
+                          type: string
+                          description: ''
+                          default: ''
+                          password: false
+                      required: []
+                  timeout: 1800
+              - id: bb
+                summary: Prompt leadmagic token
+                value:
+                  type: rawscript
+                  content: '!inline prompt_leadmagic_token.inline_script.ts'
+                  input_transforms: {}
+                  lock: '!inline prompt_leadmagic_token.inline_script.lock'
+                  language: deno
+                  path: hub/8713/windmill/default_arguments_in_approval_steps
+                  tag: ''
+              - id: ba
+                value:
+                  type: flow
+                  input_transforms:
+                    hubspot_access_token:
+                      type: javascript
+                      expr: '`${flow_input.hubspot_access_token}`'
+                    import_name:
+                      type: static
+                      value: angel investors v4
+                    leadmagic_api_key:
+                      type: static
+                      value: ''
+                  path: u/admin/incredible_flow
+            expr: flow_input.action_picked === "Continue a campaign"
+          - summary: Add leads to campaign
+            modules:
+              - id: s
+                summary: Ask create apollo link
+                value:
+                  type: rawscript
+                  content: '!inline ask_create_apollo_link.inline_script.ts'
+                  input_transforms: {}
+                  lock: '!inline ask_create_apollo_link.inline_script.lock'
+                  language: deno
+                  path: hub/8713/windmill/default_arguments_in_approval_steps
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  hide_cancel: false
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - instructions
+                        - new_search_link
+                        - go_to_link
+                      properties:
+                        go_to_link:
+                          type: string
+                          description: ''
+                          default: ''
+                        instructions:
+                          type: string
+                          description: ''
+                          default: ''
+                        new_search_link:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: t
+                summary: Ask buy apollo links
+                value:
+                  type: rawscript
+                  content: '!inline ask_buy_apollo_links.inline_script.ts'
+                  input_transforms:
+                    apollo_link:
+                      type: javascript
+                      expr: resume.new_search_link
+                  lock: '!inline ask_buy_apollo_links.inline_script.lock'
+                  language: deno
+                  path: hub/8713/windmill/default_arguments_in_approval_steps
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  hide_cancel: false
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - instructions
+                        - apollo_leads_link
+                        - google_sheet_link
+                      properties:
+                        apollo_leads_link:
+                          type: string
+                          description: ''
+                          default: ''
+                        google_sheet_link:
+                          type: string
+                          description: ''
+                          default: ''
+                        instructions:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: ak
+                summary: Convert spreadsheet to array of jsons
+                value:
+                  type: rawscript
+                  content: >-
+                    !inline
+                    convert_spreadsheet_to_array_of_jsons.inline_script.native.ts
+                  input_transforms:
+                    url:
+                      type: javascript
+                      expr: resume.google_sheet_link
+                  lock: ''
+                  language: nativets
+                  tag: ''
+                continue_on_error: false
+              - id: al
+                summary: Convert exportapollo.io to hubspot friendly format
+                value:
+                  type: rawscript
+                  content: >-
+                    !inline
+                    convert_exportapollo.io_to_hubspot_friendly_format.inline_script.native.ts
+                  input_transforms:
+                    data:
+                      type: javascript
+                      expr: results.ak
+                    list_id:
+                      type: javascript
+                      expr: results.g.listId
+                  lock: ''
+                  language: nativets
+                  tag: ''
+              - id: aq
+                summary: Convert back to csv
+                value:
+                  type: rawscript
+                  content: '!inline convert_back_to_csv.inline_script.native.ts'
+                  input_transforms:
+                    data:
+                      type: javascript
+                      expr: results.al
+                  lock: ''
+                  language: nativets
+              - id: av
+                summary: Get ids just created
+                value:
+                  type: rawscript
+                  content: '!inline get_ids_just_created.inline_script.native.ts'
+                  input_transforms:
+                    hubspot_access_token:
+                      type: javascript
+                      expr: '`${flow_input.hubspot_access_token}`'
+                    importId:
+                      type: javascript
+                      expr: results.g.name
+                  lock: ''
+                  language: nativets
+                continue_on_error: false
+                retry:
+                  constant:
+                    attempts: 0
+                    seconds: 0
+                  exponential:
+                    attempts: 1
+                    multiplier: 1
+                    random_factor: 0
+                    seconds: 5
+              - id: aw
+                summary: Add contacts ids to static list
+                value:
+                  type: rawscript
+                  content: >-
+                    !inline
+                    add_contacts_ids_to_static_list.inline_script.native.ts
+                  input_transforms:
+                    contactIds:
+                      type: javascript
+                      expr: results.av
+                    hubspot_access_token:
+                      type: javascript
+                      expr: '`${flow_input.hubspot_access_token}`'
+                    staticListId:
+                      type: javascript
+                      expr: results.g.listId
+                  lock: ''
+                  language: nativets
+              - id: at
+                value:
+                  type: whileloopflow
+                  modules:
+                    - id: au
+                      summary: Check import done
+                      value:
+                        type: rawscript
+                        content: '!inline check_import_done.inline_script.native.ts'
+                        input_transforms:
+                          hubspot_access_token:
+                            type: javascript
+                            expr: '`${flow_input.hubspot_access_token}`'
+                          import_id:
+                            type: javascript
+                            expr: '`${results.ar.id}`'
+                        language: nativets
+                      continue_on_error: false
+                      sleep:
+                        type: static
+                        value: 10
+                      stop_after_if:
+                        expr: result.state = "DONE"
+                        skip_if_stopped: false
+                  skip_failures: false
+              - id: ar
+                summary: Import data into hubspot
+                value:
+                  type: rawscript
+                  content: '!inline import_data_into_hubspot.inline_script.bun.ts'
+                  input_transforms:
+                    csvData:
+                      type: javascript
+                      expr: '`${results.aq}`'
+                    hubspot_access_token:
+                      type: javascript
+                      expr: '`${flow_input.hubspot_access_token}`'
+                    importName:
+                      type: javascript
+                      expr: '`${results.g.name}`'
+                  lock: '!inline import_data_into_hubspot.inline_script.lock'
+                  language: bun
+              - id: f
+                summary: ''
+                value:
+                  type: branchone
+                  branches: []
+                  default: []
+            expr: flow_input.action_picked === "Add leads to campaign"
+        default: []
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - action_picked
+  properties:
+    action_picked:
+      type: string
+      description: ''
+      default: ''
+      disableCreate: false
+      disableVariablePicker: false
+      enum:
+        - Create new campaign
+        - Continue a campaign
+        - Add leads to campaign
+      format: ''
+      password: false
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

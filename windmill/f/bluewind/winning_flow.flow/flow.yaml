@@ -1,0 +1,61 @@
+summary: Script cleans emails iterates external flow tasks
+description: ''
+value:
+  modules:
+    - id: b
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          emails_to_clean:
+            type: javascript
+            expr: flow_input.emails_to_clean
+        lock: ''
+        language: nativets
+    - id: a
+      value:
+        type: forloopflow
+        modules:
+          - id: c
+            value:
+              type: flow
+              input_transforms:
+                hubspot_access_token:
+                  type: javascript
+                  expr: '`${flow_input.hubspot_access_token}`'
+                leadmagic_api_key:
+                  type: javascript
+                  expr: '`${flow_input.leadmagic_api_key}`'
+              path: u/admin/momentous_flow
+        iterator:
+          type: javascript
+          expr: results.b.array_iterator
+        parallel: false
+        skip_failures: true
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - leadmagic_api_key
+    - hubspot_access_token
+    - emails_to_clean
+  properties:
+    emails_to_clean:
+      type: integer
+      description: ''
+      format: ''
+    hubspot_access_token:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    leadmagic_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

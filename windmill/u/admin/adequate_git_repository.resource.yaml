@@ -1,0 +1,6 @@
+description: ''
+value:
+  branch: main
+  folder: ''
+  url: '$var:u/admin/adequate_git_repository'
+resource_type: git_repository

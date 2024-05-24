@@ -1,0 +1,248 @@
+summary: end to end from campaign
+description: ''
+value:
+  modules:
+    - id: a
+      summary: Fetch contacts without bad email addresses
+      value:
+        type: rawscript
+        content: >-
+          !inline
+          fetch_contacts_without_bad_email_addresses.inline_script.native.ts
+        input_transforms:
+          apiKey:
+            type: javascript
+            expr: '`${flow_input.hubspot_access_token}`'
+          hubspot_list_id:
+            type: javascript
+            expr: '`${flow_input.hubspot_list_id}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: i
+      value:
+        type: flow
+        input_transforms:
+          block_1:
+            type: javascript
+            expr: '`${flow_input.block_1}`'
+          block_2:
+            type: javascript
+            expr: '`${flow_input.block_2}`'
+          block_3:
+            type: javascript
+            expr: '`${flow_input.block_3}`'
+          block_4:
+            type: javascript
+            expr: '`${flow_input.block_4}`'
+          block_5:
+            type: javascript
+            expr: '`${flow_input.block_5}`'
+          custom_subject_lines:
+            type: javascript
+            expr: flow_input.custom_subject_lines
+          custom_taglines:
+            type: javascript
+            expr: flow_input.custom_taglines
+          recipient_company_name:
+            type: javascript
+            expr: '`${results.a.contacts[0].properties.company.value}`'
+          recipient_first_name:
+            type: javascript
+            expr: 'results.a.contacts[0].properties.firstname.value'
+          sender_company_domain_name:
+            type: javascript
+            expr: '`${flow_input.sender_company_domain_name}`'
+          sender_company_name:
+            type: javascript
+            expr: '`${flow_input.sender_company_name}`'
+          sender_first_name:
+            type: javascript
+            expr: '`${flow_input.sender_first_name}`'
+          sender_last_name:
+            type: javascript
+            expr: '`${flow_input.sender_last_name}`'
+        path: u/admin/adventurous_flow
+    - id: j
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          body:
+            type: javascript
+            expr: '`${results.i.body}`'
+          email:
+            type: javascript
+            expr: '`${results.a.contacts[0].properties.email.value}`'
+          linkedin_url:
+            type: javascript
+            expr: '`${results.a.contacts[0].properties.linkedin_url.value}`'
+          subject_line:
+            type: javascript
+            expr: results.i.subject_line
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: l
+      summary: Approval Prompt (windmill)
+      value:
+        type: script
+        input_transforms: {}
+        path: hub/8712/windmill/approval_prompt
+        tag_override: null
+      suspend:
+        required_events: 1
+        timeout: 1800
+    - id: k
+      value:
+        type: rawscript
+        content: '!inline inline_script_1.inline_script.native.ts'
+        input_transforms:
+          body:
+            type: javascript
+            expr: '`${results.i.body}`'
+          email:
+            type: javascript
+            expr: '`${results.a.contacts[0].properties.email.value}`'
+          linkedin_profile:
+            type: javascript
+            expr: '`${results.j.linkedin_url}`'
+          smartlead_api_key:
+            type: javascript
+            expr: '`${flow_input.smartlead_api_key}`'
+          smartlead_campaign_id:
+            type: javascript
+            expr: '`${flow_input.smartlead_campaign_id}`'
+          subject_line:
+            type: javascript
+            expr: '`${results.i.subject_line}`'
+        lock: ''
+        language: nativets
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - hubspot_access_token
+    - smartlead_api_key
+    - smartlead_campaign_id
+    - hubspot_list_id
+    - sender_company_name
+    - custom_subject_lines
+    - sender_company_domain_name
+    - sender_first_name
+    - sender_last_name
+    - custom_taglines
+    - block_1
+    - block_2
+    - block_3
+    - block_4
+    - block_5
+  properties:
+    block_1:
+      type: string
+      description: ''
+      default: Bluewind is raising a pre-seed. 100k at 5M.
+      format: ''
+      password: false
+    block_2:
+      type: string
+      description: ''
+      default: >-
+        About Bluewind:
+
+        - open-source go-to-market assistant to generate leads.
+
+        - our customers were overwhelmed by all the GTM tools and wasted time
+        and money trying all of them.
+
+        - Instead of creating another tool we created an assistant that connects
+        all the best SaaS together to generate leads for them
+
+        - about me: ex AutoGPT, AI Agent expert (author of paper published at
+        Neurips), and famous Growth Hacker.
+      format: ''
+      password: false
+    block_3:
+      type: string
+      description: ''
+      default: >-
+        Would you like me to send you the deck? I don't send it directly because
+        of deliverability.
+      format: ''
+    block_4:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+    block_5:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+    custom_subject_lines:
+      type: array
+      description: ''
+      default:
+        - Bluewind pre-seed
+      format: ''
+      items:
+        type: string
+    custom_taglines:
+      type: array
+      description: ''
+      default:
+        - open-source go-to-market assistant
+        - free go-to-market assistant
+      format: ''
+      items:
+        type: string
+    hubspot_access_token:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    hubspot_list_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: false
+    sender_company_domain_name:
+      type: string
+      description: ''
+      default: bluewind(.)ai
+      format: ''
+      password: false
+    sender_company_name:
+      type: string
+      description: ''
+      default: Bluewind
+      format: ''
+      password: false
+    sender_first_name:
+      type: string
+      description: ''
+      default: Wayne
+      format: ''
+      password: false
+    sender_last_name:
+      type: string
+      description: ''
+      default: Hamadi
+      format: ''
+      password: false
+    smartlead_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    smartlead_campaign_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
