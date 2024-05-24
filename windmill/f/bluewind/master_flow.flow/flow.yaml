@@ -89,15 +89,15 @@ value:
               lock: ''
               language: nativets
               tag: ''
-    - id: bo
-      summary: Fetch all campaigns twenty
+    - id: br
+      summary: Fetch Campaigns
       value:
         type: flow
         input_transforms:
           twenty_api_key:
             type: javascript
             expr: '`${results.am}`'
-        path: u/merwanehamadi/immaculate_flow
+        path: f/bluewind/immaculate_flow
     - id: bp
       summary: ''
       value:
