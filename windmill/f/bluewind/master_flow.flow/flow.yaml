@@ -51,9 +51,10 @@ value:
                             required: []
                         timeout: 1800
                     - id: ao
+                      summary: test twenty api key
                       value:
                         type: rawscript
-                        content: '!inline inline_script_1.inline_script.native.ts'
+                        content: '!inline test_twenty_api_key.inline_script.native.ts'
                         input_transforms:
                           twenty_api_key:
                             type: javascript
@@ -67,9 +68,10 @@ value:
                         skip_if_stopped: false
                   skip_failures: false
               - id: aq
+                summary: store api key in windmill
                 value:
                   type: rawscript
-                  content: '!inline inline_script_2.inline_script.native.ts'
+                  content: '!inline store_api_key_in_windmill.inline_script.native.ts'
                   input_transforms:
                     all_attempts:
                       type: javascript
@@ -80,9 +82,10 @@ value:
             expr: results.al.error_message
         default:
           - id: ar
+            summary: return correct api key
             value:
               type: rawscript
-              content: '!inline inline_script_3.inline_script.native.ts'
+              content: '!inline return_correct_api_key.inline_script.native.ts'
               input_transforms:
                 correct_api_key:
                   type: javascript
