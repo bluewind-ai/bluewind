@@ -1,15 +1,1 @@
-{
-  "version": "3",
-  "packages": {
-    "specifiers": {
-      "npm:windmill-client@^1.158.2": "npm:windmill-client@1.331.0"
-    },
-    "npm": {
-      "windmill-client@1.331.0": {
-        "integrity": "sha512-eqBoJf2fHF97ymTGVBpPpYKx7NNnpPwaaWcnL1DAtfKZCZoXaMpXh873opXOawXzmjVFkMY4qZFmFORRwtdcLA==",
-        "dependencies": {}
-      }
-    }
-  },
-  "remote": {}
-}
+!inline ask_buy_apollo_link.inline_script.lock
