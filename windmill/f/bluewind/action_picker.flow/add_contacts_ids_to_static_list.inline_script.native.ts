@@ -1,6 +1,9 @@
-export async function main(contactIds: [], staticListId: number, hubspot_access_token: string): Promise<number> {
+export async function main(
+  contactIds: [],
+  staticListId: number,
+  hubspot_access_token: string
+): Promise<number> {
   const url = `https://api.hubapi.com/contacts/v1/lists/${staticListId}/add`;
-
   const requestBody = {
     vids: contactIds,
   };
@@ -9,9 +12,9 @@ export async function main(contactIds: [], staticListId: number, hubspot_access_
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${hubspot_access_token}`,
+      Authorization: `Bearer ${hubspot_access_token}`,
     },
     body: JSON.stringify(requestBody),
   });
-  return response.json()
+  return response.json();
 }
