@@ -1,21 +1,24 @@
-export async function main(twenty_api_key: string) {
-  const url = 'https://api.twenty.com/rest/apiKeys';
+export async function main(all_attempts: Array) {
+
+  const correct_api_key = all_attempts[all_attempts.length - 1].twenty_api_key
+  const data = {
+    path: "u/merwanehamadi/twenty",
+    value: correct_api_key,
+    description: "",
+    resource_type: "twenty"
+  }
+
+  const url = `${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/resources/create`;
 
   const response = await fetch(url, {
-    method: 'GET',
+    method: 'POST',
     headers: {
-      'Authorization': `Bearer ${twenty_api_key}`
-    }
+      'Authorization': `Bearer ${WM_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
   });
 
-  if (!response.ok) {
-    return {
-      "error": `HTTP error! status: ${response.status}`
-    }
-  }
-
-  return {
-    "twenty_api_key": twenty_api_key
-  }
+  return correct_api_key
 }
 

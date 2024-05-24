@@ -3,9 +3,10 @@ description: ''
 value:
   modules:
     - id: al
+      summary: Fetch twenty api key if exists
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: '!inline fetch_twenty_api_key_if_exists.inline_script.native.ts'
         input_transforms: {}
         lock: ''
         language: nativets
@@ -24,7 +25,7 @@ value:
                     - id: an
                       value:
                         type: rawscript
-                        content: '!inline inline_script_1.inline_script.bun.ts'
+                        content: '!inline inline_script_0.inline_script.bun.ts'
                         input_transforms: {}
                         language: bun
                         path: hub/8712/windmill/approval_prompt
@@ -52,7 +53,7 @@ value:
                     - id: ao
                       value:
                         type: rawscript
-                        content: '!inline inline_script_2.inline_script.native.ts'
+                        content: '!inline inline_script_1.inline_script.native.ts'
                         input_transforms:
                           twenty_api_key:
                             type: javascript
@@ -68,7 +69,7 @@ value:
               - id: aq
                 value:
                   type: rawscript
-                  content: '!inline inline_script_3.inline_script.native.ts'
+                  content: '!inline inline_script_2.inline_script.native.ts'
                   input_transforms:
                     all_attempts:
                       type: javascript
@@ -81,7 +82,7 @@ value:
           - id: ar
             value:
               type: rawscript
-              content: '!inline inline_script_4.inline_script.native.ts'
+              content: '!inline inline_script_3.inline_script.native.ts'
               input_transforms:
                 correct_api_key:
                   type: javascript
