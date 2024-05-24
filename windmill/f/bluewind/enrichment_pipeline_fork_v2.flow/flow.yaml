@@ -35,7 +35,7 @@ value:
                               email:
                                 type: javascript
                                 expr: '`${flow_input.contact.email}`'
-                            path: u/merwanehamadi/spellbinding_flow_fork
+                            path: u/bluewind/spellbinding_flow_fork
                         - id: d
                           summary: ''
                           value:
@@ -137,7 +137,7 @@ value:
             expr: results.r
           twenty_api_key:
             type: javascript
-            expr: '`${resource(''u/merwanehamadi/twenty'')}`'
+            expr: "`${resource('u/merwanehamadi/twenty')}`"
         lock: ''
         language: nativets
         tag: ''

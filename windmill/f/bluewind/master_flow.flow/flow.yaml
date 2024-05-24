@@ -314,7 +314,7 @@ value:
       value:
         type: flow
         input_transforms: {}
-        path: u/merwanehamadi/admirable_flow
+        path: u/bluewind/admirable_flow
     - id: bd
       summary: fetch leads that just got added
       value:
@@ -341,7 +341,7 @@ value:
                 contact:
                   type: javascript
                   expr: flow_input.iter.value
-              path: u/merwanehamadi/enrichment_pipeline_fork_v2
+              path: u/bluewind/enrichment_pipeline_fork_v2
         iterator:
           type: javascript
           expr: results.bd.data.people
