@@ -88,12 +88,12 @@ value:
         language: nativets
         tag: ''
     - id: ax
-      summary: Convert exportapollo.io to hubspot friendly format
+      summary: Convert exportapollo.io format to twenty friendly format
       value:
         type: rawscript
         content: >-
           !inline
-          convert_exportapollo.io_to_hubspot_friendly_format.inline_script.native.ts
+          convert_exportapollo.io_format_to_twenty_friendly_format.inline_script.native.ts
         input_transforms:
           campaign_name:
             type: javascript
