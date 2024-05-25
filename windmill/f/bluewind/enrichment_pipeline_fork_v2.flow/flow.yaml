@@ -28,14 +28,14 @@ value:
                   branches:
                     - summary: if email status unknown
                       modules:
-                        - id: aa
+                        - id: bv
                           value:
                             type: flow
                             input_transforms:
                               email:
                                 type: javascript
                                 expr: '`${flow_input.contact.email}`'
-                            path: u/bluewind/spellbinding_flow_fork
+                            path: f/bluewind/spellbinding_flow_fork
                         - id: d
                           summary: ''
                           value:
@@ -54,7 +54,7 @@ value:
                                       lock: ''
                                       language: nativets
                                       tag: ''
-                                expr: results.aa.email_status === "valid"
+                                expr: results.bv.email_status === "valid"
                               - summary: ''
                                 modules:
                                   - id: u
@@ -67,8 +67,8 @@ value:
                                       lock: ''
                                       language: nativets
                                 expr: >+
-                                  results.aa.email_status === "invalid" ||
-                                  results.aa.email_status === "unknown" 
+                                  results.bv.email_status === "invalid" ||
+                                  results.bv.email_status === "unknown" 
 
 
                               - summary: ''
@@ -85,7 +85,7 @@ value:
                                       language: nativets
                                       tag: ''
                                 expr: |
-                                  results.aa.email_status === "catch_all"
+                                  results.bv.email_status === "catch_all"
                             default:
                               - id: ab
                                 value:
@@ -137,7 +137,7 @@ value:
             expr: results.r
           twenty_api_key:
             type: javascript
-            expr: "`${resource('u/merwanehamadi/twenty')}`"
+            expr: '`${resource(''u/merwanehamadi/twenty'')}`'
         lock: ''
         language: nativets
         tag: ''
