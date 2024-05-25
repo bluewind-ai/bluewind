@@ -11,7 +11,7 @@ export async function main(data: Array, campaign_name: string) {
       "url": item.linkedin_url
     },
     jobTitle: item.title,
-    campaignName: campaign_name
+    campaignName: campaign_name,
     campaignStatus: "SOURCED"
   }));
 
