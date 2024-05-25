@@ -29,6 +29,7 @@ value:
             expr: '`${results.bx.twenty_api_key}`'
         lock: ''
         language: nativets
+        tag: ''
     - id: bp
       summary: ''
       value:
@@ -141,18 +142,6 @@ value:
             value:
               type: rawscript
               content: '!inline get_campaign_name_2.inline_script.native.ts'
-              input_transforms:
-                campaign_name:
-                  type: static
-                  value: 3
-              lock: ''
-              language: nativets
-              tag: ''
-          - id: bz
-            summary: Get campaign name
-            value:
-              type: rawscript
-              content: '!inline get_campaign_name_3.inline_script.native.ts'
               input_transforms:
                 campaign_name:
                   type: static
