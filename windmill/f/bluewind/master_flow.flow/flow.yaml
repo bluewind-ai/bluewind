@@ -65,22 +65,6 @@ value:
                   lock: ''
                   language: nativets
                   tag: ''
-              - id: cd
-                summary: Check if campaign already exists
-                value:
-                  type: rawscript
-                  content: >-
-                    !inline
-                    check_if_campaign_already_exists.inline_script.native.ts
-                  input_transforms:
-                    campaign_name:
-                      type: javascript
-                      expr: '`${results.cb.campaign_name}`'
-                    twenty_api_key:
-                      type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
-                  lock: ''
-                  language: nativets
               - id: ca
                 summary: Create campaign on Twenty
                 value:
@@ -140,6 +124,31 @@ value:
                       default: ''
                   required: []
               timeout: 1800
+          - id: ce
+            value:
+              type: rawscript
+              content: '!inline inline_script_0.inline_script.native.ts'
+              input_transforms:
+                campaign_name:
+                  type: static
+                  value: 3
+              lock: ''
+              language: nativets
+          - id: cd
+            summary: Check if campaign already exists
+            value:
+              type: rawscript
+              content: '!inline check_if_campaign_already_exists.inline_script.native.ts'
+              input_transforms:
+                campaign_name:
+                  type: javascript
+                  expr: '`${results.cb.campaign_name}`'
+                twenty_api_key:
+                  type: javascript
+                  expr: '`${results.bx.twenty_api_key}`'
+              lock: ''
+              language: nativets
+              tag: ''
           - id: bz
             summary: Get campaign name
             value:
