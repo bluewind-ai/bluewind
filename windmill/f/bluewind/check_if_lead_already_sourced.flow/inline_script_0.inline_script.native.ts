@@ -3,7 +3,7 @@ export async function main(twenty_api_key: string, campaign_name: string) {
     throw new Error("Campaign name is required.");
   }
 
-  const url = `https://api.twenty.com/rest/people?filter=campaignName[eq]:"${encodeURIComponent(campaign_name)}"&filter=campaignStatus[eq]:"SOURCED"`;
+  const url = `https://api.twenty.com/rest/people?filter=campaignName[eq]:"${encodeURIComponent(campaign_name)}"&campaignStatus[eq]:"SOURCED"`;
 
   const response = await fetch(url, {
     method: 'GET',
