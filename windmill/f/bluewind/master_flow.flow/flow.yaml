@@ -3,6 +3,7 @@ description: ''
 value:
   modules:
     - id: bx
+      summary: Fetch twenty api key
       value:
         type: flow
         input_transforms: {}
@@ -14,7 +15,7 @@ value:
         input_transforms:
           twenty_api_key:
             type: javascript
-            expr: '`${results.bx}`'
+            expr: results.bx.twenty_api_key
         path: f/bluewind/immaculate_flow
     - id: bp
       summary: ''
@@ -52,11 +53,36 @@ value:
                           default: ''
                       required: []
                   timeout: 1800
-              - id: bn
+              - id: cb
                 summary: Get campaign name
                 value:
                   type: rawscript
                   content: '!inline get_campaign_name.inline_script.native.ts'
+                  input_transforms:
+                    campaign_name:
+                      type: static
+                      value: 3
+                  lock: ''
+                  language: nativets
+              - id: ca
+                summary: Create campaign on Twenty
+                value:
+                  type: rawscript
+                  content: '!inline create_campaign_on_twenty.inline_script.native.ts'
+                  input_transforms:
+                    campaign_name:
+                      type: static
+                      value: results.cb.campaign_name
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${results.bx.twenty_api_key}`'
+                  lock: ''
+                  language: nativets
+              - id: bn
+                summary: Get campaign name
+                value:
+                  type: rawscript
+                  content: '!inline get_campaign_name_1.inline_script.native.ts'
                   input_transforms:
                     campaign_name:
                       type: javascript
@@ -74,7 +100,7 @@ value:
               input_transforms:
                 campaigns:
                   type: javascript
-                  expr: results.bo.data.campaigns
+                  expr: results.br.data.campaigns
               lock: '!inline ask_campaign_to_pick.inline_script.lock'
               language: deno
               path: hub/8713/windmill/default_arguments_in_approval_steps
@@ -91,13 +117,22 @@ value:
                     - campaign_to_pick
                   properties:
                     campaign_to_pick:
-                      type: array
+                      type: string
                       description: ''
-                      default: []
-                      items:
-                        type: string
+                      default: ''
                   required: []
               timeout: 1800
+          - id: bz
+            summary: Get campaign name
+            value:
+              type: rawscript
+              content: '!inline get_campaign_name_2.inline_script.native.ts'
+              input_transforms:
+                campaign_name:
+                  type: static
+                  value: 3
+              lock: ''
+              language: nativets
     - id: at
       summary: Ask create apollo link
       value:
@@ -214,11 +249,11 @@ value:
                   content: '!inline create_contacts.inline_script.native.ts'
                   input_transforms:
                     data:
-                      type: javascript
-                      expr: results.ax
+                      type: static
+                      value: null
                     twenty_api_key:
                       type: javascript
-                      expr: '`${resource(''u/merwanehamadi/twenty'')}`'
+                      expr: results.bx.twenty_api_key
                   lock: ''
                   language: nativets
                   tag: ''
@@ -231,6 +266,7 @@ value:
             skip_failure: false
         parallel: false
     - id: bt
+      summary: Fetch leadmagic api key
       value:
         type: flow
         input_transforms: {}
@@ -246,7 +282,7 @@ value:
             expr: '`${results.bn.campaign_name}`'
           twenty_api_key:
             type: javascript
-            expr: '`${resource(''u/merwanehamadi/twenty'')}`'
+            expr: results.bx.twenty_api_key
         lock: ''
         language: nativets
         tag: ''
@@ -255,12 +291,19 @@ value:
         type: forloopflow
         modules:
           - id: bw
+            summary: push to smartlead
             value:
               type: flow
               input_transforms:
                 contact:
                   type: javascript
                   expr: flow_input.iter.value
+                leadmagic_api_key:
+                  type: static
+                  value: null
+                twenty_api_key:
+                  type: static
+                  value: null
               path: f/bluewind/enrichment_pipeline_fork_v2
         iterator:
           type: javascript
