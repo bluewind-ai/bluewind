@@ -29,6 +29,7 @@ value:
                     - summary: if email status unknown
                       modules:
                         - id: bv
+                          summary: leadmagic_validate_email
                           value:
                             type: flow
                             input_transforms:
@@ -162,6 +163,8 @@ schema:
   additionalProperties: false
   order:
     - contact
+    - twenty_api_key
+    - leadmagic_api_key
   properties:
     contact:
       type: object
@@ -202,6 +205,18 @@ schema:
       format: ''
       properties: {}
       required: []
+    leadmagic_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
   required:
     - contact
 visible_to_runner_only: false
