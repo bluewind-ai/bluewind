@@ -36,6 +36,9 @@ value:
                               email:
                                 type: javascript
                                 expr: '`${flow_input.contact.email}`'
+                              leadmagic_api_key:
+                                type: javascript
+                                expr: '`${flow_input.leadmagic_api_key}`'
                             path: f/bluewind/spellbinding_flow_fork
                         - id: d
                           summary: ''
@@ -154,7 +157,7 @@ value:
             expr: results.r
           twenty_api_key:
             type: javascript
-            expr: '`${resource(''u/merwanehamadi/twenty'')}`'
+            expr: flow_input.twenty_api_key
         lock: ''
         language: nativets
         tag: ''
