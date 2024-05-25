@@ -17,12 +17,24 @@ value:
             type: javascript
             expr: results.bx.twenty_api_key
         path: f/bluewind/immaculate_flow
+      continue_on_error: false
+    - id: cf
+      summary: Create all necessary fields
+      value:
+        type: rawscript
+        content: '!inline create_all_necessary_fields.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
     - id: bp
       summary: ''
       value:
         type: branchone
         branches:
-          - summary: ''
+          - summary: If no campaign exists
             modules:
               - id: bf
                 summary: Prompt campaign name
@@ -60,8 +72,8 @@ value:
                   content: '!inline get_campaign_name.inline_script.native.ts'
                   input_transforms:
                     campaign_name:
-                      type: static
-                      value: 3
+                      type: javascript
+                      expr: resume.campaign_name
                   lock: ''
                   language: nativets
                   tag: ''
@@ -88,7 +100,7 @@ value:
                   input_transforms:
                     campaign_name:
                       type: javascript
-                      expr: resume.campaign_name
+                      expr: '`${results.cb.campaign_name}`'
                   lock: ''
                   language: nativets
                   tag: ''
@@ -125,27 +137,14 @@ value:
                   required: []
               timeout: 1800
           - id: ce
+            summary: Get campaign name
             value:
               type: rawscript
-              content: '!inline inline_script_0.inline_script.native.ts'
+              content: '!inline get_campaign_name_2.inline_script.native.ts'
               input_transforms:
                 campaign_name:
                   type: static
                   value: 3
-              lock: ''
-              language: nativets
-          - id: cd
-            summary: Check if campaign already exists
-            value:
-              type: rawscript
-              content: '!inline check_if_campaign_already_exists.inline_script.native.ts'
-              input_transforms:
-                campaign_name:
-                  type: javascript
-                  expr: '`${results.cb.campaign_name}`'
-                twenty_api_key:
-                  type: javascript
-                  expr: '`${results.bx.twenty_api_key}`'
               lock: ''
               language: nativets
               tag: ''
@@ -153,7 +152,7 @@ value:
             summary: Get campaign name
             value:
               type: rawscript
-              content: '!inline get_campaign_name_2.inline_script.native.ts'
+              content: '!inline get_campaign_name_3.inline_script.native.ts'
               input_transforms:
                 campaign_name:
                   type: static
@@ -167,8 +166,8 @@ value:
         type: flow
         input_transforms:
           twenty_api_key:
-            type: static
-            value: results.bx.twenty_api_key
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/source_leads_from_apollo
     - id: bt
       summary: Fetch leadmagic api key
@@ -184,7 +183,7 @@ value:
         input_transforms:
           campaign_name:
             type: javascript
-            expr: '`${results.bn.campaign_name}`'
+            expr: '`${results.bp.campaign_name}`'
           twenty_api_key:
             type: javascript
             expr: results.bx.twenty_api_key
@@ -215,6 +214,10 @@ value:
           expr: results.bd.data.people
         parallel: false
         skip_failures: true
+  failure_module:
+    id: failure
+    value:
+      type: identity
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object

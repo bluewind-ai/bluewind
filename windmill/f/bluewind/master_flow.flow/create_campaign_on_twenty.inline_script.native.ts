@@ -1,5 +1,4 @@
 export async function main(twenty_api_key: string, campaign_name: string) {
-  name%5Beq%5D%3A%22${encodedCampaignName}
   const url = 'https://api.twenty.com/rest/campaigns';
   const options = {
     method: 'POST',
