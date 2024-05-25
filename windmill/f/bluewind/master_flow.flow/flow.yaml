@@ -38,7 +38,7 @@ value:
                         required_events: 1
                         resume_form:
                           schema:
-                            $schema: https://json-schema.org/draft/2020-12/schema
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
                             type: object
                             order:
                               - twenty_api_key
@@ -76,6 +76,7 @@ value:
                     all_attempts:
                       type: javascript
                       expr: results.ap
+                  lock: ''
                   language: nativets
                   tag: ''
             expr: results.al.error_message
@@ -113,7 +114,11 @@ value:
                 value:
                   type: rawscript
                   content: '!inline prompt_campaign_name.inline_script.ts'
-                  input_transforms: {}
+                  input_transforms:
+                    campaigns:
+                      type: static
+                      value: null
+                  lock: '!inline prompt_campaign_name.inline_script.lock'
                   language: deno
                   path: hub/8713/windmill/default_arguments_in_approval_steps
                   tag: ''
@@ -122,7 +127,7 @@ value:
                   required_events: 1
                   resume_form:
                     schema:
-                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
                       type: object
                       order:
                         - campaign_name
@@ -142,6 +147,7 @@ value:
                     campaign_name:
                       type: javascript
                       expr: resume.campaign_name
+                  lock: ''
                   language: nativets
                   tag: ''
             expr: results.br.data.campaigns.length === 0
@@ -155,6 +161,7 @@ value:
                 campaigns:
                   type: javascript
                   expr: results.bo.data.campaigns
+              lock: '!inline ask_campaign_to_pick.inline_script.lock'
               language: deno
               path: hub/8713/windmill/default_arguments_in_approval_steps
               tag: ''
@@ -164,7 +171,7 @@ value:
               required_events: 1
               resume_form:
                 schema:
-                  $schema: https://json-schema.org/draft/2020-12/schema
+                  $schema: 'https://json-schema.org/draft/2020-12/schema'
                   type: object
                   order:
                     - campaign_to_pick
@@ -191,7 +198,7 @@ value:
         required_events: 1
         resume_form:
           schema:
-            $schema: https://json-schema.org/draft/2020-12/schema
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
             type: object
             order:
               - instructions
@@ -229,7 +236,7 @@ value:
         required_events: 1
         resume_form:
           schema:
-            $schema: https://json-schema.org/draft/2020-12/schema
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
             type: object
             order:
               - instructions
@@ -297,7 +304,7 @@ value:
                       expr: results.ax
                     twenty_api_key:
                       type: javascript
-                      expr: "`${resource('u/merwanehamadi/twenty')}`"
+                      expr: '`${resource(''u/merwanehamadi/twenty'')}`'
                   lock: ''
                   language: nativets
                   tag: ''
@@ -309,11 +316,11 @@ value:
             parallel: true
             skip_failure: false
         parallel: false
-    - id: bs
+    - id: bt
       value:
         type: flow
-        path: f/bluewind/admirable_flow
         input_transforms: {}
+        path: f/bluewind/ask_leadmagic_api_key
     - id: bd
       summary: fetch leads that just got added
       value:
@@ -325,7 +332,7 @@ value:
             expr: '`${results.bn.campaign_name}`'
           twenty_api_key:
             type: javascript
-            expr: "`${resource('u/merwanehamadi/twenty')}`"
+            expr: '`${resource(''u/merwanehamadi/twenty'')}`'
         lock: ''
         language: nativets
         tag: ''
@@ -333,21 +340,21 @@ value:
       value:
         type: forloopflow
         modules:
-          - id: bm
+          - id: bw
             value:
               type: flow
               input_transforms:
                 contact:
                   type: javascript
                   expr: flow_input.iter.value
-              path: u/bluewind/enrichment_pipeline_fork_v2
+              path: f/bluewind/enrichment_pipeline_fork_v2
         iterator:
           type: javascript
           expr: results.bd.data.people
         parallel: false
         skip_failures: true
 schema:
-  $schema: https://json-schema.org/draft/2020-12/schema
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order: []
   properties: {}
