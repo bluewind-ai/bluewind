@@ -313,12 +313,11 @@ value:
             parallel: true
             skip_failure: false
         parallel: false
-    - id: bk
-      summary: Prompt leadmagic api key
+    - id: bt
       value:
         type: flow
         input_transforms: {}
-        path: u/bluewind/admirable_flow
+        path: f/bluewind/ask_leadmagic_api_key
     - id: bd
       summary: fetch leads that just got added
       value:
@@ -338,14 +337,14 @@ value:
       value:
         type: forloopflow
         modules:
-          - id: bm
+          - id: bw
             value:
               type: flow
               input_transforms:
                 contact:
                   type: javascript
                   expr: flow_input.iter.value
-              path: u/bluewind/enrichment_pipeline_fork_v2
+              path: f/bluewind/enrichment_pipeline_fork_v2
         iterator:
           type: javascript
           expr: results.bd.data.people

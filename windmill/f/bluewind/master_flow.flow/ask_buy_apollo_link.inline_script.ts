@@ -13,7 +13,8 @@ export async function main(apollo_link) {
       instructions:
         'This looks correct. Please go to exportapollo.io and pay for these leads. Then put these leads in a google spreadsheet read only and paste the link below',
       apollo_leads_link: apollo_link,
-      google_sheet_link: 'YOUR_GOOGLE_SHEET_LINK',
+      google_sheet_link:
+        'https://docs.google.com/spreadsheets/d/1O9x331uYCa5VJSC6w8d1HElgVzaVgOMkdEN2he8v1yk/edit#gid=0',
     },
     resume: resumeUrls['resume'],
   };
