@@ -309,12 +309,11 @@ value:
             parallel: true
             skip_failure: false
         parallel: false
-    - id: bk
-      summary: Prompt leadmagic api key
+    - id: bs
       value:
         type: flow
+        path: f/bluewind/admirable_flow
         input_transforms: {}
-        path: u/bluewind/admirable_flow
     - id: bd
       summary: fetch leads that just got added
       value:
