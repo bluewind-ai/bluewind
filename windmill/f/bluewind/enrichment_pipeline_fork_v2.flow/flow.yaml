@@ -28,14 +28,14 @@ value:
                   branches:
                     - summary: if email status unknown
                       modules:
-                        - id: aa
+                        - id: bv
                           value:
                             type: flow
                             input_transforms:
                               email:
                                 type: javascript
                                 expr: '`${flow_input.contact.email}`'
-                            path: u/merwanehamadi/spellbinding_flow_fork
+                            path: f/bluewind/spellbinding_flow_fork
                         - id: d
                           summary: ''
                           value:
