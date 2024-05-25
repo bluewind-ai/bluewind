@@ -22,12 +22,19 @@ schema:
   type: object
   order:
     - email
+    - leadmagic_api_key
   properties:
     email:
       type: string
       description: ''
       default: ''
       format: ''
+    leadmagic_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
