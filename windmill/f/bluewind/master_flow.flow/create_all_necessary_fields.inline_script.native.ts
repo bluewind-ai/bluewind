@@ -89,36 +89,10 @@ export async function main(twenty_api_key: string) {
     })
   });
 
-  variables = {
-    input: {
-      field: {
-        description: null,
-        icon: "IconUsers",
-        label: "Is Email Scheduled",
-        name: "isEmailScheduled",
-        objectMetadataId: "e92cc3f7-959f-4389-9348-b41a9a8b07ef",
-        type: "TEXT"
-      }
-    }
-  };
-
-
-  response = await fetch('https://api.twenty.com/metadata', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${twenty_api_key}`,
-    },
-    body: JSON.stringify({
-      query: mutation,
-      variables: variables
-    })
-  });
 
   variables = {
     input: {
       field: {
-        "defaultValue": "'SOURCED'",
         "description": "Status of this contact in the curent campaign",
         "icon": "IconUsers",
         "label": "Campaign Status",

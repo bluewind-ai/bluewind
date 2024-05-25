@@ -144,8 +144,8 @@ value:
               content: '!inline get_campaign_name_2.inline_script.native.ts'
               input_transforms:
                 campaign_name:
-                  type: static
-                  value: 3
+                  type: javascript
+                  expr: resume.campaign_name
               lock: ''
               language: nativets
               tag: ''
@@ -154,6 +154,9 @@ value:
       value:
         type: flow
         input_transforms:
+          campaign_name:
+            type: javascript
+            expr: '`${results.bp.campaign_name}`'
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
@@ -192,11 +195,11 @@ value:
                   type: javascript
                   expr: flow_input.iter.value
                 leadmagic_api_key:
-                  type: static
-                  value: null
+                  type: javascript
+                  expr: '`${results.bt.correct_leadmagic_api_key}`'
                 twenty_api_key:
-                  type: static
-                  value: null
+                  type: javascript
+                  expr: '`${results.bx.twenty_api_key}`'
               path: f/bluewind/enrichment_pipeline_fork_v2
         iterator:
           type: javascript
