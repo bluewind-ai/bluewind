@@ -7,9 +7,12 @@ value:
         type: rawscript
         content: '!inline inline_script_0.inline_script.native.ts'
         input_transforms:
-          example_input:
-            type: static
-            value: 3
+          campaign_name:
+            type: javascript
+            expr: '`${flow_input.campaign_name}`'
+          twenty_api_key:
+            type: javascript
+            expr: '`${flow_input.twenty_api_key}`'
         lock: ''
         language: nativets
 schema:
