@@ -97,7 +97,7 @@ value:
         input_transforms:
           campaign_name:
             type: javascript
-            expr: results.bn.campaign_name
+            expr: flow_input.campaign_name
           data:
             type: javascript
             expr: results.aw
@@ -118,11 +118,11 @@ value:
                   content: '!inline create_contacts.inline_script.native.ts'
                   input_transforms:
                     data:
-                      type: static
-                      value: null
+                      type: javascript
+                      expr: results.ax
                     twenty_api_key:
                       type: javascript
-                      expr: results.bx.twenty_api_key
+                      expr: flow_input.twenty_api_key
                   lock: ''
                   language: nativets
                   tag: ''
@@ -139,7 +139,13 @@ schema:
   type: object
   order:
     - twenty_api_key
+    - campaign_name
   properties:
+    campaign_name:
+      type: string
+      description: ''
+      default: ''
+      format: ''
     twenty_api_key:
       type: string
       description: ''
