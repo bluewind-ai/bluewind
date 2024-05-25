@@ -86,6 +86,10 @@ value:
                                       tag: ''
                                 expr: |
                                   results.bv.email_status === "catch_all"
+                              - summary: ''
+                                modules: []
+                                expr: |
+                                  results.bv.email_status === "valid_catch_all"
                             default:
                               - id: ab
                                 value:
