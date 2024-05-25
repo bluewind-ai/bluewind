@@ -12,6 +12,7 @@ export async function main(data: Array, campaign_name: string) {
     },
     jobTitle: item.title,
     campaignName: campaign_name
+    campaignStatus: "SOURCED"
   }));
 
   return inputs;
