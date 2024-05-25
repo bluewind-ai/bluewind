@@ -66,6 +66,7 @@ value:
                                       input_transforms: {}
                                       lock: ''
                                       language: nativets
+                                      tag: ''
                                 expr: >+
                                   results.bv.email_status === "invalid" ||
                                   results.bv.email_status === "unknown" 
@@ -87,7 +88,18 @@ value:
                                 expr: |
                                   results.bv.email_status === "catch_all"
                               - summary: ''
-                                modules: []
+                                modules:
+                                  - id: bw
+                                    value:
+                                      type: rawscript
+                                      content: >-
+                                        !inline
+                                        inline_script_1.inline_script.bun.ts
+                                      input_transforms: {}
+                                      lock: >-
+                                        !inline
+                                        inline_script_1.inline_script.lock
+                                      language: bun
                                 expr: |
                                   results.bv.email_status === "valid_catch_all"
                             default:
@@ -96,7 +108,7 @@ value:
                                   type: rawscript
                                   content: >-
                                     !inline
-                                    inline_script_1.inline_script.native.ts
+                                    inline_script_2.inline_script.native.ts
                                   input_transforms: {}
                                   lock: ''
                                   language: nativets
@@ -111,7 +123,7 @@ value:
                       summary: Return empty object
                       value:
                         type: rawscript
-                        content: '!inline return_empty_object_2.inline_script.native.ts'
+                        content: '!inline return_empty_object_3.inline_script.native.ts'
                         input_transforms: {}
                         lock: ''
                         language: nativets
@@ -122,7 +134,7 @@ value:
             summary: Return empty object
             value:
               type: rawscript
-              content: '!inline return_empty_object_3.inline_script.native.ts'
+              content: '!inline return_empty_object_4.inline_script.native.ts'
               input_transforms: {}
               lock: ''
               language: nativets
