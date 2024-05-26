@@ -29,6 +29,7 @@ value:
             expr: '`${results.bx.twenty_api_key}`'
         lock: ''
         language: nativets
+        tag: ''
     - id: cf
       summary: Create all necessary fields
       value:
@@ -179,6 +180,7 @@ value:
             expr: '`${results.bx.twenty_api_key}`'
         lock: ''
         language: nativets
+        tag: ''
     - id: cg
       summary: ''
       value:
@@ -215,6 +217,12 @@ value:
         lock: ''
         language: nativets
         tag: ''
+    - id: bt
+      summary: Fetch leadmagic api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/ask_leadmagic_api_key
     - id: bl
       value:
         type: forloopflow
@@ -239,12 +247,6 @@ value:
           expr: results.bd.data.people
         parallel: false
         skip_failures: true
-    - id: bt
-      summary: Fetch leadmagic api key
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/ask_leadmagic_api_key
   failure_module:
     id: failure
     value:

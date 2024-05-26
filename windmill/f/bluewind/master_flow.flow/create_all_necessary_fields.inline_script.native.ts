@@ -63,32 +63,6 @@ export async function main(twenty_api_key: string, person_obect_metadata: string
     })
   });
 
-  variables = {
-    input: {
-      field: {
-        description: null,
-        icon: "IconUsers",
-        label: "Campaign Name",
-        name: "campaignName",
-        objectMetadataId: person_obect_metadata,
-        type: "BOOLEAN"
-      }
-    }
-  };
-
-
-  response = await fetch('https://api.twenty.com/metadata', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${twenty_api_key}`,
-    },
-    body: JSON.stringify({
-      query: mutation,
-      variables: variables
-    })
-  });
-
 
   variables = {
     input: {
