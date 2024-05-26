@@ -202,6 +202,32 @@ value:
                   path: f/bluewind/source_leads_from_apollo
             expr: results.ch.data.people.length === 0
         default: []
+    - id: cj
+      summary: Prompt for campaign info
+      value:
+        type: rawscript
+        content: '!inline prompt_for_campaign_info.inline_script.native.ts'
+        input_transforms:
+          campaigns:
+            type: static
+            value: null
+        lock: ''
+        language: nativets
+      continue_on_error: false
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - campaign_info
+            properties:
+              campaign_info:
+                type: object
+                description: ''
+            required: []
+        timeout: 1800
     - id: bd
       summary: fetch leads that just got added
       value:
