@@ -167,10 +167,7 @@ value:
     - id: ch
       summary: are there remaining records in the campaign?
       value:
-        type: rawscript
-        content: >-
-          !inline
-          are_there_remaining_records_in_the_campaign?.inline_script.native.ts
+        type: script
         input_transforms:
           campaign_name:
             type: javascript
@@ -178,9 +175,9 @@ value:
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
-        lock: ''
-        language: nativets
-        tag: ''
+        hash: 525333359400c09c
+        path: f/bluewind/master_flow/ch
+        tag_override: null
     - id: cg
       summary: ''
       value:
@@ -200,8 +197,61 @@ value:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/source_leads_from_apollo
+              - id: cp
+                value:
+                  type: rawscript
+                  content: '!inline inline_script_0.inline_script.native.ts'
+                  input_transforms:
+                    campaign_name:
+                      type: javascript
+                      expr: '`\`${results.bp.campaign_name}\``'
+                    twenty_api_key:
+                      type: javascript
+                      expr: >-
+                        `${results.bx.twenty_api_key}${results.ce.campaign_name}`
+                  lock: ''
+                  language: nativets
             expr: results.ch.data.people.length === 0
-        default: []
+        default:
+          - id: cn
+            value:
+              type: rawscript
+              content: '!inline inline_script_3.inline_script.native.ts'
+              input_transforms:
+                contacts:
+                  type: javascript
+                  expr: results.ch
+              lock: ''
+              language: nativets
+    - id: cl
+      value:
+        type: rawscript
+        content: '!inline inline_script_4.inline_script.ts'
+        input_transforms: {}
+        lock: '!inline inline_script_4.inline_script.lock'
+        language: deno
+        path: hub/8713/windmill/default_arguments_in_approval_steps
+        tag: ''
+      continue_on_error: false
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - instructions
+              - campaign_info
+            properties:
+              campaign_info:
+                type: object
+                description: ''
+              instructions:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
     - id: cj
       summary: Prompt for campaign info
       value:
@@ -213,6 +263,7 @@ value:
             value: null
         lock: ''
         language: nativets
+        tag: ''
       continue_on_error: false
       suspend:
         required_events: 1
@@ -228,21 +279,6 @@ value:
                 description: ''
             required: []
         timeout: 1800
-    - id: bd
-      summary: fetch leads that just got added
-      value:
-        type: rawscript
-        content: '!inline fetch_leads_that_just_got_added.inline_script.native.ts'
-        input_transforms:
-          campaign_name:
-            type: javascript
-            expr: '`${results.bp.campaign_name}`'
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
-        lock: ''
-        language: nativets
-        tag: ''
     - id: bt
       summary: Fetch leadmagic api key
       value:
