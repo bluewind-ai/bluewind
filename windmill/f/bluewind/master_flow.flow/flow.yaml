@@ -18,12 +18,26 @@ value:
             expr: results.bx.twenty_api_key
         path: f/bluewind/immaculate_flow
       continue_on_error: false
+    - id: ci
+      summary: get id of the person object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_person_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
     - id: cf
       summary: Create all necessary fields
       value:
         type: rawscript
         content: '!inline create_all_necessary_fields.inline_script.native.ts'
         input_transforms:
+          person_obect_metadata:
+            type: javascript
+            expr: '`${results.ci.person_obect_metadata}`'
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
@@ -145,14 +159,17 @@ value:
               input_transforms:
                 campaign_name:
                   type: javascript
-                  expr: resume.campaign_name
+                  expr: resume.campaign_to_pick
               lock: ''
               language: nativets
               tag: ''
-    - id: cc
-      summary: source leads from apollo
+    - id: ch
+      summary: are there remaining records in the campaign?
       value:
-        type: flow
+        type: rawscript
+        content: >-
+          !inline
+          are_there_remaining_records_in_the_campaign?.inline_script.native.ts
         input_transforms:
           campaign_name:
             type: javascript
@@ -160,13 +177,29 @@ value:
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
-        path: f/bluewind/source_leads_from_apollo
-    - id: bt
-      summary: Fetch leadmagic api key
+        lock: ''
+        language: nativets
+    - id: cg
+      summary: ''
       value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/ask_leadmagic_api_key
+        type: branchone
+        branches:
+          - summary: ''
+            modules:
+              - id: cc
+                summary: source leads from apollo
+                value:
+                  type: flow
+                  input_transforms:
+                    campaign_name:
+                      type: javascript
+                      expr: '`${results.bp.campaign_name}`'
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${results.bx.twenty_api_key}`'
+                  path: f/bluewind/source_leads_from_apollo
+            expr: results.ch.data.people.length === 0
+        default: []
     - id: bd
       summary: fetch leads that just got added
       value:
@@ -206,6 +239,12 @@ value:
           expr: results.bd.data.people
         parallel: false
         skip_failures: true
+    - id: bt
+      summary: Fetch leadmagic api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/ask_leadmagic_api_key
   failure_module:
     id: failure
     value:
