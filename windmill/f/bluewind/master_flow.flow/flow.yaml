@@ -164,6 +164,22 @@ value:
               lock: ''
               language: nativets
               tag: ''
+    - id: cq
+      summary: Ask campaign info
+      value:
+        type: rawscript
+        content: '!inline ask_campaign_info.inline_script.ts'
+        input_transforms: {}
+        lock: '!inline ask_campaign_info.inline_script.lock'
+        language: deno
+        path: hub/8713/windmill/default_arguments_in_approval_steps
+        tag: ''
+    - id: bt
+      summary: Fetch leadmagic api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/ask_leadmagic_api_key
     - id: ch
       summary: are there remaining records in the campaign?
       value:
@@ -198,9 +214,10 @@ value:
                       expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/source_leads_from_apollo
               - id: cp
+                summary: Get contacts just sourced
                 value:
                   type: rawscript
-                  content: '!inline inline_script_0.inline_script.native.ts'
+                  content: '!inline get_contacts_just_sourced.inline_script.native.ts'
                   input_transforms:
                     campaign_name:
                       type: javascript
@@ -211,80 +228,21 @@ value:
                         `${results.bx.twenty_api_key}${results.ce.campaign_name}`
                   lock: ''
                   language: nativets
+                  tag: ''
             expr: results.ch.data.people.length === 0
         default:
           - id: cn
+            summary: get contacts
             value:
               type: rawscript
-              content: '!inline inline_script_3.inline_script.native.ts'
+              content: '!inline get_contacts.inline_script.native.ts'
               input_transforms:
                 contacts:
                   type: javascript
                   expr: results.ch
               lock: ''
               language: nativets
-    - id: cl
-      value:
-        type: rawscript
-        content: '!inline inline_script_4.inline_script.ts'
-        input_transforms: {}
-        lock: '!inline inline_script_4.inline_script.lock'
-        language: deno
-        path: hub/8713/windmill/default_arguments_in_approval_steps
-        tag: ''
-      continue_on_error: false
-      suspend:
-        required_events: 1
-        resume_form:
-          schema:
-            $schema: 'https://json-schema.org/draft/2020-12/schema'
-            type: object
-            order:
-              - instructions
-              - campaign_info
-            properties:
-              campaign_info:
-                type: object
-                description: ''
-              instructions:
-                type: string
-                description: ''
-                default: ''
-            required: []
-        timeout: 1800
-    - id: cj
-      summary: Prompt for campaign info
-      value:
-        type: rawscript
-        content: '!inline prompt_for_campaign_info.inline_script.native.ts'
-        input_transforms:
-          campaigns:
-            type: static
-            value: null
-        lock: ''
-        language: nativets
-        tag: ''
-      continue_on_error: false
-      suspend:
-        required_events: 1
-        resume_form:
-          schema:
-            $schema: 'https://json-schema.org/draft/2020-12/schema'
-            type: object
-            order:
-              - campaign_info
-            properties:
-              campaign_info:
-                type: object
-                description: ''
-            required: []
-        timeout: 1800
-    - id: bt
-      summary: Fetch leadmagic api key
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/ask_leadmagic_api_key
+              tag: ''
     - id: bl
       value:
         type: forloopflow
@@ -306,7 +264,7 @@ value:
               path: f/bluewind/enrichment_pipeline_fork_v2
         iterator:
           type: javascript
-          expr: results.bd.data.people
+          expr: results.cg.data.people
         parallel: false
         skip_failures: true
   failure_module:
