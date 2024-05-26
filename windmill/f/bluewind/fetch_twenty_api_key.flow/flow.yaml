@@ -11,6 +11,7 @@ value:
         lock: ''
         language: nativets
         tag: ''
+      continue_on_error: false
     - id: am
       summary: ''
       value:
@@ -58,7 +59,7 @@ value:
                         input_transforms:
                           twenty_api_key:
                             type: javascript
-                            expr: resume.twenty_api_key
+                            expr: '`${resume.twenty_api_key}`'
                         concurrency_time_window_s: 0
                         language: nativets
                         tag: ''
@@ -79,7 +80,7 @@ value:
                   lock: ''
                   language: nativets
                   tag: ''
-            expr: results.al.error_message
+            expr: results.al === "null" || results.al.error_message !== undefined
         default:
           - id: ar
             summary: return correct api key

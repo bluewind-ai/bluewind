@@ -6,8 +6,7 @@ export async function main() {
   const responseClone = response.clone();
 
   try {
-    const jsonData = await response.json();
-    return jsonData;
+    return await response.text();
   } catch (error) {
     return { error_message: await responseClone.text() };
   }
