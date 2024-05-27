@@ -285,6 +285,7 @@ value:
         input_transforms: {}
         path: f/bluewind/ask_leadmagic_api_key
     - id: di
+      summary: get contacts to outreach
       value:
         type: flow
         input_transforms:
@@ -295,22 +296,6 @@ value:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/get_contacts_to_outreach
-    - id: dg
-      value:
-        type: identity
-    - id: ch
-      summary: are there remxsaxsaining records in the campaign?
-      value:
-        type: script
-        input_transforms:
-          campaign_name:
-            type: javascript
-            expr: '`${results.bp.campaign_name}`'
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
-        path: f/bluewind/master_flow/ch
-        tag_override: null
     - id: cg
       summary: ''
       value:
@@ -346,7 +331,7 @@ value:
                   lock: ''
                   language: nativets
                   tag: ''
-            expr: results.ch.data.people.length === 0
+            expr: results.cg.data.people.length === 0
         default:
           - id: cn
             summary: get contacts
