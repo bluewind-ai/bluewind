@@ -42,9 +42,9 @@ value:
                             $schema: 'https://json-schema.org/draft/2020-12/schema'
                             type: object
                             order:
-                              - twenty_api_key
+                              - smartlead_api_key
                             properties:
-                              twenty_api_key:
+                              smartlead_api_key:
                                 type: string
                                 description: ''
                                 default: ''

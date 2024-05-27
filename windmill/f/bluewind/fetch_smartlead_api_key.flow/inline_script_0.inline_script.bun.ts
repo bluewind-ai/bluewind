@@ -8,7 +8,6 @@ export async function main() {
     default_args: {
       smartlead_api_key:
         "YOUR_SMARTLEAD_API_KEY",
-
     },
   };
 }
