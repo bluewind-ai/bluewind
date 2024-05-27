@@ -197,7 +197,7 @@ value:
                       expr: flow_input.campaign_info.custom_taglines
                     recipient_first_name:
                       type: javascript
-                      expr: '`${flow_input.contact.name.lastName}`'
+                      expr: '`${flow_input.contact.name.firstName}`'
                     sender_company_domain_name:
                       type: javascript
                       expr: flow_input.campaign_info.sender_company_name
@@ -215,7 +215,7 @@ value:
                   input_transforms:
                     body:
                       type: javascript
-                      expr: '`${results.bx.body}`'
+                      expr: '`${results.cd.body}`'
                     email:
                       type: javascript
                       expr: '`${flow_input.contact.email}`'
@@ -224,7 +224,7 @@ value:
                       expr: '`${flow_input.contact.linkedinLink.url}`'
                     subject_line:
                       type: javascript
-                      expr: '`${results.bx.subject_line}`'
+                      expr: '`${results.cd.subject_line}`'
                   lock: '!inline inline_script_4.inline_script.lock'
                   language: deno
                   path: hub/8713/windmill/default_arguments_in_approval_steps
