@@ -1,24 +1,19 @@
-summary: Function returns customized email subject lines V2
+summary: generate subject lines without company name
 description: ''
 value:
   modules:
     - id: a
+      summary: generate subject lines
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: '!inline generate_subject_lines.inline_script.native.ts'
         input_transforms:
           custom_subject_lines:
             type: javascript
             expr: '`${flow_input.custom_subject_lines}`'
-          recipient_company_name:
-            type: javascript
-            expr: '`${flow_input.recipient_company_name}`'
           recipient_first_name:
             type: javascript
             expr: '`${flow_input.recipient_first_name}`'
-          sender_company_name:
-            type: javascript
-            expr: '`${flow_input.sender_company_name}`'
         lock: ''
         language: nativets
         tag: ''
@@ -27,8 +22,6 @@ schema:
   type: object
   order:
     - recipient_first_name
-    - recipient_company_name
-    - sender_company_name
     - custom_subject_lines
   properties:
     custom_subject_lines:
@@ -38,22 +31,10 @@ schema:
       format: ''
       items:
         type: string
-    recipient_company_name:
-      type: string
-      description: ''
-      default: Leadbird
-      format: ''
-      password: false
     recipient_first_name:
       type: string
       description: ''
       default: Nick
-      format: ''
-      password: false
-    sender_company_name:
-      type: string
-      description: ''
-      default: Superagent
       format: ''
       password: false
   required: []
