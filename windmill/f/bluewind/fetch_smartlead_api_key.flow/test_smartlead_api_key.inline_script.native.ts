@@ -8,7 +8,7 @@ export async function main(smartlead_api_key: string) {
     }
   };
   try {
-    await fetch(url, options);
+    const response = await fetch(url, options);
     return {
       smartlead_api_key
     }
