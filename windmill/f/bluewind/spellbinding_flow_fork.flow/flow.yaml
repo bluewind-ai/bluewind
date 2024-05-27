@@ -13,7 +13,7 @@ value:
             expr: flow_input.email
           leadmagic_api_key:
             type: javascript
-            expr: resource('u/merwanehamadi/leadmagic')
+            expr: flow_input.leadmagic_api_key
         lock: ''
         language: nativets
         tag: ''
