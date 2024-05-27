@@ -174,6 +174,26 @@ value:
         language: deno
         path: hub/8713/windmill/default_arguments_in_approval_steps
         tag: ''
+      continue_on_error: false
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - instructions
+              - campaign_info
+            properties:
+              campaign_info:
+                type: object
+                description: ''
+              instructions:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
     - id: bt
       summary: Fetch leadmagic api key
       value:
@@ -194,73 +214,92 @@ value:
         hash: 525333359400c09c
         path: f/bluewind/master_flow/ch
         tag_override: null
-    - id: cg
-      summary: ''
-      value:
-        type: branchone
-        branches:
-          - summary: ''
-            modules:
-              - id: cc
-                summary: source leads from apollo
-                value:
-                  type: flow
-                  input_transforms:
-                    campaign_name:
-                      type: javascript
-                      expr: '`${results.bp.campaign_name}`'
-                    twenty_api_key:
-                      type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
-                  path: f/bluewind/source_leads_from_apollo
-              - id: cp
-                summary: Get contacts just sourced
-                value:
-                  type: rawscript
-                  content: '!inline get_contacts_just_sourced.inline_script.native.ts'
-                  input_transforms:
-                    campaign_name:
-                      type: javascript
-                      expr: '`\`${results.bp.campaign_name}\``'
-                    twenty_api_key:
-                      type: javascript
-                      expr: >-
-                        `${results.bx.twenty_api_key}${results.ce.campaign_name}`
-                  lock: ''
-                  language: nativets
-                  tag: ''
-            expr: results.ch.data.people.length === 0
-        default:
-          - id: cn
-            summary: get contacts
-            value:
-              type: rawscript
-              content: '!inline get_contacts.inline_script.native.ts'
-              input_transforms:
-                contacts:
-                  type: javascript
-                  expr: results.ch
-              lock: ''
-              language: nativets
-              tag: ''
     - id: bl
       value:
         type: forloopflow
         modules:
-          - id: bw
-            summary: push to smartlead
+          - id: cr
+            summary: enrichment pipeline
             value:
               type: flow
               input_transforms:
+                campaign_info:
+                  type: static
+                  value:
+                    block_1: >-
+                      are you investing in AI agents? Bluewind is raising a
+                      pre-seed, 100k at 5M
+                    block_2: >-
+                      About Bluewind:
+
+                      - open-source go-to-market assistant to generate leads.
+
+                      - our customers were overwhelmed by all the GTM tools and
+                      wasted time and money trying all of them.
+
+                      - Instead of creating another tool we created an assistant
+                      that connects all the best SaaS together to generate leads
+                      for them
+
+                      - about me: ex AutoGPT, AI Agent expert (author of paper
+                      published at Neurips), and famous Growth Hacker.
+                    block_3: >-
+                      Would you like me to send you the deck? I don't send it
+                      directly because of deliverability.
+                    block_4: ''
+                    block_5: ''
+                    custom_subject_lines:
+                      - Bluewind pre-seed
+                    custom_taglines:
+                      - open-source go-to-market assistant
+                      - free go-to-market assistant
+                    recipient_company_name: First Round
+                    recipient_first_name: Steven
+                    sender_company_domain_name: bluewind(.)ai
+                    sender_company_name: Bluewind
+                    sender_first_name: Wayne
+                    sender_last_name: Hamadi
                 contact:
-                  type: javascript
-                  expr: flow_input.iter.value
+                  type: static
+                  value:
+                    id: d725b36c-e61e-4d90-8975-bb9e522abee6
+                    activityTargets: []
+                    name:
+                      firstName: Muenif
+                      lastName: Koz
+                    attachments: []
+                    avatarUrl: ''
+                    calendarEventParticipants: []
+                    campaignName: give a name to dcsdc your campaign
+                    city: ''
+                    company: null
+                    companyId: null
+                    companyName: ''
+                    createdAt: '2024-05-22T21:44:43.628Z'
+                    email: wayne@bluewind.ai
+                    favorites: []
+                    isEmailCatchAll: null
+                    isEmailValid: null
+                    isValid: false
+                    jobTitle: Angel Investor
+                    linkedinLink:
+                      label: LinkedIn
+                      url: 'http://www.linkedin.com/in/munifkoz'
+                    messageParticipants: []
+                    phone: ''
+                    pointOfContactForOpportunities: []
+                    position: 0.000003814697265625
+                    timelineActivities: []
+                    updatedAt: '2024-05-22T21:44:43.628Z'
+                    xLink:
+                      label: ''
+                      url: ''
                 leadmagic_api_key:
-                  type: javascript
-                  expr: '`${results.bt.correct_leadmagic_api_key}`'
+                  type: static
+                  value: ''
                 twenty_api_key:
-                  type: javascript
-                  expr: '`${results.bx.twenty_api_key}`'
+                  type: static
+                  value: ''
               path: f/bluewind/enrichment_pipeline_fork_v2
         iterator:
           type: javascript
