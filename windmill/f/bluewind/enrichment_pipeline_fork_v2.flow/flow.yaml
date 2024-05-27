@@ -104,6 +104,7 @@ value:
                                         !inline
                                         inline_script_1.inline_script.lock
                                       language: bun
+                                      tag: ''
                                 expr: |
                                   results.bv.email_status === "valid_catch_all"
                             default:
@@ -126,7 +127,13 @@ value:
                       value:
                         type: rawscript
                         content: '!inline return_empty_object_3.inline_script.native.ts'
-                        input_transforms: {}
+                        input_transforms:
+                          isEmailCatchall:
+                            type: javascript
+                            expr: flow_input.contact.isEmailCatchAll
+                          isEmailValid:
+                            type: javascript
+                            expr: flow_input.contact.isEmailValid
                         lock: ''
                         language: nativets
                         tag: ''
@@ -141,11 +148,10 @@ value:
               lock: ''
               language: nativets
               tag: ''
-    - id: f
-      summary: enrich is_email_valid false
+    - id: bz
+      summary: update contact twenty
       value:
-        type: rawscript
-        content: '!inline enrich_is_email_valid_false.inline_script.native.ts'
+        type: script
         input_transforms:
           contact_id:
             type: javascript
@@ -155,71 +161,115 @@ value:
             expr: results.r
           twenty_api_key:
             type: javascript
-            expr: flow_input.twenty_api_key
-        lock: ''
-        language: nativets
-        tag: ''
-    - id: bx
+            expr: '`${flow_input.twenty_api_key}`'
+        path: f/bluewind/update_contact_twenty
+        tag_override: null
+    - id: ca
+      summary: ''
       value:
-        type: flow
-        input_transforms:
-          block_1:
-            type: static
-            value: Bluewind is raising a pre-seed. 100k at 5M.
-          block_2:
-            type: static
-            value: >-
-              About Bluewind:
-
-              - open-source go-to-market assistant to generate leads.
-
-              - our customers were overwhelmed by all the GTM tools and wasted
-              time and money trying all of them.
-
-              - Instead of creating another tool we created an assistant that
-              connects all the best SaaS together to generate leads for them
-
-              - about me: ex AutoGPT, AI Agent expert (author of paper published
-              at Neurips), and famous Growth Hacker.
-          block_3:
-            type: static
-            value: >-
-              Would you like me to send you the deck? I don't send it directly
-              because of deliverability.
-          block_4:
-            type: static
-            value: ''
-          block_5:
-            type: static
-            value: ''
-          custom_subject_lines:
-            type: static
-            value:
-              - Bluewind pre-seed
-          custom_taglines:
-            type: static
-            value:
-              - open-source go-to-market assistant
-              - free go-to-market assistant
-          recipient_company_name:
-            type: static
-            value: First Round
-          recipient_first_name:
-            type: static
-            value: Steven
-          sender_company_domain_name:
-            type: static
-            value: bluewind(.)ai
-          sender_company_name:
-            type: static
-            value: Bluewind
-          sender_first_name:
-            type: static
-            value: Wayne
-          sender_last_name:
-            type: static
-            value: Hamadi
-        path: f/bluewind/generate_email
+        type: branchone
+        branches:
+          - summary: ''
+            modules:
+              - id: bx
+                summary: generate email
+                value:
+                  type: flow
+                  input_transforms:
+                    block_1:
+                      type: javascript
+                      expr: flow_input.campaign_info.block_1
+                    block_2:
+                      type: javascript
+                      expr: flow_input.campaign_info.block_2
+                    block_3:
+                      type: javascript
+                      expr: flow_input.campaign_info.block_3
+                    block_4:
+                      type: static
+                      value: ''
+                    block_5:
+                      type: static
+                      value: ''
+                    custom_subject_lines:
+                      type: javascript
+                      expr: flow_input.campaign_info.custom_subject_lines
+                    custom_taglines:
+                      type: javascript
+                      expr: flow_input.campaign_info.custom_taglines
+                    recipient_company_name:
+                      type: javascript
+                      expr: '`${flow_input.campaign_info.recipient_company_name}`'
+                    recipient_first_name:
+                      type: javascript
+                      expr: flow_input.contact.name.firstName
+                    sender_company_domain_name:
+                      type: javascript
+                      expr: flow_input.campaign_info.sender_company_domain_name
+                    sender_company_name:
+                      type: javascript
+                      expr: '`${flow_input.campaign_info.sender_company_name}`'
+                    sender_first_name:
+                      type: javascript
+                      expr: flow_input.campaign_info.sender_first_name
+                    sender_last_name:
+                      type: javascript
+                      expr: flow_input.campaign_info.sender_last_name
+                  path: f/bluewind/generate_email
+              - id: by
+                value:
+                  type: rawscript
+                  content: '!inline inline_script_5.inline_script.ts'
+                  input_transforms:
+                    body:
+                      type: javascript
+                      expr: '`${results.bx.body}`'
+                    email:
+                      type: javascript
+                      expr: '`${flow_input.contact.email}`'
+                    linkedin_url:
+                      type: javascript
+                      expr: '`${flow_input.contact.linkedinLink.url}`'
+                    subject_line:
+                      type: javascript
+                      expr: '`${results.bx.subject_line}`'
+                  lock: '!inline inline_script_5.inline_script.lock'
+                  language: deno
+                  path: hub/8713/windmill/default_arguments_in_approval_steps
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - subject_line
+                        - body
+                        - linkedin_url
+                        - email
+                      properties:
+                        body:
+                          type: string
+                          description: ''
+                          default: ''
+                        email:
+                          type: string
+                          description: ''
+                          default: ''
+                        linkedin_url:
+                          type: string
+                          description: ''
+                          default: ''
+                        subject_line:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+            expr: results.r.isEmailValid
+        default: []
 schema:
   type: object
   additionalProperties: false
@@ -237,13 +287,18 @@ schema:
           are you investing in AI agents? Bluewind is raising a pre-seed, 100k
           at 5M
         block_2: >-
-          About Bluewind:/n- open-source go-to-market assistant to generate
-          leads./n- our customers were overwhelmed by all the GTM tools and
-          wasted time and money trying all of them./n- Instead of creating
-          another tool we created an assistant that connects all the best SaaS
-          together to generate leads for them/n- about me: ex AutoGPT, AI Agent
-          expert (author of paper published at Neurips), and famous Growth
-          Hacker.
+          About Bluewind:
+
+          - open-source go-to-market assistant to generate leads.
+
+          - our customers were overwhelmed by all the GTM tools and wasted time
+          and money trying all of them.
+
+          - Instead of creating another tool we created an assistant that
+          connects all the best SaaS together to generate leads for them
+
+          - about me: ex AutoGPT, AI Agent expert (author of paper published at
+          Neurips), and famous Growth Hacker.
         block_3: >-
           Would you like me to send you the deck? I don't send it directly
           because of deliverability.
