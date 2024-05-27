@@ -1,16 +1,14 @@
 export async function main(twenty_api_key: string) {
-  const query = `
-    query {
-      objects {
-        edges {
-          node {
-            id
-            nameSingular
-          }
-        }
+  const query = `query {
+  objects(filter: {isCustom: {is: true}}) {
+    edges {
+      node {
+        id
+        nameSingular
       }
     }
-  `;
+  }
+}`;
 
   const url = 'https://api.twenty.com/metadata';
   const response = await fetch(url, {

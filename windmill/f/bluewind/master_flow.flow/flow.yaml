@@ -29,6 +29,7 @@ value:
             expr: '`${results.bx.twenty_api_key}`'
         lock: ''
         language: nativets
+        tag: ''
     - id: cv
       summary: Create campaign custom fields
       value:
@@ -43,6 +44,7 @@ value:
             expr: '`${results.bx.twenty_api_key}`'
         lock: ''
         language: nativets
+        tag: ''
     - id: ci
       summary: get id of the person object
       value:
@@ -161,12 +163,13 @@ value:
               input_transforms:
                 campaign_name:
                   type: javascript
-                  expr: resume.campaign_name
+                  expr: resume.campaign_to_pick
                 campaigns:
                   type: javascript
-                  expr: results.br.data
+                  expr: results.br.data.campaigns
               lock: ''
               language: nativets
+              tag: ''
     - id: cu
       summary: fetch smartlead api key
       value:
@@ -217,6 +220,7 @@ value:
                   expr: results.br
               lock: ''
               language: nativets
+              tag: ''
     - id: cq
       summary: Ask campaign info
       value:
