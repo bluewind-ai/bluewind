@@ -343,8 +343,12 @@ schema:
           type: array
         isEmailCatchAll:
           type: boolean
+          description: ''
+          default: false
         isEmailValid:
-          type: 'null'
+          type: boolean
+          description: ''
+          default: false
         jobTitle:
           type: string
         linkedinLink:
