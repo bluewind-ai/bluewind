@@ -44,7 +44,7 @@ value:
             expr: '`${flow_input.contact.id}`'
           data:
             type: javascript
-            expr: results.ce
+            expr: results.cf
           twenty_api_key:
             type: javascript
             expr: '`${flow_input.twenty_api_key}`'
@@ -146,11 +146,16 @@ value:
                           default: ''
                       required: []
                   timeout: 1800
-            expr: results.r.isEmailValid
+            expr: results.cf.isEmailValid
         default: []
 schema:
   type: object
   additionalProperties: false
+  order:
+    - contact
+    - campaign_info
+    - twenty_api_key
+    - leadmagic_api_key
   properties:
     campaign_info:
       type: object
@@ -270,7 +275,9 @@ schema:
     leadmagic_api_key:
       type: string
       description: ''
+      default: ''
       format: ''
+      password: true
     twenty_api_key:
       type: string
       description: ''
