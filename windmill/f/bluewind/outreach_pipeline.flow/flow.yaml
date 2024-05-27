@@ -2,18 +2,37 @@ summary: outreach pipeline
 description: ''
 value:
   modules:
-    - id: ce
-      summary: validate email
+    - id: cf
       value:
         type: flow
         input_transforms:
           contact:
-            type: javascript
-            expr: flow_input.contact
+            type: static
+            value:
+              id: ''
+              name:
+                firstName: ''
+                lastName: ''
+              avatarUrl: ''
+              campaignName: ''
+              campaignStatus: ''
+              city: ''
+              company: ''
+              companyId: ''
+              isEmailCatchAll: false
+              isEmailValid: false
+              jobTitle: ''
+              linkedinLink:
+                label: ''
+                url: ''
+              phone: ''
+              xLink:
+                label: ''
+                url: ''
           leadmagic_api_key:
-            type: javascript
-            expr: '`${flow_input.leadmagic_api_key}`'
-        path: u/merwanehamadi/validate_email
+            type: static
+            value: ''
+        path: f/bluewind/validate_email
     - id: cc
       summary: update contact twenty
       value:
