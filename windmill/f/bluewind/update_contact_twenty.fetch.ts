@@ -1,4 +1,7 @@
 export async function main(twenty_api_key: string, data: Object, contact_id: string) {
+  if (Object.keys(data).length === 0) {
+    return {}
+  }
   const url = `https://api.twenty.com/rest/people/${contact_id}`;
   const options = {
     method: 'PATCH',
@@ -10,5 +13,5 @@ export async function main(twenty_api_key: string, data: Object, contact_id: str
     body: JSON.stringify(data)
   };
   const response = await fetch(url, options);
-  return await response.text()
+  return await response.json()
 }

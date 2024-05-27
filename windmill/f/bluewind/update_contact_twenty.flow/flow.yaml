@@ -1,19 +1,22 @@
-summary: Validate email using LeadMagic API
+summary: update contact twenty
 description: ''
 value:
   modules:
     - id: a
-      summary: Validate email via LeadMagic API
+      summary: update contact twenty
       value:
         type: rawscript
-        content: '!inline validate_email_via_leadmagic_api.inline_script.native.ts'
+        content: '!inline update_contact_twenty.inline_script.native.ts'
         input_transforms:
-          email:
+          contact_id:
             type: javascript
-            expr: flow_input.email
-          leadmagic_api_key:
+            expr: '`${flow_input.contact_id}`'
+          data:
             type: javascript
-            expr: flow_input.leadmagic_api_key
+            expr: flow_input.data
+          twenty_api_key:
+            type: javascript
+            expr: '`${flow_input.twenty_api_key}`'
         lock: ''
         language: nativets
         tag: ''
@@ -21,18 +24,23 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - email
-    - leadmagic_api_key
+    - twenty_api_key
+    - contact_id
+    - data
   properties:
-    email:
+    contact_id:
       type: string
       description: ''
       default: ''
       format: ''
-    leadmagic_api_key:
+    data:
+      type: object
+      description: ''
+      format: ''
+    twenty_api_key:
       type: string
       description: ''
-      default: '$var:u/admin/secret_arg/BoFjrwLT7Hyu'
+      default: ''
       format: ''
       password: true
   required: []

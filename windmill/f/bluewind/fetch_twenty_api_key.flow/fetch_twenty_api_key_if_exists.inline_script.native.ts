@@ -5,9 +5,14 @@ export async function main() {
 
   const responseClone = response.clone();
 
+
   try {
-    const jsonData = await response.json();
-    return jsonData;
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return { error_message: `status code: ${response.status}` }
+    }
   } catch (error) {
     return { error_message: await responseClone.text() };
   }

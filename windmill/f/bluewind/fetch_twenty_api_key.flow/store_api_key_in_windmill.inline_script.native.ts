@@ -8,7 +8,6 @@ export async function main(all_attempts: Array) {
   };
 
   const url = `${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/resources/create`;
-
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -17,6 +16,10 @@ export async function main(all_attempts: Array) {
     },
     body: JSON.stringify(data),
   });
+  return await response.text()
 
-  return correct_api_key;
+  return {
+    twenty_api_key: correct_api_key
+  }
+
 }

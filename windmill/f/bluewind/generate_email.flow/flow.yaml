@@ -2,7 +2,7 @@ summary: Create basic email
 description: ''
 value:
   modules:
-    - id: a
+    - id: i
       summary: generate subject lines
       value:
         type: flow
@@ -19,8 +19,8 @@ value:
           sender_company_name:
             type: javascript
             expr: '`${flow_input.sender_company_name}`'
-        path: u/admin/magic_flow_fork
-    - id: b
+        path: f/bluewind/magic_flow_fork
+    - id: j
       summary: generate salutations
       value:
         type: flow
@@ -28,15 +28,15 @@ value:
           first_name:
             type: javascript
             expr: '`${flow_input.recipient_first_name}`'
-        path: u/admin/first_in_class_flow
-    - id: c
-      summary: generate signatures
+        path: f/bluewind/first_in_class_flow
+    - id: k
+      summary: generate body
       value:
         type: flow
         input_transforms:
           company_name:
             type: javascript
-            expr: flow_input.sender_company_name
+            expr: '`${flow_input.recipient_company_name}`'
           custom_taglines:
             type: javascript
             expr: flow_input.custom_taglines
@@ -49,7 +49,30 @@ value:
           sender_last_name:
             type: javascript
             expr: '`${flow_input.sender_last_name}`'
-        path: u/admin/thankful_flow
+        path: f/bluewind/thankful_flow
+    - id: l
+      summary: generate signatures
+      value:
+        type: flow
+        input_transforms:
+          company_name:
+            type: static
+            value: Bluewind
+          custom_taglines:
+            type: static
+            value:
+              - open-source automations to grow your business
+              - free automations to grow your business
+          domain_name:
+            type: static
+            value: bluewind(.)ai
+          sender_first_name:
+            type: static
+            value: Wayne
+          sender_last_name:
+            type: static
+            value: Hamadi
+        path: f/bluewind/thankful_flow
     - id: h
       value:
         type: rawscript
@@ -72,15 +95,16 @@ value:
             expr: '`${flow_input.block_5}`'
           salutation:
             type: javascript
-            expr: '`${results.b.picked_salutation}`'
+            expr: '`${results.j.picked_salutation}`'
           signature:
             type: javascript
-            expr: results.c.picked_signature
+            expr: results.l.picked_signature
           subject_line:
             type: javascript
-            expr: '`${results.a.picked_subject_line}`'
+            expr: '`${results.i.picked_subject_line}`'
         lock: '!inline inline_script_0.inline_script.lock'
         language: bun
+        tag: ''
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object

@@ -1,8 +1,8 @@
 // Fetch-only script, no imports allowed but benefits from a dedicated highly efficient runtime
 
-export async function main() {
+export async function main(correct_api_key: string) {
   return {
-    property: "is_catch_all",
-    value: "true",
+    twenty_api_key: correct_api_key
   }
+
 }

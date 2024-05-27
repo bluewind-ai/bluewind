@@ -1,7 +1,8 @@
 summary: Convert exportapollo.io to hubspot friendly format
 description: >-
-  This script was edited in place of flow u/bluewind/captivating_flow_fork 
-  by merwanehamadi.
+  This script was edited in place of flow u/bluewind/captivating_flow_fork  by
+  merwanehamadi.
+lock: ''
 kind: script
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
