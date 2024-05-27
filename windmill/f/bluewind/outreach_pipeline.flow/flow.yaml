@@ -1,4 +1,4 @@
-summary: enrichment pipeline
+summary: outreach pipeline
 description: ''
 value:
   modules:
@@ -170,8 +170,7 @@ value:
         branches:
           - summary: ''
             modules:
-              - id: bx
-                summary: generate email
+              - id: cd
                 value:
                   type: flow
                   input_transforms:
@@ -196,25 +195,19 @@ value:
                     custom_taglines:
                       type: javascript
                       expr: flow_input.campaign_info.custom_taglines
-                    recipient_company_name:
-                      type: javascript
-                      expr: '`${flow_input.campaign_info.recipient_company_name}`'
                     recipient_first_name:
                       type: javascript
-                      expr: flow_input.contact.name.firstName
+                      expr: '`${flow_input.contact.name.lastName}`'
                     sender_company_domain_name:
                       type: javascript
-                      expr: flow_input.campaign_info.sender_company_domain_name
-                    sender_company_name:
-                      type: javascript
-                      expr: '`${flow_input.campaign_info.sender_company_name}`'
+                      expr: flow_input.campaign_info.sender_company_name
                     sender_first_name:
                       type: javascript
                       expr: flow_input.campaign_info.sender_first_name
                     sender_last_name:
                       type: javascript
                       expr: flow_input.campaign_info.sender_last_name
-                  path: f/bluewind/generate_email
+                  path: f/bluewind/generate_email_fork
               - id: by
                 value:
                   type: rawscript
