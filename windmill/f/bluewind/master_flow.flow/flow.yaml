@@ -190,10 +190,10 @@ value:
                   input_transforms:
                     campaign_name:
                       type: javascript
-                      expr: '`${results.cb.campaign_name}`'
+                      expr: '`${results.bp.name}`'
                     smartlead_api_key:
-                      type: static
-                      value: ''
+                      type: javascript
+                      expr: '`${results.cu.smartlead_api_key}`'
                   path: f/bluewind/brilliant_flow
               - id: da
                 summary: get smartlead_campaign_id
@@ -202,10 +202,11 @@ value:
                   content: '!inline get_smartlead_campaign_id.inline_script.native.ts'
                   input_transforms:
                     smartlead_response:
-                      type: static
-                      value: null
+                      type: javascript
+                      expr: results.ct.campaign_id
                   lock: ''
                   language: nativets
+                  tag: ''
             expr: >-
               results.bp.smartleadCampaignId === undefined ||
               results.bp.smartleadCampaignId === null
@@ -269,20 +270,20 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/ask_leadmagic_api_key
-    - id: ch
-      summary: are there remaining records in the campaign?
+    - id: dc
+      summary: get contacts to reach out to
       value:
-        type: script
+        type: rawscript
+        content: '!inline get_contacts_to_reach_out_to.inline_script.native.ts'
         input_transforms:
           campaign_name:
             type: javascript
-            expr: '`${results.bp.campaign_name}`'
+            expr: '`\`${results.bp.campaign_name}\``'
           twenty_api_key:
             type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
-        hash: 525333359400c09c
-        path: f/bluewind/master_flow/ch
-        tag_override: null
+            expr: '`\`${results.bx.twenty_api_key}\``'
+        lock: ''
+        language: nativets
     - id: cg
       summary: ''
       value:

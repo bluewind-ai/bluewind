@@ -2,6 +2,6 @@
 
 export async function main(smartlead_response: object) {
   return {
-    smartlead_campaign_id: smartlead_response.id
+    smartlead_campaign_id: smartlead_response.campaign_id
   }
 }
