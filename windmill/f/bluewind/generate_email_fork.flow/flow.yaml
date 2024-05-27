@@ -7,11 +7,11 @@ value:
         type: flow
         input_transforms:
           custom_subject_lines:
-            type: static
-            value: []
+            type: javascript
+            expr: flow_input.custom_subject_lines
           recipient_first_name:
             type: javascript
-            expr: '`Nick${flow_input.recipient_first_name}`'
+            expr: '`${flow_input.recipient_first_name}`'
         path: f/bluewind/generate_subject_lines_without_company_name
     - id: j
       summary: generate salutations
