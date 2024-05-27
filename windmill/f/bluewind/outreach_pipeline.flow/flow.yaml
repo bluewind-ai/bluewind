@@ -8,31 +8,11 @@ value:
         type: flow
         input_transforms:
           contact:
-            type: static
-            value:
-              id: ''
-              name:
-                firstName: ''
-                lastName: ''
-              avatarUrl: ''
-              campaignName: ''
-              campaignStatus: ''
-              city: ''
-              company: ''
-              companyId: ''
-              isEmailCatchAll: false
-              isEmailValid: false
-              jobTitle: ''
-              linkedinLink:
-                label: ''
-                url: ''
-              phone: ''
-              xLink:
-                label: ''
-                url: ''
+            type: javascript
+            expr: flow_input.contact
           leadmagic_api_key:
-            type: static
-            value: ''
+            type: javascript
+            expr: '`${flow_input.leadmagic_api_key}`'
         path: f/bluewind/validate_email
     - id: cc
       summary: update contact twenty
