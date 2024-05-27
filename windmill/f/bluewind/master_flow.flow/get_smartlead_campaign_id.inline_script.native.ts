@@ -1,7 +1,7 @@
 // Fetch-only script, no imports allowed but benefits from a dedicated highly efficient runtime
 
-export async function main(campaign_name: number = 3) {
+export async function main(smartlead_response: object) {
   return {
-    campaign_name
+    smartlead_campaign_id: smartlead_response.id
   }
 }

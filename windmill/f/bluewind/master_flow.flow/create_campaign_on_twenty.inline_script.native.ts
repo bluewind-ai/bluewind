@@ -13,5 +13,6 @@ export async function main(twenty_api_key: string, campaign_name: string) {
   };
 
   const response = await fetch(url, options);
-  return await response.json()
+  const data = await response.json()
+  return data.data.createCampaign
 }

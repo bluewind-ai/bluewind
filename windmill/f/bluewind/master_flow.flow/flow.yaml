@@ -18,6 +18,31 @@ value:
             expr: results.bx.twenty_api_key
         path: f/bluewind/immaculate_flow
       continue_on_error: false
+    - id: cw
+      summary: get id of the campaign object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_campaign_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+    - id: cv
+      summary: Create campaign custom fields
+      value:
+        type: rawscript
+        content: '!inline create_campaign_custom_fields.inline_script.native.ts'
+        input_transforms:
+          campaign_obect_metadata:
+            type: javascript
+            expr: '`${results.cw.campaign_object_metadata}`'
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
     - id: ci
       summary: get id of the person object
       value:
@@ -31,10 +56,10 @@ value:
         language: nativets
         tag: ''
     - id: cf
-      summary: Create all necessary fields
+      summary: create person custom fields
       value:
         type: rawscript
-        content: '!inline create_all_necessary_fields.inline_script.native.ts'
+        content: '!inline create_person_custom_fields.inline_script.native.ts'
         input_transforms:
           person_obect_metadata:
             type: javascript
@@ -81,18 +106,6 @@ value:
                           default: ''
                       required: []
                   timeout: 1800
-              - id: cb
-                summary: Get campaign name
-                value:
-                  type: rawscript
-                  content: '!inline get_campaign_name.inline_script.native.ts'
-                  input_transforms:
-                    campaign_name:
-                      type: javascript
-                      expr: resume.campaign_name
-                  lock: ''
-                  language: nativets
-                  tag: ''
               - id: ca
                 summary: Create campaign on Twenty
                 value:
@@ -101,22 +114,10 @@ value:
                   input_transforms:
                     campaign_name:
                       type: javascript
-                      expr: '`${results.cb.campaign_name}`'
+                      expr: resume.campaign_name
                     twenty_api_key:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
-                  lock: ''
-                  language: nativets
-                  tag: ''
-              - id: bn
-                summary: Get campaign name
-                value:
-                  type: rawscript
-                  content: '!inline get_campaign_name_1.inline_script.native.ts'
-                  input_transforms:
-                    campaign_name:
-                      type: javascript
-                      expr: '`${results.cb.campaign_name}`'
                   lock: ''
                   language: nativets
                   tag: ''
@@ -152,18 +153,70 @@ value:
                       default: ''
                   required: []
               timeout: 1800
-          - id: ce
-            summary: Get campaign name
+          - id: cy
+            summary: Filter by the campaign name
             value:
               type: rawscript
-              content: '!inline get_campaign_name_2.inline_script.native.ts'
+              content: '!inline filter_by_the_campaign_name.inline_script.native.ts'
               input_transforms:
                 campaign_name:
                   type: javascript
-                  expr: resume.campaign_to_pick
+                  expr: resume.campaign_name
+                campaigns:
+                  type: javascript
+                  expr: results.br.data
               lock: ''
               language: nativets
-              tag: ''
+    - id: cu
+      summary: fetch smartlead api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_smartlead_api_key
+    - id: cz
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: if no campaign created on smartlead
+            modules:
+              - id: ct
+                summary: create smartlead campaign
+                value:
+                  type: flow
+                  input_transforms:
+                    campaign_name:
+                      type: javascript
+                      expr: '`${results.cb.campaign_name}`'
+                    smartlead_api_key:
+                      type: static
+                      value: ''
+                  path: f/bluewind/brilliant_flow
+              - id: da
+                summary: get smartlead_campaign_id
+                value:
+                  type: rawscript
+                  content: '!inline get_smartlead_campaign_id.inline_script.native.ts'
+                  input_transforms:
+                    smartlead_response:
+                      type: static
+                      value: null
+                  lock: ''
+                  language: nativets
+            expr: >-
+              results.bp.smartleadCampaignId === undefined ||
+              results.bp.smartleadCampaignId === null
+        default:
+          - id: db
+            value:
+              type: rawscript
+              content: '!inline inline_script_0.inline_script.native.ts'
+              input_transforms:
+                campaign:
+                  type: javascript
+                  expr: results.br
+              lock: ''
+              language: nativets
     - id: cq
       summary: Ask campaign info
       value:
@@ -176,6 +229,7 @@ value:
         tag: ''
       continue_on_error: false
       suspend:
+        hide_cancel: false
         required_events: 1
         resume_form:
           schema:
@@ -278,8 +332,8 @@ value:
       value:
         type: forloopflow
         modules:
-          - id: bw
-            summary: enrichment pipeline
+          - id: cs
+            summary: outreach pipeline
             value:
               type: flow
               input_transforms:
@@ -295,7 +349,7 @@ value:
                 twenty_api_key:
                   type: javascript
                   expr: '`${results.bx.twenty_api_key}`'
-              path: f/bluewind/enrichment_pipeline_fork_v2
+              path: f/bluewind/outreach_pipeline
         iterator:
           type: javascript
           expr: results.cg.data.people
