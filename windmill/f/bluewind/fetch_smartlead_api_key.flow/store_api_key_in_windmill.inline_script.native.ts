@@ -1,10 +1,10 @@
 export async function main(all_attempts: Array) {
-  const correct_api_key = all_attempts[all_attempts.length - 1].twenty_api_key;
+  const correct_api_key = all_attempts[all_attempts.length - 1].smartlead_api_key;
   const data = {
-    path: `u/${WM_USERNAME}/twenty`,
+    path: `u/${WM_USERNAME}/smartlead`,
     value: correct_api_key,
     description: '',
-    resource_type: 'twenty',
+    resource_type: 'smartlead',
   };
 
   const url = `${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/resources/create`;
@@ -17,9 +17,4 @@ export async function main(all_attempts: Array) {
     body: JSON.stringify(data),
   });
   return await response.text()
-
-  return {
-    twenty_api_key: correct_api_key
-  }
-
 }
