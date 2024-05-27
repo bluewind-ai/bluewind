@@ -308,8 +308,6 @@ schema:
         custom_taglines:
           - open-source go-to-market assistant
           - free go-to-market assistant
-        recipient_company_name: First Round
-        recipient_first_name: Steven
         sender_company_domain_name: bluewind(.)ai
         sender_company_name: Bluewind
         sender_first_name: Wayne
