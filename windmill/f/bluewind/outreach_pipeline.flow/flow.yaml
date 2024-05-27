@@ -3,6 +3,7 @@ description: ''
 value:
   modules:
     - id: cf
+      summary: validate email
       value:
         type: flow
         input_transforms:
