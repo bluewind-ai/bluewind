@@ -148,8 +148,7 @@ value:
               lock: ''
               language: nativets
               tag: ''
-    - id: cb
-      summary: update contact twenty
+    - id: cc
       value:
         type: flow
         input_transforms:
@@ -162,7 +161,7 @@ value:
           twenty_api_key:
             type: javascript
             expr: '`${flow_input.twenty_api_key}`'
-        path: u/merwanehamadi/update_contact_twenty
+        path: f/bluewind/update_contact_twenty
     - id: ca
       summary: ''
       value:
