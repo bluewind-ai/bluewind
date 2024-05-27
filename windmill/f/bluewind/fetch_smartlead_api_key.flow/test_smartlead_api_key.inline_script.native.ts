@@ -9,9 +9,12 @@ export async function main(smartlead_api_key: string) {
   };
   try {
     const response = await fetch(url, options);
-    return {
-      smartlead_api_key
+    if response.status === 200 {
+      return {
+        smartlead_api_key
+      }
     }
+
   } catch (error) {
     return {};
   }
