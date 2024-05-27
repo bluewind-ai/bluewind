@@ -22,7 +22,7 @@ export async function main() {
           "open-source go-to-market assistant",
           "free go-to-market assistant",
         ],
-        "block_1": "Bluewind is raising a pre-seed. 100k at 5M.",
+        "block_1": "are you investing in AI agents? Bluewind is raising a pre-seed, 100k at 5M",
         "block_2": `About Bluewind:
 - open-source go-to-market assistant to generate leads.
 - our customers were overwhelmed by all the GTM tools and wasted time and money trying all of them.
