@@ -23,6 +23,15 @@ value:
                 value:
                   type: whileloopflow
                   modules:
+                    - id: as
+                      value:
+                        type: rawscript
+                        content: '!inline inline_script_0.inline_script.ts'
+                        input_transforms:
+                          x:
+                            type: static
+                            value: null
+                        language: deno
                     - id: an
                       summary: prompt smartlead api key
                       value:
