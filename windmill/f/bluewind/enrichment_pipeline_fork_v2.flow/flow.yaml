@@ -161,7 +161,65 @@ value:
         tag: ''
     - id: bx
       value:
-        type: identity
+        type: flow
+        input_transforms:
+          block_1:
+            type: static
+            value: Bluewind is raising a pre-seed. 100k at 5M.
+          block_2:
+            type: static
+            value: >-
+              About Bluewind:
+
+              - open-source go-to-market assistant to generate leads.
+
+              - our customers were overwhelmed by all the GTM tools and wasted
+              time and money trying all of them.
+
+              - Instead of creating another tool we created an assistant that
+              connects all the best SaaS together to generate leads for them
+
+              - about me: ex AutoGPT, AI Agent expert (author of paper published
+              at Neurips), and famous Growth Hacker.
+          block_3:
+            type: static
+            value: >-
+              Would you like me to send you the deck? I don't send it directly
+              because of deliverability.
+          block_4:
+            type: static
+            value: ''
+          block_5:
+            type: static
+            value: ''
+          custom_subject_lines:
+            type: static
+            value:
+              - Bluewind pre-seed
+          custom_taglines:
+            type: static
+            value:
+              - open-source go-to-market assistant
+              - free go-to-market assistant
+          recipient_company_name:
+            type: static
+            value: First Round
+          recipient_first_name:
+            type: static
+            value: Steven
+          sender_company_domain_name:
+            type: static
+            value: bluewind(.)ai
+          sender_company_name:
+            type: static
+            value: Bluewind
+          sender_first_name:
+            type: static
+            value: Wayne
+          sender_last_name:
+            type: static
+            value: Hamadi
+        path: f/bluewind/generate_email
 schema:
   type: object
   additionalProperties: false
@@ -174,6 +232,34 @@ schema:
     campaign_info:
       type: object
       description: ''
+      default:
+        block_1: >-
+          are you investing in AI agents? Bluewind is raising a pre-seed, 100k
+          at 5M
+        block_2: >-
+          About Bluewind:/n- open-source go-to-market assistant to generate
+          leads./n- our customers were overwhelmed by all the GTM tools and
+          wasted time and money trying all of them./n- Instead of creating
+          another tool we created an assistant that connects all the best SaaS
+          together to generate leads for them/n- about me: ex AutoGPT, AI Agent
+          expert (author of paper published at Neurips), and famous Growth
+          Hacker.
+        block_3: >-
+          Would you like me to send you the deck? I don't send it directly
+          because of deliverability.
+        block_4: ''
+        block_5: ''
+        custom_subject_lines:
+          - Bluewind pre-seed
+        custom_taglines:
+          - open-source go-to-market assistant
+          - free go-to-market assistant
+        recipient_company_name: First Round
+        recipient_first_name: Steven
+        sender_company_domain_name: bluewind(.)ai
+        sender_company_name: Bluewind
+        sender_first_name: Wayne
+        sender_last_name: Hamadi
       format: ''
       properties: {}
       required: []
