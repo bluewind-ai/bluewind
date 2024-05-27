@@ -315,23 +315,18 @@ value:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/source_leads_from_apollo
-              - id: cp
-                summary: Get contacts just sourced
+              - id: dj
                 value:
-                  type: rawscript
-                  content: '!inline get_contacts_just_sourced.inline_script.native.ts'
+                  type: flow
                   input_transforms:
                     campaign_name:
-                      type: javascript
-                      expr: '`\`${results.bp.campaign_name}\``'
+                      type: static
+                      value: results.bp.name
                     twenty_api_key:
                       type: javascript
-                      expr: >-
-                        `${results.bx.twenty_api_key}${results.ce.campaign_name}`
-                  lock: ''
-                  language: nativets
-                  tag: ''
-            expr: results.cg.data.people.length === 0
+                      expr: '`${results.bx.twenty_api_key}`'
+                  path: f/bluewind/get_contacts_to_outreach
+            expr: results.di.data.people.length === 0
         default:
           - id: cn
             summary: get contacts
@@ -341,7 +336,7 @@ value:
               input_transforms:
                 contacts:
                   type: javascript
-                  expr: results.ch
+                  expr: results.di
               lock: ''
               language: nativets
               tag: ''
