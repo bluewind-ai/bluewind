@@ -195,33 +195,33 @@ value:
                       type: javascript
                       expr: '`${results.cu.smartlead_api_key}`'
                   path: f/bluewind/brilliant_flow
+              - id: df
+                summary: add smartlead campaign id to twenty
+                value:
+                  type: flow
+                  input_transforms:
+                    campaign_id:
+                      type: javascript
+                      expr: results.bp.id
+                    data:
+                      type: javascript
+                      expr: '{"smartlead_campaign_id": `${results.ct.campaign_id}`}'
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${results.bx.twenty_api_key}`'
+                  path: u/merwanehamadi/update_campaign_twenty
               - id: da
                 summary: get smartlead_campaign_id
                 value:
                   type: rawscript
                   content: '!inline get_smartlead_campaign_id.inline_script.native.ts'
                   input_transforms:
-                    smartlead_response:
-                      type: javascript
-                      expr: results.ct.campaign_id
+                    smartlead:
+                      type: static
+                      value: null
                   lock: ''
                   language: nativets
                   tag: ''
-              - id: de
-                summary: add smartlead campaign id to twenty
-                value:
-                  type: flow
-                  input_transforms:
-                    contact_id:
-                      type: static
-                      value: ''
-                    data:
-                      type: static
-                      value: null
-                    twenty_api_key:
-                      type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
-                  path: f/bluewind/update_contact_twenty
             expr: >-
               results.bp.smartleadCampaignId === undefined ||
               results.bp.smartleadCampaignId === null

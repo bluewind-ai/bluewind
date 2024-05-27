@@ -25,6 +25,6 @@ export async function main(twenty_api_key: string) {
     (edge: any) => edge.node.nameSingular === "campaign"
   );
   return {
-    campaign_obect_metadata: filteredObject.node.id
+    campaign_object_metadata: filteredObject.node.id
   }
 }
