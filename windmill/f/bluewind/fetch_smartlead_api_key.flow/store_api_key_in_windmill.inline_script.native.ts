@@ -16,5 +16,7 @@ export async function main(all_attempts: Array) {
     },
     body: JSON.stringify(data),
   });
-  return await response.text()
+  return {
+    smartlead_api_key: correct_api_key
+  }
 }
