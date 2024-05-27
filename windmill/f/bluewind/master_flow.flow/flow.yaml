@@ -207,6 +207,21 @@ value:
                   lock: ''
                   language: nativets
                   tag: ''
+              - id: de
+                summary: add smartlead campaign id to twenty
+                value:
+                  type: flow
+                  input_transforms:
+                    contact_id:
+                      type: static
+                      value: ''
+                    data:
+                      type: static
+                      value: null
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${results.bx.twenty_api_key}`'
+                  path: f/bluewind/update_contact_twenty
             expr: >-
               results.bp.smartleadCampaignId === undefined ||
               results.bp.smartleadCampaignId === null
@@ -270,20 +285,20 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/ask_leadmagic_api_key
-    - id: dc
-      summary: get contacts to reach out to
+    - id: ch
+      summary: are there remaining records in the campaign?
       value:
-        type: rawscript
-        content: '!inline get_contacts_to_reach_out_to.inline_script.native.ts'
+        type: script
         input_transforms:
           campaign_name:
             type: javascript
-            expr: '`\`${results.bp.campaign_name}\``'
+            expr: '`${results.bp.campaign_name}`'
           twenty_api_key:
             type: javascript
-            expr: '`\`${results.bx.twenty_api_key}\``'
-        lock: ''
-        language: nativets
+            expr: '`${results.bx.twenty_api_key}`'
+        hash: 525333359400c09c
+        path: f/bluewind/master_flow/ch
+        tag_override: null
     - id: cg
       summary: ''
       value:
