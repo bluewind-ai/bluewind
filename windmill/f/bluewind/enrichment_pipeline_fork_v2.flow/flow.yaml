@@ -148,10 +148,9 @@ value:
               lock: ''
               language: nativets
               tag: ''
-    - id: bz
-      summary: update contact twenty
+    - id: cb
       value:
-        type: script
+        type: flow
         input_transforms:
           contact_id:
             type: javascript
@@ -162,8 +161,7 @@ value:
           twenty_api_key:
             type: javascript
             expr: '`${flow_input.twenty_api_key}`'
-        path: f/bluewind/update_contact_twenty
-        tag_override: null
+        path: u/merwanehamadi/update_contact_twenty
     - id: ca
       summary: ''
       value:
@@ -336,7 +334,7 @@ schema:
         companyId: null
         companyName: ''
         createdAt: '2024-05-22T21:44:43.628Z'
-        email: koz@bionluk.com
+        email: wayne@bluewind.ai
         favorites: []
         isEmailCatchAll: null
         isEmailValid: null
