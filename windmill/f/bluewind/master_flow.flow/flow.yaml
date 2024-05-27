@@ -194,6 +194,17 @@ value:
                 default: ''
             required: []
         timeout: 1800
+    - id: cs
+      summary: get campaign info
+      value:
+        type: rawscript
+        content: '!inline get_campaign_info.inline_script.native.ts'
+        input_transforms:
+          campaign_info:
+            type: javascript
+            expr: resume.campaign_info
+        lock: ''
+        language: nativets
     - id: bt
       summary: Fetch leadmagic api key
       value:
