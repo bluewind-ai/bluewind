@@ -1,0 +1,55 @@
+summary: update campaign twenty
+description: ''
+value:
+  modules:
+    - id: a
+      summary: update campaign twenty
+      value:
+        type: rawscript
+        content: '!inline update_campaign_twenty.inline_script.native.ts'
+        input_transforms:
+          campaign_id:
+            type: javascript
+            expr: '`${flow_input.campaign_id}`'
+          data:
+            type: javascript
+            expr: flow_input.data
+          twenty_api_key:
+            type: javascript
+            expr: '`${flow_input.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - twenty_api_key
+    - campaign_id
+    - data
+  properties:
+    campaign_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: false
+    data:
+      type: object
+      description: ''
+      format: ''
+      properties:
+        smartleadCampaignId:
+          type: string
+          description: ''
+          default: ''
+      required: []
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
