@@ -3,9 +3,12 @@ description: ''
 value:
   modules:
     - id: a
+      summary: Generate subject lines without company name
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: >-
+          !inline
+          generate_subject_lines_without_company_name.inline_script.native.ts
         input_transforms:
           recipient_company_name:
             type: javascript
