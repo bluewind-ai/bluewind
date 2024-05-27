@@ -195,21 +195,20 @@ value:
                       type: javascript
                       expr: '`${results.cu.smartlead_api_key}`'
                   path: f/bluewind/brilliant_flow
-              - id: df
-                summary: add smartlead campaign id to twenty
+              - id: dh
                 value:
                   type: flow
                   input_transforms:
                     campaign_id:
-                      type: javascript
-                      expr: results.bp.id
+                      type: static
+                      value: results.bp.id
                     data:
                       type: javascript
                       expr: '{"smartlead_campaign_id": `${results.ct.campaign_id}`}'
                     twenty_api_key:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
-                  path: u/merwanehamadi/update_campaign_twenty
+                  path: f/bluewind/update_campaign_twenty
               - id: da
                 summary: get smartlead_campaign_id
                 value:
@@ -285,8 +284,11 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/ask_leadmagic_api_key
+    - id: dg
+      value:
+        type: identity
     - id: ch
-      summary: are there remaining records in the campaign?
+      summary: are there remxsaxsaining records in the campaign?
       value:
         type: script
         input_transforms:
@@ -296,7 +298,6 @@ value:
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
-        hash: 525333359400c09c
         path: f/bluewind/master_flow/ch
         tag_override: null
     - id: cg
