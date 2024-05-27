@@ -123,12 +123,12 @@ value:
                         flow_input.contact.isEmailCatchAll === null
                   default:
                     - id: x
-                      summary: Return empty object
+                      summary: Return existing values
                       value:
                         type: rawscript
-                        content: '!inline return_empty_object_3.inline_script.native.ts'
+                        content: '!inline return_existing_values.inline_script.native.ts'
                         input_transforms:
-                          isEmailCatchall:
+                          isEmailCatchAll:
                             type: javascript
                             expr: flow_input.contact.isEmailCatchAll
                           isEmailValid:
@@ -143,12 +143,13 @@ value:
             summary: Return empty object
             value:
               type: rawscript
-              content: '!inline return_empty_object_4.inline_script.native.ts'
+              content: '!inline return_empty_object_3.inline_script.native.ts'
               input_transforms: {}
               lock: ''
               language: nativets
               tag: ''
     - id: cc
+      summary: update contact twenty
       value:
         type: flow
         input_transforms:
@@ -217,7 +218,7 @@ value:
               - id: by
                 value:
                   type: rawscript
-                  content: '!inline inline_script_5.inline_script.ts'
+                  content: '!inline inline_script_4.inline_script.ts'
                   input_transforms:
                     body:
                       type: javascript
@@ -231,7 +232,7 @@ value:
                     subject_line:
                       type: javascript
                       expr: '`${results.bx.subject_line}`'
-                  lock: '!inline inline_script_5.inline_script.lock'
+                  lock: '!inline inline_script_4.inline_script.lock'
                   language: deno
                   path: hub/8713/windmill/default_arguments_in_approval_steps
                   tag: ''
