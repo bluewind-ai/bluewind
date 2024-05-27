@@ -16,5 +16,6 @@ export async function main(campaign_id: number, smartlead_api_key: string, inbox
   });
   return {
     "campaign_url": `https://app.smartlead.ai/app/email-campaign/${campaign_id}/analytics`
+    campaign_id
   }
 }
