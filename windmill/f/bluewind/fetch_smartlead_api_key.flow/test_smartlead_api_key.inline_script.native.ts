@@ -4,14 +4,14 @@ export async function main(smartlead_api_key: string) {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
-      'Authorization': `Bearer ${twenty_api_key}`,
+      'Authorization': `Bearer ${smartlead_api_key}`,
       'Content-Type': 'application/json'
     }
   };
   try {
     await fetch(url, options);
     return {
-      twenty_api_key
+      smartlead_api_key
     }
   } catch (error) {
     return {};
