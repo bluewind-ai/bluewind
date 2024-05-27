@@ -284,6 +284,17 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/ask_leadmagic_api_key
+    - id: di
+      value:
+        type: flow
+        input_transforms:
+          campaign_name:
+            type: javascript
+            expr: results.bp.name
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        path: f/bluewind/get_contacts_to_outreach
     - id: dg
       value:
         type: identity
