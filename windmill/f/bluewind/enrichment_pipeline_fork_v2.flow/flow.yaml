@@ -159,6 +159,9 @@ value:
         lock: ''
         language: nativets
         tag: ''
+    - id: bx
+      value:
+        type: identity
 schema:
   type: object
   additionalProperties: false
@@ -166,7 +169,14 @@ schema:
     - contact
     - twenty_api_key
     - leadmagic_api_key
+    - campaign_info
   properties:
+    campaign_info:
+      type: object
+      description: ''
+      format: ''
+      properties: {}
+      required: []
     contact:
       type: object
       description: ''
