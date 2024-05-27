@@ -279,7 +279,7 @@ value:
         type: forloopflow
         modules:
           - id: bw
-            summary: push to smartlead
+            summary: enrichment pipeline
             value:
               type: flow
               input_transforms:
