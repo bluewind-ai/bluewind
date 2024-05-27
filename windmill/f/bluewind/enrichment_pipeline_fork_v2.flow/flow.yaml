@@ -118,10 +118,8 @@ value:
                                   language: nativets
                                   tag: ''
                       expr: >-
-                        flow_input.contact.isEmailValid === null ||
-                        flow_input.contact.isEmailValid === ""  &&
-                        flow_input.contact.isEmailCatchAll === null ||
-                        flow_input.contact.isEmailCatchAll === ""
+                        flow_input.contact.isEmailValid === null &&
+                        flow_input.contact.isEmailCatchAll === null
                   default:
                     - id: x
                       summary: Return empty object
