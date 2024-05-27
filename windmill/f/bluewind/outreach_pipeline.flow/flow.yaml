@@ -136,6 +136,7 @@ schema:
     - campaign_info
     - twenty_api_key
     - leadmagic_api_key
+    - smartlead_campaign_id
   properties:
     campaign_info:
       type: object
@@ -258,6 +259,11 @@ schema:
       default: ''
       format: ''
       password: true
+    smartlead_campaign_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
     twenty_api_key:
       type: string
       description: ''
