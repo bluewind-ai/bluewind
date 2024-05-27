@@ -50,6 +50,29 @@ value:
             type: javascript
             expr: '`${flow_input.sender_last_name}`'
         path: f/bluewind/thankful_flow
+    - id: l
+      summary: generate signatures
+      value:
+        type: flow
+        input_transforms:
+          company_name:
+            type: static
+            value: Bluewind
+          custom_taglines:
+            type: static
+            value:
+              - open-source automations to grow your business
+              - free automations to grow your business
+          domain_name:
+            type: static
+            value: bluewind(.)ai
+          sender_first_name:
+            type: static
+            value: Wayne
+          sender_last_name:
+            type: static
+            value: Hamadi
+        path: f/bluewind/thankful_flow
     - id: h
       value:
         type: rawscript
@@ -72,13 +95,13 @@ value:
             expr: '`${flow_input.block_5}`'
           salutation:
             type: javascript
-            expr: '`${results.b.picked_salutation}`'
+            expr: '`${results.j.picked_salutation}`'
           signature:
             type: javascript
-            expr: results.c.picked_signature
+            expr: results.l.picked_signature
           subject_line:
             type: javascript
-            expr: '`${results.a.picked_subject_line}`'
+            expr: '`${results.i.picked_subject_line}`'
         lock: '!inline inline_script_0.inline_script.lock'
         language: bun
         tag: ''
