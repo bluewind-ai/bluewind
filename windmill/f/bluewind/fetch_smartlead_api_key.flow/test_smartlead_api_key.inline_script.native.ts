@@ -13,6 +13,8 @@ export async function main(smartlead_api_key: string) {
       return {
         smartlead_api_key
       }
+    } else {
+      return {}
     }
 
   } catch (error) {
