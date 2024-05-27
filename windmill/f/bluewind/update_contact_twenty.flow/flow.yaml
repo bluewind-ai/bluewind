@@ -1,0 +1,48 @@
+summary: update contact twenty
+description: ''
+value:
+  modules:
+    - id: a
+      summary: update contact twenty
+      value:
+        type: rawscript
+        content: '!inline update_contact_twenty.inline_script.native.ts'
+        input_transforms:
+          contact_id:
+            type: javascript
+            expr: '`${flow_input.contact_id}`'
+          data:
+            type: javascript
+            expr: flow_input.data
+          twenty_api_key:
+            type: javascript
+            expr: '`${flow_input.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - twenty_api_key
+    - contact_id
+    - data
+  properties:
+    contact_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+    data:
+      type: object
+      description: ''
+      format: ''
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
