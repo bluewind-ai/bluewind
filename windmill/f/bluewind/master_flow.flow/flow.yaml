@@ -196,6 +196,7 @@ value:
                       expr: '`${results.cu.smartlead_api_key}`'
                   path: f/bluewind/brilliant_flow
               - id: dh
+                summary: add smartleadcampaign id to twenty
                 value:
                   type: flow
                   input_transforms:
@@ -215,9 +216,9 @@ value:
                   type: rawscript
                   content: '!inline get_smartlead_campaign_id.inline_script.native.ts'
                   input_transforms:
-                    smartlead:
-                      type: static
-                      value: null
+                    smartlead_campaign_id:
+                      type: javascript
+                      expr: results.ct.campaign_id
                   lock: ''
                   language: nativets
                   tag: ''
@@ -316,6 +317,7 @@ value:
                       expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/source_leads_from_apollo
               - id: dj
+                summary: get contacts to outreach
                 value:
                   type: flow
                   input_transforms:
@@ -344,6 +346,17 @@ value:
       value:
         type: forloopflow
         modules:
+          - id: dk
+            summary: Approval
+            value:
+              type: rawscript
+              content: '!inline approval.inline_script.ts'
+              input_transforms: {}
+              lock: '!inline approval.inline_script.lock'
+              language: deno
+            suspend:
+              required_events: 1
+              timeout: 1800
           - id: cs
             summary: outreach pipeline
             value:
@@ -358,6 +371,9 @@ value:
                 leadmagic_api_key:
                   type: javascript
                   expr: '`${results.bt.correct_leadmagic_api_key}`'
+                smartlead_campaign_id:
+                  type: static
+                  value: ''
                 twenty_api_key:
                   type: javascript
                   expr: '`${results.bx.twenty_api_key}`'
