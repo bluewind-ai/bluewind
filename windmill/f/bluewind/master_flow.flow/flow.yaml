@@ -280,102 +280,117 @@ value:
             expr: resume.campaign_info
         lock: ''
         language: nativets
-    - id: bt
-      summary: Fetch leadmagic api key
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/ask_leadmagic_api_key
-    - id: di
-      summary: get contacts to outreach
-      value:
-        type: flow
-        input_transforms:
-          campaign_name:
-            type: javascript
-            expr: results.bp.name
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
-        path: f/bluewind/get_contacts_to_outreach
-    - id: cg
+        tag: ''
+    - id: dk
       summary: ''
       value:
-        type: branchone
+        type: branchall
         branches:
-          - summary: ''
+          - summary: Lead sourcing and email writing
             modules:
-              - id: cc
-                summary: source leads from apollo
+              - id: bt
+                summary: Fetch leadmagic api key
                 value:
                   type: flow
-                  input_transforms:
-                    campaign_name:
-                      type: javascript
-                      expr: '`${results.bp.campaign_name}`'
-                    twenty_api_key:
-                      type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
-                  path: f/bluewind/source_leads_from_apollo
-              - id: dj
+                  input_transforms: {}
+                  path: f/bluewind/ask_leadmagic_api_key
+              - id: di
                 summary: get contacts to outreach
                 value:
                   type: flow
                   input_transforms:
                     campaign_name:
-                      type: static
-                      value: results.bp.name
+                      type: javascript
+                      expr: results.bp.name
                     twenty_api_key:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/get_contacts_to_outreach
-            expr: results.di.data.people.length === 0
-        default:
-          - id: cn
-            summary: get contacts
-            value:
-              type: rawscript
-              content: '!inline get_contacts.inline_script.native.ts'
-              input_transforms:
-                contacts:
-                  type: javascript
-                  expr: results.di
-              lock: ''
-              language: nativets
-              tag: ''
-    - id: bl
-      value:
-        type: forloopflow
-        modules:
-          - id: cs
-            summary: outreach pipeline
-            value:
-              type: flow
-              input_transforms:
-                campaign_info:
-                  type: javascript
-                  expr: results.cr.campaign_info
-                contact:
-                  type: javascript
-                  expr: flow_input.iter.value
-                leadmagic_api_key:
-                  type: javascript
-                  expr: '`${results.bt.correct_leadmagic_api_key}`'
-                smartlead_api_key:
-                  type: javascript
-                  expr: '`${results.cu.smartlead_api_key}`'
-                smartlead_campaign_id:
-                  type: javascript
-                  expr: results.cz.smartlead_campaign_id
-                twenty_api_key:
-                  type: javascript
-                  expr: '`${results.bx.twenty_api_key}`'
-              path: f/bluewind/outreach_pipeline
-        iterator:
-          type: javascript
-          expr: results.cg.data.people
-        parallel: false
-        skip_failures: true
+              - id: cg
+                summary: ''
+                value:
+                  type: branchone
+                  branches:
+                    - summary: ''
+                      modules:
+                        - id: cc
+                          summary: source leads from apollo
+                          value:
+                            type: flow
+                            input_transforms:
+                              campaign_name:
+                                type: javascript
+                                expr: '`${results.bp.campaign_name}`'
+                              twenty_api_key:
+                                type: javascript
+                                expr: '`${results.bx.twenty_api_key}`'
+                            path: f/bluewind/source_leads_from_apollo
+                        - id: dj
+                          summary: get contacts to outreach
+                          value:
+                            type: flow
+                            input_transforms:
+                              campaign_name:
+                                type: static
+                                value: results.bp.name
+                              twenty_api_key:
+                                type: javascript
+                                expr: '`${results.bx.twenty_api_key}`'
+                            path: f/bluewind/get_contacts_to_outreach
+                      expr: results.di.data.people.length === 0
+                  default:
+                    - id: cn
+                      summary: get contacts
+                      value:
+                        type: rawscript
+                        content: '!inline get_contacts.inline_script.native.ts'
+                        input_transforms:
+                          contacts:
+                            type: javascript
+                            expr: results.di
+                        lock: ''
+                        language: nativets
+                        tag: ''
+              - id: bl
+                value:
+                  type: forloopflow
+                  modules:
+                    - id: cs
+                      summary: outreach pipeline
+                      value:
+                        type: flow
+                        input_transforms:
+                          campaign_info:
+                            type: javascript
+                            expr: results.cr.campaign_info
+                          contact:
+                            type: javascript
+                            expr: flow_input.iter.value
+                          leadmagic_api_key:
+                            type: javascript
+                            expr: '`${results.bt.correct_leadmagic_api_key}`'
+                          smartlead_api_key:
+                            type: javascript
+                            expr: '`${results.cu.smartlead_api_key}`'
+                          smartlead_campaign_id:
+                            type: javascript
+                            expr: results.cz.smartlead_campaign_id
+                          twenty_api_key:
+                            type: javascript
+                            expr: '`${results.bx.twenty_api_key}`'
+                        path: f/bluewind/outreach_pipeline
+                  iterator:
+                    type: javascript
+                    expr: results.cg.data.people
+                  parallel: false
+                  skip_failures: true
+            parallel: true
+            skip_failure: false
+          - summary: Email infrastructure
+            modules: []
+            parallel: true
+            skip_failure: false
+        parallel: true
   failure_module:
     id: failure
     value:
