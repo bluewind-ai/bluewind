@@ -37,6 +37,7 @@ value:
           - summary: ''
             modules:
               - id: cd
+                summary: generate email
                 value:
                   type: flow
                   input_transforms:
@@ -75,9 +76,10 @@ value:
                       expr: flow_input.campaign_info.sender_last_name
                   path: f/bluewind/generate_email_fork
               - id: by
+                summary: ask email approval
                 value:
                   type: rawscript
-                  content: '!inline inline_script_0.inline_script.ts'
+                  content: '!inline ask_email_approval.inline_script.ts'
                   input_transforms:
                     body:
                       type: javascript
@@ -91,7 +93,7 @@ value:
                     subject_line:
                       type: javascript
                       expr: '`${results.cd.subject_line}`'
-                  lock: '!inline inline_script_0.inline_script.lock'
+                  lock: '!inline ask_email_approval.inline_script.lock'
                   language: deno
                   path: hub/8713/windmill/default_arguments_in_approval_steps
                   tag: ''
@@ -126,6 +128,68 @@ value:
                           default: ''
                       required: []
                   timeout: 1800
+              - id: cg
+                summary: send email to smartlead
+                value:
+                  type: flow
+                  input_transforms:
+                    body:
+                      type: javascript
+                      expr: '`${results.cd}`'
+                    email:
+                      type: static
+                      value: john@doe.com
+                    linkedin_profile:
+                      type: static
+                      value: 'https://www.linkedin.com/in/spaldrich/'
+                    smartlead_api_key:
+                      type: static
+                      value: ''
+                    smartlead_campaign_id:
+                      type: static
+                      value: ''
+                    subject_line:
+                      type: static
+                      value: First Round <> Bluewind
+                  path: f/bluewind/dirt_cheap_flow
+              - id: cj
+                summary: Ask channel for approval (slack)
+                value:
+                  type: script
+                  input_transforms:
+                    channel:
+                      type: static
+                      value: ''
+                    slack:
+                      type: static
+                      value: null
+                    text:
+                      type: static
+                      value: A flow is requesting an approval to be resumed
+                  path: hub/2439/slack/ask_channel_for_approval
+                  tag_override: null
+                suspend:
+                  required_events: 1
+                  timeout: 1800
+              - id: cl
+                summary: Return resume and cancel endpoints (windmill)
+                value:
+                  type: script
+                  input_transforms:
+                    approver:
+                      type: static
+                      value: ''
+                  path: hub/2440/windmill/return_resume_and_cancel_endpoints
+                  tag_override: null
+                suspend:
+                  required_events: 1
+                  timeout: 1800
+              - id: ck
+                value:
+                  type: identity
+              - id: ci
+                value:
+                  type: identity
             expr: results.cf.isEmailValid
         default: []
 schema:

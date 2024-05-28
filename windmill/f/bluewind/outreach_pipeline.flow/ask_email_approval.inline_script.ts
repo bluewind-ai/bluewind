@@ -14,6 +14,7 @@ export async function main(
   // send the resumeUrls to the recipient or see Prompt section above
 
   return {
+    cancel: resumeUrls["cancel"]
     resume: resumeUrls["resume"],
     default_args: {
       subject_line,
