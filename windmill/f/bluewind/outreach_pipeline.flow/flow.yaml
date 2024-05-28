@@ -152,44 +152,6 @@ value:
                       type: static
                       value: First Round <> Bluewind
                   path: f/bluewind/dirt_cheap_flow
-              - id: cj
-                summary: Ask channel for approval (slack)
-                value:
-                  type: script
-                  input_transforms:
-                    channel:
-                      type: static
-                      value: ''
-                    slack:
-                      type: static
-                      value: null
-                    text:
-                      type: static
-                      value: A flow is requesting an approval to be resumed
-                  path: hub/2439/slack/ask_channel_for_approval
-                  tag_override: null
-                suspend:
-                  required_events: 1
-                  timeout: 1800
-              - id: cl
-                summary: Return resume and cancel endpoints (windmill)
-                value:
-                  type: script
-                  input_transforms:
-                    approver:
-                      type: static
-                      value: ''
-                  path: hub/2440/windmill/return_resume_and_cancel_endpoints
-                  tag_override: null
-                suspend:
-                  required_events: 1
-                  timeout: 1800
-              - id: ck
-                value:
-                  type: identity
-              - id: ci
-                value:
-                  type: identity
             expr: results.cf.isEmailValid
         default: []
 schema:
