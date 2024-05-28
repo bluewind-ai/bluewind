@@ -137,20 +137,20 @@ value:
                       type: javascript
                       expr: '`${results.cd}`'
                     email:
-                      type: static
-                      value: john@doe.com
+                      type: javascript
+                      expr: '`${flow_input.contact.email}`'
                     linkedin_profile:
-                      type: static
-                      value: 'https://www.linkedin.com/in/spaldrich/'
+                      type: javascript
+                      expr: '`${flow_input.contact.linkedinLink.url}`'
                     smartlead_api_key:
-                      type: static
-                      value: ''
+                      type: javascript
+                      expr: '`${flow_input.leadmagic_api_key}`'
                     smartlead_campaign_id:
-                      type: static
-                      value: ''
+                      type: javascript
+                      expr: '`${flow_input.smartlead_campaign_id}`'
                     subject_line:
-                      type: static
-                      value: First Round <> Bluewind
+                      type: javascript
+                      expr: '`${results.by.subject_line}`'
                   path: f/bluewind/dirt_cheap_flow
             expr: results.cf.isEmailValid
         default: []
@@ -198,7 +198,6 @@ schema:
           type: string
     contact:
       type: object
-      additionalProperties: false
       description: ''
       format: ''
       properties:
@@ -279,6 +278,7 @@ schema:
               type: string
             url:
               type: string
+      required: []
     leadmagic_api_key:
       type: string
       description: ''
