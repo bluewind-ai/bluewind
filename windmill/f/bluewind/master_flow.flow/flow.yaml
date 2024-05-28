@@ -361,6 +361,9 @@ value:
                 leadmagic_api_key:
                   type: javascript
                   expr: '`${results.bt.correct_leadmagic_api_key}`'
+                smartlead_api_key:
+                  type: javascript
+                  expr: '`${results.cu.smartlead_api_key}`'
                 smartlead_campaign_id:
                   type: javascript
                   expr: results.cz.smartlead_campaign_id
