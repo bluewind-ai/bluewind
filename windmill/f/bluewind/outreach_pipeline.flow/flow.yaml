@@ -144,7 +144,7 @@ value:
                       expr: '`${flow_input.contact.linkedinLink.url}`'
                     smartlead_api_key:
                       type: javascript
-                      expr: '`${flow_input.leadmagic_api_key}`'
+                      expr: '`${flow_input.smartlead_api_key}`'
                     smartlead_campaign_id:
                       type: javascript
                       expr: '`${flow_input.smartlead_campaign_id}`'
@@ -163,6 +163,7 @@ schema:
     - twenty_api_key
     - leadmagic_api_key
     - smartlead_campaign_id
+    - smartlead_api_key
   properties:
     campaign_info:
       type: object
@@ -280,6 +281,12 @@ schema:
               type: string
       required: []
     leadmagic_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    smartlead_api_key:
       type: string
       description: ''
       default: ''
