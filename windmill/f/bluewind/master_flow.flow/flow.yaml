@@ -227,13 +227,14 @@ value:
               results.bp.smartleadCampaignId === null
         default:
           - id: db
+            summary: get smartlead campaign id
             value:
               type: rawscript
-              content: '!inline inline_script_0.inline_script.native.ts'
+              content: '!inline get_smartlead_campaign_id_1.inline_script.native.ts'
               input_transforms:
                 campaign:
                   type: javascript
-                  expr: results.br
+                  expr: results.bp
               lock: ''
               language: nativets
               tag: ''
@@ -361,8 +362,8 @@ value:
                   type: javascript
                   expr: '`${results.bt.correct_leadmagic_api_key}`'
                 smartlead_campaign_id:
-                  type: static
-                  value: ''
+                  type: javascript
+                  expr: results.cz.smartlead_campaign_id
                 twenty_api_key:
                   type: javascript
                   expr: '`${results.bx.twenty_api_key}`'
