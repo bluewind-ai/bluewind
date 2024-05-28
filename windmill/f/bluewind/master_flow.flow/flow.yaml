@@ -346,17 +346,6 @@ value:
       value:
         type: forloopflow
         modules:
-          - id: dk
-            summary: Approval
-            value:
-              type: rawscript
-              content: '!inline approval.inline_script.ts'
-              input_transforms: {}
-              lock: '!inline approval.inline_script.lock'
-              language: deno
-            suspend:
-              required_events: 1
-              timeout: 1800
           - id: cs
             summary: outreach pipeline
             value:
