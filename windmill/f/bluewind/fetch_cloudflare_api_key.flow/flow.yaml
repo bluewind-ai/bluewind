@@ -65,7 +65,7 @@ value:
                         tag: ''
                       continue_on_error: false
                       stop_after_if:
-                        expr: result.smartlead_api_key !== undefined
+                        expr: result.cloudflare_api_key !== undefined
                         skip_if_stopped: false
                   skip_failures: false
               - id: aq
