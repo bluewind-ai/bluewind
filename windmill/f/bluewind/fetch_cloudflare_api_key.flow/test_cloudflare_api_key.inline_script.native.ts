@@ -9,7 +9,6 @@ export async function main(cloudflare_api_key: string) {
 
   try {
     const response = await fetch(url, options);
-    return await response.json()
     if (response.status === 200) {
       return {
         cloudflare_api_key
