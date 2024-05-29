@@ -10,7 +10,7 @@ export async function main() {
     resume: resumeUrls["resume"],
     default_args: {
       instructions:
-        "You don't have any email accounts. Let's create 2. First, create a cloudflare account, it's free: https://dash.cloudflare.com/sign-up",
+        "You don't have any email accounts. Let's create 2 email accounts to start with. First, create a cloudflare account, it's free: https://dash.cloudflare.com/sign-up",
     },
   };
 }

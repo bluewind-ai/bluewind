@@ -1,4 +1,4 @@
-summary: check_cloudflare_domains
+summary: setup_email_accounts
 description: ''
 value:
   modules:
@@ -39,6 +39,7 @@ value:
                     !inline
                     ask_user_to_create__cloudflare_account.inline_script.lock
                   language: deno
+                  tag: ''
                 continue_on_error: false
                 suspend:
                   required_events: 1
@@ -90,6 +91,18 @@ value:
                                 default: ''
                             required: []
                         timeout: 1800
+                    - id: y
+                      summary: get primary domain name
+                      value:
+                        type: rawscript
+                        content: >-
+                          !inline
+                          get_primary_domain_name.inline_script.native.ts
+                        input_transforms:
+                          primary_domain_name:
+                            type: javascript
+                            expr: resume.domain_name_of_your_company
+                        language: nativets
                     - id: j
                       summary: suggest secondary domain names
                       value:
@@ -100,7 +113,7 @@ value:
                         input_transforms:
                           primary_domain_name:
                             type: javascript
-                            expr: resume.domain_name_of_your_company
+                            expr: results.y.primary_domain_name
                         language: nativets
                         tag: ''
                     - id: h
@@ -194,6 +207,9 @@ value:
                           domain_name_just_created:
                             type: javascript
                             expr: results.n.domain_name_to_buy
+                          primary_domain_name:
+                            type: javascript
+                            expr: results.y.primary_domain_name
                         language: nativets
                         tag: ''
                       continue_on_error: false
@@ -212,26 +228,128 @@ value:
                       expr: results.q
                   lock: ''
                   language: nativets
+                  tag: ''
+              - id: t
+                summary: overwrite DMARC
+                value:
+                  type: rawscript
+                  content: '!inline overwrite_dmarc.inline_script.native.ts'
+                  input_transforms:
+                    cloudflare_api_key:
+                      type: javascript
+                      expr: '`${results.k.cloudflare_api_key}`'
+                    domain_id:
+                      type: javascript
+                      expr: results.s.domain_id
+                    domain_name_just_created:
+                      type: javascript
+                      expr: results.s.domain_name_just_created
+                  lock: ''
+                  language: nativets
+              - id: v
+                summary: overwrite cname
+                value:
+                  type: rawscript
+                  content: '!inline overwrite_cname.inline_script.native.ts'
+                  input_transforms:
+                    cloudflare_api_key:
+                      type: javascript
+                      expr: '`${results.k.cloudflare_api_key}`'
+                    domain_id:
+                      type: javascript
+                      expr: results.s.domain_id
+                    domain_name_just_created:
+                      type: javascript
+                      expr: results.s.domain_name_just_created
+                  lock: ''
+                  language: nativets
+              - id: z
+                summary: Create an A record
+                value:
+                  type: rawscript
+                  content: '!inline create_an_a_record.inline_script.native.ts'
+                  input_transforms:
+                    cloudflare_api_key:
+                      type: javascript
+                      expr: '`${results.k.cloudflare_api_key}`'
+                    domain_id:
+                      type: javascript
+                      expr: results.s.domain_id
+                    domain_name_just_created:
+                      type: javascript
+                      expr: results.s.domain_name_just_created
+                  lock: ''
+                  language: nativets
+              - id: u
+                summary: overwrite spf
+                value:
+                  type: rawscript
+                  content: '!inline overwrite_spf.inline_script.native.ts'
+                  input_transforms:
+                    cloudflare_api_key:
+                      type: javascript
+                      expr: '`${results.k.cloudflare_api_key}`'
+                    domain_id:
+                      type: javascript
+                      expr: results.s.domain_id
+                    domain_name_just_created:
+                      type: javascript
+                      expr: results.s.domain_name_just_created
+                  lock: ''
+                  language: nativets
+              - id: x
+                summary: mx records
+                value:
+                  type: rawscript
+                  content: '!inline mx_records.inline_script.native.ts'
+                  input_transforms:
+                    cloudflare_api_key:
+                      type: javascript
+                      expr: '`${results.k.cloudflare_api_key}`'
+                    domain_id:
+                      type: javascript
+                      expr: results.s.domain_id
+                    domain_name_just_created:
+                      type: javascript
+                      expr: results.s.domain_name_just_created
+                  lock: ''
+                  language: nativets
+              - id: w
+                summary: setup redirect
+                value:
+                  type: rawscript
+                  content: '!inline setup_redirect.inline_script.native.ts'
+                  input_transforms:
+                    cloudflare_api_key:
+                      type: javascript
+                      expr: '`${results.k.cloudflare_api_key}`'
+                    domain_id:
+                      type: javascript
+                      expr: results.s.domain_id
+                    domain_name_just_created:
+                      type: javascript
+                      expr: results.s.domain_name_just_created
+                    primary_domain_name:
+                      type: javascript
+                      expr: results.s.primary_domain_name
+                  lock: ''
+                  language: nativets
+              - id: aa
+                summary: Approval
+                value:
+                  type: rawscript
+                  content: '!inline approval.inline_script.ts'
+                  input_transforms:
+                    domain_name_to_buy:
+                      type: static
+                      value: null
+                  lock: '!inline approval.inline_script.lock'
+                  language: deno
+                suspend:
+                  required_events: 1
+                  timeout: 1800
             expr: results.f.length === 0
         default: []
-    - id: d
-      summary: fetch cloudflare api key
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/fetch_cloudflare_api_key
-    - id: c
-      summary: fetch all accounts
-      value:
-        type: rawscript
-        content: '!inline fetch_all_accounts.inline_script.native.ts'
-        input_transforms:
-          cloudflare_api_key:
-            type: javascript
-            expr: '`${results.d.cloudflare_api_key}`'
-        lock: ''
-        language: nativets
-        tag: ''
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
