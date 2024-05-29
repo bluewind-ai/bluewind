@@ -1,10 +1,10 @@
 export async function main(all_attempts: Array) {
-  const correct_api_key = all_attempts[all_attempts.length - 1].smartlead_api_key;
+  const correct_api_key = all_attempts[all_attempts.length - 1].cloudflare_api_key;
   const data = {
-    path: `u/${WM_USERNAME}/smartlead`,
+    path: `u/${WM_USERNAME}/cloudflare`,
     value: correct_api_key,
     description: '',
-    resource_type: 'smartlead',
+    resource_type: 'cloudflare',
   };
 
   const url = `${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/resources/create`;
@@ -17,6 +17,6 @@ export async function main(all_attempts: Array) {
     body: JSON.stringify(data),
   });
   return {
-    smartlead_api_key: correct_api_key
+    cloudflare_api_key: correct_api_key
   }
 }

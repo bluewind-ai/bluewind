@@ -3,10 +3,10 @@ description: ''
 value:
   modules:
     - id: al
-      summary: Fetch smartlead api key if exists
+      summary: Fetch cloudflare api key if exists
       value:
         type: rawscript
-        content: '!inline fetch_smartlead_api_key_if_exists.inline_script.native.ts'
+        content: '!inline fetch_cloudflare_api_key_if_exists.inline_script.native.ts'
         input_transforms: {}
         lock: ''
         language: nativets

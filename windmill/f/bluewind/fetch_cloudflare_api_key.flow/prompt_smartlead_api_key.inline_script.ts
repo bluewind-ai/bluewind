@@ -6,7 +6,7 @@ export async function main() {
   return {
     resume: resumeUrls["resume"],
     default_args: {
-      smartlead_api_key: "YOUR_SMARTLEAD_API_KEY",
+      cloudflare_api_key: "YOUR_CLOUDFLARE_API_KEY",
     },
   };
 }

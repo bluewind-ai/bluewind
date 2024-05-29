@@ -2,7 +2,7 @@
 
 export async function main(correct_api_key: string) {
   return {
-    smartlead_api_key: correct_api_key
+    cloudflare_api_key: correct_api_key
   }
 
 }
