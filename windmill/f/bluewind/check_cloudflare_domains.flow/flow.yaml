@@ -19,6 +19,7 @@ value:
             expr: '`${results.e.smartlead_api_key}`'
         lock: ''
         language: nativets
+        tag: ''
     - id: g
       summary: ''
       value:
@@ -26,55 +27,18 @@ value:
         branches:
           - summary: If no email account in smartlead
             modules:
-              - id: i
-                summary: Ask domain name of company
-                value:
-                  type: rawscript
-                  content: '!inline ask_domain_name_of_company.inline_script.ts'
-                  input_transforms: {}
-                  lock: '!inline ask_domain_name_of_company.inline_script.lock'
-                  language: deno
-                continue_on_error: false
-                suspend:
-                  required_events: 1
-                  resume_form:
-                    schema:
-                      $schema: 'https://json-schema.org/draft/2020-12/schema'
-                      type: object
-                      order:
-                        - domain_name_of_your_company
-                      properties:
-                        domain_name_of_your_company:
-                          type: string
-                          description: ''
-                          default: ''
-                      required: []
-                  timeout: 1800
-              - id: j
-                summary: suggest secondary domain names
+              - id: l
+                summary: Ask user to create  cloudflare account
                 value:
                   type: rawscript
                   content: >-
                     !inline
-                    suggest_secondary_domain_names.inline_script.native.ts
-                  input_transforms:
-                    primary_domain_name:
-                      type: static
-                      value: resume.domain_name_of_your_company
-                  lock: ''
-                  language: nativets
-              - id: h
-                summary: ask to pick a secondary domain name
-                value:
-                  type: rawscript
-                  content: '!inline ask_to_pick_a_secondary_domain_name.inline_script.ts'
-                  input_transforms:
-                    campaigns:
-                      type: javascript
-                      expr: results.j
+                    ask_user_to_create__cloudflare_account.inline_script.ts
+                  input_transforms: {}
+                  lock: >-
+                    !inline
+                    ask_user_to_create__cloudflare_account.inline_script.lock
                   language: deno
-                  path: hub/8713/windmill/default_arguments_in_approval_steps
-                  tag: ''
                 continue_on_error: false
                 suspend:
                   required_events: 1
@@ -91,6 +55,149 @@ value:
                           default: ''
                       required: []
                   timeout: 1800
+              - id: k
+                summary: fetch cloudflare api key
+                value:
+                  type: flow
+                  input_transforms: {}
+                  path: f/bluewind/fetch_cloudflare_api_key
+              - id: q
+                value:
+                  type: whileloopflow
+                  modules:
+                    - id: i
+                      summary: Ask domain name of company
+                      value:
+                        type: rawscript
+                        content: '!inline ask_domain_name_of_company.inline_script.ts'
+                        input_transforms: {}
+                        lock: '!inline ask_domain_name_of_company.inline_script.lock'
+                        language: deno
+                        tag: ''
+                      continue_on_error: false
+                      suspend:
+                        required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - domain_name_of_your_company
+                            properties:
+                              domain_name_of_your_company:
+                                type: string
+                                description: ''
+                                default: ''
+                            required: []
+                        timeout: 1800
+                    - id: j
+                      summary: suggest secondary domain names
+                      value:
+                        type: rawscript
+                        content: >-
+                          !inline
+                          suggest_secondary_domain_names.inline_script.native.ts
+                        input_transforms:
+                          primary_domain_name:
+                            type: javascript
+                            expr: resume.domain_name_of_your_company
+                        language: nativets
+                        tag: ''
+                    - id: h
+                      summary: ask to pick a secondary domain name
+                      value:
+                        type: rawscript
+                        content: >-
+                          !inline
+                          ask_to_pick_a_secondary_domain_name.inline_script.ts
+                        input_transforms:
+                          suggested_secondary_domain_names:
+                            type: javascript
+                            expr: results.j.suggested_secondary_domain_names
+                        language: deno
+                        path: hub/8713/windmill/default_arguments_in_approval_steps
+                        tag: ''
+                      continue_on_error: false
+                      suspend:
+                        hide_cancel: false
+                        required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - pick_a_secondary_domain_name
+                              - custom_secondary_domain_name
+                            properties:
+                              custom_secondary_domain_name:
+                                type: string
+                                description: ''
+                                default: ''
+                              pick_a_secondary_domain_name:
+                                type: string
+                                description: ''
+                                default: ''
+                            required: []
+                        timeout: 1800
+                    - id: n
+                      summary: get domain name to buy
+                      value:
+                        type: rawscript
+                        content: '!inline get_domain_name_to_buy.inline_script.native.ts'
+                        input_transforms:
+                          custom_domain_name_to_buy:
+                            type: static
+                            value: resume.custom_secondary_domain_name
+                          domain_name_to_buy:
+                            type: javascript
+                            expr: resume.pick_a_secondary_domain_name
+                        language: nativets
+                    - id: m
+                      summary: Ask to buy domain name
+                      value:
+                        type: rawscript
+                        content: '!inline ask_to_buy_domain_name.inline_script.ts'
+                        input_transforms:
+                          domain_name_to_buy:
+                            type: javascript
+                            expr: results.n.domain_name_to_buy
+                        language: deno
+                      continue_on_error: false
+                      suspend:
+                        required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - instructions
+                            properties:
+                              instructions:
+                                type: string
+                                description: ''
+                                default: ''
+                            required: []
+                        timeout: 1800
+                    - id: r
+                      summary: find domain name
+                      value:
+                        type: rawscript
+                        content: '!inline find_domain_name.inline_script.native.ts'
+                        input_transforms:
+                          cloudflare_api_key:
+                            type: javascript
+                            expr: '`${results.k.cloudflare_api_key}`'
+                          domain_name_just_created:
+                            type: javascript
+                            expr: results.n.domain_name_to_buy
+                        language: nativets
+                      continue_on_error: false
+                      stop_after_if:
+                        expr: >-
+                          result.result !== undefined && result.result.length
+                          !== 0
+                        skip_if_stopped: false
+                  skip_failures: false
             expr: results.f.length === 0
         default: []
     - id: d

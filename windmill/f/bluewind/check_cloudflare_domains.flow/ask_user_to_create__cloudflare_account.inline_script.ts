@@ -1,8 +1,6 @@
-//this assumes the Form tab has a string field named "foo" and a checkbox named "bar"
-
 import * as wmill from "npm:windmill-client@^1.158.2";
 
-export async function main(suggested_secondary_domain_names: Array) {
+export async function main() {
   // if no argument is passed, if user is logged in, it will use the user's username
   const resumeUrls = await wmill.getResumeUrls("approver1");
 
@@ -11,10 +9,8 @@ export async function main(suggested_secondary_domain_names: Array) {
   return {
     resume: resumeUrls["resume"],
     default_args: {
-      custom_secondary_domain_name: "",
-    },
-    enums: {
-      pick_a_secondary_domain_name: suggested_secondary_domain_names,
+      instructions:
+        "You don't have any email accounts. Let's create 2. First, create a cloudflare account, it's free: https://dash.cloudflare.com/sign-up",
     },
   };
 }
