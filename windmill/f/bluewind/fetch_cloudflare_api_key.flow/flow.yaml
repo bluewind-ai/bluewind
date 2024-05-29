@@ -40,9 +40,9 @@ value:
                             $schema: 'https://json-schema.org/draft/2020-12/schema'
                             type: object
                             order:
-                              - smartlead_api_key
+                              - cloudflare_api_key
                             properties:
-                              smartlead_api_key:
+                              cloudflare_api_key:
                                 type: string
                                 description: ''
                                 default: ''

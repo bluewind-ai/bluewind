@@ -1,5 +1,5 @@
 export async function main(smartlead_api_key: string) {
-  const url = `https://server.smartlead.ai/api/v1/email-accounts?api_key=${smartlead_api_key}&limit=1`;
+  const url = `https://api.cloudflare.com/client/v4/user`;
   const options = {
     method: 'GET',
     headers: {
