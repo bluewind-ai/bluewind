@@ -57,9 +57,9 @@ value:
                           !inline
                           test_cloudflare_api_key.inline_script.native.ts
                         input_transforms:
-                          smartlead_api_key:
+                          cloudflare_api_key:
                             type: javascript
-                            expr: '`${resume.smartlead_api_key}`'
+                            expr: resume.cloudflare_api_key
                         concurrency_time_window_s: 0
                         language: nativets
                         tag: ''
