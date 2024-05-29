@@ -10,7 +10,7 @@ export async function main(domain_name_to_buy: string) {
     resume: resumeUrls["resume"],
     default_args: {
       instructions:
-        `Buy the domain name ${domain_name_to_buy}: https://www.loom.com/share/78ec0b2b16ec4b97a67f09986340a4dc`,
+        `Buy the domain name ${domain_name_to_buy} by following these instructions: https://www.loom.com/share/78ec0b2b16ec4b97a67f09986340a4dc`,
     },
   };
 }

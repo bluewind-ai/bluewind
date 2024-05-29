@@ -146,12 +146,13 @@ value:
                         content: '!inline get_domain_name_to_buy.inline_script.native.ts'
                         input_transforms:
                           custom_domain_name_to_buy:
-                            type: static
-                            value: resume.custom_secondary_domain_name
+                            type: javascript
+                            expr: resume.custom_secondary_domain_name
                           domain_name_to_buy:
                             type: javascript
                             expr: resume.pick_a_secondary_domain_name
                         language: nativets
+                        tag: ''
                     - id: m
                       summary: Ask to buy domain name
                       value:
@@ -162,6 +163,7 @@ value:
                             type: javascript
                             expr: results.n.domain_name_to_buy
                         language: deno
+                        tag: ''
                       continue_on_error: false
                       suspend:
                         required_events: 1
@@ -179,10 +181,12 @@ value:
                             required: []
                         timeout: 1800
                     - id: r
-                      summary: find domain name
+                      summary: check if domain name is bought
                       value:
                         type: rawscript
-                        content: '!inline find_domain_name.inline_script.native.ts'
+                        content: >-
+                          !inline
+                          check_if_domain_name_is_bought.inline_script.native.ts
                         input_transforms:
                           cloudflare_api_key:
                             type: javascript
@@ -191,13 +195,23 @@ value:
                             type: javascript
                             expr: results.n.domain_name_to_buy
                         language: nativets
+                        tag: ''
                       continue_on_error: false
                       stop_after_if:
-                        expr: >-
-                          result.result !== undefined && result.result.length
-                          !== 0
+                        expr: result.domain_name_just_created !== undefined
                         skip_if_stopped: false
                   skip_failures: false
+              - id: s
+                summary: Get domain name info
+                value:
+                  type: rawscript
+                  content: '!inline get_domain_name_info.inline_script.native.ts'
+                  input_transforms:
+                    all_attempts:
+                      type: javascript
+                      expr: results.q
+                  lock: ''
+                  language: nativets
             expr: results.f.length === 0
         default: []
     - id: d
