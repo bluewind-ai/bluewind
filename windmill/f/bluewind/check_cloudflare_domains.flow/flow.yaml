@@ -2,6 +2,97 @@ summary: check_cloudflare_domains
 description: ''
 value:
   modules:
+    - id: e
+      summary: fetch smartlead api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_smartlead_api_key
+    - id: f
+      summary: get all email accounts
+      value:
+        type: rawscript
+        content: '!inline get_all_email_accounts.inline_script.native.ts'
+        input_transforms:
+          smartlead_api_key:
+            type: javascript
+            expr: '`${results.e.smartlead_api_key}`'
+        lock: ''
+        language: nativets
+    - id: g
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: If no email account in smartlead
+            modules:
+              - id: i
+                summary: Ask domain name of company
+                value:
+                  type: rawscript
+                  content: '!inline ask_domain_name_of_company.inline_script.ts'
+                  input_transforms: {}
+                  lock: '!inline ask_domain_name_of_company.inline_script.lock'
+                  language: deno
+                continue_on_error: false
+                suspend:
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - domain_name_of_your_company
+                      properties:
+                        domain_name_of_your_company:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: j
+                summary: suggest secondary domain names
+                value:
+                  type: rawscript
+                  content: >-
+                    !inline
+                    suggest_secondary_domain_names.inline_script.native.ts
+                  input_transforms:
+                    primary_domain_name:
+                      type: static
+                      value: resume.domain_name_of_your_company
+                  lock: ''
+                  language: nativets
+              - id: h
+                summary: ask to pick a secondary domain name
+                value:
+                  type: rawscript
+                  content: '!inline ask_to_pick_a_secondary_domain_name.inline_script.ts'
+                  input_transforms:
+                    campaigns:
+                      type: javascript
+                      expr: results.j
+                  language: deno
+                  path: hub/8713/windmill/default_arguments_in_approval_steps
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - instructions
+                      properties:
+                        instructions:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+            expr: results.f.length === 0
+        default: []
     - id: d
       summary: fetch cloudflare api key
       value:
