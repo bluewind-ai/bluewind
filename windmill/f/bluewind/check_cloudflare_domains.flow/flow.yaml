@@ -1,0 +1,29 @@
+summary: check_cloudflare_domains
+description: ''
+value:
+  modules:
+    - id: d
+      summary: fetch cloudflare api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_cloudflare_api_key
+    - id: c
+      summary: fetch all accounts
+      value:
+        type: rawscript
+        content: '!inline fetch_all_accounts.inline_script.native.ts'
+        input_transforms:
+          cloudflare_api_key:
+            type: javascript
+            expr: '`${results.d.cloudflare_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  properties: {}
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
