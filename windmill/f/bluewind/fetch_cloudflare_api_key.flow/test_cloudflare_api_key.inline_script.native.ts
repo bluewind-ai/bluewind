@@ -1,11 +1,9 @@
 export async function main(cloudflare_api_key: string) {
-  const url = `https://api.cloudflare.com/client/v4/user`;
+  const url = `https://api.cloudflare.com/client/v4/accounts`;
   const options = {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${cloudflare_api_key}`
+      'Authorization': `Bearer ${cloudflare_api_key}`,
     }
   };
 
