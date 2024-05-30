@@ -9,8 +9,7 @@ export async function main(
   return {
     resume: resumeUrls["resume"],
     default_args: {
-      instructions:
-        `Congrats! you just created the 2 email accounts ${email_just_created_1} and ${email_just_created_2}.`,
+      instructions: `Congrats! you just created the an email account.`,
     },
   };
 }
