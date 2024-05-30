@@ -70,7 +70,7 @@ value:
               type: rawscript
               content: '!inline approval.inline_script.ts'
               input_transforms:
-                approver:
+                domain_just_created:
                   type: static
                   value: null
               language: deno
