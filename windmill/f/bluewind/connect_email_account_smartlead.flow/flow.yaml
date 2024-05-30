@@ -54,7 +54,7 @@ value:
               input_transforms:
                 email_just_created:
                   type: javascript
-                  expr: resume.email_account_just_created
+                  expr: resume.email_account
                 smartlead_api_key:
                   type: javascript
                   expr: results.e.smartlead_api_key
