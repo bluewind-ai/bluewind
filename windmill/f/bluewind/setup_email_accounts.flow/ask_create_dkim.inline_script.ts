@@ -10,7 +10,7 @@ export async function main() {
     resume: resumeUrls["resume"],
     default_args: {
       instructions:
-        `Did you create the DNS record on cloudflare and start authentication for the DKIM? If yes I will check it now.`,
+        `Follow all the instructions to create the DKIM: https://www.youtube.com/watch?v=fZyPDCtjx8c`,
     },
   };
 }

@@ -263,6 +263,7 @@ value:
                       expr: results.s.domain_name_just_created
                   lock: ''
                   language: nativets
+                  tag: ''
               - id: z
                 summary: Create an A record
                 value:
@@ -280,6 +281,7 @@ value:
                       expr: results.s.domain_name_just_created
                   lock: ''
                   language: nativets
+                  tag: ''
               - id: u
                 summary: overwrite spf
                 value:
@@ -353,6 +355,7 @@ value:
                   tag: ''
                 continue_on_error: false
                 suspend:
+                  hide_cancel: false
                   required_events: 1
                   resume_form:
                     schema:
@@ -368,6 +371,31 @@ value:
                       required: []
                   timeout: 1800
               - id: ab
+                summary: Ask create DKIM
+                value:
+                  type: rawscript
+                  content: '!inline ask_create_dkim.inline_script.ts'
+                  input_transforms: {}
+                  lock: '!inline ask_create_dkim.inline_script.lock'
+                  language: deno
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - instructions
+                      properties:
+                        instructions:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: ac
                 summary: Approval
                 value:
                   type: rawscript
@@ -375,8 +403,21 @@ value:
                   input_transforms: {}
                   lock: '!inline approval.inline_script.lock'
                   language: deno
+                continue_on_error: false
                 suspend:
                   required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - instructions
+                      properties:
+                        instructions:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
                   timeout: 1800
             expr: results.f.length === 0
         default: []

@@ -8,7 +8,8 @@ export async function main(cloudflare_api_key: string, domain_name_just_created:
     body: JSON.stringify({
       "content": `cname.random.com`,
       "name": "www",
-      "type": "CNAME"
+      "type": "CNAME",
+      "proxied": true
     })
   };
   const response = await fetch(url, options);

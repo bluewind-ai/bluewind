@@ -9,7 +9,6 @@ export async function main(cloudflare_api_key: string, domain_name_just_created:
       "content": `192.0.2.1`,
       "name": domain_name_just_created,
       "type": "A",
-      "proxied": true,
     })
   };
   const response = await fetch(url, options);
