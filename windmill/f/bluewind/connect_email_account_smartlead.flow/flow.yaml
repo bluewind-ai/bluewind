@@ -20,7 +20,7 @@ value:
               input_transforms:
                 domain_just_created:
                   type: javascript
-                  expr: results.s.domain_name_just_created
+                  expr: flow_input.domain_name_just_created
               language: deno
               tag: ''
             continue_on_error: false
