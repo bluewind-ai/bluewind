@@ -69,13 +69,23 @@ value:
             value:
               type: rawscript
               content: '!inline approval.inline_script.ts'
-              input_transforms:
-                domain_just_created:
-                  type: static
-                  value: null
+              input_transforms: {}
               language: deno
+            continue_on_error: false
             suspend:
               required_events: 1
+              resume_form:
+                schema:
+                  $schema: 'https://json-schema.org/draft/2020-12/schema'
+                  type: object
+                  order:
+                    - instructions
+                  properties:
+                    instructions:
+                      type: string
+                      description: ''
+                      default: ''
+                  required: []
               timeout: 1800
         skip_failures: false
     - id: ao
