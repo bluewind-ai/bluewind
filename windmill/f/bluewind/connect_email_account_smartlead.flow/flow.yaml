@@ -71,6 +71,7 @@ value:
               content: '!inline approval.inline_script.ts'
               input_transforms: {}
               language: deno
+              tag: ''
             continue_on_error: false
             suspend:
               required_events: 1
@@ -105,8 +106,13 @@ value:
       value:
         type: rawscript
         content: '!inline inform_user_of_warmup.inline_script.ts'
-        input_transforms: {}
+        input_transforms:
+          email_account_just_created:
+            type: javascript
+            expr: results.ao.email_just_created
+        lock: '!inline inform_user_of_warmup.inline_script.lock'
         language: deno
+        tag: ''
       continue_on_error: false
       suspend:
         hide_cancel: false
@@ -125,16 +131,34 @@ value:
             required: []
         timeout: 1800
     - id: ar
+      summary: configure warmup
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: '!inline configure_warmup.inline_script.native.ts'
         input_transforms:
           inbox_id:
-            type: static
-            value: null
+            type: javascript
+            expr: results.ao.inbox_id
           smartlead_api_key:
-            type: static
-            value: ''
+            type: javascript
+            expr: results.e.smartlead_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: as
+      summary: configure number of real emails sent per day
+      value:
+        type: rawscript
+        content: >-
+          !inline
+          configure_number_of_real_emails_sent_per_day.inline_script.native.ts
+        input_transforms:
+          inbox_id:
+            type: javascript
+            expr: results.ao.inbox_id
+          smartlead_api_key:
+            type: javascript
+            expr: '`${results.e.smartlead_api_key}`'
         lock: ''
         language: nativets
 schema:

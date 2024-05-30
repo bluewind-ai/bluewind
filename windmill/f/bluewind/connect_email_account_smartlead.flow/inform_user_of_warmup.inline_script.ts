@@ -8,7 +8,7 @@ export async function main(email_account_just_created: string) {
     resume: resumeUrls["resume"],
     default_args: {
       instructions:
-        `Congrats the email account ${} is now connected to smartlead. We will now warmup this inbox. This process involves sending emails to a warm up network before sending it to your prospects, in order to increase your deliverability.`,
+        `Congrats the email account ${email_account_just_created} is now connected to smartlead. We will now warmup this inbox. This process involves sending emails to a warm up network before sending it to your prospects, in order to increase your deliverability.`,
     },
   };
 }

@@ -7,7 +7,8 @@ export async function main(smartlead_api_key: string, email_just_created: string
   const data = await response.json()
   if (data.length > 0) {
     return {
-      email_just_created: email_just_created
+      email_just_created: email_just_created,
+      inbox_id: data[0].id
     }
   } else {
     return {}
