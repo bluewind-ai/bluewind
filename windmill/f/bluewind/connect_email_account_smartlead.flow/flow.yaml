@@ -99,6 +99,44 @@ value:
             expr: results.am
         lock: ''
         language: nativets
+        tag: ''
+    - id: aq
+      summary: Inform user of warmup
+      value:
+        type: rawscript
+        content: '!inline inform_user_of_warmup.inline_script.ts'
+        input_transforms: {}
+        language: deno
+      continue_on_error: false
+      suspend:
+        hide_cancel: false
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - instructions
+            properties:
+              instructions:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
+    - id: ar
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          inbox_id:
+            type: static
+            value: null
+          smartlead_api_key:
+            type: static
+            value: ''
+        lock: ''
+        language: nativets
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
