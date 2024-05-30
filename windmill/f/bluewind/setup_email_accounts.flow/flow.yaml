@@ -530,6 +530,7 @@ value:
                     !inline
                     ask_connect_email_account_to_smartlead.inline_script.lock
                   language: deno
+                  tag: ''
                 continue_on_error: false
                 suspend:
                   required_events: 1
@@ -546,89 +547,89 @@ value:
                           default: ''
                       required: []
                   timeout: 1800
-              - id: am
+              - id: aq
+                summary: connect email account number 1 to smartlead
                 value:
-                  type: whileloopflow
-                  modules:
-                    - id: an
-                      summary: Ask email account created
-                      value:
-                        type: rawscript
-                        content: '!inline ask_email_account_created.inline_script.ts'
-                        input_transforms:
-                          domain_just_created:
-                            type: javascript
-                            expr: results.s.domain_name_just_created
-                        language: deno
-                        tag: ''
-                      continue_on_error: false
-                      suspend:
-                        required_events: 1
-                        resume_form:
-                          schema:
-                            $schema: 'https://json-schema.org/draft/2020-12/schema'
-                            type: object
-                            order:
-                              - instructions
-                              - email_account
-                            properties:
-                              email_account:
-                                type: string
-                                description: ''
-                                default: ''
-                              instructions:
-                                type: string
-                                description: ''
-                                default: ''
-                            required: []
-                        timeout: 1800
-                    - id: al
-                      summary: attempt to find email account on smartlead
-                      value:
-                        type: rawscript
-                        content: >-
-                          !inline
-                          attempt_to_find_email_account_on_smartlead.inline_script.native.ts
-                        input_transforms:
-                          email_just_created:
-                            type: javascript
-                            expr: resume.email_account_just_created
-                          smartlead_api_key:
-                            type: javascript
-                            expr: results.e.smartlead_api_key
-                        language: nativets
-                        tag: ''
-                      continue_on_error: false
-                      stop_after_if:
-                        expr: result.email_just_created !== undefined
-                        skip_if_stopped: false
-                  skip_failures: false
-              - id: ao
-                summary: Get email account just created
+                  type: flow
+                  input_transforms:
+                    domain_name_just_created:
+                      type: javascript
+                      expr: results.s.domain_name_just_created
+                  path: f/bluewind/connect_email_account_smartlead
+              - id: as
+                summary: Ask connect email account to smartlead
                 value:
                   type: rawscript
                   content: >-
                     !inline
-                    get_email_account_just_created.inline_script.native.ts
-                  input_transforms:
-                    all_attempts:
-                      type: javascript
-                      expr: results.am
-                  lock: ''
-                  language: nativets
-              - id: ap
-                summary: Approval
-                value:
-                  type: rawscript
-                  content: '!inline approval_2.inline_script.ts'
-                  input_transforms:
-                    email_just_created:
-                      type: static
-                      value: result.ao.email_just_created
-                  lock: '!inline approval_2.inline_script.lock'
+                    ask_connect_email_account_to_smartlead_2.inline_script.ts
+                  input_transforms: {}
+                  lock: >-
+                    !inline
+                    ask_connect_email_account_to_smartlead_2.inline_script.lock
                   language: deno
+                continue_on_error: false
+                stop_after_if:
+                  expr: result == undefined
+                  skip_if_stopped: false
                 suspend:
                   required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - instructions
+                      properties:
+                        instructions:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: ar
+                summary: connect email account number 2 to smartlead
+                value:
+                  type: flow
+                  input_transforms:
+                    domain_name_just_created:
+                      type: javascript
+                      expr: results.s.domain_name_just_created
+                  path: f/bluewind/connect_email_account_smartlead
+              - id: ap
+                summary: Inform user of email account creation
+                value:
+                  type: rawscript
+                  content: >-
+                    !inline
+                    inform_user_of_email_account_creation.inline_script.ts
+                  input_transforms:
+                    email_just_created_1:
+                      type: javascript
+                      expr: results.ak.email_just_created
+                    email_just_created_2:
+                      type: static
+                      value: results.as.email_just_created
+                  lock: >-
+                    !inline
+                    inform_user_of_email_account_creation.inline_script.lock
+                  language: deno
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - instructions
+                      properties:
+                        instructions:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
                   timeout: 1800
             expr: results.f.length === 0
         default: []
