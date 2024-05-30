@@ -66,9 +66,10 @@ value:
               skip_if_stopped: false
         skip_failures: false
     - id: ao
+      summary: Get email account just created
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: '!inline get_email_account_just_created.inline_script.native.ts'
         input_transforms:
           all_attempts:
             type: javascript
