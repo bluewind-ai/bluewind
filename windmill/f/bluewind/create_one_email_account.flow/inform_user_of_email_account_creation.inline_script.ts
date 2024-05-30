@@ -1,9 +1,6 @@
 import * as wmill from "npm:windmill-client@^1.158.2";
 
-export async function main(
-  email_just_created_1: string,
-  email_just_created_2: string,
-) {
+export async function main() {
   const resumeUrls = await wmill.getResumeUrls("approver1");
 
   return {
