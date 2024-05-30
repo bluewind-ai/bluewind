@@ -246,6 +246,7 @@ value:
                       expr: results.s.domain_name_just_created
                   lock: ''
                   language: nativets
+                  tag: ''
               - id: v
                 summary: overwrite cname
                 value:
@@ -339,86 +340,165 @@ value:
                   lock: ''
                   language: nativets
                   tag: ''
-              - id: aa
-                summary: Ask to create the google workspace
+              - id: ah
                 value:
-                  type: rawscript
-                  content: '!inline ask_to_create_the_google_workspace.inline_script.ts'
-                  input_transforms:
-                    domain_name_just_created:
-                      type: javascript
-                      expr: results.s.domain_name_just_created
-                  lock: >-
-                    !inline
-                    ask_to_create_the_google_workspace.inline_script.lock
-                  language: deno
-                  tag: ''
-                continue_on_error: false
-                suspend:
-                  hide_cancel: false
-                  required_events: 1
-                  resume_form:
-                    schema:
-                      $schema: 'https://json-schema.org/draft/2020-12/schema'
-                      type: object
-                      order:
-                        - instructions
-                      properties:
-                        instructions:
-                          type: string
-                          description: ''
-                          default: ''
-                      required: []
-                  timeout: 1800
-              - id: ab
-                summary: Ask create DKIM
+                  type: whileloopflow
+                  modules:
+                    - id: aa
+                      summary: Ask to create the google workspace
+                      value:
+                        type: rawscript
+                        content: >-
+                          !inline
+                          ask_to_create_the_google_workspace.inline_script.ts
+                        input_transforms:
+                          domain_name_just_created:
+                            type: javascript
+                            expr: results.s.domain_name_just_created
+                        lock: >-
+                          !inline
+                          ask_to_create_the_google_workspace.inline_script.lock
+                        language: deno
+                        tag: ''
+                      continue_on_error: false
+                      suspend:
+                        hide_cancel: false
+                        required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - instructions
+                            properties:
+                              instructions:
+                                type: string
+                                description: ''
+                                default: ''
+                            required: []
+                        timeout: 1800
+                    - id: ai
+                      summary: Get all dns records
+                      value:
+                        type: rawscript
+                        content: '!inline get_all_dns_records.inline_script.native.ts'
+                        input_transforms:
+                          cloudflare_api_key:
+                            type: static
+                            value: null
+                          domain_id:
+                            type: static
+                            value: null
+                        language: nativets
+                    - id: aj
+                      summary: 'Find spf, mx and google-verification records'
+                      value:
+                        type: rawscript
+                        content: >-
+                          !inline
+                          find_spf,_mx_and_google-verification_records.inline_script.native.ts
+                        input_transforms:
+                          dns_records:
+                            type: static
+                            value: null
+                        language: nativets
+                      continue_on_error: false
+                      stop_after_if:
+                        expr: result.spf && result.mx
+                        skip_if_stopped: false
+                  skip_failures: false
+              - id: af
                 value:
-                  type: rawscript
-                  content: '!inline ask_create_dkim.inline_script.ts'
-                  input_transforms: {}
-                  lock: '!inline ask_create_dkim.inline_script.lock'
-                  language: deno
-                  tag: ''
-                continue_on_error: false
-                suspend:
-                  required_events: 1
-                  resume_form:
-                    schema:
-                      $schema: 'https://json-schema.org/draft/2020-12/schema'
-                      type: object
-                      order:
-                        - instructions
-                      properties:
-                        instructions:
-                          type: string
-                          description: ''
-                          default: ''
-                      required: []
-                  timeout: 1800
-              - id: ac
-                summary: Approval
-                value:
-                  type: rawscript
-                  content: '!inline approval.inline_script.ts'
-                  input_transforms: {}
-                  lock: '!inline approval.inline_script.lock'
-                  language: deno
-                continue_on_error: false
-                suspend:
-                  required_events: 1
-                  resume_form:
-                    schema:
-                      $schema: 'https://json-schema.org/draft/2020-12/schema'
-                      type: object
-                      order:
-                        - instructions
-                      properties:
-                        instructions:
-                          type: string
-                          description: ''
-                          default: ''
-                      required: []
-                  timeout: 1800
+                  type: whileloopflow
+                  modules:
+                    - id: ab
+                      summary: Ask create DKIM
+                      value:
+                        type: rawscript
+                        content: '!inline ask_create_dkim.inline_script.ts'
+                        input_transforms: {}
+                        lock: '!inline ask_create_dkim.inline_script.lock'
+                        language: deno
+                        tag: ''
+                      continue_on_error: false
+                      suspend:
+                        required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - instructions
+                            properties:
+                              instructions:
+                                type: string
+                                description: ''
+                                default: ''
+                            required: []
+                        timeout: 1800
+                    - id: ac
+                      summary: Approval
+                      value:
+                        type: rawscript
+                        content: '!inline approval.inline_script.ts'
+                        input_transforms: {}
+                        lock: '!inline approval.inline_script.lock'
+                        language: deno
+                        tag: ''
+                      continue_on_error: false
+                      suspend:
+                        required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - instructions
+                            properties:
+                              instructions:
+                                type: string
+                                description: ''
+                                default: ''
+                            required: []
+                        timeout: 1800
+                    - id: ad
+                      summary: Fetch all dns records
+                      value:
+                        type: rawscript
+                        content: '!inline fetch_all_dns_records.inline_script.native.ts'
+                        input_transforms:
+                          cloudflare_api_key:
+                            type: javascript
+                            expr: results.k.cloudflare_api_key
+                          domain_id:
+                            type: javascript
+                            expr: results.s.domain_id
+                        language: nativets
+                    - id: ae
+                      summary: Get dkim
+                      value:
+                        type: rawscript
+                        content: '!inline get_dkim.inline_script.native.ts'
+                        input_transforms:
+                          dns_records:
+                            type: javascript
+                            expr: results.ad.result
+                        language: nativets
+                      continue_on_error: false
+                      stop_after_if:
+                        expr: result.dkim !== undefined
+                        skip_if_stopped: false
+                    - id: ag
+                      summary: Approval
+                      value:
+                        type: rawscript
+                        content: '!inline approval_1.inline_script.ts'
+                        input_transforms: {}
+                        language: deno
+                      suspend:
+                        required_events: 1
+                        timeout: 1800
+                  skip_failures: false
             expr: results.f.length === 0
         default: []
 schema:
