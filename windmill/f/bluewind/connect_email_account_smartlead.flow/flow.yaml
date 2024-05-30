@@ -70,9 +70,9 @@ value:
         type: rawscript
         content: '!inline inline_script_0.inline_script.native.ts'
         input_transforms:
-          example_input:
-            type: static
-            value: 3
+          all_attempts:
+            type: javascript
+            expr: results.am
         lock: ''
         language: nativets
 schema:
