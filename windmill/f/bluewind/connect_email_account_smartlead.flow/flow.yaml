@@ -65,10 +65,27 @@ value:
               expr: result.email_just_created !== undefined
               skip_if_stopped: false
         skip_failures: false
+    - id: ao
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          example_input:
+            type: static
+            value: 3
+        lock: ''
+        language: nativets
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
-  properties: {}
+  order:
+    - domain_name_just_created
+  properties:
+    domain_name_just_created:
+      type: string
+      description: ''
+      default: ''
+      format: ''
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
