@@ -8,7 +8,7 @@ export async function main(domain_just_created: string) {
     resume: resumeUrls["resume"],
     default_args: {
       instructions:
-        `Couldn't find the email account in smartlead. Please try again`,
+        `Couldn't find the email account in smartlead. Please make sure you followed all the steps and try again`,
     },
   };
 }
