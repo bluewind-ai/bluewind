@@ -384,12 +384,13 @@ value:
                         content: '!inline get_all_dns_records.inline_script.native.ts'
                         input_transforms:
                           cloudflare_api_key:
-                            type: static
-                            value: null
+                            type: javascript
+                            expr: results.k.cloudflare_api_key
                           domain_id:
-                            type: static
-                            value: null
+                            type: javascript
+                            expr: results.s.domain_id
                         language: nativets
+                        tag: ''
                     - id: aj
                       summary: 'Find spf, mx and google-verification records'
                       value:
@@ -399,12 +400,13 @@ value:
                           find_spf,_mx_and_google-verification_records.inline_script.native.ts
                         input_transforms:
                           dns_records:
-                            type: static
-                            value: null
+                            type: javascript
+                            expr: results.ai.result
                         language: nativets
+                        tag: ''
                       continue_on_error: false
                       stop_after_if:
-                        expr: result.spf && result.mx
+                        expr: result.spf !== undefined && result.mx !== undefined
                         skip_if_stopped: false
                   skip_failures: false
               - id: af
@@ -474,6 +476,7 @@ value:
                             type: javascript
                             expr: results.s.domain_id
                         language: nativets
+                        tag: ''
                     - id: ae
                       summary: Get dkim
                       value:
@@ -484,6 +487,7 @@ value:
                             type: javascript
                             expr: results.ad.result
                         language: nativets
+                        tag: ''
                       continue_on_error: false
                       stop_after_if:
                         expr: result.dkim !== undefined
@@ -495,10 +499,135 @@ value:
                         content: '!inline approval_1.inline_script.ts'
                         input_transforms: {}
                         language: deno
+                        tag: ''
+                      continue_on_error: false
                       suspend:
+                        hide_cancel: false
                         required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - instructions
+                            properties:
+                              instructions:
+                                type: string
+                                description: ''
+                                default: ''
+                            required: []
                         timeout: 1800
                   skip_failures: false
+              - id: ak
+                summary: Ask connect email account to smartlead
+                value:
+                  type: rawscript
+                  content: >-
+                    !inline
+                    ask_connect_email_account_to_smartlead.inline_script.ts
+                  input_transforms: {}
+                  lock: >-
+                    !inline
+                    ask_connect_email_account_to_smartlead.inline_script.lock
+                  language: deno
+                continue_on_error: false
+                suspend:
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - instructions
+                      properties:
+                        instructions:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: am
+                value:
+                  type: whileloopflow
+                  modules:
+                    - id: an
+                      summary: Ask email account created
+                      value:
+                        type: rawscript
+                        content: '!inline ask_email_account_created.inline_script.ts'
+                        input_transforms:
+                          domain_just_created:
+                            type: javascript
+                            expr: results.s.domain_name_just_created
+                        language: deno
+                      continue_on_error: false
+                      suspend:
+                        required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - instructions
+                              - email_account
+                            properties:
+                              email_account:
+                                type: string
+                                description: ''
+                                default: ''
+                              instructions:
+                                type: string
+                                description: ''
+                                default: ''
+                            required: []
+                        timeout: 1800
+                    - id: al
+                      summary: attempt to find email account on smartlead
+                      value:
+                        type: rawscript
+                        content: >-
+                          !inline
+                          attempt_to_find_email_account_on_smartlead.inline_script.native.ts
+                        input_transforms:
+                          email_just_created:
+                            type: javascript
+                            expr: resume.email_account_just_created
+                          smartlead_api_key:
+                            type: javascript
+                            expr: results.e.smartlead_api_key
+                        language: nativets
+                      continue_on_error: false
+                      stop_after_if:
+                        expr: result.email_just_created !== undefined
+                        skip_if_stopped: false
+                  skip_failures: false
+              - id: ao
+                summary: Get email account just created
+                value:
+                  type: rawscript
+                  content: >-
+                    !inline
+                    get_email_account_just_created.inline_script.native.ts
+                  input_transforms:
+                    all_attempts:
+                      type: javascript
+                      expr: results.am
+                  lock: ''
+                  language: nativets
+              - id: ap
+                summary: Approval
+                value:
+                  type: rawscript
+                  content: '!inline approval_2.inline_script.ts'
+                  input_transforms:
+                    email_just_created:
+                      type: static
+                      value: result.ao.email_just_created
+                  lock: '!inline approval_2.inline_script.lock'
+                  language: deno
+                suspend:
+                  required_events: 1
+                  timeout: 1800
             expr: results.f.length === 0
         default: []
 schema:
