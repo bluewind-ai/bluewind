@@ -2,6 +2,12 @@ summary: setup_email_accounts
 description: ''
 value:
   modules:
+    - id: au
+      summary: fetch twenty api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_twenty_api_key
     - id: e
       summary: fetch smartlead api key
       value:
@@ -632,7 +638,30 @@ value:
                       required: []
                   timeout: 1800
             expr: results.f.length === 0
-        default: []
+        default:
+          - id: at
+            summary: Count email scheduled
+            value:
+              type: rawscript
+              content: '!inline count_email_scheduled.inline_script.native.ts'
+              input_transforms:
+                twenty_api_key:
+                  type: javascript
+                  expr: results.au.twenty_api_key
+              lock: ''
+              language: nativets
+          - id: av
+            summary: ''
+            value:
+              type: branchone
+              branches:
+                - summary: if too many emails scheduled compared to email accounts
+                  modules:
+                    - id: aw
+                      value:
+                        type: identity
+                  expr: results.at.data.people.total_count > results.f.length * 300
+              default: []
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
