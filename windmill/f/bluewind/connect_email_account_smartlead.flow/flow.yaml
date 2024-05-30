@@ -64,6 +64,19 @@ value:
             stop_after_if:
               expr: result.email_just_created !== undefined
               skip_if_stopped: false
+          - id: ap
+            summary: Approval
+            value:
+              type: rawscript
+              content: '!inline approval.inline_script.ts'
+              input_transforms:
+                approver:
+                  type: static
+                  value: null
+              language: deno
+            suspend:
+              required_events: 1
+              timeout: 1800
         skip_failures: false
     - id: ao
       summary: Get email account just created
