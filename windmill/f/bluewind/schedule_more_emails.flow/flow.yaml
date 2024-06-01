@@ -24,6 +24,37 @@ value:
             expr: results.bx.twenty_api_key
         path: f/bluewind/immaculate_flow
       continue_on_error: false
+    - id: ci
+      summary: get id of the person object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_person_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: dr
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                description: null,
+                icon: "IconUsers",
+                label: "Is Email Valid",
+                name: "isEmailValid",
+                objectMetadataId: results.ci.person_obect_metadata,
+                type: "BOOLEAN"
+              }
+          object_metadata:
+            type: static
+            value: ''
+        path: f/bluewind/create_or_update_twenty_field
     - id: cw
       summary: get id of the campaign object
       value:
@@ -45,18 +76,6 @@ value:
           campaign_obect_metadata:
             type: javascript
             expr: '`${results.cw.campaign_object_metadata}`'
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
-        lock: ''
-        language: nativets
-        tag: ''
-    - id: ci
-      summary: get id of the person object
-      value:
-        type: rawscript
-        content: '!inline get_id_of_the_person_object.inline_script.native.ts'
-        input_transforms:
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
