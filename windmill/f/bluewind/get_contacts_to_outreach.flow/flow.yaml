@@ -3,9 +3,10 @@ description: ''
 value:
   modules:
     - id: a
+      summary: get_contacts_to_outreach
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: '!inline get_contacts_to_outreach.inline_script.native.ts'
         input_transforms:
           campaign_name:
             type: javascript
