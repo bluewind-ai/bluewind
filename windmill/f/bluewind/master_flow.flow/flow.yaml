@@ -8,6 +8,47 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_twenty_api_key
+    - id: cu
+      summary: fetch smartlead api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_smartlead_api_key
+    - id: dp
+      value:
+        type: whileloopflow
+        modules:
+          - id: dm
+            summary: count email scheduled
+            value:
+              type: flow
+              input_transforms:
+                twenty_api_key:
+                  type: javascript
+                  value: '${results.bx.twenty_api_key}'
+                  expr: '`${results.bx.twenty_api_key}`'
+              path: f/bluewind/count_emails_scheduled
+          - id: dn
+            summary: get email accounts
+            value:
+              type: rawscript
+              content: '!inline get_email_accounts.inline_script.native.ts'
+              input_transforms:
+                smartlead_api_key:
+                  type: javascript
+                  expr: results.cu.smartlead_api_key
+              language: nativets
+              tag: null
+          - id: do
+            summary: ''
+            value:
+              type: branchone
+              branches:
+                - summary: ''
+                  modules: []
+                  expr: results.dm.data.people.total_count > results.dn.length * 300
+              default: []
+        skip_failures: false
     - id: br
       summary: Fetch Campaigns
       value:
@@ -124,6 +165,8 @@ value:
                   language: nativets
                   tag: ''
             expr: results.br.data.campaigns.length === 0
+            parallel: true
+            skip_failure: true
         default:
           - id: bq
             summary: Ask campaign to pick
@@ -170,12 +213,6 @@ value:
               lock: ''
               language: nativets
               tag: ''
-    - id: cu
-      summary: fetch smartlead api key
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/fetch_smartlead_api_key
     - id: cz
       summary: ''
       value:
@@ -225,6 +262,8 @@ value:
             expr: >-
               results.bp.smartleadCampaignId === undefined ||
               results.bp.smartleadCampaignId === null
+            parallel: true
+            skip_failure: true
         default:
           - id: db
             summary: get smartlead campaign id
@@ -342,6 +381,8 @@ value:
                       expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/get_contacts_to_outreach
             expr: results.di.data.people.length === 0
+            parallel: true
+            skip_failure: true
         default:
           - id: cn
             summary: get contacts
