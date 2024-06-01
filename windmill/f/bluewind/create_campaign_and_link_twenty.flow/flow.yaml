@@ -1,0 +1,96 @@
+summary: create_campaign_and_link_twenty
+description: ''
+value:
+  modules:
+    - id: bx
+      summary: Fetch twenty api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_twenty_api_key
+    - id: cu
+      summary: fetch smartlead api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_smartlead_api_key
+    - id: dm
+      summary: Get campaign on smartlead
+      value:
+        type: rawscript
+        content: '!inline get_campaign_on_smartlead.inline_script.native.ts'
+        input_transforms:
+          smartlead_api_key:
+            type: javascript
+            expr: '`${results.cu.smartlead_api_key}`'
+          smartlead_campaign_id:
+            type: javascript
+            expr: results.bp.smartleadCampaignId
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: ct
+      summary: create smartlead campaign
+      value:
+        type: flow
+        input_transforms:
+          campaign_name:
+            type: javascript
+            expr: '`${results.bp.name}`'
+          smartlead_api_key:
+            type: javascript
+            expr: '`${results.cu.smartlead_api_key}`'
+        path: f/bluewind/brilliant_flow
+    - id: dh
+      summary: add smartleadcampaign id to twenty
+      value:
+        type: flow
+        input_transforms:
+          campaign_id:
+            type: static
+            value: results.bp.id
+          data:
+            type: javascript
+            expr: '{"smartlead_campaign_id": `${results.ct.campaign_id}`}'
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        path: f/bluewind/update_campaign_twenty
+    - id: da
+      summary: get smartlead_campaign_id
+      value:
+        type: rawscript
+        content: '!inline get_smartlead_campaign_id.inline_script.native.ts'
+        input_transforms:
+          smartlead_campaign_id:
+            type: javascript
+            expr: results.ct.campaign_id
+        lock: ''
+        language: nativets
+        tag: ''
+  failure_module:
+    id: failure
+    value:
+      type: identity
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - smartlead_campaign_id
+    - twenty_api_key
+  properties:
+    smartlead_campaign_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
