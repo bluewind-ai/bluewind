@@ -14,21 +14,6 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_smartlead_api_key
-    - id: dm
-      summary: Get campaign on smartlead
-      value:
-        type: rawscript
-        content: '!inline get_campaign_on_smartlead.inline_script.native.ts'
-        input_transforms:
-          smartlead_api_key:
-            type: javascript
-            expr: flow_input.smartlead_api_key
-          smartlead_campaign_id:
-            type: javascript
-            expr: flow_input.smartlead_campaign_id
-        lock: ''
-        language: nativets
-        tag: ''
     - id: ct
       summary: create smartlead campaign
       value:
@@ -47,8 +32,9 @@ value:
         type: flow
         input_transforms:
           campaign_id:
-            type: static
-            value: ''
+            type: javascript
+            value: '${results.ct.}'
+            expr: flow_input.twenty_campaign_id
           data:
             type: javascript
             expr: '{"smartleadCampaignId": `${results.ct.smartlead_campaign_id}`}'
