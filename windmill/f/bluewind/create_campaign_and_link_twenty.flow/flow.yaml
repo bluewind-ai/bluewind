@@ -22,10 +22,10 @@ value:
         input_transforms:
           smartlead_api_key:
             type: javascript
-            expr: '`${results.cu.smartlead_api_key}`'
+            expr: flow_input.smartlead_api_key
           smartlead_campaign_id:
             type: javascript
-            expr: results.bp.smartleadCampaignId
+            expr: flow_input.smartlead_campaign_id
         lock: ''
         language: nativets
         tag: ''
@@ -36,10 +36,10 @@ value:
         input_transforms:
           campaign_name:
             type: javascript
-            expr: '`${results.bp.name}`'
+            expr: flow_input.campaign_name
           smartlead_api_key:
             type: javascript
-            expr: '`${results.cu.smartlead_api_key}`'
+            expr: flow_input.smartlead_api_key
         path: f/bluewind/brilliant_flow
     - id: dh
       summary: add smartleadcampaign id to twenty
@@ -48,13 +48,13 @@ value:
         input_transforms:
           campaign_id:
             type: static
-            value: results.bp.id
+            value: ''
           data:
             type: javascript
-            expr: '{"smartlead_campaign_id": `${results.ct.campaign_id}`}'
+            expr: '{"smartleadCampaignId": `${results.ct.smartlead_campaign_id}`}'
           twenty_api_key:
             type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
+            expr: flow_input.twenty_api_key
         path: f/bluewind/update_campaign_twenty
     - id: da
       summary: get smartlead_campaign_id
@@ -76,10 +76,20 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - smartlead_campaign_id
+    - twenty_campaign_id
     - twenty_api_key
+    - smartlead_api_key
+    - campaign_name
   properties:
-    smartlead_campaign_id:
+    campaign_name:
+      type: string
+      description: ''
+      dateFormat: ''
+      default: ''
+      format: ''
+      nullable: false
+      password: false
+    smartlead_api_key:
       type: string
       description: ''
       default: ''
@@ -90,6 +100,14 @@ schema:
       description: ''
       default: ''
       format: ''
+      password: true
+    twenty_campaign_id:
+      type: string
+      description: ''
+      dateFormat: ''
+      default: ''
+      format: ''
+      nullable: false
       password: true
   required: []
 visible_to_runner_only: false
