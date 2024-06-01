@@ -69,19 +69,18 @@ value:
                   input_transforms: {}
                   path: f/bluewind/create_one_email_account
             expr: results.f.length === 0
+            parallel: true
+            skip_failure: true
         default:
-          - id: at
-            summary: Count email scheduled
+          - id: az
+            summary: count email schedule
             value:
-              type: rawscript
-              content: '!inline count_email_scheduled.inline_script.native.ts'
+              type: flow
               input_transforms:
                 twenty_api_key:
                   type: javascript
                   expr: results.au.twenty_api_key
-              lock: ''
-              language: nativets
-              tag: ''
+              path: f/bluewind/count_emails_scheduled
           - id: av
             summary: ''
             value:
@@ -95,7 +94,9 @@ value:
                         type: flow
                         input_transforms: {}
                         path: f/bluewind/create_one_email_account
-                  expr: results.at.data.people.total_count > results.f.length * 300
+                  expr: results.az.data.people.total_count > results.f.length * 300
+                  parallel: true
+                  skip_failure: true
               default: []
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
