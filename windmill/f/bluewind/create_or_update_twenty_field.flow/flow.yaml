@@ -1,0 +1,68 @@
+summary: create_or_update_twenty_field
+description: ''
+value:
+  modules:
+    - id: a
+      summary: Get field
+      value:
+        type: rawscript
+        content: '!inline get_field.inline_script.native.ts'
+        input_transforms:
+          example_input:
+            type: static
+            value: 3
+        lock: ''
+        language: nativets
+    - id: b
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: If field exists
+            modules:
+              - id: c
+                summary: Update field
+                value:
+                  type: rawscript
+                  content: '!inline update_field.inline_script.native.ts'
+                  input_transforms:
+                    example_input:
+                      type: static
+                      value: 3
+                  lock: ''
+                  language: nativets
+            expr: 'false'
+            parallel: true
+            skip_failure: true
+        default:
+          - id: d
+            summary: create field
+            value:
+              type: rawscript
+              content: '!inline create_field.inline_script.native.ts'
+              input_transforms:
+                example_input:
+                  type: static
+                  value: 3
+              lock: ''
+              language: nativets
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - object_metadata
+    - field_medatadata
+  properties:
+    field_medatadata:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+    object_metadata:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
