@@ -3,14 +3,17 @@ description: ''
 value:
   modules:
     - id: a
-      summary: Get field
+      summary: find field if exists
       value:
         type: rawscript
-        content: '!inline get_field.inline_script.native.ts'
+        content: '!inline find_field_if_exists.inline_script.native.ts'
         input_transforms:
-          example_input:
-            type: static
-            value: 3
+          field_name:
+            type: javascript
+            expr: flow_input.field_medatadata.name
+          twenty_api_key:
+            type: javascript
+            expr: flow_input.twenty_api_key
         lock: ''
         language: nativets
         tag: ''
@@ -27,12 +30,26 @@ value:
                   type: rawscript
                   content: '!inline update_field.inline_script.native.ts'
                   input_transforms:
-                    example_input:
-                      type: static
-                      value: 3
+                    idToUpdate:
+                      type: javascript
+                      expr: results.a.found_field.node.id
+                    twenty_api_key:
+                      type: javascript
+                      expr: flow_input.twenty_api_key
+                    updatePayload:
+                      type: javascript
+                      expr: |-
+                        {
+                          icon: flow_input.field_medatadata.icon,
+                          name: flow_input.field_medatadata.name,
+                          label: flow_input.field_medatadata.label,
+                          description: flow_input.field_medatadata.description,
+                          options: flow_input.field_medatadata.options ?? []
+                        }
                   lock: ''
                   language: nativets
-            expr: 'false'
+                  tag: ''
+            expr: results.a.found_field !== undefined
             parallel: true
             skip_failure: true
         default:
@@ -42,14 +59,21 @@ value:
               type: rawscript
               content: '!inline create_field.inline_script.native.ts'
               input_transforms:
-                example_input:
-                  type: static
-                  value: 3
+                field_metadata:
+                  type: javascript
+                  expr: flow_input.field_medatadata
+                twenty_api_key:
+                  type: javascript
+                  expr: '`${flow_input.twenty_api_key}`'
               lock: ''
               language: nativets
+              tag: ''
 schema:
   type: object
   additionalProperties: false
+  order:
+    - field_medatadata
+    - twenty_api_key
   properties:
     field_medatadata:
       type: object
@@ -70,6 +94,12 @@ schema:
         objectMetadataId:
           type: string
           format: uuid
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
