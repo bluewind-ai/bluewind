@@ -11,6 +11,9 @@ value:
           campaign_name:
             type: javascript
             expr: '`${flow_input.campaign_name}`'
+          page_size:
+            type: static
+            value: null
           twenty_api_key:
             type: javascript
             expr: '`${flow_input.twenty_api_key}`'
@@ -23,12 +26,17 @@ schema:
   order:
     - twenty_api_key
     - campaign_name
+    - number_of_contacts_needed
   properties:
     campaign_name:
       type: string
       description: ''
       default: ''
       format: ''
+    number_of_contacts_needed:
+      type: number
+      description: ''
+      nullable: false
     twenty_api_key:
       type: string
       description: ''

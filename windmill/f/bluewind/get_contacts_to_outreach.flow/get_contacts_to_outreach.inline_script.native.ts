@@ -1,6 +1,6 @@
-export async function main(twenty_api_key: string, campaign_name: string) {
+export async function main(twenty_api_key: string, campaign_name: string, page_size: number) {
   const query = `query FindManyPeople($filter: PersonFilterInput) {
-  people(filter: $filter) {
+  people(filter: $filter, first: ${page_size}) {
     totalCount
     __typename
     edges {
