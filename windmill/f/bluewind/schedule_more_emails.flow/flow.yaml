@@ -178,6 +178,31 @@ value:
               lock: ''
               language: nativets
               tag: ''
+    - id: dm
+      summary: Get campaign on smartlead
+      value:
+        type: rawscript
+        content: '!inline get_campaign_on_smartlead.inline_script.native.ts'
+        input_transforms:
+          smartlead_api_key:
+            type: javascript
+            expr: '`${results.cu.smartlead_api_key}`'
+          smartlead_campaign_id:
+            type: javascript
+            expr: results.bp.smartleadCampaignId
+        lock: ''
+        language: nativets
+    - id: dn
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: if campaign still doesn't exist
+            modules: []
+            expr: 'false'
+            parallel: true
+            skip_failure: true
+        default: []
     - id: cz
       summary: ''
       value:
@@ -311,7 +336,7 @@ value:
         input_transforms:
           data:
             type: javascript
-            expr: results.di.data.people
+            expr: results.di.data.people.edges
         lock: ''
         language: nativets
         tag: ''
