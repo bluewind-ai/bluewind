@@ -54,10 +54,9 @@ schema:
     - field_medatadata
   properties:
     field_medatadata:
-      type: string
+      type: object
       description: ''
-      default: ''
-      format: ''
+      nullable: false
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
