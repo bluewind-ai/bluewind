@@ -37,7 +37,7 @@ value:
             expr: flow_input.twenty_campaign_id
           data:
             type: javascript
-            expr: '{"smartleadCampaignId": `${results.ct.smartlead_campaign_id}`}'
+            expr: '{"smartleadCampaignId": `${results.ct.campaign_id}`}'
           twenty_api_key:
             type: javascript
             expr: flow_input.twenty_api_key
