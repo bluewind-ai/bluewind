@@ -1,0 +1,47 @@
+summary: setup_spf_mx_records
+description: ''
+value:
+  modules:
+    - id: u
+      summary: overwrite spf
+      value:
+        type: rawscript
+        content: '!inline overwrite_spf.inline_script.native.ts'
+        input_transforms:
+          cloudflare_api_key:
+            type: javascript
+            expr: '`${results.k.cloudflare_api_key}`'
+          domain_id:
+            type: javascript
+            expr: results.s.domain_id
+          domain_name_just_created:
+            type: javascript
+            expr: results.s.domain_name_just_created
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: x
+      summary: mx records
+      value:
+        type: rawscript
+        content: '!inline mx_records.inline_script.native.ts'
+        input_transforms:
+          cloudflare_api_key:
+            type: javascript
+            expr: '`${results.k.cloudflare_api_key}`'
+          domain_id:
+            type: javascript
+            expr: results.s.domain_id
+          domain_name_just_created:
+            type: javascript
+            expr: results.s.domain_name_just_created
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  properties: {}
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

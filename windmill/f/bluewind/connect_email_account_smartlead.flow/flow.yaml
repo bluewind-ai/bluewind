@@ -1,0 +1,177 @@
+summary: connect_email_account_smartlead
+description: ''
+value:
+  modules:
+    - id: e
+      summary: fetch smartlead api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_smartlead_api_key
+    - id: am
+      value:
+        type: whileloopflow
+        modules:
+          - id: an
+            summary: Ask email account created
+            value:
+              type: rawscript
+              content: '!inline ask_email_account_created.inline_script.ts'
+              input_transforms:
+                domain_just_created:
+                  type: javascript
+                  expr: flow_input.domain_name_just_created
+              language: deno
+              tag: ''
+            continue_on_error: false
+            suspend:
+              required_events: 1
+              resume_form:
+                schema:
+                  $schema: 'https://json-schema.org/draft/2020-12/schema'
+                  type: object
+                  order:
+                    - instructions
+                    - email_account
+                  properties:
+                    email_account:
+                      type: string
+                      description: ''
+                      default: ''
+                    instructions:
+                      type: string
+                      description: ''
+                      default: ''
+                  required: []
+              timeout: 1800
+          - id: al
+            summary: attempt to find email account on smartlead
+            value:
+              type: rawscript
+              content: >-
+                !inline
+                attempt_to_find_email_account_on_smartlead.inline_script.native.ts
+              input_transforms:
+                email_just_created:
+                  type: javascript
+                  expr: resume.email_account
+                smartlead_api_key:
+                  type: javascript
+                  expr: results.e.smartlead_api_key
+              language: nativets
+              tag: ''
+            continue_on_error: false
+            stop_after_if:
+              expr: result.email_just_created !== undefined
+              skip_if_stopped: false
+          - id: ap
+            summary: Approval
+            value:
+              type: rawscript
+              content: '!inline approval.inline_script.ts'
+              input_transforms: {}
+              language: deno
+              tag: ''
+            continue_on_error: false
+            suspend:
+              required_events: 1
+              resume_form:
+                schema:
+                  $schema: 'https://json-schema.org/draft/2020-12/schema'
+                  type: object
+                  order:
+                    - instructions
+                  properties:
+                    instructions:
+                      type: string
+                      description: ''
+                      default: ''
+                  required: []
+              timeout: 1800
+        skip_failures: false
+    - id: ao
+      summary: Get email account just created
+      value:
+        type: rawscript
+        content: '!inline get_email_account_just_created.inline_script.native.ts'
+        input_transforms:
+          all_attempts:
+            type: javascript
+            expr: results.am
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: aq
+      summary: Inform user of warmup
+      value:
+        type: rawscript
+        content: '!inline inform_user_of_warmup.inline_script.ts'
+        input_transforms:
+          email_account_just_created:
+            type: javascript
+            expr: results.ao.email_just_created
+        lock: '!inline inform_user_of_warmup.inline_script.lock'
+        language: deno
+        tag: ''
+      continue_on_error: false
+      suspend:
+        hide_cancel: false
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - instructions
+            properties:
+              instructions:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
+    - id: ar
+      summary: configure warmup
+      value:
+        type: rawscript
+        content: '!inline configure_warmup.inline_script.native.ts'
+        input_transforms:
+          inbox_id:
+            type: javascript
+            expr: results.ao.inbox_id
+          smartlead_api_key:
+            type: javascript
+            expr: results.e.smartlead_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: as
+      summary: configure number of real emails sent per day
+      value:
+        type: rawscript
+        content: >-
+          !inline
+          configure_number_of_real_emails_sent_per_day.inline_script.native.ts
+        input_transforms:
+          inbox_id:
+            type: javascript
+            expr: results.ao.inbox_id
+          smartlead_api_key:
+            type: javascript
+            expr: '`${results.e.smartlead_api_key}`'
+        lock: ''
+        language: nativets
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - domain_name_just_created
+  properties:
+    domain_name_just_created:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

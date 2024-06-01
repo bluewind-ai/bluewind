@@ -1,0 +1,306 @@
+summary: outreach pipeline
+description: ''
+value:
+  modules:
+    - id: cf
+      summary: validate email
+      value:
+        type: flow
+        input_transforms:
+          contact:
+            type: javascript
+            expr: flow_input.contact
+          leadmagic_api_key:
+            type: javascript
+            expr: '`${flow_input.leadmagic_api_key}`'
+        path: f/bluewind/validate_email
+    - id: cc
+      summary: update contact twenty
+      value:
+        type: flow
+        input_transforms:
+          contact_id:
+            type: javascript
+            expr: '`${flow_input.contact.id}`'
+          data:
+            type: javascript
+            expr: results.cf
+          twenty_api_key:
+            type: javascript
+            expr: '`${flow_input.twenty_api_key}`'
+        path: f/bluewind/update_contact_twenty
+    - id: ca
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: ''
+            modules:
+              - id: cd
+                summary: generate email
+                value:
+                  type: flow
+                  input_transforms:
+                    block_1:
+                      type: javascript
+                      expr: flow_input.campaign_info.block_1
+                    block_2:
+                      type: javascript
+                      expr: flow_input.campaign_info.block_2
+                    block_3:
+                      type: javascript
+                      expr: flow_input.campaign_info.block_3
+                    block_4:
+                      type: static
+                      value: ''
+                    block_5:
+                      type: static
+                      value: ''
+                    custom_subject_lines:
+                      type: javascript
+                      expr: flow_input.campaign_info.custom_subject_lines
+                    custom_taglines:
+                      type: javascript
+                      expr: flow_input.campaign_info.custom_taglines
+                    recipient_first_name:
+                      type: javascript
+                      expr: '`${flow_input.contact.name.firstName}`'
+                    sender_company_domain_name:
+                      type: javascript
+                      expr: flow_input.campaign_info.sender_company_name
+                    sender_first_name:
+                      type: javascript
+                      expr: flow_input.campaign_info.sender_first_name
+                    sender_last_name:
+                      type: javascript
+                      expr: flow_input.campaign_info.sender_last_name
+                  path: f/bluewind/generate_email_fork
+              - id: by
+                summary: ask email approval
+                value:
+                  type: rawscript
+                  content: '!inline ask_email_approval.inline_script.ts'
+                  input_transforms:
+                    body:
+                      type: javascript
+                      expr: '`${results.cd.body}`'
+                    email:
+                      type: javascript
+                      expr: '`${flow_input.contact.email}`'
+                    linkedin_url:
+                      type: javascript
+                      expr: '`${flow_input.contact.linkedinLink.url}`'
+                    subject_line:
+                      type: javascript
+                      expr: '`${results.cd.subject_line}`'
+                  lock: '!inline ask_email_approval.inline_script.lock'
+                  language: deno
+                  path: hub/8713/windmill/default_arguments_in_approval_steps
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - subject_line
+                        - body
+                        - linkedin_url
+                        - email
+                      properties:
+                        body:
+                          type: string
+                          description: ''
+                          default: ''
+                        email:
+                          type: string
+                          description: ''
+                          default: ''
+                        linkedin_url:
+                          type: string
+                          description: ''
+                          default: ''
+                        subject_line:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: cg
+                summary: send email to smartlead
+                value:
+                  type: flow
+                  input_transforms:
+                    body:
+                      type: javascript
+                      expr: '`${results.cd}`'
+                    email:
+                      type: javascript
+                      expr: '`${flow_input.contact.email}`'
+                    linkedin_profile:
+                      type: javascript
+                      expr: '`${flow_input.contact.linkedinLink.url}`'
+                    smartlead_api_key:
+                      type: javascript
+                      expr: '`${flow_input.smartlead_api_key}`'
+                    smartlead_campaign_id:
+                      type: javascript
+                      expr: '`${flow_input.smartlead_campaign_id}`'
+                    subject_line:
+                      type: javascript
+                      expr: '`${results.by.subject_line}`'
+                  path: f/bluewind/dirt_cheap_flow
+            expr: results.cf.isEmailValid
+        default: []
+schema:
+  type: object
+  additionalProperties: false
+  order:
+    - contact
+    - campaign_info
+    - twenty_api_key
+    - leadmagic_api_key
+    - smartlead_campaign_id
+    - smartlead_api_key
+  properties:
+    campaign_info:
+      type: object
+      additionalProperties: false
+      description: ''
+      format: ''
+      properties:
+        block_1:
+          type: string
+        block_2:
+          type: string
+        block_3:
+          type: string
+        block_4:
+          type: string
+        block_5:
+          type: string
+        custom_subject_lines:
+          type: array
+          items:
+            type: string
+        custom_taglines:
+          type: array
+          items:
+            type: string
+        sender_company_domain_name:
+          type: string
+        sender_company_name:
+          type: string
+        sender_first_name:
+          type: string
+        sender_last_name:
+          type: string
+    contact:
+      type: object
+      description: ''
+      format: ''
+      properties:
+        id:
+          type: string
+          format: uuid
+        activityTargets:
+          type: array
+        name:
+          type: object
+          additionalProperties: false
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+        attachments:
+          type: array
+        avatarUrl:
+          type: string
+        calendarEventParticipants:
+          type: array
+        campaignName:
+          type: string
+        campaignStatus:
+          type: string
+        city:
+          type: string
+        company:
+          type: 'null'
+        companyId:
+          type: 'null'
+        createdAt:
+          type: string
+          format: date-time
+        email:
+          type: string
+          format: email
+        favorites:
+          type: array
+        isEmailCatchAll:
+          type: boolean
+          description: ''
+          default: false
+        isEmailValid:
+          type: boolean
+          description: ''
+          default: false
+        jobTitle:
+          type: string
+        linkedinLink:
+          type: object
+          additionalProperties: false
+          properties:
+            label:
+              type: string
+            url:
+              type: string
+              format: url
+        messageParticipants:
+          type: array
+        phone:
+          type: string
+        pointOfContactForOpportunities:
+          type: array
+        position:
+          type: integer
+        timelineActivities:
+          type: array
+        updatedAt:
+          type: string
+          format: date-time
+        xLink:
+          type: object
+          additionalProperties: false
+          properties:
+            label:
+              type: string
+            url:
+              type: string
+      required: []
+    leadmagic_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    smartlead_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    smartlead_campaign_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+    twenty_api_key:
+      type: string
+      description: ''
+      format: ''
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

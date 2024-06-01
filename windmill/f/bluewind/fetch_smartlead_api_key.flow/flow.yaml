@@ -1,0 +1,104 @@
+summary: Fetch smartlead api key
+description: ''
+value:
+  modules:
+    - id: al
+      summary: Fetch smartlead api key if exists
+      value:
+        type: rawscript
+        content: '!inline fetch_smartlead_api_key_if_exists.inline_script.native.ts'
+        input_transforms: {}
+        lock: ''
+        language: nativets
+        tag: ''
+      continue_on_error: false
+    - id: am
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: if error
+            modules:
+              - id: ap
+                value:
+                  type: whileloopflow
+                  modules:
+                    - id: as
+                      summary: prompt smartlead api key
+                      value:
+                        type: rawscript
+                        content: '!inline prompt_smartlead_api_key.inline_script.ts'
+                        input_transforms: {}
+                        language: deno
+                        tag: ''
+                      continue_on_error: false
+                      suspend:
+                        hide_cancel: false
+                        required_events: 1
+                        resume_form:
+                          schema:
+                            $schema: 'https://json-schema.org/draft/2020-12/schema'
+                            type: object
+                            order:
+                              - smartlead_api_key
+                            properties:
+                              smartlead_api_key:
+                                type: string
+                                description: ''
+                                default: ''
+                                password: true
+                            required: []
+                        timeout: 1800
+                    - id: ao
+                      summary: test smartlead api key
+                      value:
+                        type: rawscript
+                        content: '!inline test_smartlead_api_key.inline_script.native.ts'
+                        input_transforms:
+                          smartlead_api_key:
+                            type: javascript
+                            expr: '`${resume.smartlead_api_key}`'
+                        concurrency_time_window_s: 0
+                        language: nativets
+                        tag: ''
+                      continue_on_error: false
+                      stop_after_if:
+                        expr: result.smartlead_api_key !== undefined
+                        skip_if_stopped: false
+                  skip_failures: false
+              - id: aq
+                summary: store api key in windmill
+                value:
+                  type: rawscript
+                  content: '!inline store_api_key_in_windmill.inline_script.native.ts'
+                  input_transforms:
+                    all_attempts:
+                      type: javascript
+                      expr: results.ap
+                  lock: ''
+                  language: nativets
+                  tag: ''
+            expr: >-
+              results.al === null || results.al === "null" ||
+              results.al.error_message !== undefined
+        default:
+          - id: ar
+            summary: return correct api key
+            value:
+              type: rawscript
+              content: '!inline return_correct_api_key.inline_script.native.ts'
+              input_transforms:
+                correct_api_key:
+                  type: javascript
+                  expr: results.al
+              lock: ''
+              language: nativets
+              tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order: []
+  properties: {}
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

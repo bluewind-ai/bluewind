@@ -1,19 +1,18 @@
-summary: Validate email using LeadMagic API
+summary: get_contacts_to_outreach
 description: ''
 value:
   modules:
     - id: a
-      summary: Validate email via LeadMagic API
       value:
         type: rawscript
-        content: '!inline validate_email_via_leadmagic_api.inline_script.native.ts'
+        content: '!inline inline_script_0.inline_script.native.ts'
         input_transforms:
-          email:
+          campaign_name:
             type: javascript
-            expr: flow_input.email
-          leadmagic_api_key:
+            expr: '`${flow_input.campaign_name}`'
+          twenty_api_key:
             type: javascript
-            expr: flow_input.leadmagic_api_key
+            expr: '`${flow_input.twenty_api_key}`'
         lock: ''
         language: nativets
         tag: ''
@@ -21,20 +20,20 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - email
-    - leadmagic_api_key
+    - twenty_api_key
+    - campaign_name
   properties:
-    email:
+    campaign_name:
       type: string
       description: ''
       default: ''
       format: ''
-    leadmagic_api_key:
+    twenty_api_key:
       type: string
       description: ''
       default: ''
       format: ''
-      password: true
+      password: false
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false

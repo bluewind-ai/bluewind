@@ -1,0 +1,31 @@
+summary: count email scheduled
+description: ''
+value:
+  modules:
+    - id: a
+      summary: Count email scheduled
+      value:
+        type: rawscript
+        content: '!inline count_email_scheduled.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${flow_input.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - twenty_api_key
+  properties:
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

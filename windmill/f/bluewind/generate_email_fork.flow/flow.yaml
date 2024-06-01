@@ -1,0 +1,201 @@
+summary: Create basic email
+description: ''
+value:
+  modules:
+    - id: m
+      value:
+        type: flow
+        input_transforms:
+          custom_subject_lines:
+            type: javascript
+            expr: flow_input.custom_subject_lines
+          recipient_first_name:
+            type: javascript
+            expr: '`${flow_input.recipient_first_name}`'
+        path: f/bluewind/generate_subject_lines_without_company_name
+    - id: j
+      summary: generate salutations
+      value:
+        type: flow
+        input_transforms:
+          first_name:
+            type: javascript
+            expr: '`${flow_input.recipient_first_name}`'
+        path: f/bluewind/first_in_class_flow
+    - id: k
+      summary: generate body
+      value:
+        type: flow
+        input_transforms:
+          company_name:
+            type: javascript
+            expr: '`${flow_input.recipient_company_name}`'
+          custom_taglines:
+            type: javascript
+            expr: flow_input.custom_taglines
+          domain_name:
+            type: javascript
+            expr: '`${flow_input.sender_company_domain_name}`'
+          sender_first_name:
+            type: javascript
+            expr: '`${flow_input.sender_first_name}`'
+          sender_last_name:
+            type: javascript
+            expr: '`${flow_input.sender_last_name}`'
+        path: f/bluewind/thankful_flow
+    - id: l
+      summary: generate signatures
+      value:
+        type: flow
+        input_transforms:
+          company_name:
+            type: static
+            value: Bluewind
+          custom_taglines:
+            type: static
+            value:
+              - open-source automations to grow your business
+              - free automations to grow your business
+          domain_name:
+            type: static
+            value: bluewind(.)ai
+          sender_first_name:
+            type: static
+            value: Wayne
+          sender_last_name:
+            type: static
+            value: Hamadi
+        path: f/bluewind/thankful_flow
+    - id: h
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.bun.ts'
+        input_transforms:
+          block_1:
+            type: javascript
+            expr: '`${flow_input.block_1}`'
+          block_2:
+            type: javascript
+            expr: '`${flow_input.block_2}`'
+          block_3:
+            type: javascript
+            expr: '`${flow_input.block_3}`'
+          block_4:
+            type: javascript
+            expr: '`${flow_input.block_4}`'
+          block_5:
+            type: javascript
+            expr: '`${flow_input.block_5}`'
+          salutation:
+            type: javascript
+            expr: '`${results.j.picked_salutation}`'
+          signature:
+            type: javascript
+            expr: results.l.picked_signature
+          subject_line:
+            type: javascript
+            expr: '`${results.m.picked_subject_line}`'
+        lock: '!inline inline_script_0.inline_script.lock'
+        language: bun
+        tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - recipient_first_name
+    - custom_subject_lines
+    - sender_company_domain_name
+    - sender_first_name
+    - sender_last_name
+    - custom_taglines
+    - block_1
+    - block_2
+    - block_3
+    - block_4
+    - block_5
+  properties:
+    block_1:
+      type: string
+      description: ''
+      default: Bluewind is raising a pre-seed. 100k at 5M.
+      format: ''
+      password: false
+    block_2:
+      type: string
+      description: ''
+      default: >-
+        About Bluewind:
+
+        - open-source go-to-market assistant to generate leads.
+
+        - our customers were overwhelmed by all the GTM tools and wasted time
+        and money trying all of them.
+
+        - Instead of creating another tool we created an assistant that connects
+        all the best SaaS together to generate leads for them
+
+        - about me: ex AutoGPT, AI Agent expert (author of paper published at
+        Neurips), and famous Growth Hacker.
+      format: ''
+      password: false
+    block_3:
+      type: string
+      description: ''
+      default: >-
+        Would you like me to send you the deck? I don't send it directly because
+        of deliverability.
+      format: ''
+    block_4:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+    block_5:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+    custom_subject_lines:
+      type: array
+      description: ''
+      default:
+        - Bluewind pre-seed
+      format: ''
+      items:
+        type: string
+    custom_taglines:
+      type: array
+      description: ''
+      default:
+        - open-source go-to-market assistant
+        - free go-to-market assistant
+      format: ''
+      items:
+        type: string
+    recipient_first_name:
+      type: string
+      description: ''
+      default: Steven
+      format: ''
+      password: false
+    sender_company_domain_name:
+      type: string
+      description: ''
+      default: bluewind(.)ai
+      format: ''
+      password: false
+    sender_first_name:
+      type: string
+      description: ''
+      default: Wayne
+      format: ''
+      password: false
+    sender_last_name:
+      type: string
+      description: ''
+      default: Hamadi
+      format: ''
+      password: false
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
