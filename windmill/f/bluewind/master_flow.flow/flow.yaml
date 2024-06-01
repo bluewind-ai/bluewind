@@ -45,21 +45,390 @@ value:
               type: branchone
               branches:
                 - summary: ''
-                  modules:
-                    - id: dr
-                      value:
-                        type: flow
-                        input_transforms: {}
-                        path: f/bluewind/create_one_email_account
+                  modules: []
                   expr: results.dm.data.people.total_count > results.dn.length * 300
-              default:
-                - id: dq
-                  summary: schedule more emails
-                  value:
-                    type: flow
-                    input_transforms: {}
-                    path: f/bluewind/schedule_more_emails
+              default: []
         skip_failures: false
+    - id: br
+      summary: Fetch Campaigns
+      value:
+        type: flow
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        path: f/bluewind/immaculate_flow
+      continue_on_error: false
+    - id: cw
+      summary: get id of the campaign object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_campaign_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: cv
+      summary: Create campaign custom fields
+      value:
+        type: rawscript
+        content: '!inline create_campaign_custom_fields.inline_script.native.ts'
+        input_transforms:
+          campaign_obect_metadata:
+            type: javascript
+            expr: '`${results.cw.campaign_object_metadata}`'
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: ci
+      summary: get id of the person object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_person_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: cf
+      summary: create person custom fields
+      value:
+        type: rawscript
+        content: '!inline create_person_custom_fields.inline_script.native.ts'
+        input_transforms:
+          person_obect_metadata:
+            type: javascript
+            expr: '`${results.ci.person_obect_metadata}`'
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: bp
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: If no campaign exists
+            modules:
+              - id: bf
+                summary: Prompt campaign name
+                value:
+                  type: rawscript
+                  content: '!inline prompt_campaign_name.inline_script.ts'
+                  input_transforms:
+                    campaigns:
+                      type: static
+                      value: null
+                  lock: '!inline prompt_campaign_name.inline_script.lock'
+                  language: deno
+                  path: hub/8713/windmill/default_arguments_in_approval_steps
+                  tag: ''
+                continue_on_error: false
+                suspend:
+                  required_events: 1
+                  resume_form:
+                    schema:
+                      $schema: 'https://json-schema.org/draft/2020-12/schema'
+                      type: object
+                      order:
+                        - campaign_name
+                      properties:
+                        campaign_name:
+                          type: string
+                          description: ''
+                          default: ''
+                      required: []
+                  timeout: 1800
+              - id: ca
+                summary: Create campaign on Twenty
+                value:
+                  type: rawscript
+                  content: '!inline create_campaign_on_twenty.inline_script.native.ts'
+                  input_transforms:
+                    campaign_name:
+                      type: javascript
+                      expr: resume.campaign_name
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${results.bx.twenty_api_key}`'
+                  lock: ''
+                  language: nativets
+                  tag: ''
+            expr: results.br.data.campaigns.length === 0
+            parallel: true
+            skip_failure: true
+        default:
+          - id: bq
+            summary: Ask campaign to pick
+            value:
+              type: rawscript
+              content: '!inline ask_campaign_to_pick.inline_script.ts'
+              input_transforms:
+                campaigns:
+                  type: javascript
+                  expr: results.br.data.campaigns
+              lock: '!inline ask_campaign_to_pick.inline_script.lock'
+              language: deno
+              path: hub/8713/windmill/default_arguments_in_approval_steps
+              tag: ''
+            continue_on_error: false
+            suspend:
+              hide_cancel: false
+              required_events: 1
+              resume_form:
+                schema:
+                  $schema: 'https://json-schema.org/draft/2020-12/schema'
+                  type: object
+                  order:
+                    - campaign_to_pick
+                  properties:
+                    campaign_to_pick:
+                      type: string
+                      description: ''
+                      default: ''
+                  required: []
+              timeout: 1800
+          - id: cy
+            summary: Filter by the campaign name
+            value:
+              type: rawscript
+              content: '!inline filter_by_the_campaign_name.inline_script.native.ts'
+              input_transforms:
+                campaign_name:
+                  type: javascript
+                  expr: resume.campaign_to_pick
+                campaigns:
+                  type: javascript
+                  expr: results.br.data.campaigns
+              lock: ''
+              language: nativets
+              tag: ''
+    - id: cz
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: if no campaign created on smartlead
+            modules:
+              - id: ct
+                summary: create smartlead campaign
+                value:
+                  type: flow
+                  input_transforms:
+                    campaign_name:
+                      type: javascript
+                      expr: '`${results.bp.name}`'
+                    smartlead_api_key:
+                      type: javascript
+                      expr: '`${results.cu.smartlead_api_key}`'
+                  path: f/bluewind/brilliant_flow
+              - id: dh
+                summary: add smartleadcampaign id to twenty
+                value:
+                  type: flow
+                  input_transforms:
+                    campaign_id:
+                      type: static
+                      value: results.bp.id
+                    data:
+                      type: javascript
+                      expr: '{"smartlead_campaign_id": `${results.ct.campaign_id}`}'
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${results.bx.twenty_api_key}`'
+                  path: f/bluewind/update_campaign_twenty
+              - id: da
+                summary: get smartlead_campaign_id
+                value:
+                  type: rawscript
+                  content: '!inline get_smartlead_campaign_id.inline_script.native.ts'
+                  input_transforms:
+                    smartlead_campaign_id:
+                      type: javascript
+                      expr: results.ct.campaign_id
+                  lock: ''
+                  language: nativets
+                  tag: ''
+            expr: >-
+              results.bp.smartleadCampaignId === undefined ||
+              results.bp.smartleadCampaignId === null
+            parallel: true
+            skip_failure: true
+        default:
+          - id: db
+            summary: get smartlead campaign id
+            value:
+              type: rawscript
+              content: '!inline get_smartlead_campaign_id_1.inline_script.native.ts'
+              input_transforms:
+                campaign:
+                  type: javascript
+                  expr: results.bp
+              lock: ''
+              language: nativets
+              tag: ''
+    - id: cq
+      summary: Ask campaign info
+      value:
+        type: rawscript
+        content: '!inline ask_campaign_info.inline_script.ts'
+        input_transforms: {}
+        lock: '!inline ask_campaign_info.inline_script.lock'
+        language: deno
+        path: hub/8713/windmill/default_arguments_in_approval_steps
+        tag: ''
+      continue_on_error: false
+      suspend:
+        hide_cancel: false
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - instructions
+              - campaign_info
+            properties:
+              campaign_info:
+                type: object
+                description: ''
+              instructions:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
+    - id: cr
+      summary: get campaign_info
+      value:
+        type: rawscript
+        content: '!inline get_campaign_info.inline_script.native.ts'
+        input_transforms:
+          campaign_info:
+            type: javascript
+            expr: resume.campaign_info
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: bt
+      summary: Fetch leadmagic api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/ask_leadmagic_api_key
+    - id: di
+      summary: get contacts to outreach
+      value:
+        type: flow
+        input_transforms:
+          campaign_name:
+            type: javascript
+            expr: results.bp.name
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        path: f/bluewind/get_contacts_to_outreach
+    - id: dl
+      summary: get only 20 records
+      value:
+        type: rawscript
+        content: '!inline get_only_20_records.inline_script.native.ts'
+        input_transforms:
+          data:
+            type: javascript
+            expr: results.di.data.people
+        lock: ''
+        language: nativets
+    - id: cg
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: ''
+            modules:
+              - id: cc
+                summary: source leads from apollo
+                value:
+                  type: flow
+                  input_transforms:
+                    campaign_name:
+                      type: javascript
+                      expr: '`${results.bp.campaign_name}`'
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${results.bx.twenty_api_key}`'
+                  path: f/bluewind/source_leads_from_apollo
+              - id: dj
+                summary: get contacts to outreach
+                value:
+                  type: flow
+                  input_transforms:
+                    campaign_name:
+                      type: static
+                      value: results.bp.name
+                    twenty_api_key:
+                      type: javascript
+                      expr: '`${results.bx.twenty_api_key}`'
+                  path: f/bluewind/get_contacts_to_outreach
+            expr: results.di.data.people.length === 0
+            parallel: true
+            skip_failure: true
+        default:
+          - id: cn
+            summary: get contacts
+            value:
+              type: rawscript
+              content: '!inline get_contacts.inline_script.native.ts'
+              input_transforms:
+                contacts:
+                  type: javascript
+                  expr: results.di
+              lock: ''
+              language: nativets
+              tag: ''
+    - id: bl
+      value:
+        type: forloopflow
+        modules:
+          - id: cs
+            summary: outreach pipeline
+            value:
+              type: flow
+              input_transforms:
+                campaign_info:
+                  type: javascript
+                  expr: results.cr.campaign_info
+                contact:
+                  type: javascript
+                  expr: flow_input.iter.value
+                leadmagic_api_key:
+                  type: javascript
+                  expr: '`${results.bt.correct_leadmagic_api_key}`'
+                smartlead_api_key:
+                  type: javascript
+                  expr: '`${results.cu.smartlead_api_key}`'
+                smartlead_campaign_id:
+                  type: javascript
+                  expr: results.cz.smartlead_campaign_id
+                twenty_api_key:
+                  type: javascript
+                  expr: '`${results.bx.twenty_api_key}`'
+              path: f/bluewind/outreach_pipeline
+        iterator:
+          type: javascript
+          expr: results.cg.data.people
+        parallel: false
+        skip_failures: true
   failure_module:
     id: failure
     value:
