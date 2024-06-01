@@ -1,5 +1,3 @@
-//this assumes the Form tab has a string field named "foo" and a checkbox named "bar"
-
 import * as wmill from "npm:windmill-client@^1.158.2";
 
 export async function main(

@@ -135,7 +135,7 @@ value:
                   input_transforms:
                     body:
                       type: javascript
-                      expr: '`${results.cd}`'
+                      expr: '`${results.cd.body}`'
                     email:
                       type: javascript
                       expr: '`${flow_input.contact.email}`'
@@ -150,9 +150,28 @@ value:
                       expr: '`${flow_input.smartlead_campaign_id}`'
                     subject_line:
                       type: javascript
-                      expr: '`${results.by.subject_line}`'
+                      expr: '`${results.cd.subject_line}`'
                   path: f/bluewind/dirt_cheap_flow
+              - id: ch
+                value:
+                  type: flow
+                  input_transforms:
+                    contact_id:
+                      type: javascript
+                      value: '${flow_input.contact.id}'
+                      expr: '`${flow_input.contact.id}`'
+                    data:
+                      type: static
+                      value:
+                        campaignStatus: EMAIL_SCHEDULED
+                    twenty_api_key:
+                      type: javascript
+                      value: ''
+                      expr: flow_input.twenty_api_key
+                  path: f/bluewind/update_contact_twenty
             expr: results.cf.isEmailValid
+            parallel: true
+            skip_failure: true
         default: []
 schema:
   type: object
