@@ -375,7 +375,7 @@ value:
                   expr: results.cr.campaign_info
                 contact:
                   type: javascript
-                  expr: flow_input.iter.value
+                  expr: flow_input.iter.value.node
                 leadmagic_api_key:
                   type: javascript
                   expr: '`${results.bt.correct_leadmagic_api_key}`'
@@ -391,7 +391,7 @@ value:
               path: f/bluewind/outreach_pipeline
         iterator:
           type: javascript
-          expr: results.cg.data.people
+          expr: results.cg.data.people.edges
         parallel: false
         skip_failures: true
   failure_module:
