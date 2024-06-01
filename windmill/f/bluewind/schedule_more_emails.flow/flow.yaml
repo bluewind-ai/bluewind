@@ -314,6 +314,7 @@ value:
             expr: results.di.data.people
         lock: ''
         language: nativets
+        tag: ''
     - id: cg
       summary: ''
       value:
