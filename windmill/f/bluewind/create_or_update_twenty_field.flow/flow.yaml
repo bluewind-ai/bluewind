@@ -13,6 +13,7 @@ value:
             value: 3
         lock: ''
         language: nativets
+        tag: ''
     - id: b
       summary: ''
       value:
@@ -50,15 +51,9 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - object_metadata
     - field_medatadata
   properties:
     field_medatadata:
-      type: string
-      description: ''
-      default: ''
-      format: ''
-    object_metadata:
       type: string
       description: ''
       default: ''
