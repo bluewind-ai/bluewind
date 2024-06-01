@@ -178,31 +178,6 @@ value:
               lock: ''
               language: nativets
               tag: ''
-    - id: dm
-      summary: Get campaign on smartlead
-      value:
-        type: rawscript
-        content: '!inline get_campaign_on_smartlead.inline_script.native.ts'
-        input_transforms:
-          smartlead_api_key:
-            type: javascript
-            expr: '`${results.cu.smartlead_api_key}`'
-          smartlead_campaign_id:
-            type: javascript
-            expr: results.bp.smartleadCampaignId
-        lock: ''
-        language: nativets
-    - id: dn
-      summary: ''
-      value:
-        type: branchone
-        branches:
-          - summary: if campaign still doesn't exist
-            modules: []
-            expr: 'false'
-            parallel: true
-            skip_failure: true
-        default: []
     - id: cz
       summary: ''
       value:
@@ -210,63 +185,91 @@ value:
         branches:
           - summary: if no campaign created on smartlead
             modules:
-              - id: ct
-                summary: create smartlead campaign
+              - id: do
+                summary: create campaign and link to twenty
                 value:
                   type: flow
                   input_transforms:
                     campaign_name:
                       type: javascript
-                      expr: '`${results.bp.name}`'
+                      value: ''
+                      expr: results.bp.name
                     smartlead_api_key:
                       type: javascript
-                      expr: '`${results.cu.smartlead_api_key}`'
-                  path: f/bluewind/brilliant_flow
-              - id: dh
-                summary: add smartleadcampaign id to twenty
-                value:
-                  type: flow
-                  input_transforms:
-                    campaign_id:
-                      type: static
-                      value: results.bp.id
-                    data:
-                      type: javascript
-                      expr: '{"smartlead_campaign_id": `${results.ct.campaign_id}`}'
+                      value: ''
+                      expr: results.cu.smartlead_api_key
                     twenty_api_key:
                       type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
-                  path: f/bluewind/update_campaign_twenty
-              - id: da
-                summary: get smartlead_campaign_id
-                value:
-                  type: rawscript
-                  content: '!inline get_smartlead_campaign_id.inline_script.native.ts'
-                  input_transforms:
-                    smartlead_campaign_id:
+                      value: ''
+                      expr: results.bx.twenty_api_key
+                    twenty_campaign_id:
                       type: javascript
-                      expr: results.ct.campaign_id
-                  lock: ''
-                  language: nativets
-                  tag: ''
+                      value: ''
+                      expr: results.bp.id
+                  path: f/bluewind/create_campaign_and_link_twenty
             expr: >-
               results.bp.smartleadCampaignId === undefined ||
-              results.bp.smartleadCampaignId === null
+              results.bp.smartleadCampaignId === null ||
+              results.bp.smartleadCampaignId === ""
             parallel: true
             skip_failure: true
         default:
-          - id: db
-            summary: get smartlead campaign id
+          - id: dm
+            summary: Get campaign on smartlead
             value:
               type: rawscript
-              content: '!inline get_smartlead_campaign_id_1.inline_script.native.ts'
+              content: '!inline get_campaign_on_smartlead.inline_script.native.ts'
               input_transforms:
-                campaign:
+                smartlead_api_key:
                   type: javascript
-                  expr: results.bp
+                  expr: '`${results.cu.smartlead_api_key}`'
+                smartlead_campaign_id:
+                  type: javascript
+                  expr: results.bp.smartleadCampaignId
               lock: ''
               language: nativets
               tag: ''
+          - id: dp
+            summary: ''
+            value:
+              type: branchone
+              branches:
+                - summary: If campaign not found
+                  modules:
+                    - id: dq
+                      summary: create campaign and link to twenty
+                      value:
+                        type: flow
+                        input_transforms:
+                          campaign_name:
+                            type: javascript
+                            expr: results.bp.name
+                          smartlead_api_key:
+                            type: javascript
+                            expr: results.cu.smartlead_api_key
+                          twenty_api_key:
+                            type: javascript
+                            expr: results.bx.twenty_api_key
+                          twenty_campaign_id:
+                            type: javascript
+                            expr: results.bp.id
+                        path: f/bluewind/create_campaign_and_link_twenty
+                  expr: results.dm.error !== undefined
+                  parallel: true
+                  skip_failure: true
+              default:
+                - id: db
+                  summary: get smartlead campaign id
+                  value:
+                    type: rawscript
+                    content: '!inline get_smartlead_campaign_id.inline_script.native.ts'
+                    input_transforms:
+                      campaign:
+                        type: javascript
+                        expr: results.bp
+                    lock: ''
+                    language: nativets
+                    tag: ''
     - id: cq
       summary: Ask campaign info
       value:
@@ -354,7 +357,7 @@ value:
                   input_transforms:
                     campaign_name:
                       type: javascript
-                      expr: '`${results.bp.campaign_name}`'
+                      expr: '`${results.bp.name}`'
                     twenty_api_key:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
@@ -365,13 +368,13 @@ value:
                   type: flow
                   input_transforms:
                     campaign_name:
-                      type: static
-                      value: results.bp.name
+                      type: javascript
+                      expr: results.bp.name
                     twenty_api_key:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/get_contacts_to_outreach
-            expr: results.di.data.people.length === 0
+            expr: results.di.data.people.edges.length === 0
             parallel: true
             skip_failure: true
         default:
@@ -418,7 +421,8 @@ value:
         iterator:
           type: javascript
           expr: results.cg.data.people.edges
-        parallel: false
+        parallel: true
+        parallelism: 2
         skip_failures: true
   failure_module:
     id: failure
@@ -427,8 +431,13 @@ value:
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
-  order: []
-  properties: {}
+  order:
+    - email_remaining_to_schedule
+  properties:
+    email_remaining_to_schedule:
+      type: number
+      description: ''
+      nullable: false
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
