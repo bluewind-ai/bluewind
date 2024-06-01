@@ -327,6 +327,9 @@ value:
           campaign_name:
             type: javascript
             expr: results.bp.name
+          number_of_contacts_needed:
+            type: javascript
+            expr: flow_input.email_remaining_to_schedule * 2
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
@@ -370,6 +373,8 @@ value:
                     campaign_name:
                       type: javascript
                       expr: results.bp.name
+                    number_of_contacts_needed:
+                      type: static
                     twenty_api_key:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
