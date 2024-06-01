@@ -28,32 +28,55 @@ value:
                   value: '${results.bx.twenty_api_key}'
                   expr: '`${results.bx.twenty_api_key}`'
               path: f/bluewind/count_emails_scheduled
-          - id: dn
-            summary: get email accounts
-            value:
-              type: rawscript
-              content: '!inline get_email_accounts.inline_script.native.ts'
-              input_transforms:
-                smartlead_api_key:
-                  type: javascript
-                  expr: results.cu.smartlead_api_key
-              language: nativets
-              tag: null
-          - id: do
+          - id: dr
             summary: ''
             value:
               type: branchone
               branches:
                 - summary: ''
-                  modules: []
-                  expr: results.dm.data.people.total_count > results.dn.length * 300
+                  modules:
+                    - id: ds
+                      summary: schedule more emails until 10
+                      value:
+                        type: flow
+                        input_transforms:
+                          email_remaining_to_schedule:
+                            type: javascript
+                            expr: >-
+                              Math.max(10 - results.dm.data.people.totalCount,
+                              5)
+                        path: f/bluewind/schedule_more_emails
+                  expr: |
+                    results.dm.data.people.totalCount < 10
               default:
-                - id: dq
-                  summary: schedule more emails
+                - id: dn
+                  summary: get email accounts
                   value:
-                    type: flow
-                    input_transforms: {}
-                    path: f/bluewind/schedule_more_emails
+                    type: rawscript
+                    content: '!inline get_email_accounts.inline_script.native.ts'
+                    input_transforms:
+                      smartlead_api_key:
+                        type: javascript
+                        expr: results.cu.smartlead_api_key
+                    language: nativets
+                    tag: null
+                - id: do
+                  summary: ''
+                  value:
+                    type: branchone
+                    branches:
+                      - summary: ''
+                        modules: []
+                        expr: >-
+                          results.dm.data.people.totalCount > results.dn.length
+                          * 300
+                    default:
+                      - id: dq
+                        summary: schedule more emails
+                        value:
+                          type: flow
+                          input_transforms: {}
+                          path: f/bluewind/schedule_more_emails
         skip_failures: false
   failure_module:
     id: failure
