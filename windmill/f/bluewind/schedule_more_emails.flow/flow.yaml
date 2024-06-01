@@ -37,6 +37,7 @@ value:
         language: nativets
         tag: ''
     - id: dr
+      summary: create or update isEmailValid
       value:
         type: flow
         input_transforms:
@@ -51,9 +52,6 @@ value:
                 objectMetadataId: results.ci.person_obect_metadata,
                 type: "BOOLEAN"
               }
-          object_metadata:
-            type: static
-            value: ''
         path: f/bluewind/create_or_update_twenty_field
     - id: cw
       summary: get id of the campaign object
