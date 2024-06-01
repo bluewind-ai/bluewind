@@ -19,8 +19,8 @@ export async function main(
         email: email,
 
         custom_fields: {
-          subject_line: subject_line,
-          body: body,
+          message_1_subject: subject_line,
+          message_1_body: body,
         },
         linkedin_profile: linkedin_profile,
       },
