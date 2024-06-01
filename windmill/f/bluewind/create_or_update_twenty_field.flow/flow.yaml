@@ -48,15 +48,28 @@ value:
               lock: ''
               language: nativets
 schema:
-  $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
-  order:
-    - field_medatadata
+  additionalProperties: false
   properties:
     field_medatadata:
       type: object
+      additionalProperties: false
       description: ''
-      nullable: false
+      format: ''
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+        description:
+          type: 'null'
+        icon:
+          type: string
+        label:
+          type: string
+        objectMetadataId:
+          type: string
+          format: uuid
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
