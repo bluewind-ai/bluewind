@@ -153,6 +153,7 @@ value:
                       expr: '`${results.cd.subject_line}`'
                   path: f/bluewind/dirt_cheap_flow
               - id: ch
+                summary: update contact twenty
                 value:
                   type: flow
                   input_transforms:
