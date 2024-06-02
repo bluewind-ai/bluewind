@@ -15,7 +15,6 @@ value:
             value: 3
         lock: ''
         language: nativets
-        tag: ''
     - id: a
       summary: get last_migration_date_twenty
       value:
@@ -26,12 +25,41 @@ value:
         language: nativets
         tag: ''
     - id: c
+      summary: ''
       value:
-        type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
-        input_transforms: {}
-        lock: ''
-        language: nativets
+        type: branchone
+        branches:
+          - summary: ''
+            modules:
+              - id: d
+                summary: migrate
+                value:
+                  type: flow
+                  input_transforms: {}
+                  path: f/bluewind/migrate_twenty_fields
+            expr: >-
+              results.a === null || results.a === "null" ||
+              results.a.error_message !== undefined
+            parallel: true
+            skip_failure: true
+        default:
+          - id: e
+            summary: ''
+            value:
+              type: branchone
+              branches:
+                - summary: If migration date doesn't match
+                  modules:
+                    - id: f
+                      summary: migrate
+                      value:
+                        type: flow
+                        input_transforms: {}
+                        path: f/bluewind/migrate_twenty_fields
+                  expr: results.b.expected_last_twenty_migration_date !== results.a
+                  parallel: true
+                  skip_failure: true
+              default: []
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
