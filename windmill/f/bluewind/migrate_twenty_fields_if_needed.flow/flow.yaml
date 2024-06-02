@@ -28,10 +28,7 @@ value:
       value:
         type: rawscript
         content: '!inline inline_script_0.inline_script.native.ts'
-        input_transforms:
-          example_input:
-            type: static
-            value: 3
+        input_transforms: {}
         lock: ''
         language: nativets
 schema:

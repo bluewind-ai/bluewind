@@ -1,16 +1,12 @@
 export async function main() {
-  const response = await fetch(`${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/resources/get_value_interpolated/u/${WM_USERNAME}/last_twenty_migration`, {
-    headers: { Authorization: `Bearer ${WM_TOKEN}` }
-  });
+
 
   const responseClone = response.clone();
 
   try {
-    if (response.status === 200) {
-      return await response.json()
-    } else {
-      return { error_message: `status code: ${response.status}` }
-    }
+    const response = await fetch(`${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/flows/get/f/bluewind/migrate_twenty_fields_if_needed`, {
+      headers: { Authorization: `Bearer ${WM_TOKEN}` }
+    });
   } catch (error) {
     return { error_message: await responseClone.text() };
   }
