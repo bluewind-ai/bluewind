@@ -7,7 +7,6 @@ export async function main() {
 
 
   try {
-
     if (response.status === 200) {
       return await response.json()
     } else {
