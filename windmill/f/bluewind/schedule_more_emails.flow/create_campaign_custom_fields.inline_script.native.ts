@@ -10,7 +10,7 @@ export async function main(twenty_api_key: string, campaign_obect_metadata: stri
     }
   `;
 
-  let variables = {
+  const variables = {
     input: {
       field: {
         description: null,
@@ -23,16 +23,27 @@ export async function main(twenty_api_key: string, campaign_obect_metadata: stri
     }
   };
 
-  let response = await fetch('https://api.twenty.com/metadata', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${twenty_api_key}`,
-    },
-    body: JSON.stringify({
-      query: mutation,
-      variables: variables
-    })
-  });
-  return await response.json();
+  try {
+    const response = await fetch('https://api.twenty.com/metadata', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${twenty_api_key}`,
+      },
+      body: JSON.stringify({
+        query: mutation,
+        variables: variables
+      })
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+
+      throw new Error(`HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
 }

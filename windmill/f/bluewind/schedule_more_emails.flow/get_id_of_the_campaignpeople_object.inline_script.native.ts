@@ -1,7 +1,7 @@
 export async function main(twenty_api_key: string) {
   const query = `
 query {
-  objects {
+  objects(filter: {isCustom: {is: true}}) {
     edges {
       node {
         id
@@ -30,11 +30,11 @@ query {
 
     const data = await response.json();
     const filteredObject = data.data.objects.edges.find(
-      (edge: any) => edge.node.nameSingular === "person"
+      (edge: any) => edge.node.nameSingular === "campaignPerson"
     );
 
     return {
-      person_obect_metadata: filteredObject.node.id
+      campaign_people_object_metadata: filteredObject.node.id
     };
   } catch (error) {
     throw error;

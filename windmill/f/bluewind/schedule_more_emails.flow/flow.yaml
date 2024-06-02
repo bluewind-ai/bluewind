@@ -14,6 +14,28 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_smartlead_api_key
+    - id: dw
+      summary: Create Campaign Object
+      value:
+        type: rawscript
+        content: '!inline create_campaign_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
+    - id: dx
+      summary: Create Campaign People Object
+      value:
+        type: rawscript
+        content: '!inline create_campaign_people_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
     - id: br
       summary: Fetch Campaigns
       value:
@@ -52,6 +74,10 @@ value:
                 objectMetadataId: results.ci.person_obect_metadata,
                 type: "BOOLEAN"
               }
+          twenty_api_key:
+            type: javascript
+            value: '${results.bx.twenty_api_key}'
+            expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_or_update_twenty_field
     - id: ds
       summary: create or update isEmailCatchAll
@@ -69,7 +95,67 @@ value:
                       objectMetadataId: results.ci.person_obect_metadata,
                       type: "BOOLEAN"
                     }
+          twenty_api_key:
+            type: javascript
+            value: '${results.bx.twenty_api_key}'
+            expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_or_update_twenty_field
+    - id: cw
+      summary: get id of the campaign object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_campaign_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: cv
+      summary: Create campaign custom fields
+      value:
+        type: rawscript
+        content: '!inline create_campaign_custom_fields.inline_script.native.ts'
+        input_transforms:
+          campaign_obect_metadata:
+            type: javascript
+            expr: '`${results.cw.campaign_object_metadata}`'
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: dv
+      summary: get id of the campaignpeople object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_campaignpeople_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
+    - id: du
+      summary: Create relation CampaignPeople.person
+      value:
+        type: rawscript
+        content: '!inline create_relation_campaignpeople.person.inline_script.native.ts'
+        input_transforms:
+          campaign_people_object_id:
+            type: javascript
+            expr: results.dv.campaign_people_object_metadata
+          person_object_id:
+            type: javascript
+            expr: results.ci.person_obect_metadata
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
+      continue_on_error: false
     - id: dt
       summary: create or update CampaignStatus
       value:
@@ -106,37 +192,14 @@ value:
                     "value": "EMAIL_SCHEDULED"
                   }
                 ],
-                "objectMetadataId": results.ci.person_obect_metadata,
+                "objectMetadataId": results.dv.campaign_people_object_metadata,
                 "type": "SELECT"
               }
+          twenty_api_key:
+            type: javascript
+            value: '${results.bx.twenty_api_key}'
+            expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_or_update_twenty_field
-    - id: cw
-      summary: get id of the campaign object
-      value:
-        type: rawscript
-        content: '!inline get_id_of_the_campaign_object.inline_script.native.ts'
-        input_transforms:
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
-        lock: ''
-        language: nativets
-        tag: ''
-    - id: cv
-      summary: Create campaign custom fields
-      value:
-        type: rawscript
-        content: '!inline create_campaign_custom_fields.inline_script.native.ts'
-        input_transforms:
-          campaign_obect_metadata:
-            type: javascript
-            expr: '`${results.cw.campaign_object_metadata}`'
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
-        lock: ''
-        language: nativets
-        tag: ''
     - id: cf
       summary: create person custom fields
       value:
@@ -145,7 +208,7 @@ value:
         input_transforms:
           person_obect_metadata:
             type: javascript
-            expr: '`${results.ci.person_obect_metadata}`'
+            expr: results.ci.person_obect_metadata
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'

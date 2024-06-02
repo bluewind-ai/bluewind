@@ -1,25 +1,38 @@
 export async function main(twenty_api_key: string) {
   const query = `
-query {
-  objects {
-    edges {
-      node {
+    mutation CreateOneObjectMetadataItem($input: CreateOneObjectInput!) {
+      createOneObject(input: $input) {
         id
-        nameSingular
+        dataSourceId
       }
     }
-  }
-}
-`;
+  `;
+
+  const variables = {
+    "input": {
+      "object": {
+        "description": "",
+        "icon": "IconAd",
+        "labelPlural": "Campaigns",
+        "labelSingular": "Campaign",
+        "nameSingular": "campaign",
+        "namePlural": "campaigns"
+      }
+    }
+  };
 
   try {
     const response = await fetch('https://api.twenty.com/metadata', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': `Bearer ${twenty_api_key}`,
       },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
     });
 
     if (!response.ok) {
@@ -28,14 +41,7 @@ query {
       throw new Error(`HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`);
     }
 
-    const data = await response.json();
-    const filteredObject = data.data.objects.edges.find(
-      (edge: any) => edge.node.nameSingular === "person"
-    );
-
-    return {
-      person_obect_metadata: filteredObject.node.id
-    };
+    return await response.json();
   } catch (error) {
     throw error;
   }
