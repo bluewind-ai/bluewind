@@ -4,6 +4,6 @@ export async function main() {
       headers: { Authorization: `Bearer ${WM_TOKEN}` }
     });
   } catch (error) {
-    return { error_message: await responseClone.text() };
+    throw error;
   }
 }
