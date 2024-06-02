@@ -3,13 +3,11 @@ description: ''
 value:
   modules:
     - id: a
+      summary: get last_migration_date_twenty
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
-        input_transforms:
-          example_input:
-            type: static
-            value: 3
+        content: '!inline get_last_migration_date_twenty.inline_script.native.ts'
+        input_transforms: {}
         lock: ''
         language: nativets
         tag: ''
