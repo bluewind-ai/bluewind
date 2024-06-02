@@ -2,6 +2,14 @@ summary: migrate_twenty_fields
 description: ''
 value:
   modules:
+    - id: dy
+      summary: fetch last_twenty_migration resource
+      value:
+        type: rawscript
+        content: '!inline fetch_last_twenty_migration_resource.inline_script.native.ts'
+        input_transforms: {}
+        lock: ''
+        language: nativets
     - id: bx
       summary: Fetch twenty api key
       value:
@@ -138,6 +146,7 @@ value:
             expr: results.bx.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
     - id: du
       summary: Create relation CampaignPeople.person
       value:
@@ -212,6 +221,17 @@ value:
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: dz
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          example_input:
+            type: static
+            value: 3
         lock: ''
         language: nativets
         tag: ''
