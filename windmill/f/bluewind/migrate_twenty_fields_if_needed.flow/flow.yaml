@@ -24,6 +24,16 @@ value:
         lock: ''
         language: nativets
         tag: ''
+    - id: c
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          example_input:
+            type: static
+            value: 3
+        lock: ''
+        language: nativets
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
