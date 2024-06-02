@@ -9,7 +9,9 @@ export async function main() {
       throw new Error(`HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`);
     }
     const data = await response.json()
-    return await response.json()
+    return {
+      edited_at: data.edited_at
+    }
   } catch (error) {
     throw error;
   }
