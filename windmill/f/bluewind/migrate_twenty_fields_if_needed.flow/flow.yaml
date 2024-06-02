@@ -2,6 +2,19 @@ summary: ''
 description: ''
 value:
   modules:
+    - id: b
+      summary: get expected_last_twenty_migration_date
+      value:
+        type: rawscript
+        content: >-
+          !inline
+          get_expected_last_twenty_migration_date.inline_script.native.ts
+        input_transforms:
+          example_input:
+            type: static
+            value: 3
+        lock: ''
+        language: nativets
     - id: a
       summary: get last_migration_date_twenty
       value:
