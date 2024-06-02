@@ -1,5 +1,5 @@
 export async function main() {
-  const response = await fetch(`${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/resources/get_value_interpolated/u/${WM_USERNAME}/last_twenty_migration`, {
+  const response = await fetch(`${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/resources/get_value_interpolated/u/${WM_USERNAME}/migration_edited_at`, {
     headers: { Authorization: `Bearer ${WM_TOKEN}` }
   });
 
