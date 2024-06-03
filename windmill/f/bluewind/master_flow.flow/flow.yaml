@@ -41,18 +41,17 @@ value:
               branches:
                 - summary: ''
                   modules:
-                    - id: ds
-                      summary: schedule more emails until 10
+                    - id: du
+                      summary: schedule until reach 10 emails
                       value:
                         type: flow
                         input_transforms:
                           email_remaining_to_schedule:
                             type: javascript
                             expr: >-
-                              Math.max(10 - results.dm.data.people.totalCount,
-                              5)
+                              Math.max(10 -
+                              results.dm.data.campaignsPeople.totalCount, 5)
                         path: f/bluewind/schedule_more_emails
-                      continue_on_error: false
                   expr: |
                     results.dm.data.campaignsPeople.totalCount < 10
               default:
@@ -78,11 +77,16 @@ value:
                           results.dm.data.people.totalCount > results.dn.length
                           * 300
                     default:
-                      - id: dq
-                        summary: schedule more emails
+                      - id: dv
+                        summary: schedule until 300 emails
                         value:
                           type: flow
-                          input_transforms: {}
+                          input_transforms:
+                            email_remaining_to_schedule:
+                              type: javascript
+                              expr: >-
+                                Math.max(10 -
+                                results.dm.data.campaignsPeople.totalCount, 5)
                           path: f/bluewind/schedule_more_emails
         skip_failures: false
   failure_module:
