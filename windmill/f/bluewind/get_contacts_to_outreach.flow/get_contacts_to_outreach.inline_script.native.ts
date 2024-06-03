@@ -1,37 +1,47 @@
-export async function main(twenty_api_key: string, campaign_name: string, page_size: number) {
-  const query = `query FindManyPeople {
-  people(first: ${page_size}) {
-    totalCount
-    __typename
+export async function main(twenty_api_key: string, campaign_id: string, number_of_contacts_needed: number) {
+  const query = `query FindManyCampaignsPeople($filter: CampaignPersonFilterInput) {
+  campaignsPeople(first: ${number_of_contacts_needed}, filter: $filter) {
     edges {
       node {
-        	name {
-          firstName
-          lastName
-        }
-        email
-          linkedinLink{
-          label
-          url
-        }
-        jobTitle
-        phone
-        city
-        avatarUrl
-        position
         id
-        createdAt
-        updatedAt
-        companyId
-        isEmailCatchAll
-        isEmailValid
+        person {
+          name {
+            firstName
+            lastName
+          }
+          email
+          linkedinLink {
+            label
+            url
+          }
+          jobTitle
+          phone
+          city
+          avatarUrl
+          position
+          id
+          createdAt
+          updatedAt
+          companyId
+          isEmailCatchAll
+          isEmailValid
+        }
       }
     }
   }
-}
-`;
+}`;
 
   let variables = {
+    "filter": {
+      "campaignStatus": {
+        "in": [
+          "SOURCED"
+        ]
+      },
+      "campaignId": {
+        "eq": campaign_id
+      }
+    }
   };
 
   let response = await fetch('https://api.twenty.com/graphql', {
