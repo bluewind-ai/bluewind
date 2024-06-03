@@ -25,16 +25,16 @@ export async function main(
     "input": {
       "relation": {
         "fromDescription": null,
-        "fromIcon": "IconUsers",
-        "fromLabel": "person",
-        "fromName": "person",
-        "fromObjectMetadataId": campaign_people_object_id,
+        "fromIcon": "IconAds",
+        "fromLabel": "campaigns",
+        "fromName": "campaigns",
+        "fromObjectMetadataId": person_object_id,
         "relationType": "ONE_TO_MANY",
         "toDescription": null,
-        "toIcon": "IconAds",
-        "toLabel": "campaigns",
-        "toName": "campaigns",
-        "toObjectMetadataId": person_object_id
+        "toIcon": "IconUsers",
+        "toLabel": "person",
+        "toName": "person",
+        "toObjectMetadataId": campaign_people_object_id
       }
     }
   };
