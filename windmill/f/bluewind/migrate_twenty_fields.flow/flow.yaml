@@ -38,16 +38,7 @@ value:
             expr: results.bx.twenty_api_key
         lock: ''
         language: nativets
-    - id: br
-      summary: Fetch Campaigns
-      value:
-        type: flow
-        input_transforms:
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
-        path: f/bluewind/immaculate_flow
-      continue_on_error: false
+        tag: ''
     - id: ci
       summary: get id of the person object
       value:

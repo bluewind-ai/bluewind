@@ -1,7 +1,7 @@
 export async function main(twenty_api_key: string) {
   const query = `
 query {
-  objects {
+  objects(paging: { first: 1000 }) {
     edges {
       node {
         id
