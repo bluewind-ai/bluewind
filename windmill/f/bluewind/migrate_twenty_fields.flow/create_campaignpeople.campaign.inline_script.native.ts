@@ -3,7 +3,7 @@
 export async function main(
   twenty_api_key: string,
   campaign_people_object_id: string,
-  person_object_id: string
+  campaign_object_id: string
 ) {
   const mutation = `
   mutation CreateOneRelationMetadata($input: CreateOneRelationInput!) {
@@ -26,15 +26,15 @@ export async function main(
       "relation": {
         "fromDescription": null,
         "fromIcon": "IconUsers",
-        "fromLabel": "person",
-        "fromName": "person",
+        "fromLabel": "campaign",
+        "fromName": "campaign",
         "fromObjectMetadataId": campaign_people_object_id,
         "relationType": "ONE_TO_MANY",
         "toDescription": null,
         "toIcon": "IconAds",
-        "toLabel": "campaigns",
-        "toName": "campaigns",
-        "toObjectMetadataId": person_object_id
+        "toLabel": "people",
+        "toName": "people",
+        "toObjectMetadataId": campaign_object_id
       }
     }
   };

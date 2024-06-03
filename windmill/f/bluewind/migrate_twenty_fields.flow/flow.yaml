@@ -152,6 +152,23 @@ value:
         language: nativets
         tag: ''
       continue_on_error: false
+    - id: dz
+      summary: Create CampaignPeople.campaign
+      value:
+        type: rawscript
+        content: '!inline create_campaignpeople.campaign.inline_script.native.ts'
+        input_transforms:
+          campaign_object_id:
+            type: javascript
+            expr: results.cw.campaign_object_metadata
+          campaign_people_object_id:
+            type: javascript
+            expr: results.dv.campaign_people_object_metadata
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
     - id: dt
       summary: create CampaignStatus
       value:
