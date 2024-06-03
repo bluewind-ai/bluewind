@@ -16,12 +16,6 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_twenty_api_key
-    - id: cu
-      summary: fetch smartlead api key
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/fetch_smartlead_api_key
     - id: dw
       summary: Create Campaign Object
       value:
