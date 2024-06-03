@@ -1,11 +1,15 @@
 export async function main(twenty_api_key: string) {
   const query = `
                   query {
-                    fields(filter: { isCustom: { is: true } }) {
+                    fields(filter: { isCustom: { is: true }}) {
                       edges {
                         node {
                           id
                           name
+                          type
+                          relationDefinition {
+                            relationId
+                          }
                         }
                       }
                     }
@@ -25,7 +29,10 @@ export async function main(twenty_api_key: string) {
     if (!response.ok) {
       throw ("error")
     }
-    return await response.json()
+    const data = await response.json()
+    // return data
+    return data.data.fields.edges.filter(obj => obj.node.type === "RELATION");
+
   } catch (error) {
     throw error
   }

@@ -1,17 +1,15 @@
-export async function main(twenty_api_key: string, people_ids_to_delete: Array) {
-  const query = `mutation DeleteManyPeople($filter: PersonFilterInput!) {
-  deletePeople(filter: $filter) {
-    id
-    __typename
+export async function main(twenty_api_key: string) {
+  const query = `query FindManyCampaigns {
+  campaigns(first: 10000) {
+    edges {
+      node {
+        id
+      }
+    }
   }
 }`;
 
   let variables = {
-    "filter": {
-      "id": {
-        "in": people_ids_to_delete
-      }
-    }
   };
 
   let response = await fetch('https://api.twenty.com/graphql', {
@@ -27,5 +25,9 @@ export async function main(twenty_api_key: string, people_ids_to_delete: Array) 
       variables,
     }),
   });
-  return await response.json()
+  const data = await response.json()
+  if (data.data !== undefined) {
+    return data.data.campaigns.edges.map(obj => obj.node.id);
+  }
+  return []
 }

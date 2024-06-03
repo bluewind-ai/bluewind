@@ -67,6 +67,7 @@ value:
             expr: results.f.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
     - id: k
       summary: delete all people
       value:
@@ -81,11 +82,63 @@ value:
             expr: results.f.twenty_api_key
         lock: ''
         language: nativets
-    - id: e
-      summary: find all custom fields
+        tag: ''
+    - id: m
+      summary: Get all campaignPeople ids
       value:
         type: rawscript
-        content: '!inline find_all_custom_fields.inline_script.native.ts'
+        content: '!inline get_all_campaignpeople_ids.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: results.f.twenty_api_key
+        lock: ''
+        language: nativets
+      continue_on_error: true
+    - id: n
+      summary: delete all campaign people
+      value:
+        type: rawscript
+        content: '!inline delete_all_campaign_people.inline_script.native.ts'
+        input_transforms:
+          campaign_people_ids_to_delete:
+            type: javascript
+            expr: results.m
+          twenty_api_key:
+            type: javascript
+            expr: results.f.twenty_api_key
+        lock: ''
+        language: nativets
+    - id: o
+      summary: Get all campaigns
+      value:
+        type: rawscript
+        content: '!inline get_all_campaigns.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: results.f.twenty_api_key
+        lock: ''
+        language: nativets
+    - id: p
+      summary: delete all campaigns
+      value:
+        type: rawscript
+        content: '!inline delete_all_campaigns.inline_script.native.ts'
+        input_transforms:
+          campaigns_ids_to_delete:
+            type: javascript
+            expr: results.o
+          twenty_api_key:
+            type: javascript
+            expr: results.f.twenty_api_key
+        lock: ''
+        language: nativets
+    - id: e
+      summary: find all relations
+      value:
+        type: rawscript
+        content: '!inline find_all_relations.inline_script.native.ts'
         input_transforms:
           twenty_api_key:
             type: javascript
@@ -98,10 +151,10 @@ value:
         type: forloopflow
         modules:
           - id: i
-            summary: disable
+            summary: disable relation
             value:
               type: rawscript
-              content: '!inline disable.inline_script.native.ts'
+              content: '!inline disable_relation.inline_script.native.ts'
               input_transforms:
                 idToUpdate:
                   type: javascript
@@ -112,30 +165,15 @@ value:
               lock: ''
               language: nativets
               tag: ''
-          - id: h
-            summary: DELETE FIELD
-            value:
-              type: rawscript
-              content: '!inline delete_field.inline_script.native.ts'
-              input_transforms:
-                field_to_delete_id:
-                  type: javascript
-                  expr: flow_input.iter.value.node.id
-                twenty_api_key:
-                  type: javascript
-                  expr: results.f.twenty_api_key
-              lock: ''
-              language: nativets
-              tag: ''
           - id: j
-            summary: 'OR IF RELATION, DELETE '
+            summary: delete relation
             value:
               type: rawscript
-              content: '!inline or_if_relation,_delete_.inline_script.native.ts'
+              content: '!inline delete_relation.inline_script.native.ts'
               input_transforms:
-                field_to_delete_id:
+                relation_to_delete:
                   type: javascript
-                  expr: flow_input.iter.value.node.id
+                  expr: flow_input.iter.value.node.relationDefinition.relationId
                 twenty_api_key:
                   type: javascript
                   expr: results.f.twenty_api_key
@@ -144,9 +182,24 @@ value:
               tag: ''
         iterator:
           type: javascript
-          expr: results.e.data.fields.edges
+          expr: results.e
         parallel: false
         skip_failures: true
+    - id: h
+      summary: DELETE FIELD
+      value:
+        type: rawscript
+        content: '!inline delete_field.inline_script.native.ts'
+        input_transforms:
+          field_to_delete_id:
+            type: javascript
+            expr: flow_input.iter.value.node.id
+          twenty_api_key:
+            type: javascript
+            expr: results.f.twenty_api_key
+        lock: ''
+        language: nativets
+        tag: ''
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object

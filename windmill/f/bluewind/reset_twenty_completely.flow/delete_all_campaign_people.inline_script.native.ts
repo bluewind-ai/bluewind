@@ -1,6 +1,6 @@
-export async function main(twenty_api_key: string, people_ids_to_delete: Array) {
-  const query = `mutation DeleteManyPeople($filter: PersonFilterInput!) {
-  deletePeople(filter: $filter) {
+export async function main(twenty_api_key: string, campaign_people_ids_to_delete: Array) {
+  const query = `mutation DeleteManyCampaignsPeople($filter: CampaignPersonFilterInput!) {
+  deleteCampaignsPeople(filter: $filter) {
     id
     __typename
   }
@@ -9,7 +9,7 @@ export async function main(twenty_api_key: string, people_ids_to_delete: Array) 
   let variables = {
     "filter": {
       "id": {
-        "in": people_ids_to_delete
+        "in": campaign_people_ids_to_delete
       }
     }
   };
