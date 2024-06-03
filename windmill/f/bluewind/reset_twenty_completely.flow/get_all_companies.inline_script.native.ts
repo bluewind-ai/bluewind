@@ -1,6 +1,6 @@
 export async function main(twenty_api_key: string) {
-  const query = `query FindManyCampaignsPeople {
-  campaignsPeople(paging: { first: 1000 }) {
+  const query = `query FindManyCompanies {
+  companies(paging: { first: 10000 }) {
     edges {
       node {
         id
@@ -26,8 +26,8 @@ export async function main(twenty_api_key: string) {
     }),
   });
   const data = await response.json()
-  if (data.data.campaignsPeople !== undefined) {
-    return data.data.campaignsPeople.edges.map(obj => obj.node.id);
+  if (data.data !== undefined) {
+    return data.data.companies.edges.map(obj => obj.node.id);
   }
   return []
 }

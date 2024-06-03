@@ -1,15 +1,17 @@
-export async function main(twenty_api_key: string) {
-  const query = `query FindManyCampaigns {
-  campaigns(paging: { first: 1000 }) {
-    edges {
-      node {
-        id
-      }
-    }
+export async function main(twenty_api_key: string, company_ids_to_delete: Array) {
+  const query = `mutation DeleteManyCompanies($filter: CompanyFilterInput!) {
+  deleteCompanies(filter: $filter) {
+    id
+    __typename
   }
 }`;
 
   let variables = {
+    "filter": {
+      "id": {
+        "in": company_ids_to_delete
+      }
+    }
   };
 
   let response = await fetch('https://api.twenty.com/graphql', {
@@ -25,9 +27,5 @@ export async function main(twenty_api_key: string) {
       variables,
     }),
   });
-  const data = await response.json()
-  if (data.data !== undefined) {
-    return data.data.campaigns.edges.map(obj => obj.node.id);
-  }
-  return []
+  return await response.json()
 }
