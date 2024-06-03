@@ -264,15 +264,17 @@ value:
         parallel: false
         skip_failures: true
     - id: x
+      summary: get all custom objects
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: '!inline get_all_custom_objects.inline_script.native.ts'
         input_transforms:
           twenty_api_key:
             type: javascript
             expr: results.f.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
       continue_on_error: false
     - id: y
       value:
@@ -292,6 +294,7 @@ value:
                   expr: results.f.twenty_api_key
               lock: ''
               language: nativets
+              tag: ''
           - id: aa
             summary: delete object
             value:
@@ -299,13 +302,14 @@ value:
               content: '!inline delete_object.inline_script.native.ts'
               input_transforms:
                 object_to_delete_id:
-                  type: static
-                  value: null
+                  type: javascript
+                  expr: flow_input.iter.value.node.id
                 twenty_api_key:
                   type: javascript
-                  expr: flow_input.twenty_api_key
+                  expr: results.f.twenty_api_key
               lock: ''
               language: nativets
+              tag: ''
         iterator:
           type: javascript
           expr: results.x
