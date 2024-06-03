@@ -26,7 +26,6 @@ export async function main(twenty_api_key: string) {
     }),
   });
   const data = await response.json()
-  return data
   if (data.data !== undefined) {
     return data.data.companies.edges.map(obj => obj.node.id);
   }

@@ -26,7 +26,5 @@ export async function main(twenty_api_key: string) {
     }),
   });
   const data = await response.json()
-
   return data.data.people.edges.map(obj => obj.node.id);
-
 }
