@@ -1,0 +1,12 @@
+description: Date of last migration of twenty
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - twenty_last_migrated_at_iso_8601
+  properties:
+    twenty_last_migrated_at_iso_8601:
+      type: string
+      description: ''
+      default: ''
+  required: []
