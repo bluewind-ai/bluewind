@@ -129,16 +129,21 @@ value:
         input_transforms:
           campaign_name:
             type: javascript
-            expr: results.az
+            expr: flow_input.campaign_name
           data:
             type: javascript
             expr: results.az
+          twenty_campaign_id:
+            type: javascript
+            expr: flow_input.twenty_campaign_id
         lock: ''
         language: nativets
+        tag: ''
     - id: bc
+      summary: create campaignsPeople
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: '!inline create_campaignspeople.inline_script.native.ts'
         input_transforms:
           data:
             type: javascript
@@ -148,6 +153,7 @@ value:
             expr: flow_input.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
