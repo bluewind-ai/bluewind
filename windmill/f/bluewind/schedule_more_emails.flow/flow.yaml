@@ -288,7 +288,7 @@ value:
         input_transforms:
           data:
             type: javascript
-            expr: results.di.data.people.edges
+            expr: results.di.data.campaignsPeople.edges
         lock: ''
         language: nativets
         tag: ''
@@ -391,6 +391,9 @@ schema:
     email_remaining_to_schedule:
       type: number
       description: ''
+      dateFormat: ''
+      default: 5
+      format: ''
       nullable: false
   required: []
 visible_to_runner_only: false
