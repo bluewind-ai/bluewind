@@ -24,14 +24,14 @@ mutation CreateOneRelationMetadata($input: CreateOneRelationInput!) {
   const variables = {
     input: {
       relation: {
-        "fromIcon": "IconUser",
-        "fromLabel": "campaign",
-        "fromName": "campaign",
+        "fromIcon": "IconUsers",
+        "fromLabel": "person",
+        "fromName": "person",
         "fromObjectMetadataId": campaign_people_object_id,
         "relationType": "ONE_TO_MANY",
-        "toIcon": "IconUsers",
-        "toLabel": "person",
-        "toName": "person",
+        "toIcon": "IconAds",
+        "toLabel": "campaigns",
+        "toName": "campaigns",
         "toObjectMetadataId": person_object_id
       }
     }

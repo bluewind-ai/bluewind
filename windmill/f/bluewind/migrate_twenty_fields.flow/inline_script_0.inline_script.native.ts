@@ -2,4 +2,5 @@
 //import * as wmill from './windmill.ts'
 
 export async function main(example_input: number = 3) {
+  
 }

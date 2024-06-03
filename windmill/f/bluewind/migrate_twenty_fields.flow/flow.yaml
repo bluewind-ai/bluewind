@@ -27,6 +27,7 @@ value:
             expr: results.bx.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
     - id: dx
       summary: Create Campaign People Object
       value:
@@ -149,9 +150,10 @@ value:
             expr: results.bx.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
       continue_on_error: false
     - id: dt
-      summary: create or update CampaignStatus
+      summary: create CampaignStatus
       value:
         type: flow
         input_transforms:
@@ -194,21 +196,6 @@ value:
             value: '${results.bx.twenty_api_key}'
             expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_or_update_twenty_field
-    - id: cf
-      summary: create person custom fields
-      value:
-        type: rawscript
-        content: '!inline create_person_custom_fields.inline_script.native.ts'
-        input_transforms:
-          person_obect_metadata:
-            type: javascript
-            expr: results.ci.person_obect_metadata
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
-        lock: ''
-        language: nativets
-        tag: ''
     - id: dz
       value:
         type: rawscript
@@ -219,7 +206,6 @@ value:
             value: 3
         lock: ''
         language: nativets
-        tag: ''
   failure_module:
     id: failure
     value:
