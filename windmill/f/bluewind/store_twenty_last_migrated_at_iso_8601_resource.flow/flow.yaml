@@ -3,13 +3,13 @@ description: ''
 value:
   modules:
     - id: a
+      summary: store_twenty_last_migrated_at_iso_8601_resource
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
-        input_transforms:
-          example_input:
-            type: static
-            value: 3
+        content: >-
+          !inline
+          store_twenty_last_migrated_at_iso_8601_resource.inline_script.native.ts
+        input_transforms: {}
         lock: ''
         language: nativets
         tag: ''
