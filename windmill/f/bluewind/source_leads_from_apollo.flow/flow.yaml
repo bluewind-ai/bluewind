@@ -154,6 +154,7 @@ schema:
   order:
     - twenty_api_key
     - campaign_name
+    - twenty_campaign_id
   properties:
     campaign_name:
       type: string
@@ -166,6 +167,11 @@ schema:
       default: ''
       format: ''
       password: true
+    twenty_campaign_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
