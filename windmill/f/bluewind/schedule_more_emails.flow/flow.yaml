@@ -310,6 +310,9 @@ value:
                     twenty_api_key:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
+                    twenty_campaign_id:
+                      type: javascript
+                      expr: '`${results.bp.id}`'
                   path: f/bluewind/source_leads_from_apollo
               - id: dj
                 summary: get contacts to outreach
