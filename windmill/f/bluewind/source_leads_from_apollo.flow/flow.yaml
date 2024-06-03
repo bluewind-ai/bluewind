@@ -105,35 +105,49 @@ value:
         language: nativets
         tag: ''
       continue_on_error: false
-    - id: ba
-      summary: ''
+    - id: az
+      summary: Create contacts
       value:
-        type: branchall
-        branches:
-          - modules:
-              - id: az
-                summary: Create contacts
-                value:
-                  type: rawscript
-                  content: '!inline create_contacts.inline_script.native.ts'
-                  input_transforms:
-                    data:
-                      type: javascript
-                      expr: results.ax
-                    twenty_api_key:
-                      type: javascript
-                      expr: flow_input.twenty_api_key
-                  lock: ''
-                  language: nativets
-                  tag: ''
-                continue_on_error: false
-            parallel: true
-            skip_failure: false
-          - summary: ''
-            modules: []
-            parallel: true
-            skip_failure: false
-        parallel: false
+        type: rawscript
+        content: '!inline create_contacts.inline_script.native.ts'
+        input_transforms:
+          data:
+            type: javascript
+            expr: results.ax
+          twenty_api_key:
+            type: javascript
+            expr: flow_input.twenty_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+      continue_on_error: false
+    - id: ba
+      summary: create campaignPeople payload
+      value:
+        type: rawscript
+        content: '!inline create_campaignpeople_payload.inline_script.native.ts'
+        input_transforms:
+          campaign_name:
+            type: javascript
+            expr: results.az
+          data:
+            type: javascript
+            expr: results.az
+        lock: ''
+        language: nativets
+    - id: bc
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          data:
+            type: javascript
+            expr: results.ba
+          twenty_api_key:
+            type: javascript
+            expr: flow_input.twenty_api_key
+        lock: ''
+        language: nativets
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
