@@ -28,7 +28,7 @@ mutation CreateOneRelationMetadata($input: CreateOneRelationInput!) {
         "fromLabel": "person",
         "fromName": "person",
         "fromObjectMetadataId": campaign_people_object_id,
-        "relationType": "ONE_TO_MANY",
+        "relationType": "MANY_TO_ONE",
         "toIcon": "IconAds",
         "toLabel": "campaigns",
         "toName": "campaigns",
