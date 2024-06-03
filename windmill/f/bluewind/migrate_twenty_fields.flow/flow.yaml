@@ -196,23 +196,6 @@ value:
             value: '${results.bx.twenty_api_key}'
             expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_twenty_field
-    - id: ea
-      value:
-        type: flow
-        input_transforms:
-          field_medatadata:
-            type: static
-            value:
-              type: ''
-              name: ''
-              description: ''
-              icon: ''
-              label: ''
-              objectMetadataId: ''
-          twenty_api_key:
-            type: static
-            value: ''
-        path: f/bluewind/create_twenty_field
   failure_module:
     id: failure
     value:
