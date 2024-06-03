@@ -1,6 +1,6 @@
 export async function main(twenty_api_key: string) {
   const query = `query FindManyPeople {
-  people(first: 10000) {
+  people(first: 1000) {
     edges {
       node {
         id

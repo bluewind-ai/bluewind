@@ -112,6 +112,7 @@ value:
             expr: results.f.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
     - id: o
       summary: Get all campaigns
       value:
@@ -150,6 +151,7 @@ value:
             expr: results.f.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
     - id: s
       summary: delete all companies
       value:
@@ -164,6 +166,7 @@ value:
             expr: results.f.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
     - id: e
       summary: find all relations
       value:

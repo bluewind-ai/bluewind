@@ -1,6 +1,6 @@
 export async function main(twenty_api_key: string) {
   const query = `query FindManyCompanies {
-  companies(paging: { first: 10000 }) {
+  companies(first: 1000 ) {
     edges {
       node {
         id
@@ -26,6 +26,7 @@ export async function main(twenty_api_key: string) {
     }),
   });
   const data = await response.json()
+  return data
   if (data.data !== undefined) {
     return data.data.companies.edges.map(obj => obj.node.id);
   }

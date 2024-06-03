@@ -1,6 +1,6 @@
 export async function main(twenty_api_key: string) {
   const query = `query FindManyCampaignsPeople {
-  campaignsPeople(paging: { first: 1000 }) {
+  campaignsPeople(first: 1000 }) {
     edges {
       node {
         id
