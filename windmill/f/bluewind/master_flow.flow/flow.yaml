@@ -3,13 +3,11 @@ description: ''
 value:
   modules:
     - id: dt
-      summary: Get last_twenty_migration
+      summary: migrate twenty if needed
       value:
-        type: rawscript
-        content: '!inline get_last_twenty_migration.inline_script.native.ts'
+        type: flow
         input_transforms: {}
-        lock: ''
-        language: nativets
+        path: f/bluewind/migrate_twenty_if_needed
     - id: bx
       summary: Fetch twenty api key
       value:
