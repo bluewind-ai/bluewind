@@ -26,7 +26,7 @@ export async function main(twenty_api_key: string) {
     }),
   });
   const data = await response.json()
-  if (data.data.campaignsPeople !== undefined) {
+  if (data.data !== undefined) {
     return data.data.campaignsPeople.edges.map(obj => obj.node.id);
   }
   return []

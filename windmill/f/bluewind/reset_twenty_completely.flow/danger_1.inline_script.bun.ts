@@ -6,7 +6,7 @@ export async function main() {
   return {
     resume: resumeUrls["resume"],
     default_args: {
-      instructions: "AGAIN, YOU ARE ABOUT TO REMOVE ALL THE FIELDS IN TWENTY !!!",
+      instructions: "AGAIN, YOU ARE ABOUT TO REMOVE EVERYTHING IN TWENTY !!!",
     }, // optional
     enums: {}, // optional
   };
