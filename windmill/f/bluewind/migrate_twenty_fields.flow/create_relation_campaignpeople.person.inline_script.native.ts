@@ -6,36 +6,40 @@ export async function main(
   person_object_id: string
 ) {
   const mutation = `
-mutation CreateOneRelationMetadata($input: CreateOneRelationInput!) {
-  createOneRelation(input: $input) {
-    id
-    relationType
-    fromObjectMetadataId
-    toObjectMetadataId
-    fromFieldMetadataId
-    toFieldMetadataId
-    createdAt
-    updatedAt
-    __typename
+  mutation CreateOneRelationMetadata($input: CreateOneRelationInput!) {
+    createOneRelation(input: $input) {
+      id
+      relationType
+      fromObjectMetadataId
+      toObjectMetadataId
+      fromFieldMetadataId
+      toFieldMetadataId
+      createdAt
+      updatedAt
+      __typename
+    }
   }
-}
-`;
+  `;
 
   const variables = {
-    input: {
-      relation: {
+    "input": {
+      "relation": {
+        "fromDescription": null,
         "fromIcon": "IconUsers",
-        "fromLabel": "person",
-        "fromName": "person",
+        "fromLabel": "campaigns",
+        "fromName": "campaigns",
         "fromObjectMetadataId": campaign_people_object_id,
-        "relationType": "MANY_TO_ONE",
+        "relationType": "ONE_TO_MANY",
+        "toDescription": null,
         "toIcon": "IconAds",
-        "toLabel": "campaigns",
-        "toName": "campaigns",
-        "toObjectMetadataId": person_object_id
+        "toLabel": "person",
+        "toName": "person",
+        "toObjectMetadataId": campaign_people_object_id
       }
     }
   };
+
+
 
   try {
     const response = await fetch('https://api.twenty.com/metadata', {
