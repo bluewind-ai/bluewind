@@ -1,6 +1,6 @@
 export async function main(twenty_api_key: string, campaign_name: string, page_size: number) {
-  const query = `query FindManyPeople($filter: PersonFilterInput) {
-  people(filter: $filter, first: ${page_size}) {
+  const query = `query FindManyPeople() {
+  people(first: ${page_size}) {
     totalCount
     __typename
     edges {
@@ -34,17 +34,17 @@ export async function main(twenty_api_key: string, campaign_name: string, page_s
 `;
 
   let variables = {
-    "filter": {
-      "campaignStatus": {
-        "in": [
-          "SOURCED"
-        ]
-      },
-      "campaignName": {
-        "eq":
-          campaign_name
-      }
-    }
+    // "filter": {
+    //   "campaignStatus": {
+    //     "in": [
+    //       "SOURCED"
+    //     ]
+    //   },
+    //   "campaignName": {
+    //     "eq":
+    //       campaign_name
+    //   }
+    // }
   };
 
   let response = await fetch('https://api.twenty.com/graphql', {
