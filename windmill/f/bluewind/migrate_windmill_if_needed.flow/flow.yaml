@@ -1,0 +1,47 @@
+summary: migrate_windmill_if_needed
+description: ''
+value:
+  modules:
+    - id: a
+      summary: create twenty resource type
+      value:
+        type: rawscript
+        content: '!inline create_twenty_resource_type.inline_script.native.ts'
+        input_transforms: {}
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: c
+      summary: ''
+      value:
+        type: branchone
+        branches:
+          - summary: resource doesn't exist
+            modules:
+              - id: d
+                summary: migrate twenty fields
+                value:
+                  type: flow
+                  input_transforms: {}
+                  path: f/bluewind/migrate_twenty_fields
+            expr: results.a.error_message !== undefined
+            parallel: true
+            skip_failure: true
+        default: []
+    - id: b
+      summary: store twenty_last_migrated_at_iso_8601 resource
+      value:
+        type: rawscript
+        content: >-
+          !inline
+          store_twenty_last_migrated_at_iso_8601_resource.inline_script.native.ts
+        input_transforms: {}
+        lock: ''
+        language: nativets
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  properties: {}
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
