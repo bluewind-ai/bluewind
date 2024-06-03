@@ -1,6 +1,6 @@
 export async function main(twenty_api_key: string) {
-  const query = `query FindManyPeople($filter: PersonFilterInput) {
-  people(filter: $filter) {
+  const query = `query FindManyCampaignsPeople($filter: CampaignPersonFilterInput) {
+  campaignsPeople(filter: $filter) {
     totalCount
     __typename
   }
