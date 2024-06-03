@@ -2,6 +2,14 @@ summary: Master flow
 description: ''
 value:
   modules:
+    - id: dt
+      summary: Get last_twenty_migration
+      value:
+        type: rawscript
+        content: '!inline get_last_twenty_migration.inline_script.native.ts'
+        input_transforms: {}
+        lock: ''
+        language: nativets
     - id: bx
       summary: Fetch twenty api key
       value:
