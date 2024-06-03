@@ -196,16 +196,23 @@ value:
             value: '${results.bx.twenty_api_key}'
             expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_or_update_twenty_field
-    - id: dz
+    - id: ea
       value:
-        type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        type: flow
         input_transforms:
-          example_input:
+          field_medatadata:
             type: static
-            value: 3
-        lock: ''
-        language: nativets
+            value:
+              type: ''
+              name: ''
+              description: ''
+              icon: ''
+              label: ''
+              objectMetadataId: ''
+          twenty_api_key:
+            type: static
+            value: ''
+        path: f/bluewind/create_or_update_twenty_field
   failure_module:
     id: failure
     value:
