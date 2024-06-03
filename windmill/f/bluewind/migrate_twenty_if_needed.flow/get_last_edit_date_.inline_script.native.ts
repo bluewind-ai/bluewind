@@ -1,5 +1,5 @@
 export async function main() {
-  const response = await fetch(`${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/flows/get/f/bluewind/migrate_twenty_fields_if_needed`, {
+  const response = await fetch(`${BASE_INTERNAL_URL}/api/w/${WM_WORKSPACE}/flows/get/f/bluewind/migrate_twenty_fields`, {
     headers: { Authorization: `Bearer ${WM_TOKEN}` }
   });
   const responseClone = response.clone();

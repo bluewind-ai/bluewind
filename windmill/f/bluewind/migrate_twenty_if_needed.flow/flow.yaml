@@ -24,12 +24,16 @@ value:
                   type: flow
                   input_transforms: {}
                   path: f/bluewind/migrate_twenty_fields
-              - id: k
-                summary: store twenty_last_migrated_at_iso_8601 resource
+              - id: m
+                summary: store twenty_last_migrated_at_iso_8601_resource
                 value:
-                  type: flow
+                  type: rawscript
+                  content: >-
+                    !inline
+                    store_twenty_last_migrated_at_iso_8601_resource.inline_script.native.ts
                   input_transforms: {}
-                  path: f/bluewind/store_twenty_last_migrated_at_iso_8601_resource
+                  lock: ''
+                  language: nativets
             expr: results.a.error_message !== undefined
             parallel: true
             skip_failure: true
@@ -42,10 +46,12 @@ value:
               input_transforms: {}
               lock: ''
               language: nativets
+              tag: ''
           - id: i
+            summary: convert to linux timestamps
             value:
               type: rawscript
-              content: '!inline inline_script_0.inline_script.native.ts'
+              content: '!inline convert_to_linux_timestamps.inline_script.native.ts'
               input_transforms:
                 edit_at:
                   type: javascript
@@ -55,6 +61,7 @@ value:
                   expr: results.a.twenty_last_migrated_at_iso_8601
               lock: ''
               language: nativets
+              tag: ''
           - id: f
             summary: ''
             value:
@@ -65,16 +72,21 @@ value:
                     was updated
                   modules:
                     - id: j
+                      summary: migrate twenty
                       value:
                         type: flow
                         input_transforms: {}
                         path: f/bluewind/migrate_twenty_fields
-                    - id: l
+                    - id: n
+                      summary: update twenty_last_migrated_at_iso_8601_resource
                       value:
-                        type: flow
+                        type: rawscript
+                        content: >-
+                          !inline
+                          update_twenty_last_migrated_at_iso_8601_resource.inline_script.native.ts
                         input_transforms: {}
-                        path: >-
-                          f/bluewind/store_twenty_last_migrated_at_iso_8601_resource
+                        lock: ''
+                        language: nativets
                   expr: >-
                     results.i.twenty_last_migrated_at_iso_8601 <
                     results.i.edit_at
