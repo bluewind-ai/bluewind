@@ -384,7 +384,7 @@ schema:
       type: number
       description: ''
       dateFormat: ''
-      default: 5
+      default: null
       format: ''
       nullable: false
   required: []
