@@ -13,6 +13,17 @@ value:
         lock: ''
         language: nativets
         tag: ''
+    - id: b
+      summary: count number of emails scheduled
+      value:
+        type: rawscript
+        content: '!inline count_number_of_emails_scheduled.inline_script.native.ts'
+        input_transforms:
+          example_input:
+            type: static
+            value: 3
+        lock: ''
+        language: nativets
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
