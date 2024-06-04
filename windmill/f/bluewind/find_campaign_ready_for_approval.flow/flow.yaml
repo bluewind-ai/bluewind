@@ -1,0 +1,22 @@
+summary: Find campaign ready for approval
+description: ''
+value:
+  modules:
+    - id: a
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: static
+            value: null
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  properties: {}
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
