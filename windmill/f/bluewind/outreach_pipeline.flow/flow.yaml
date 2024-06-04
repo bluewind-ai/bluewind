@@ -178,12 +178,12 @@ schema:
   type: object
   additionalProperties: false
   order:
-    - contact
     - campaign_info
     - twenty_api_key
     - leadmagic_api_key
     - smartlead_campaign_id
     - smartlead_api_key
+    - contact
   properties:
     campaign_info:
       type: object
@@ -221,85 +221,6 @@ schema:
       type: object
       description: ''
       format: ''
-      properties:
-        id:
-          type: string
-          format: uuid
-        activityTargets:
-          type: array
-        name:
-          type: object
-          additionalProperties: false
-          properties:
-            firstName:
-              type: string
-            lastName:
-              type: string
-        attachments:
-          type: array
-        avatarUrl:
-          type: string
-        calendarEventParticipants:
-          type: array
-        campaignName:
-          type: string
-        campaignStatus:
-          type: string
-        city:
-          type: string
-        company:
-          type: 'null'
-        companyId:
-          type: 'null'
-        createdAt:
-          type: string
-          format: date-time
-        email:
-          type: string
-          format: email
-        favorites:
-          type: array
-        isEmailCatchAll:
-          type: boolean
-          description: ''
-          default: false
-        isEmailValid:
-          type: boolean
-          description: ''
-          default: false
-        jobTitle:
-          type: string
-        linkedinLink:
-          type: object
-          additionalProperties: false
-          properties:
-            label:
-              type: string
-            url:
-              type: string
-              format: url
-        messageParticipants:
-          type: array
-        phone:
-          type: string
-        pointOfContactForOpportunities:
-          type: array
-        position:
-          type: integer
-        timelineActivities:
-          type: array
-        updatedAt:
-          type: string
-          format: date-time
-        xLink:
-          type: object
-          additionalProperties: false
-          properties:
-            label:
-              type: string
-            url:
-              type: string
-      required: []
     leadmagic_api_key:
       type: string
       description: ''
