@@ -214,6 +214,26 @@ value:
             value: '${results.bx.twenty_api_key}'
             expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_twenty_field
+    - id: ea
+      summary: create isPipelineProcessed
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                description: null,
+                icon: "DatabaseExport",
+                label: "Is Pipeline Processed",
+                name: "isPipelineProcessed",
+                objectMetadataId: results.dv.campaign_people_object_metadata,
+                type: "BOOLEAN"
+              }
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        path: f/bluewind/create_twenty_field
   failure_module:
     id: failure
     value:
