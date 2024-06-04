@@ -40,57 +40,7 @@ value:
               type: branchone
               branches:
                 - summary: ''
-                  modules:
-                    - id: eb
-                      value:
-                        type: flow
-                        input_transforms:
-                          email_remaining_to_schedule:
-                            type: static
-                            value: 10
-                        path: f/bluewind/schedule_more_emails
-                    - id: ea
-                      value:
-                        type: flow
-                        input_transforms:
-                          email_remaining_to_schedule:
-                            type: static
-                            value: 10
-                        path: f/bluewind/schedule_more_emails
-                    - id: dz
-                      value:
-                        type: flow
-                        input_transforms:
-                          email_remaining_to_schedule:
-                            type: javascript
-                            expr: >-
-                              Math.max(10 -
-                              results.dm.data.campaignsPeople.totalCount, 5)
-                        path: f/bluewind/schedule_more_emails
-                      continue_on_error: false
-                    - id: du
-                      summary: schedule until reach 10 emails
-                      value:
-                        type: flow
-                        input_transforms:
-                          email_remaining_to_schedule:
-                            type: javascript
-                            expr: >-
-                              Math.max(10 -
-                              results.dm.data.campaignsPeople.totalCount, 5)
-                        path: f/bluewind/schedule_more_emails
-                    - id: dy
-                      summary: schedule more emails
-                      value:
-                        type: flow
-                        input_transforms:
-                          email_remaining_to_schedule:
-                            type: javascript
-                            expr: >-
-                              Math.max(10 -
-                              results.dm.data.campaignsPeople.totalCount, 5)
-                        path: f/bluewind/schedule_more_emails
-                      continue_on_error: false
+                  modules: []
                   expr: |
                     results.dm.data.campaignsPeople.totalCount < 10
               default:
@@ -122,27 +72,13 @@ value:
                           results.dm.data.campaignsPeople.totalCount >
                           results.dn.length * 300
                     default:
-                      - id: dx
-                        summary: schedule more emails
+                      - id: dz
                         value:
                           type: flow
                           input_transforms:
                             email_remaining_to_schedule:
-                              type: javascript
-                              expr: >-
-                                Math.max(300 -
-                                results.dm.data.campaignsPeople.totalCount, 5)
-                          path: f/bluewind/schedule_more_emails
-                      - id: dv
-                        summary: schedule until 300 emails
-                        value:
-                          type: flow
-                          input_transforms:
-                            email_remaining_to_schedule:
-                              type: javascript
-                              expr: >-
-                                Math.max(10 -
-                                results.dm.data.campaignsPeople.totalCount, 5)
+                              type: static
+                              value: 10
                           path: f/bluewind/schedule_more_emails
         skip_failures: false
   failure_module:
