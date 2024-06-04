@@ -1,10 +1,248 @@
-summary: ''
+summary: migrate twenty fields
 description: ''
 value:
-  modules: []
+  modules:
+    - id: dy
+      summary: fetch last_twenty_migration resource
+      value:
+        type: rawscript
+        content: '!inline fetch_last_twenty_migration_resource.inline_script.native.ts'
+        input_transforms: {}
+        lock: ''
+        language: nativets
+    - id: bx
+      summary: Fetch twenty api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_twenty_api_key
+    - id: dw
+      summary: Create Campaign Object
+      value:
+        type: rawscript
+        content: '!inline create_campaign_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: dx
+      summary: Create Campaign People Object
+      value:
+        type: rawscript
+        content: '!inline create_campaign_people_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: ci
+      summary: get id of the person object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_person_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: dr
+      summary: create or update isEmailValid
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                description: null,
+                icon: "IconUsers",
+                label: "Is Email Valid",
+                name: "isEmailValid",
+                objectMetadataId: results.ci.person_obect_metadata,
+                type: "BOOLEAN"
+              }
+          twenty_api_key:
+            type: javascript
+            value: '${results.bx.twenty_api_key}'
+            expr: '`${results.bx.twenty_api_key}`'
+        path: f/bluewind/create_twenty_field
+    - id: ds
+      summary: create or update isEmailCatchAll
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                      description: null,
+                      icon: "IconUsers",
+                      label: "Is Email Catch All",
+                      name: "isEmailCatchAll",
+                      objectMetadataId: results.ci.person_obect_metadata,
+                      type: "BOOLEAN"
+                    }
+          twenty_api_key:
+            type: javascript
+            value: '${results.bx.twenty_api_key}'
+            expr: '`${results.bx.twenty_api_key}`'
+        path: f/bluewind/create_twenty_field
+    - id: cw
+      summary: get id of the campaign object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_campaign_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: cv
+      summary: Create campaign custom fields
+      value:
+        type: rawscript
+        content: '!inline create_campaign_custom_fields.inline_script.native.ts'
+        input_transforms:
+          campaign_obect_metadata:
+            type: javascript
+            expr: '`${results.cw.campaign_object_metadata}`'
+          twenty_api_key:
+            type: javascript
+            expr: '`${results.bx.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: dv
+      summary: get id of the campaignpeople object
+      value:
+        type: rawscript
+        content: '!inline get_id_of_the_campaignpeople_object.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: du
+      summary: Create relation CampaignPeople.person
+      value:
+        type: rawscript
+        content: '!inline create_relation_campaignpeople.person.inline_script.native.ts'
+        input_transforms:
+          campaign_people_object_id:
+            type: javascript
+            expr: results.dv.campaign_people_object_metadata
+          person_object_id:
+            type: javascript
+            expr: results.ci.person_obect_metadata
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+      continue_on_error: false
+    - id: dz
+      summary: Create CampaignPeople.campaign
+      value:
+        type: rawscript
+        content: '!inline create_campaignpeople.campaign.inline_script.native.ts'
+        input_transforms:
+          campaign_object_id:
+            type: javascript
+            expr: results.cw.campaign_object_metadata
+          campaign_people_object_id:
+            type: javascript
+            expr: results.dv.campaign_people_object_metadata
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: dt
+      summary: create CampaignStatus
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                "description": "Status of this contact in the curent campaign",
+                "icon": "IconUsers",
+                "label": "Campaign Status",
+                "name": "campaignStatus",
+                "options": [
+                  {
+                    "color": "blue",
+                    "id": "5817df78-228d-4d17-a7eb-7875d380034d",
+                    "label": "Sourced",
+                    "position": 0,
+                    "value": "SOURCED"
+                  },
+                  {
+                    "color": "turquoise",
+                    "id": "cd2d4f3f-1404-483a-acf7-935b06fea8d8",
+                    "label": "Unqualified",
+                    "position": 1,
+                    "value": "UNQUALIFIED"
+                  },
+                  {
+                    "color": "green",
+                    "id": "ccf00459-c395-4c7f-aaa0-44cf960805e9",
+                    "label": "Email Scheduled",
+                    "position": 2,
+                    "value": "EMAIL_SCHEDULED"
+                  }
+                ],
+                "objectMetadataId": results.dv.campaign_people_object_metadata,
+                "type": "SELECT"
+              }
+          twenty_api_key:
+            type: javascript
+            value: '${results.bx.twenty_api_key}'
+            expr: '`${results.bx.twenty_api_key}`'
+        path: f/bluewind/create_twenty_field
+    - id: ea
+      summary: create isPipelineProcessed
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                description: null,
+                icon: "DatabaseExport",
+                label: "Is Pipeline Processed",
+                name: "isPipelineProcessed",
+                objectMetadataId: results.dv.campaign_people_object_metadata,
+                type: "BOOLEAN",
+                defaultValue: false
+              }
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        path: f/bluewind/create_twenty_field
+  failure_module:
+    id: failure
+    value:
+      type: identity
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
+  order: []
   properties: {}
   required: []
 visible_to_runner_only: false
