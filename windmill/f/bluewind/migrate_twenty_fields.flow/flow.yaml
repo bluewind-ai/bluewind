@@ -10,6 +10,7 @@ value:
         input_transforms: {}
         lock: ''
         language: nativets
+        tag: ''
     - id: bx
       summary: Fetch twenty api key
       value:
@@ -93,6 +94,66 @@ value:
             type: javascript
             value: '${results.bx.twenty_api_key}'
             expr: '`${results.bx.twenty_api_key}`'
+        path: f/bluewind/create_twenty_field
+    - id: ee
+      summary: create person.emailStatus
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                "description": "Email Status after verification",
+                "defaultValue": "'UNKNOWN'",
+                "icon": "IconUsers",
+                "label": "Email Status",
+                "name": "emailStatus",
+                "options": [
+                  {
+                    "color": "yellow",
+                    "label": "Unknown",
+                    "position": 0,
+                    "value": "UNKNOWN"
+                  },
+                  {
+                    "color": "turquoise",
+                    "label": "Catch-All",
+                    "position": 1,
+                    "value": "CATCH_ALL"
+                  },
+                  {
+                    "color": "green",
+                    "label": "Valid",
+                    "position": 2,
+                    "value": "VALID"
+                  },
+                  {
+                    "color": "blue",
+                    "label": "Valid Catch-All",
+                    "position": 3,
+                    "value": "VALID_CATCH_ALL"
+                  },
+                  {
+                    "color": "red",
+                    "label": "Invalid",
+                    "position": 4,
+                    "value": "INVALID"
+                  },
+                  {
+                    "color": "yellow",
+                    "label": "Invalid Catch-All",
+                    "position": 5,
+                    "value": "INVALID_CATCH_ALL"
+                  }
+                ],
+                "type": "SELECT",
+                "objectMetadataId": results.cw.campaign_object_metadata
+              }
+          twenty_api_key:
+            type: javascript
+            value: '`${results.bx.twenty_api_key}`'
+            expr: '`\`${results.bx.twenty_api_key}\``'
         path: f/bluewind/create_twenty_field
     - id: cw
       summary: get id of the campaign object
