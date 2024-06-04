@@ -152,24 +152,22 @@ value:
                       type: javascript
                       expr: '`${results.cd.subject_line}`'
                   path: f/bluewind/dirt_cheap_flow
-              - id: ch
-                summary: update contact twenty
+              - id: ci
+                summary: Update campaign_person to EMAIL_SCHEDULED
                 value:
-                  type: flow
+                  type: rawscript
+                  content: >-
+                    !inline
+                    update_campaign_person_to_email_scheduled.inline_script.native.ts
                   input_transforms:
-                    contact_id:
+                    campaign_person_id:
                       type: javascript
-                      value: '${flow_input.contact.id}'
-                      expr: '`${flow_input.contact.id}`'
-                    data:
-                      type: static
-                      value:
-                        campaignStatus: EMAIL_SCHEDULED
+                      expr: flow_input.campaign_person_id
                     twenty_api_key:
                       type: javascript
-                      value: ''
                       expr: flow_input.twenty_api_key
-                  path: f/bluewind/update_contact_twenty
+                  lock: ''
+                  language: nativets
             expr: results.cf.isEmailValid
             parallel: true
             skip_failure: true
