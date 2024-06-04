@@ -355,6 +355,9 @@ value:
                 campaign_info:
                   type: javascript
                   expr: results.cr.campaign_info
+                campaign_person_id:
+                  type: javascript
+                  expr: flow_input.iter.value.node.id
                 contact:
                   type: javascript
                   expr: flow_input.iter.value.node.person
