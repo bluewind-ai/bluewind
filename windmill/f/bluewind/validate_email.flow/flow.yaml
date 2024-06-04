@@ -19,6 +19,8 @@ value:
                   language: nativets
                   tag: ''
             expr: flow_input.contact.email === ""
+            parallel: true
+            skip_failure: true
           - summary: If email present
             modules:
               - id: s
@@ -59,6 +61,8 @@ value:
                                       language: nativets
                                       tag: ''
                                 expr: results.bv.email_status === "valid"
+                                parallel: true
+                                skip_failure: true
                               - summary: ''
                                 modules:
                                   - id: u
@@ -76,6 +80,8 @@ value:
                                   results.bv.email_status === "unknown" 
 
 
+                                parallel: true
+                                skip_failure: true
                               - summary: ''
                                 modules:
                                   - id: t
@@ -91,6 +97,8 @@ value:
                                       tag: ''
                                 expr: |
                                   results.bv.email_status === "catch_all"
+                                parallel: true
+                                skip_failure: true
                               - summary: ''
                                 modules:
                                   - id: bw
@@ -107,6 +115,8 @@ value:
                                       tag: ''
                                 expr: |
                                   results.bv.email_status === "valid_catch_all"
+                                parallel: true
+                                skip_failure: true
                             default:
                               - id: ab
                                 value:
@@ -121,6 +131,8 @@ value:
                       expr: >-
                         flow_input.contact.isEmailValid === null &&
                         flow_input.contact.isEmailCatchAll === null
+                      parallel: true
+                      skip_failure: true
                   default:
                     - id: x
                       summary: Return existing values
@@ -138,6 +150,8 @@ value:
                         language: nativets
                         tag: ''
             expr: flow_input.contact.email !== undefined
+            parallel: true
+            skip_failure: true
         default:
           - id: w
             summary: Return empty object
@@ -152,92 +166,13 @@ schema:
   type: object
   additionalProperties: false
   order:
-    - contact
     - leadmagic_api_key
+    - contact
   properties:
     contact:
       type: object
-      additionalProperties: false
       description: ''
       format: ''
-      properties:
-        id:
-          type: string
-          format: uuid
-        activityTargets:
-          type: array
-        name:
-          type: object
-          additionalProperties: false
-          properties:
-            firstName:
-              type: string
-            lastName:
-              type: string
-        attachments:
-          type: array
-        avatarUrl:
-          type: string
-        calendarEventParticipants:
-          type: array
-        campaignName:
-          type: string
-        campaignStatus:
-          type: string
-        city:
-          type: string
-        company:
-          type: 'null'
-        companyId:
-          type: 'null'
-        createdAt:
-          type: string
-          format: date-time
-        email:
-          type: string
-          format: email
-        favorites:
-          type: array
-        isEmailCatchAll:
-          type: boolean
-          description: ''
-          default: false
-        isEmailValid:
-          type: boolean
-          description: ''
-          default: false
-        jobTitle:
-          type: string
-        linkedinLink:
-          type: object
-          additionalProperties: false
-          properties:
-            label:
-              type: string
-            url:
-              type: string
-              format: url
-        messageParticipants:
-          type: array
-        phone:
-          type: string
-        pointOfContactForOpportunities:
-          type: array
-        position:
-          type: integer
-        timelineActivities:
-          type: array
-        updatedAt:
-          type: string
-          format: date-time
-        xLink:
-          type: object
-          additionalProperties: false
-          properties:
-            label:
-              type: string
-            url:
-              type: string
     leadmagic_api_key:
       type: string
       description: ''
