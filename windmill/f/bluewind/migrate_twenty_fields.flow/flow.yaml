@@ -229,7 +229,7 @@ value:
                 name: "isPipelineProcessed",
                 objectMetadataId: results.dv.campaign_people_object_metadata,
                 type: "BOOLEAN",
-                default: true
+                defaultValue: true
               }
           twenty_api_key:
             type: javascript
