@@ -20,9 +20,9 @@ value:
         type: rawscript
         content: '!inline count_number_of_emails_scheduled.inline_script.native.ts'
         input_transforms:
-          example_input:
-            type: javascript
-            expr: flow_input.twenty_api_key
+          data:
+            type: static
+            value: null
         lock: ''
         language: nativets
 schema:
