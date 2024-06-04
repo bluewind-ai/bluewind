@@ -72,7 +72,7 @@ value:
                   value:
                     type: branchone
                     branches:
-                      - summary: ''
+                      - summary: we didn't reach 300 emails scheduled
                         modules:
                           - id: dw
                             summary: create one email account
