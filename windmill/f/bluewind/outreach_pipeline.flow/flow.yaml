@@ -184,6 +184,7 @@ schema:
     - smartlead_campaign_id
     - smartlead_api_key
     - contact
+    - campaign_person_id
   properties:
     campaign_info:
       type: object
@@ -217,6 +218,11 @@ schema:
           type: string
         sender_last_name:
           type: string
+    campaign_person_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
     contact:
       type: object
       description: ''
