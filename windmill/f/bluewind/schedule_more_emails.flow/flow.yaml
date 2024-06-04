@@ -384,9 +384,9 @@ schema:
       type: number
       description: ''
       dateFormat: ''
-      default: null
       format: ''
       nullable: false
-  required: []
+  required:
+    - email_remaining_to_schedule
 visible_to_runner_only: false
 ws_error_handler_muted: false
