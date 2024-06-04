@@ -177,17 +177,19 @@ schema:
   type: object
   additionalProperties: false
   order:
-    - contact
     - campaign_info
     - twenty_api_key
     - leadmagic_api_key
     - smartlead_api_key
     - campaign_person_id
     - smartlead_campaign_id
+    - contact
   properties:
     campaign_info:
       type: object
       additionalProperties: false
+      description: ''
+      format: ''
       properties:
         block_1:
           type: string
@@ -217,69 +219,28 @@ schema:
           type: string
     campaign_person_id:
       type: string
+      description: ''
       format: uuid
     contact:
       type: object
       description: ''
-      dateFormat: ''
       format: ''
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: object
-          additionalProperties: false
-          properties:
-            firstName:
-              type: string
-            lastName:
-              type: string
-        avatarUrl:
-          type: string
-        city:
-          type: string
-        companyId:
-          type: 'null'
-        createdAt:
-          type: string
-          format: date-time
-        email:
-          type: string
-          format: email
-        isEmailCatchAll:
-          type: 'null'
-        isEmailValid:
-          type: 'null'
-          description: ''
-          default: ''
-        jobTitle:
-          type: string
-        linkedinLink:
-          type: object
-          additionalProperties: false
-          properties:
-            label:
-              type: string
-            url:
-              type: string
-              format: url
-        phone:
-          type: string
-        position:
-          type: integer
-        updatedAt:
-          type: string
-          format: date-time
-      required: []
     leadmagic_api_key:
       type: string
+      description: ''
+      format: ''
     smartlead_api_key:
       type: string
+      description: ''
+      format: ''
     smartlead_campaign_id:
       type: string
+      description: ''
+      format: ''
     twenty_api_key:
       type: string
+      description: ''
+      format: ''
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
