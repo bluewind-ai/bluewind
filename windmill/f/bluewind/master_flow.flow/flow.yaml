@@ -52,6 +52,17 @@ value:
                               Math.max(10 -
                               results.dm.data.campaignsPeople.totalCount, 5)
                         path: f/bluewind/schedule_more_emails
+                    - id: dy
+                      summary: schedule more emails
+                      value:
+                        type: flow
+                        input_transforms:
+                          email_remaining_to_schedule:
+                            type: javascript
+                            expr: >-
+                              Math.max(10 -
+                              results.dm.data.campaignsPeople.totalCount, 5)
+                        path: f/bluewind/schedule_more_emails
                   expr: |
                     results.dm.data.campaignsPeople.totalCount < 10
               default:
@@ -80,9 +91,20 @@ value:
                               input_transforms: {}
                               path: f/bluewind/create_one_email_account
                         expr: >-
-                          results.dm.data.people.totalCount > results.dn.length
-                          * 300
+                          results.dm.data.campaignsPeople.totalCount >
+                          results.dn.length * 300
                     default:
+                      - id: dx
+                        summary: schedule more emails
+                        value:
+                          type: flow
+                          input_transforms:
+                            email_remaining_to_schedule:
+                              type: javascript
+                              expr: >-
+                                Math.max(300 -
+                                results.dm.data.campaignsPeople.totalCount, 5)
+                          path: f/bluewind/schedule_more_emails
                       - id: dv
                         summary: schedule until 300 emails
                         value:
