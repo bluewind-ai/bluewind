@@ -106,21 +106,61 @@ value:
         lock: ''
         language: nativets
         tag: ''
-    - id: cv
-      summary: Create campaign custom fields
+    - id: ec
+      summary: create smartlead campaignId
       value:
-        type: rawscript
-        content: '!inline create_campaign_custom_fields.inline_script.native.ts'
+        type: flow
         input_transforms:
-          campaign_obect_metadata:
+          field_medatadata:
             type: javascript
-            expr: '`${results.cw.campaign_object_metadata}`'
+            expr: |-
+              {
+                      "description": null,
+                      "icon": "IconUsers",
+                      "label": "Smartlead Campaign Id",
+                      "name": "smartleadCampaignId",
+                "objectMetadataId": results.cw.campaign_object_metadata,
+                      "type": "TEXT"
+                    }
           twenty_api_key:
             type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
-        lock: ''
-        language: nativets
-        tag: ''
+            expr: results.bx.twenty_api_key
+        path: f/bluewind/create_twenty_field
+    - id: ed
+      summary: Create campaignStatus
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                "description": "Status of the campaign",
+                "icon": "IconUsers",
+                "label": "Campaign Status",
+                "name": "campaignStatus",
+                "options": [
+                  {
+                    "color": "blue",
+                    "label": "Drafted",
+                    "position": 0,
+                    "value": "DRAFTED"
+                  },
+                  {
+                    "color": "turquoise",
+                    "label": "Active",
+                    "position": 1,
+                    "value": "ACTIVE"
+                  }
+                ],
+                "type": "SELECT",
+                "objectMetadataId": results.cw.campaign_object_metadata,
+
+              }
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        path: f/bluewind/create_twenty_field
     - id: dv
       summary: get id of the campaignpeople object
       value:
@@ -206,8 +246,9 @@ value:
                     "value": "EMAIL_SCHEDULED"
                   }
                 ],
-                "objectMetadataId": results.dv.campaign_people_object_metadata,
-                "type": "SELECT"
+                "type": "SELECT",
+
+                "objectMetadataId": results.dv.campaign_people_object_metadata
               }
           twenty_api_key:
             type: javascript
