@@ -51,6 +51,7 @@ value:
                               Math.max(10 -
                               results.dm.data.campaignsPeople.totalCount, 5)
                         path: f/bluewind/schedule_more_emails
+                      continue_on_error: false
                     - id: du
                       summary: schedule until reach 10 emails
                       value:
