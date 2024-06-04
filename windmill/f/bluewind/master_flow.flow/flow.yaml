@@ -40,7 +40,18 @@ value:
               type: branchone
               branches:
                 - summary: ''
-                  modules: []
+                  modules:
+                    - id: ea
+                      summary: reach 10 emails scheduled
+                      value:
+                        type: flow
+                        input_transforms:
+                          email_remaining_to_schedule:
+                            type: javascript
+                            expr: >-
+                              Math.max(results.dm.data.campaignsPeople.totalCount,
+                              5)
+                        path: f/bluewind/schedule_more_emails
                   expr: |
                     results.dm.data.campaignsPeople.totalCount < 10
               default:
@@ -73,6 +84,7 @@ value:
                           results.dn.length * 300
                     default:
                       - id: dz
+                        summary: reach 300 emails scheduled
                         value:
                           type: flow
                           input_transforms:
@@ -80,6 +92,7 @@ value:
                               type: static
                               value: 10
                           path: f/bluewind/schedule_more_emails
+                        continue_on_error: false
         skip_failures: false
   failure_module:
     id: failure
