@@ -36,7 +36,7 @@ schema:
           type: string
         description:
           type: 'null'
-        default:
+        defaultValue:
           description: ''
         icon:
           type: string
