@@ -8,15 +8,23 @@ value:
         content: '!inline inline_script_0.inline_script.native.ts'
         input_transforms:
           twenty_api_key:
-            type: static
-            value: null
+            type: javascript
+            expr: flow_input.twenty_api_key
         lock: ''
         language: nativets
         tag: ''
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
-  properties: {}
+  order:
+    - twenty_api_key
+  properties:
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
