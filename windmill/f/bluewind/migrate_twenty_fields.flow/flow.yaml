@@ -136,6 +136,7 @@ value:
             expr: |-
               {
                 "description": "Status of the campaign",
+                "defaultValue": "'DRAFTED'",
                 "icon": "IconUsers",
                 "label": "Campaign Status",
                 "name": "campaignStatus",
