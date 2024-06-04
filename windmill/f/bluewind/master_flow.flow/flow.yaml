@@ -56,6 +56,15 @@ value:
                   expr: |
                     results.dm.data.campaignsPeople.totalCount < 10
               default:
+                - id: ec
+                  summary: find a campaign ready for approval
+                  value:
+                    type: flow
+                    input_transforms:
+                      twenty_api_key:
+                        type: javascript
+                        expr: results.bx.twenty_api_key
+                    path: f/bluewind/find_campaign_ready_for_approval
                 - id: dn
                   summary: get email accounts
                   value:
