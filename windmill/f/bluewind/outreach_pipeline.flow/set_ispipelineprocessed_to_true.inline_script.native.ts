@@ -9,7 +9,7 @@ export async function main(twenty_api_key: string, campaign_person_id: string) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      campaignStatus: "EMAIL_SCHEDULED"
+      isPipelineProcessed: true
     })
   };
   const response = await fetch(url, options);
