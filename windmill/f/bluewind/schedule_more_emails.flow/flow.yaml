@@ -368,7 +368,7 @@ value:
           type: javascript
           expr: results.cg.data.campaignsPeople.edges
         parallel: true
-        parallelism: 2
+        parallelism: 5
         skip_failures: true
   failure_module:
     id: failure
