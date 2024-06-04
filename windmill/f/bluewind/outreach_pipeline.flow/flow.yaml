@@ -135,7 +135,7 @@ value:
                   input_transforms:
                     body:
                       type: javascript
-                      expr: '`${results.cd}`'
+                      expr: '`${results.cd.body}`'
                     email:
                       type: javascript
                       expr: '`${flow_input.contact.email}`'
@@ -150,20 +150,37 @@ value:
                       expr: '`${flow_input.smartlead_campaign_id}`'
                     subject_line:
                       type: javascript
-                      expr: '`${results.by.subject_line}`'
+                      expr: '`${results.cd.subject_line}`'
                   path: f/bluewind/dirt_cheap_flow
             expr: results.cf.isEmailValid
+            parallel: true
+            skip_failure: true
         default: []
+    - id: cj
+      summary: Set isPipelineProcessed to true
+      value:
+        type: rawscript
+        content: '!inline set_ispipelineprocessed_to_true.inline_script.native.ts'
+        input_transforms:
+          campaign_person_id:
+            type: javascript
+            expr: flow_input.campaign_person_id
+          twenty_api_key:
+            type: javascript
+            expr: flow_input.twenty_api_key
+        lock: ''
+        language: nativets
 schema:
   type: object
   additionalProperties: false
   order:
-    - contact
     - campaign_info
     - twenty_api_key
     - leadmagic_api_key
-    - smartlead_campaign_id
     - smartlead_api_key
+    - campaign_person_id
+    - smartlead_campaign_id
+    - contact
   properties:
     campaign_info:
       type: object
@@ -197,105 +214,25 @@ schema:
           type: string
         sender_last_name:
           type: string
+    campaign_person_id:
+      type: string
+      description: ''
+      format: uuid
     contact:
       type: object
       description: ''
       format: ''
-      properties:
-        id:
-          type: string
-          format: uuid
-        activityTargets:
-          type: array
-        name:
-          type: object
-          additionalProperties: false
-          properties:
-            firstName:
-              type: string
-            lastName:
-              type: string
-        attachments:
-          type: array
-        avatarUrl:
-          type: string
-        calendarEventParticipants:
-          type: array
-        campaignName:
-          type: string
-        campaignStatus:
-          type: string
-        city:
-          type: string
-        company:
-          type: 'null'
-        companyId:
-          type: 'null'
-        createdAt:
-          type: string
-          format: date-time
-        email:
-          type: string
-          format: email
-        favorites:
-          type: array
-        isEmailCatchAll:
-          type: boolean
-          description: ''
-          default: false
-        isEmailValid:
-          type: boolean
-          description: ''
-          default: false
-        jobTitle:
-          type: string
-        linkedinLink:
-          type: object
-          additionalProperties: false
-          properties:
-            label:
-              type: string
-            url:
-              type: string
-              format: url
-        messageParticipants:
-          type: array
-        phone:
-          type: string
-        pointOfContactForOpportunities:
-          type: array
-        position:
-          type: integer
-        timelineActivities:
-          type: array
-        updatedAt:
-          type: string
-          format: date-time
-        xLink:
-          type: object
-          additionalProperties: false
-          properties:
-            label:
-              type: string
-            url:
-              type: string
-      required: []
     leadmagic_api_key:
       type: string
       description: ''
-      default: ''
       format: ''
-      password: true
     smartlead_api_key:
       type: string
       description: ''
-      default: ''
       format: ''
-      password: true
     smartlead_campaign_id:
       type: string
       description: ''
-      default: ''
       format: ''
     twenty_api_key:
       type: string

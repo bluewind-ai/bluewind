@@ -1,0 +1,57 @@
+summary: create_twenty_field
+description: ''
+value:
+  modules:
+    - id: d
+      summary: create field
+      value:
+        type: rawscript
+        content: '!inline create_field.inline_script.native.ts'
+        input_transforms:
+          field_metadata:
+            type: javascript
+            expr: flow_input.field_medatadata
+          twenty_api_key:
+            type: javascript
+            expr: '`${flow_input.twenty_api_key}`'
+        lock: ''
+        language: nativets
+        tag: ''
+schema:
+  type: object
+  additionalProperties: false
+  order:
+    - field_medatadata
+    - twenty_api_key
+  properties:
+    field_medatadata:
+      type: object
+      description: ''
+      dateFormat: ''
+      format: ''
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+        description:
+          type: 'null'
+        defaultValue:
+          description: ''
+        icon:
+          type: string
+        label:
+          type: string
+        objectMetadataId:
+          type: string
+          format: uuid
+      required: []
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

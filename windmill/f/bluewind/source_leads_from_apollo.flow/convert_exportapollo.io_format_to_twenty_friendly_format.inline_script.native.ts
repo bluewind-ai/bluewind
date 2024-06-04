@@ -10,9 +10,7 @@ export async function main(data: Array, campaign_name: string) {
       "label": "LinkedIn",
       "url": item.linkedin_url
     },
-    jobTitle: item.title,
-    campaignName: campaign_name,
-    campaignStatus: "SOURCED"
+    jobTitle: item.title
   }));
 
   return inputs;

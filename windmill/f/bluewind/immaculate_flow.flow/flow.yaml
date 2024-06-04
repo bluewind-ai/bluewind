@@ -21,18 +21,6 @@ value:
         branches:
           - summary: ''
             modules:
-              - id: c
-                summary: Create campaign object
-                value:
-                  type: rawscript
-                  content: '!inline create_campaign_object.inline_script.native.ts'
-                  input_transforms:
-                    twenty_api_key:
-                      type: javascript
-                      expr: '`${flow_input.twenty_api_key}`'
-                  lock: ''
-                  language: nativets
-                  tag: ''
               - id: d
                 summary: Create campaign
                 value:
@@ -60,6 +48,8 @@ value:
                   language: nativets
                   tag: ''
             expr: results.a.error !== undefined
+            parallel: true
+            skip_failure: true
         default:
           - id: f
             value:
@@ -71,6 +61,7 @@ value:
                   expr: results.a
               lock: ''
               language: nativets
+              tag: ''
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object

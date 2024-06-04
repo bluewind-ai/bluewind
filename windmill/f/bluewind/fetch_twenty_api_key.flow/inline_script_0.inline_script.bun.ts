@@ -1,12 +1,13 @@
-// Since there are no specific resource types mentioned, we will not define any resource types here.
-// This function simply returns the inputs it receives.
+import * as wmill from "windmill-client"
 
-export async function main(recipient_first_name: string, recipient_company_name: string, sender_company_name: string): Promise<any> {
+export async function main() {
+  const resumeUrls = await wmill.getResumeUrls("approver1")
+
   return {
-    "subject_lines": [
-      "quick question",
-      `${recipient_first_name}, thoughts?`,
-      `${recipient_company_name} <> ${sender_company_name}`
-    ]
+    resume: resumeUrls['resume'],
+    default_args: {
+      twenty_api_key: "YOUR_TWENTY_API_KEY"
+    }, // optional
+    enums: {} // optional
   }
 }

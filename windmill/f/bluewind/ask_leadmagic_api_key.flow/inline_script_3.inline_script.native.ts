@@ -2,7 +2,7 @@ export async function main(all_attempts: Array) {
   const correct_api_key =
     all_attempts[all_attempts.length - 1].leadmagic_api_key;
   const data = {
-    path: 'u/bluewind/leadmagic',
+    path: `u/${WM_USERNAME}/leadmagic`,
     value: correct_api_key,
     description: '',
     resource_type: 'leadmagic',
@@ -18,6 +18,7 @@ export async function main(all_attempts: Array) {
     },
     body: JSON.stringify(data),
   });
+
 
   return {
     leadmagic_api_key: correct_api_key,

@@ -13,8 +13,8 @@ export async function main(campaign_id: number, smartlead_api_key: string) {
         },
         "seq_variants": [
           {
-            "subject": "{{Message_1_Subject}}",
-            "email_body": "{{Message_1_Body}}",
+            "subject": "{{message_1_subject}}",
+            "email_body": "{{message_1_body}}",
             "variant_label": "A"
           }
         ]

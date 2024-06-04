@@ -77,6 +77,8 @@ value:
               results.d === null
 
 
+            parallel: true
+            skip_failure: true
         default:
           - id: f
             value:

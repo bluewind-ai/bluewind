@@ -2,17 +2,21 @@ summary: get_contacts_to_outreach
 description: ''
 value:
   modules:
-    - id: a
+    - id: b
+      summary: get contacts to outreach
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: '!inline get_contacts_to_outreach.inline_script.native.ts'
         input_transforms:
-          campaign_name:
+          campaign_id:
             type: javascript
-            expr: '`${flow_input.campaign_name}`'
+            expr: flow_input.campaign_id
+          number_of_contacts_needed:
+            type: javascript
+            expr: flow_input.number_of_contacts_needed
           twenty_api_key:
             type: javascript
-            expr: '`${flow_input.twenty_api_key}`'
+            expr: flow_input.twenty_api_key
         lock: ''
         language: nativets
         tag: ''
@@ -21,13 +25,22 @@ schema:
   type: object
   order:
     - twenty_api_key
-    - campaign_name
+    - campaign_id
+    - number_of_contacts_needed
   properties:
-    campaign_name:
+    campaign_id:
       type: string
       description: ''
+      dateFormat: ''
       default: ''
       format: ''
+      nullable: false
+      password: false
+    number_of_contacts_needed:
+      type: number
+      description: ''
+      format: ''
+      nullable: false
     twenty_api_key:
       type: string
       description: ''

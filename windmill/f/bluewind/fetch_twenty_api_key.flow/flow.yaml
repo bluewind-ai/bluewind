@@ -83,6 +83,8 @@ value:
             expr: >-
               results.al === null || results.al === "null" ||
               results.al.error_message !== undefined
+            parallel: true
+            skip_failure: true
         default:
           - id: ar
             summary: return correct api key
