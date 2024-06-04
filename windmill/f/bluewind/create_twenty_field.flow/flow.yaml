@@ -26,8 +26,8 @@ schema:
   properties:
     field_medatadata:
       type: object
-      additionalProperties: false
       description: ''
+      dateFormat: ''
       format: ''
       properties:
         type:
@@ -36,6 +36,8 @@ schema:
           type: string
         description:
           type: 'null'
+        default:
+          description: ''
         icon:
           type: string
         label:
@@ -43,6 +45,7 @@ schema:
         objectMetadataId:
           type: string
           format: uuid
+      required: []
     twenty_api_key:
       type: string
       description: ''
