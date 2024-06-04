@@ -63,6 +63,7 @@ value:
                               Math.max(10 -
                               results.dm.data.campaignsPeople.totalCount, 5)
                         path: f/bluewind/schedule_more_emails
+                      continue_on_error: false
                   expr: |
                     results.dm.data.campaignsPeople.totalCount < 10
               default:
