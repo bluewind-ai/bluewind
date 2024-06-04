@@ -72,7 +72,13 @@ value:
                     type: branchone
                     branches:
                       - summary: ''
-                        modules: []
+                        modules:
+                          - id: dw
+                            summary: create one email account
+                            value:
+                              type: flow
+                              input_transforms: {}
+                              path: f/bluewind/create_one_email_account
                         expr: >-
                           results.dm.data.people.totalCount > results.dn.length
                           * 300
