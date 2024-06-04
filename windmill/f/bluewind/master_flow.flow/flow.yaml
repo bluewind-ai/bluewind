@@ -65,6 +65,19 @@ value:
                         type: javascript
                         expr: results.bx.twenty_api_key
                     path: f/bluewind/find_campaign_ready_for_approval
+                - id: ed
+                  summary: ''
+                  value:
+                    type: branchone
+                    branches:
+                      - summary: if one campaign is ready for approval
+                        modules:
+                          - id: ef
+                            value:
+                              type: identity
+                              flow: true
+                        expr: results.ec !== undefined
+                    default: []
                 - id: dn
                   summary: get email accounts
                   value:
