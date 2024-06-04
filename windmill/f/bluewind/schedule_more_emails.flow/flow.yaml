@@ -270,9 +270,9 @@ value:
       value:
         type: flow
         input_transforms:
-          campaign_name:
+          campaign_id:
             type: javascript
-            expr: results.bp.name
+            expr: '`${results.bp.id}`'
           number_of_contacts_needed:
             type: javascript
             expr: flow_input.email_remaining_to_schedule * 2
@@ -319,16 +319,15 @@ value:
                 value:
                   type: flow
                   input_transforms:
-                    campaign_name:
-                      type: javascript
-                      expr: results.bp.name
+                    campaign_id:
+                      type: static
                     number_of_contacts_needed:
                       type: static
                     twenty_api_key:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/get_contacts_to_outreach
-            expr: results.di.data.people.edges.length === 0
+            expr: results.di.data.campaignsPeople.edges.length === 0
             parallel: true
             skip_failure: true
         default:
@@ -358,7 +357,7 @@ value:
                   expr: results.cr.campaign_info
                 contact:
                   type: javascript
-                  expr: flow_input.iter.value.node
+                  expr: flow_input.iter.value.node.person
                 leadmagic_api_key:
                   type: javascript
                   expr: '`${results.bt.correct_leadmagic_api_key}`'
@@ -374,7 +373,7 @@ value:
               path: f/bluewind/outreach_pipeline
         iterator:
           type: javascript
-          expr: results.cg.data.people.edges
+          expr: results.cg.data.campaignsPeople.edges
         parallel: true
         parallelism: 2
         skip_failures: true
