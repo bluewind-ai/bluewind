@@ -41,6 +41,16 @@ value:
               branches:
                 - summary: ''
                   modules:
+                    - id: dz
+                      value:
+                        type: flow
+                        input_transforms:
+                          email_remaining_to_schedule:
+                            type: javascript
+                            expr: >-
+                              Math.max(10 -
+                              results.dm.data.campaignsPeople.totalCount, 5)
+                        path: f/bluewind/schedule_more_emails
                     - id: du
                       summary: schedule until reach 10 emails
                       value:
