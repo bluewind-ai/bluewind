@@ -35,10 +35,8 @@ export async function main(twenty_api_key: string, campaign_id: string, number_o
 
   let variables = {
     "filter": {
-      "campaignStatus": {
-        "in": [
-          "SOURCED"
-        ]
+      "isPipelineProcessed": {
+        "eq": false
       },
       "campaignId": {
         "eq": campaign_id
