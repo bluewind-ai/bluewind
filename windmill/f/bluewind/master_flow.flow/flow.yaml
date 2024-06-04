@@ -41,6 +41,14 @@ value:
               branches:
                 - summary: ''
                   modules:
+                    - id: ea
+                      value:
+                        type: flow
+                        input_transforms:
+                          email_remaining_to_schedule:
+                            type: static
+                            value: 10
+                        path: f/bluewind/schedule_more_emails
                     - id: dz
                       value:
                         type: flow
