@@ -19,6 +19,7 @@ value:
             expr: flow_input.twenty_api_key
         lock: ''
         language: nativets
+        tag: ''
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object

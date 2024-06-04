@@ -4,6 +4,7 @@ export async function main(twenty_api_key: string, campaign_id: string, number_o
     edges {
       node {
         id
+        campaignStatus
         person {
           name {
             firstName
@@ -25,6 +26,7 @@ export async function main(twenty_api_key: string, campaign_id: string, number_o
           companyId
           isEmailCatchAll
           isEmailValid
+
         }
       }
     }
