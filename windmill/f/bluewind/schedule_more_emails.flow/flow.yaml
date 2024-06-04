@@ -280,18 +280,6 @@ value:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/get_contacts_to_outreach
-    - id: dl
-      summary: get only 20 records
-      value:
-        type: rawscript
-        content: '!inline get_only_20_records.inline_script.native.ts'
-        input_transforms:
-          data:
-            type: javascript
-            expr: results.di.data.campaignsPeople.edges
-        lock: ''
-        language: nativets
-        tag: ''
     - id: cg
       summary: ''
       value:
@@ -320,9 +308,11 @@ value:
                   type: flow
                   input_transforms:
                     campaign_id:
-                      type: static
+                      type: javascript
+                      expr: '`${results.bp.id}`'
                     number_of_contacts_needed:
-                      type: static
+                      type: javascript
+                      expr: flow_input.email_remaining_to_schedule * 2
                     twenty_api_key:
                       type: javascript
                       expr: '`${results.bx.twenty_api_key}`'
