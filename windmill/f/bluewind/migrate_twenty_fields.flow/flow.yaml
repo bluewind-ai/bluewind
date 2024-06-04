@@ -18,10 +18,10 @@ value:
         input_transforms: {}
         path: f/bluewind/fetch_twenty_api_key
     - id: dw
-      summary: Create Campaign Object
+      summary: Create Campaign
       value:
         type: rawscript
-        content: '!inline create_campaign_object.inline_script.native.ts'
+        content: '!inline create_campaign.inline_script.native.ts'
         input_transforms:
           twenty_api_key:
             type: javascript
@@ -30,10 +30,10 @@ value:
         language: nativets
         tag: ''
     - id: dx
-      summary: Create Campaign People Object
+      summary: Create Campaign
       value:
         type: rawscript
-        content: '!inline create_campaign_people_object.inline_script.native.ts'
+        content: '!inline create_campaign_1.inline_script.native.ts'
         input_transforms:
           twenty_api_key:
             type: javascript
@@ -54,7 +54,7 @@ value:
         language: nativets
         tag: ''
     - id: dr
-      summary: create or update isEmailValid
+      summary: person.isEmailValid
       value:
         type: flow
         input_transforms:
@@ -66,7 +66,7 @@ value:
                 icon: "IconUsers",
                 label: "Is Email Valid",
                 name: "isEmailValid",
-                objectMetadataId: results.ci.person_obect_metadata,
+                objectMetadataId: results.ci.person_object_metadata,
                 type: "BOOLEAN"
               }
           twenty_api_key:
@@ -75,7 +75,7 @@ value:
             expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_twenty_field
     - id: ds
-      summary: create or update isEmailCatchAll
+      summary: person.isEmailCatchall
       value:
         type: flow
         input_transforms:
@@ -87,7 +87,7 @@ value:
                       icon: "IconUsers",
                       label: "Is Email Catch All",
                       name: "isEmailCatchAll",
-                      objectMetadataId: results.ci.person_obect_metadata,
+                      objectMetadataId: results.ci.person_object_metadata,
                       type: "BOOLEAN"
                     }
           twenty_api_key:
@@ -96,7 +96,7 @@ value:
             expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_twenty_field
     - id: ee
-      summary: create person.emailStatus
+      summary: person.emailStatus
       value:
         type: flow
         input_transforms:
@@ -148,12 +148,12 @@ value:
                   }
                 ],
                 "type": "SELECT",
-                "objectMetadataId": results.cw.campaign_object_metadata
+                "objectMetadataId": results.ci.person_object_metadata
               }
           twenty_api_key:
             type: javascript
             value: '`${results.bx.twenty_api_key}`'
-            expr: '`\`${results.bx.twenty_api_key}\``'
+            expr: results.bx.twenty_api_key
         path: f/bluewind/create_twenty_field
     - id: cw
       summary: get id of the campaign object
