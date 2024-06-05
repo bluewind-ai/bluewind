@@ -300,6 +300,51 @@ value:
             value: '${results.bx.twenty_api_key}'
             expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/create_twenty_field
+    - id: ei
+      summary: Update campaign tags
+      value:
+        type: rawscript
+        content: '!inline update_campaign_tags.inline_script.native.ts'
+        input_transforms:
+          field_metadata:
+            type: javascript
+            expr: |-
+              {
+                "description": "Tags are used to store information about an entities and its associated entities.",
+                "icon": "IconUsers",
+                "label": "Tags",
+                "name": "tags",
+                "options": [
+                  {
+                    "color": "blue",
+                    "id": "5817df78-228d-4d17-a7eb-7875d380034d",
+                    "label": "Pipeline Todo",
+                    "position": 0,
+                    "value": "PIPELINE_TODO"
+                  },
+                  {
+                    "color": "turquoise",
+                    "id": "cd2d4f3f-1404-483a-acf7-935b06fea8d8",
+                    "label": "Pipeline In Progress",
+                    "position": 1,
+                    "value": "PIPELINE_IN_PROGRESS"
+                  },
+                  {
+                    "color": "green",
+                    "id": "ccf00459-c395-4c7f-aaa0-44cf960805e9",
+                    "label": "Pipeline Done",
+                    "position": 2,
+                    "value": "PIPELINE_DONE"
+                  }
+                ],
+                "type": "MULTI_SELECT",
+                "objectMetadataId": results.dv.campaign_people_object_metadata
+              }
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
     - id: eg
       summary: campaignPeople.tagsFlattened
       value:
