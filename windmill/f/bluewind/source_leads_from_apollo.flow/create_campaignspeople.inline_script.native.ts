@@ -1,16 +1,41 @@
-export async function main(twenty_api_key: string, data: Array<any>) {
-  const url = 'https://api.twenty.com/rest/batch/campaignsPeople';
-  const headers = {
-    'Accept': 'application/json',
-    'Authorization': `Bearer ${twenty_api_key}`,
-    'Content-Type': 'application/json'
-  };
-  const options = {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(data)
+export async function main(twenty_api_key: string, data: Array) {
+  const mutation = `
+mutation CreatePeople($input: [PersonCreateInput!]!) {
+  createPeople(data: $input) {
+    id
+    tags
+  }
+}
+`;
+
+  let variables = {
+    "input": [
+      {
+        "name": {
+          "firstName": "cdscds"
+        },
+        "tags": ["EMAIL_STATUS_UNKNOWN"]
+      },
+      {
+        "name": {
+          "firstName": "cdscds"
+        },
+        "tags": ["EMAIL_STATUS_UNKNOWN"]
+      }
+    ]
   };
 
-  const response = await fetch(url, options);
+  let response = await fetch('https://api.twenty.com/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${twenty_api_key}`,
+    },
+    body: JSON.stringify({
+      query: mutation,
+      variables: variables
+    })
+  });
   return await response.json();
+
 }
