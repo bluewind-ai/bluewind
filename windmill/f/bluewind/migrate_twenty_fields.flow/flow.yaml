@@ -53,50 +53,8 @@ value:
         lock: ''
         language: nativets
         tag: ''
-    - id: dr
-      summary: person.isEmailValid
-      value:
-        type: flow
-        input_transforms:
-          field_medatadata:
-            type: javascript
-            expr: |-
-              {
-                description: null,
-                icon: "IconUsers",
-                label: "Is Email Valid",
-                name: "isEmailValid",
-                objectMetadataId: results.ci.person_object_metadata,
-                type: "BOOLEAN"
-              }
-          twenty_api_key:
-            type: javascript
-            value: '${results.bx.twenty_api_key}'
-            expr: '`${results.bx.twenty_api_key}`'
-        path: f/bluewind/create_twenty_field
-    - id: ds
-      summary: person.isEmailCatchall
-      value:
-        type: flow
-        input_transforms:
-          field_medatadata:
-            type: javascript
-            expr: |-
-              {
-                      description: null,
-                      icon: "IconUsers",
-                      label: "Is Email Catch All",
-                      name: "isEmailCatchAll",
-                      objectMetadataId: results.ci.person_object_metadata,
-                      type: "BOOLEAN"
-                    }
-          twenty_api_key:
-            type: javascript
-            value: '${results.bx.twenty_api_key}'
-            expr: '`${results.bx.twenty_api_key}`'
-        path: f/bluewind/create_twenty_field
     - id: ee
-      summary: person.emailStatus
+      summary: person.tags_to_delete
       value:
         type: flow
         input_transforms:
@@ -104,11 +62,10 @@ value:
             type: javascript
             expr: |-
               {
-                "description": "Email Status after verification",
-                "defaultValue": "'UNKNOWN'",
+                "description": "Tags are used to store information about an entities and its associated entities.",
                 "icon": "IconUsers",
-                "label": "Email Status",
-                "name": "emailStatus",
+                "label": "Tags",
+                "name": "tags",
                 "options": [
                   {
                     "color": "yellow",
@@ -281,10 +238,10 @@ value:
             type: javascript
             expr: |-
               {
-                "description": "Status of this contact in the curent campaign",
+                "description": "Tags are used to store information about an entities and its associated entities.",
                 "icon": "IconUsers",
-                "label": "Campaign Status",
-                "name": "campaignStatus",
+                "label": "Tags",
+                "name": "tags",
                 "options": [
                   {
                     "color": "blue",
@@ -309,7 +266,6 @@ value:
                   }
                 ],
                 "type": "SELECT",
-
                 "objectMetadataId": results.dv.campaign_people_object_metadata
               }
           twenty_api_key:
