@@ -186,6 +186,7 @@ value:
             type: javascript
             expr: results.bx.twenty_api_key
         path: f/bluewind/create_twenty_field
+      continue_on_error: false
     - id: eh
       summary: Create campaigns tagsFlattened
       value:
@@ -229,7 +230,7 @@ value:
             expr: results.dv.campaign_people_object_metadata
           person_object_id:
             type: javascript
-            expr: results.ci.person_obect_metadata
+            expr: results.ci.person_object_metadata
           twenty_api_key:
             type: javascript
             expr: results.bx.twenty_api_key
