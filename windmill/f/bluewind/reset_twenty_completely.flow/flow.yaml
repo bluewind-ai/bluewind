@@ -111,6 +111,9 @@ value:
               language: nativets
               tag: ''
             continue_on_error: false
+            stop_after_if:
+              expr: result.length == 0
+              skip_if_stopped: false
           - id: n
             summary: delete all campaign people
             value:
