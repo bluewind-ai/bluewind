@@ -58,33 +58,42 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_twenty_api_key
-    - id: l
-      summary: Get all people ids
+    - id: ab
       value:
-        type: rawscript
-        content: '!inline get_all_people_ids.inline_script.native.ts'
-        input_transforms:
-          twenty_api_key:
-            type: javascript
-            expr: results.f.twenty_api_key
-        lock: ''
-        language: nativets
-        tag: ''
-    - id: k
-      summary: delete all people
-      value:
-        type: rawscript
-        content: '!inline delete_all_people.inline_script.native.ts'
-        input_transforms:
-          people_ids_to_delete:
-            type: javascript
-            expr: results.l
-          twenty_api_key:
-            type: javascript
-            expr: results.f.twenty_api_key
-        lock: ''
-        language: nativets
-        tag: ''
+        type: whileloopflow
+        modules:
+          - id: l
+            summary: Get all people ids
+            value:
+              type: rawscript
+              content: '!inline get_all_people_ids.inline_script.native.ts'
+              input_transforms:
+                twenty_api_key:
+                  type: javascript
+                  expr: results.f.twenty_api_key
+              lock: ''
+              language: nativets
+              tag: ''
+            continue_on_error: false
+            stop_after_if:
+              expr: result.length == 0
+              skip_if_stopped: false
+          - id: k
+            summary: delete all people
+            value:
+              type: rawscript
+              content: '!inline delete_all_people.inline_script.native.ts'
+              input_transforms:
+                people_ids_to_delete:
+                  type: javascript
+                  expr: results.l
+                twenty_api_key:
+                  type: javascript
+                  expr: results.f.twenty_api_key
+              lock: ''
+              language: nativets
+              tag: ''
+        skip_failures: false
     - id: m
       summary: Get all campaignPeople ids
       value:
