@@ -187,7 +187,7 @@ value:
             expr: results.bx.twenty_api_key
         path: f/bluewind/create_twenty_field
     - id: eh
-      summary: Create twenty field
+      summary: Create campaigns tagsFlattened
       value:
         type: flow
         input_transforms:
