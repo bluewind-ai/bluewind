@@ -53,6 +53,26 @@ value:
         lock: ''
         language: nativets
         tag: ''
+    - id: ef
+      summary: create tags_flattened
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                "description": null,
+                "icon": "IconUsers",
+                "label": "Tags Flattened",
+                "name": "tags_flattened",
+                "objectMetadataId": results.ci.person_object_metadata,
+                "type": "TEXT"
+              }
+          twenty_api_key:
+            type: static
+            value: ''
+        path: f/bluewind/create_twenty_field
     - id: ee
       summary: person.tags
       value:
