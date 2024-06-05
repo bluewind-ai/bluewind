@@ -168,15 +168,15 @@ value:
                 "options": [
                   {
                     "color": "blue",
-                    "label": "Drafted",
+                    "label": "Campaign Drafted",
                     "position": 0,
-                    "value": "DRAFTED"
+                    "value": "CAMPAIGN_DRAFTED"
                   },
                   {
                     "color": "turquoise",
-                    "label": "Active",
+                    "label": "Campaign Active",
                     "position": 1,
-                    "value": "ACTIVE"
+                    "value": "CAMPAIGN_ACTIVE"
                   }
                 ],
                 "type": "MULTI_SELECT",
@@ -273,23 +273,23 @@ value:
                   {
                     "color": "blue",
                     "id": "5817df78-228d-4d17-a7eb-7875d380034d",
-                    "label": "Sourced",
+                    "label": "Pipeline Todo",
                     "position": 0,
-                    "value": "SOURCED"
+                    "value": "PIPELINE_TODO"
                   },
                   {
                     "color": "turquoise",
                     "id": "cd2d4f3f-1404-483a-acf7-935b06fea8d8",
-                    "label": "Unqualified",
+                    "label": "Pipeline In Progress",
                     "position": 1,
-                    "value": "UNQUALIFIED"
+                    "value": "PIPELINE_IN_PROGRESS"
                   },
                   {
                     "color": "green",
                     "id": "ccf00459-c395-4c7f-aaa0-44cf960805e9",
-                    "label": "Email Scheduled",
+                    "label": "Pipeline Done",
                     "position": 2,
-                    "value": "EMAIL_SCHEDULED"
+                    "value": "PIPELINE_DONE"
                   }
                 ],
                 "type": "MULTI_SELECT",
