@@ -381,10 +381,9 @@ schema:
     - email_remaining_to_schedule
   properties:
     email_remaining_to_schedule:
-      type: number
+      type: integer
       description: ''
-      dateFormat: ''
-      format: ''
+      default: 5
       nullable: false
   required:
     - email_remaining_to_schedule
