@@ -34,7 +34,7 @@ query {
     );
 
     return {
-      person_obect_metadata: filteredObject.node.id
+      person_object_metadata: filteredObject.node.id
     };
   } catch (error) {
     throw error;

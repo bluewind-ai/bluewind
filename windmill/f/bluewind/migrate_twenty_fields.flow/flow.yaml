@@ -10,6 +10,7 @@ value:
         input_transforms: {}
         lock: ''
         language: nativets
+        tag: ''
     - id: bx
       summary: Fetch twenty api key
       value:
@@ -17,10 +18,10 @@ value:
         input_transforms: {}
         path: f/bluewind/fetch_twenty_api_key
     - id: dw
-      summary: Create Campaign Object
+      summary: Create Campaign
       value:
         type: rawscript
-        content: '!inline create_campaign_object.inline_script.native.ts'
+        content: '!inline create_campaign.inline_script.native.ts'
         input_transforms:
           twenty_api_key:
             type: javascript
@@ -29,10 +30,10 @@ value:
         language: nativets
         tag: ''
     - id: dx
-      summary: Create Campaign People Object
+      summary: Create Campaign
       value:
         type: rawscript
-        content: '!inline create_campaign_people_object.inline_script.native.ts'
+        content: '!inline create_campaign_1.inline_script.native.ts'
         input_transforms:
           twenty_api_key:
             type: javascript
@@ -52,8 +53,8 @@ value:
         lock: ''
         language: nativets
         tag: ''
-    - id: dr
-      summary: create or update isEmailValid
+    - id: ee
+      summary: person.tags_to_delete
       value:
         type: flow
         input_transforms:
@@ -61,38 +62,55 @@ value:
             type: javascript
             expr: |-
               {
-                description: null,
-                icon: "IconUsers",
-                label: "Is Email Valid",
-                name: "isEmailValid",
-                objectMetadataId: results.ci.person_obect_metadata,
-                type: "BOOLEAN"
+                "description": "Tags are used to store information about an entities and its associated entities.",
+                "icon": "IconUsers",
+                "label": "Tags",
+                "name": "tags",
+                "options": [
+                  {
+                    "color": "yellow",
+                    "label": "Unknown",
+                    "position": 0,
+                    "value": "UNKNOWN"
+                  },
+                  {
+                    "color": "turquoise",
+                    "label": "Catch-All",
+                    "position": 1,
+                    "value": "CATCH_ALL"
+                  },
+                  {
+                    "color": "green",
+                    "label": "Valid",
+                    "position": 2,
+                    "value": "VALID"
+                  },
+                  {
+                    "color": "blue",
+                    "label": "Valid Catch-All",
+                    "position": 3,
+                    "value": "VALID_CATCH_ALL"
+                  },
+                  {
+                    "color": "red",
+                    "label": "Invalid",
+                    "position": 4,
+                    "value": "INVALID"
+                  },
+                  {
+                    "color": "yellow",
+                    "label": "Invalid Catch-All",
+                    "position": 5,
+                    "value": "INVALID_CATCH_ALL"
+                  }
+                ],
+                "type": "SELECT",
+                "objectMetadataId": results.ci.person_object_metadata
               }
           twenty_api_key:
             type: javascript
-            value: '${results.bx.twenty_api_key}'
-            expr: '`${results.bx.twenty_api_key}`'
-        path: f/bluewind/create_twenty_field
-    - id: ds
-      summary: create or update isEmailCatchAll
-      value:
-        type: flow
-        input_transforms:
-          field_medatadata:
-            type: javascript
-            expr: |-
-              {
-                      description: null,
-                      icon: "IconUsers",
-                      label: "Is Email Catch All",
-                      name: "isEmailCatchAll",
-                      objectMetadataId: results.ci.person_obect_metadata,
-                      type: "BOOLEAN"
-                    }
-          twenty_api_key:
-            type: javascript
-            value: '${results.bx.twenty_api_key}'
-            expr: '`${results.bx.twenty_api_key}`'
+            value: '`${results.bx.twenty_api_key}`'
+            expr: results.bx.twenty_api_key
         path: f/bluewind/create_twenty_field
     - id: cw
       summary: get id of the campaign object
@@ -106,21 +124,62 @@ value:
         lock: ''
         language: nativets
         tag: ''
-    - id: cv
-      summary: Create campaign custom fields
+    - id: ec
+      summary: create smartlead campaignId
       value:
-        type: rawscript
-        content: '!inline create_campaign_custom_fields.inline_script.native.ts'
+        type: flow
         input_transforms:
-          campaign_obect_metadata:
+          field_medatadata:
             type: javascript
-            expr: '`${results.cw.campaign_object_metadata}`'
+            expr: |-
+              {
+                      "description": null,
+                      "icon": "IconUsers",
+                      "label": "Smartlead Campaign Id",
+                      "name": "smartleadCampaignId",
+                "objectMetadataId": results.cw.campaign_object_metadata,
+                      "type": "TEXT"
+                    }
           twenty_api_key:
             type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
-        lock: ''
-        language: nativets
-        tag: ''
+            expr: results.bx.twenty_api_key
+        path: f/bluewind/create_twenty_field
+    - id: ed
+      summary: Create campaignStatus
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                "description": "Status of the campaign",
+                "defaultValue": "'DRAFTED'",
+                "icon": "IconUsers",
+                "label": "Campaign Status",
+                "name": "campaignStatus",
+                "options": [
+                  {
+                    "color": "blue",
+                    "label": "Drafted",
+                    "position": 0,
+                    "value": "DRAFTED"
+                  },
+                  {
+                    "color": "turquoise",
+                    "label": "Active",
+                    "position": 1,
+                    "value": "ACTIVE"
+                  }
+                ],
+                "type": "SELECT",
+                "objectMetadataId": results.cw.campaign_object_metadata,
+
+              }
+          twenty_api_key:
+            type: javascript
+            expr: results.bx.twenty_api_key
+        path: f/bluewind/create_twenty_field
     - id: dv
       summary: get id of the campaignpeople object
       value:
@@ -179,10 +238,10 @@ value:
             type: javascript
             expr: |-
               {
-                "description": "Status of this contact in the curent campaign",
+                "description": "Tags are used to store information about an entities and its associated entities.",
                 "icon": "IconUsers",
-                "label": "Campaign Status",
-                "name": "campaignStatus",
+                "label": "Tags",
+                "name": "tags",
                 "options": [
                   {
                     "color": "blue",
@@ -206,8 +265,8 @@ value:
                     "value": "EMAIL_SCHEDULED"
                   }
                 ],
-                "objectMetadataId": results.dv.campaign_people_object_metadata,
-                "type": "SELECT"
+                "type": "SELECT",
+                "objectMetadataId": results.dv.campaign_people_object_metadata
               }
           twenty_api_key:
             type: javascript

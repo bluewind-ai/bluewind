@@ -1,0 +1,46 @@
+summary: Ask for campaign approval
+description: ''
+value:
+  modules:
+    - id: a
+      summary: Approval
+      value:
+        type: rawscript
+        content: '!inline approval.inline_script.ts'
+        input_transforms:
+          smartlead_campaign_id:
+            type: javascript
+            expr: flow_input.smartlead_campaign_id
+        lock: '!inline approval.inline_script.lock'
+        language: deno
+        tag: ''
+      continue_on_error: false
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - instructions
+            properties:
+              instructions:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - smartlead_campaign_id
+  properties:
+    smartlead_campaign_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false

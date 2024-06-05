@@ -1,0 +1,42 @@
+summary: Find campaign ready for approval
+description: ''
+value:
+  modules:
+    - id: a
+      summary: Find campaigns with DRAFTED status
+      value:
+        type: rawscript
+        content: '!inline find_campaigns_with_drafted_status.inline_script.native.ts'
+        input_transforms:
+          twenty_api_key:
+            type: javascript
+            expr: flow_input.twenty_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: b
+      summary: count number of emails scheduled
+      value:
+        type: rawscript
+        content: '!inline count_number_of_emails_scheduled.inline_script.native.ts'
+        input_transforms:
+          data:
+            type: static
+            value: null
+        lock: ''
+        language: nativets
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - twenty_api_key
+  properties:
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
