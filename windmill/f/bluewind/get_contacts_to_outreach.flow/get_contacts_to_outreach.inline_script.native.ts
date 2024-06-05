@@ -4,8 +4,7 @@ export async function main(twenty_api_key: string, campaign_id: string, number_o
     edges {
       node {
         id
-        campaignStatus
-        isPipelineProcessed
+        tags
         person {
           name {
             firstName
@@ -25,9 +24,7 @@ export async function main(twenty_api_key: string, campaign_id: string, number_o
           createdAt
           updatedAt
           companyId
-          isEmailCatchAll
-          isEmailValid
-
+          tags
         }
       }
     }
@@ -36,8 +33,8 @@ export async function main(twenty_api_key: string, campaign_id: string, number_o
 
   let variables = {
     "filter": {
-      "isPipelineProcessed": {
-        "eq": false
+      "tagsFlattened": {
+        "contains": "PIPELINE_TODO"
       },
       "campaignId": {
         "eq": campaign_id
