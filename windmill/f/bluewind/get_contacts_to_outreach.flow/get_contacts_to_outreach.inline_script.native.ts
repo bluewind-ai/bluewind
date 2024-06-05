@@ -33,9 +33,7 @@ export async function main(twenty_api_key: string, campaign_id: string, number_o
 
   let variables = {
     "filter": {
-      "tagsFlattened": {
-        "contains": "PIPELINE_TODO"
-      },
+      "tagsFlattened": { "ilike": "%csdcds%" },
       "campaignId": {
         "eq": campaign_id
       }
