@@ -1,28 +1,14 @@
 export async function main(twenty_api_key: string, data: Array) {
   const mutation = `
-mutation CreatePeople($input: [PersonCreateInput!]!) {
-  createPeople(data: $input) {
+mutation CreateCampaignsPeople($input: [CampaignPersonCreateInput!]!) {
+  createCampaignsPeople(data: $input) {
     id
-    tags
   }
 }
 `;
 
   let variables = {
-    "input": [
-      {
-        "name": {
-          "firstName": "cdscds"
-        },
-        "tags": ["EMAIL_STATUS_UNKNOWN"]
-      },
-      {
-        "name": {
-          "firstName": "cdscds"
-        },
-        "tags": ["EMAIL_STATUS_UNKNOWN"]
-      }
-    ]
+    "input": data
   };
 
   let response = await fetch('https://api.twenty.com/graphql', {
