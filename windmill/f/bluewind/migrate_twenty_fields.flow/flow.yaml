@@ -54,7 +54,7 @@ value:
         language: nativets
         tag: ''
     - id: ee
-      summary: person.tags_to_delete
+      summary: person.tags
       value:
         type: flow
         input_transforms:
@@ -69,42 +69,30 @@ value:
                 "options": [
                   {
                     "color": "yellow",
-                    "label": "Unknown",
+                    "label": "Email Status Unknown",
                     "position": 0,
-                    "value": "UNKNOWN"
+                    "value": "EMAIL_STATUS_UNKNOWN"
                   },
                   {
                     "color": "turquoise",
-                    "label": "Catch-All",
+                    "label": "Email Catch-All",
                     "position": 1,
-                    "value": "CATCH_ALL"
+                    "value": "EMAIL_CATCH_ALL"
                   },
                   {
                     "color": "green",
-                    "label": "Valid",
+                    "label": "Email Valid",
                     "position": 2,
-                    "value": "VALID"
-                  },
-                  {
-                    "color": "blue",
-                    "label": "Valid Catch-All",
-                    "position": 3,
-                    "value": "VALID_CATCH_ALL"
+                    "value": "EMAIL_VALID"
                   },
                   {
                     "color": "red",
                     "label": "Invalid",
-                    "position": 4,
+                    "position": 3,
                     "value": "INVALID"
                   },
-                  {
-                    "color": "yellow",
-                    "label": "Invalid Catch-All",
-                    "position": 5,
-                    "value": "INVALID_CATCH_ALL"
-                  }
                 ],
-                "type": "SELECT",
+                "type": "MULTI_SELECT",
                 "objectMetadataId": results.ci.person_object_metadata
               }
           twenty_api_key:
@@ -174,7 +162,6 @@ value:
                 ],
                 "type": "SELECT",
                 "objectMetadataId": results.cw.campaign_object_metadata,
-
               }
           twenty_api_key:
             type: javascript
@@ -230,7 +217,7 @@ value:
         language: nativets
         tag: ''
     - id: dt
-      summary: create CampaignStatus
+      summary: create CampaignPeople.tags
       value:
         type: flow
         input_transforms:
@@ -265,34 +252,13 @@ value:
                     "value": "EMAIL_SCHEDULED"
                   }
                 ],
-                "type": "SELECT",
+                "type": "MULTI_SELECT",
                 "objectMetadataId": results.dv.campaign_people_object_metadata
               }
           twenty_api_key:
             type: javascript
             value: '${results.bx.twenty_api_key}'
             expr: '`${results.bx.twenty_api_key}`'
-        path: f/bluewind/create_twenty_field
-    - id: ea
-      summary: create isPipelineProcessed
-      value:
-        type: flow
-        input_transforms:
-          field_medatadata:
-            type: javascript
-            expr: |-
-              {
-                description: null,
-                icon: "DatabaseExport",
-                label: "Is Pipeline Processed",
-                name: "isPipelineProcessed",
-                objectMetadataId: results.dv.campaign_people_object_metadata,
-                type: "BOOLEAN",
-                defaultValue: false
-              }
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
         path: f/bluewind/create_twenty_field
   failure_module:
     id: failure
