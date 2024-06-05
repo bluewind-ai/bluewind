@@ -153,7 +153,7 @@ value:
             expr: results.bx.twenty_api_key
         path: f/bluewind/create_twenty_field
     - id: ed
-      summary: Create campaignStatus
+      summary: Create campaigns tags
       value:
         type: flow
         input_transforms:
@@ -162,10 +162,9 @@ value:
             expr: |-
               {
                 "description": "Status of the campaign",
-                "defaultValue": "'DRAFTED'",
                 "icon": "IconUsers",
-                "label": "Campaign Status",
-                "name": "campaignStatus",
+                "label": "Tags",
+                "name": "tags",
                 "options": [
                   {
                     "color": "blue",
@@ -180,12 +179,32 @@ value:
                     "value": "ACTIVE"
                   }
                 ],
-                "type": "SELECT",
+                "type": "MULTI_SELECT",
                 "objectMetadataId": results.cw.campaign_object_metadata,
               }
           twenty_api_key:
             type: javascript
             expr: results.bx.twenty_api_key
+        path: f/bluewind/create_twenty_field
+    - id: eh
+      summary: Create twenty field
+      value:
+        type: flow
+        input_transforms:
+          field_medatadata:
+            type: javascript
+            expr: |-
+              {
+                "description": null,
+                "icon": "IconUsers",
+                "label": "Tags Flattened",
+                "name": "tagsFlattened",
+                "objectMetadataId": results.ed.campaign_object_metadata
+                "type": "TEXT"
+              }
+          twenty_api_key:
+            type: static
+            value: ''
         path: f/bluewind/create_twenty_field
     - id: dv
       summary: get id of the campaignpeople object
