@@ -199,12 +199,12 @@ value:
                 "icon": "IconUsers",
                 "label": "Tags Flattened",
                 "name": "tagsFlattened",
-                "objectMetadataId": results.ed.campaign_object_metadata
+                "objectMetadataId": results.cw.campaign_object_metadata,
                 "type": "TEXT"
               }
           twenty_api_key:
-            type: static
-            value: ''
+            type: javascript
+            expr: results.bx.twenty_api_key
         path: f/bluewind/create_twenty_field
     - id: dv
       summary: get id of the campaignpeople object
@@ -312,12 +312,12 @@ value:
                 "icon": "IconUsers",
                 "label": "Tags Flattened",
                 "name": "tagsFlattened",
-                "objectMetadataId": results.dv.campaign_people_object_metadata
+                "objectMetadataId": results.dv.campaign_people_object_metadata,
                 "type": "TEXT"
               }
           twenty_api_key:
-            type: static
-            value: ''
+            type: javascript
+            expr: results.bx.twenty_api_key
         path: f/bluewind/create_twenty_field
   failure_module:
     id: failure
