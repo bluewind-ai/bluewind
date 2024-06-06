@@ -63,7 +63,7 @@ schema:
   type: object
   order:
     - twenty_campaign_id
-    - twenty_api_key
+    - twenty
     - smartlead_api_key
     - campaign_name
   properties:
@@ -81,12 +81,11 @@ schema:
       default: ''
       format: ''
       password: true
-    twenty_api_key:
-      type: string
+    twenty:
+      type: object
       description: ''
-      default: ''
       format: ''
-      password: true
+      nullable: false
     twenty_campaign_id:
       type: string
       description: ''
