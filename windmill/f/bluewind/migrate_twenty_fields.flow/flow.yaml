@@ -38,8 +38,8 @@ value:
         content: '!inline create_campaign_1.inline_script.native.ts'
         input_transforms:
           twenty:
-            type: static
-            value: '$res:u/merwanehamadi/twenty'
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
@@ -50,8 +50,8 @@ value:
         content: '!inline get_id_of_the_person_object.inline_script.native.ts'
         input_transforms:
           twenty:
-            type: static
-            value: '$res:u/merwanehamadi/twenty'
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
@@ -73,7 +73,7 @@ value:
               }
           twenty_api_key:
             type: javascript
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
     - id: ee
       summary: person.tags
@@ -120,7 +120,7 @@ value:
           twenty_api_key:
             type: javascript
             value: '`${results.bx.twenty_api_key}`'
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
     - id: cw
       summary: get id of the campaign object
@@ -129,8 +129,8 @@ value:
         content: '!inline get_id_of_the_campaign_object.inline_script.native.ts'
         input_transforms:
           twenty:
-            type: static
-            value: null
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
@@ -152,7 +152,7 @@ value:
                     }
           twenty_api_key:
             type: javascript
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
     - id: ed
       summary: Create campaigns tags
@@ -186,7 +186,7 @@ value:
               }
           twenty_api_key:
             type: javascript
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
       continue_on_error: false
     - id: eh
@@ -207,7 +207,7 @@ value:
               }
           twenty_api_key:
             type: javascript
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
     - id: dv
       summary: get id of the campaignpeople object

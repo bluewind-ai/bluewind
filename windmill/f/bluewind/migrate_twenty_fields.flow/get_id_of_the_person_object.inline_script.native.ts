@@ -1,4 +1,4 @@
-export async function main(twenty: Object, twenty: Object) {
+export async function main(twenty: Object) {
   // return twenty
   const query = `
 query {
@@ -25,6 +25,7 @@ query {
 
     if (!response.ok) {
       const data = await response.json();
+      return data
 
       throw new Error(
         `HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`
