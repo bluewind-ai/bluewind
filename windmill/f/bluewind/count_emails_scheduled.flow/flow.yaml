@@ -9,8 +9,8 @@ value:
         content: '!inline count_email_scheduled.inline_script.native.ts'
         input_transforms:
           twenty:
-            type: static
-            value: null
+            type: javascript
+            expr: flow_input.twenty
         lock: ''
         language: nativets
         tag: ''
