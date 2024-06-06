@@ -47,7 +47,7 @@ value:
                           email_remaining_to_schedule:
                             type: javascript
                             expr: >-
-                              Math.max(results.dm.data.campaignsPeople.totalCount,
+                              Math.max(results.eg.data.campaignsPeople.totalCount,
                               5)
                         path: f/bluewind/schedule_more_emails
                       continue_on_error: false
@@ -101,7 +101,7 @@ value:
                               input_transforms: {}
                               path: f/bluewind/create_one_email_account
                         expr: >-
-                          results.dm.data.campaignsPeople.totalCount >
+                          results.eg.data.campaignsPeople.totalCount >
                           results.dn.length * 300
                     default:
                       - id: eb
@@ -113,7 +113,7 @@ value:
                               type: javascript
                               expr: >-
                                 Math.max(300 -
-                                results.dm.data.campaignsPeople.totalCount, 5)
+                                results.eg.data.campaignsPeople.totalCount, 5)
                           path: f/bluewind/schedule_more_emails
         skip_failures: false
   failure_module:
