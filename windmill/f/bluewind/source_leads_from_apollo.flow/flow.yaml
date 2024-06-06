@@ -114,9 +114,9 @@ value:
           data:
             type: javascript
             expr: results.ax
-          twenty_api_key:
+          twenty:
             type: javascript
-            expr: flow_input.twenty_api_key
+            expr: flow_input.twenty
         lock: ''
         language: nativets
         tag: ''
@@ -148,9 +148,9 @@ value:
           data:
             type: javascript
             expr: results.ba
-          twenty_api_key:
+          twenty:
             type: javascript
-            expr: flow_input.twenty_api_key
+            expr: flow_input.twenty
         lock: ''
         language: nativets
         tag: ''
@@ -158,7 +158,7 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - twenty_api_key
+    - twenty
     - campaign_name
     - twenty_campaign_id
   properties:
@@ -167,12 +167,11 @@ schema:
       description: ''
       default: ''
       format: ''
-    twenty_api_key:
-      type: string
+    twenty:
+      type: object
       description: ''
-      default: ''
       format: ''
-      password: true
+      nullable: false
     twenty_campaign_id:
       type: string
       description: ''
