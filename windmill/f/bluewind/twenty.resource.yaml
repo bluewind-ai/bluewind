@@ -1,0 +1,5 @@
+description: ''
+value:
+  twenty_api_key: YOUR_TWENTY_API_KEY
+  twenty_base_url: 'https://api.twenty.com'
+resource_type: twenty
