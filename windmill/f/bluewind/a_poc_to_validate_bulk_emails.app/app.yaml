@@ -4,7 +4,7 @@ value:
   grid:
     - '12':
         fixed: false
-        h: 10
+        h: 101
         w: 8
         x: 2
         y: 0
@@ -305,5 +305,6 @@ policy:
   execution_mode: anonymous
   triggerables_v2:
     'b:rawscript/aa1f978435d96697e564111906e302fd9a77774b99022e043ba4920978c192a3':
+      allow_user_resources: []
       one_of_inputs: {}
       static_inputs: {}
