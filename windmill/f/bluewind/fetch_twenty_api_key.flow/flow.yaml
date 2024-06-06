@@ -48,7 +48,8 @@ value:
                                 type: string
                                 description: ''
                                 default: ''
-                                password: true
+                                nullable: false
+                                password: false
                             required: []
                         timeout: 1800
                     - id: ao
@@ -92,7 +93,7 @@ value:
               type: rawscript
               content: '!inline return_correct_api_key.inline_script.native.ts'
               input_transforms:
-                correct_api_key:
+                twenty_resource:
                   type: javascript
                   expr: results.al
               lock: ''

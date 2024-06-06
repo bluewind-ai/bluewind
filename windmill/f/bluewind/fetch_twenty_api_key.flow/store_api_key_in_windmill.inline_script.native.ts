@@ -1,10 +1,12 @@
 export async function main(all_attempts: Array) {
   const correct_api_key = all_attempts[all_attempts.length - 1].twenty_api_key;
+  const twenty_resource = {
+    twenty_api_key: correct_api_key,
+    twenty_base_url: "https://api.twenty.com"
+  }
   const data = {
     path: `u/${WM_USERNAME}/twenty`,
-    value: {
-      twenty_api_key: correct_api_key
-    },
+    value: twenty_resource,
     description: '',
     resource_type: 'twenty',
   };
@@ -19,8 +21,5 @@ export async function main(all_attempts: Array) {
     body: JSON.stringify(data),
   });
 
-  return {
-    twenty_api_key: correct_api_key
-  }
-
+  return twenty_resource
 }

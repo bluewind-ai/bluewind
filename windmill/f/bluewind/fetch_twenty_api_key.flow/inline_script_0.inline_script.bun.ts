@@ -6,7 +6,7 @@ export async function main() {
   return {
     resume: resumeUrls['resume'],
     default_args: {
-      twenty_api_key: "YOUR_TWENTY_API_KEY"
+      twenty_api_key: "YOUR_TWENTY_API_KEY",
     }, // optional
     enums: {} // optional
   }
