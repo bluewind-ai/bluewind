@@ -1,5 +1,4 @@
 export async function main(twenty: Object) {
-  return twenty
   const url = `${twenty.twenty_base_url}/rest/apiKeys`;
   const options = {
     method: 'GET',
@@ -13,6 +12,7 @@ export async function main(twenty: Object) {
     await fetch(url, options);
     return {
       twenty_api_key,
+      twenty_base_url
     };
   } catch (error) {
     return {};

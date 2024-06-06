@@ -1,8 +1,8 @@
 export async function main(all_attempts: Array) {
-  const correct_api_key = all_attempts[all_attempts.length - 1].twenty_api_key;
+  const twenty = all_attempts[all_attempts.length - 1];
   const twenty_resource = {
-    twenty_api_key: correct_api_key,
-    twenty_base_url: "https://api.twenty.com"
+    twenty_api_key: twenty.twenty_api_key,
+    twenty_base_url: twenty.twenty_base_url
   }
   const data = {
     path: `u/${WM_USERNAME}/twenty`,

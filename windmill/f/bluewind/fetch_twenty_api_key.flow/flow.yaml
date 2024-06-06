@@ -24,9 +24,10 @@ value:
                   type: whileloopflow
                   modules:
                     - id: an
+                      summary: approval prompt
                       value:
                         type: rawscript
-                        content: '!inline inline_script_0.inline_script.bun.ts'
+                        content: '!inline approval_prompt.inline_script.bun.ts'
                         input_transforms: {}
                         language: bun
                         path: hub/8712/windmill/approval_prompt
