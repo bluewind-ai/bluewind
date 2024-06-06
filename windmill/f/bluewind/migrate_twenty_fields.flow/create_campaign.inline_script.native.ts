@@ -1,4 +1,5 @@
-export async function main(twenty: Twenty) {
+export async function main(twenty: Object) {
+  return twenty
   const query = `
     mutation CreateOneObjectMetadataItem($input: CreateOneObjectInput!) {
       createOneObject(input: $input) {
@@ -22,7 +23,7 @@ export async function main(twenty: Twenty) {
   };
 
   try {
-    const response = await fetch(`${twenty.base_url}/metadata`, {
+    const response = await fetch(`${twenty.twenty_base_url}/metadata`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

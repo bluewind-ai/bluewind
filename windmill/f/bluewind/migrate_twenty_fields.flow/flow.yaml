@@ -52,9 +52,6 @@ value:
           twenty:
             type: static
             value: '$res:u/merwanehamadi/twenty'
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
         lock: ''
         language: nativets
         tag: ''
@@ -131,9 +128,9 @@ value:
         type: rawscript
         content: '!inline get_id_of_the_campaign_object.inline_script.native.ts'
         input_transforms:
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
+          twenty:
+            type: static
+            value: null
         lock: ''
         language: nativets
         tag: ''
@@ -218,9 +215,9 @@ value:
         type: rawscript
         content: '!inline get_id_of_the_campaignpeople_object.inline_script.native.ts'
         input_transforms:
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
+          twenty:
+            type: static
+            value: null
         lock: ''
         language: nativets
         tag: ''
@@ -236,9 +233,9 @@ value:
           person_object_id:
             type: javascript
             expr: results.ci.person_object_metadata
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
+          twenty:
+            type: static
+            value: null
         lock: ''
         language: nativets
         tag: ''
@@ -255,9 +252,9 @@ value:
           campaign_people_object_id:
             type: javascript
             expr: results.dv.campaign_people_object_metadata
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
+          twenty:
+            type: static
+            value: null
         lock: ''
         language: nativets
         tag: ''
@@ -345,9 +342,9 @@ value:
                 "type": "MULTI_SELECT",
                 "objectMetadataId": results.dv.campaign_people_object_metadata
               }
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
+          twenty:
+            type: static
+            value: null
         lock: ''
         language: nativets
         tag: ''
@@ -359,7 +356,7 @@ value:
           field_metadata:
             type: static
             value: null
-          twenty_api_key:
+          twenty:
             type: static
             value: null
         lock: ''
