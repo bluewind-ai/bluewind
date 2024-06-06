@@ -132,7 +132,7 @@ value:
             expr: flow_input.campaign_name
           data:
             type: javascript
-            expr: results.az
+            expr: results.ax
           twenty_campaign_id:
             type: javascript
             expr: flow_input.twenty_campaign_id

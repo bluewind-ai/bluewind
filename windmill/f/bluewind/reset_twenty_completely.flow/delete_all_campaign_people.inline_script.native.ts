@@ -1,4 +1,7 @@
-export async function main(twenty_api_key: string, campaign_people_ids_to_delete: Array) {
+export async function main(
+  twenty: Twenty,
+  campaign_people_ids_to_delete: Array
+) {
   const query = `mutation DeleteManyCampaignsPeople($filter: CampaignPersonFilterInput!) {
   deleteCampaignsPeople(filter: $filter) {
     id
@@ -7,25 +10,24 @@ export async function main(twenty_api_key: string, campaign_people_ids_to_delete
 }`;
 
   let variables = {
-    "filter": {
-      "id": {
-        "in": campaign_people_ids_to_delete
-      }
-    }
+    filter: {
+      id: {
+        in: campaign_people_ids_to_delete,
+      },
+    },
   };
 
-  let response = await fetch('https://api.twenty.com/graphql', {
+  let response = await fetch(`${twenty.twenty_base_url}/graphql`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${twenty_api_key}`,
-
+      Accept: 'application/json',
+      Authorization: `Bearer ${twenty.twenty_api_key}`,
     },
     body: JSON.stringify({
       query,
       variables,
     }),
   });
-  return await response.json()
+  return await response.json();
 }

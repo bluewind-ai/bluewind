@@ -1,4 +1,4 @@
-export async function main(twenty_api_key: string) {
+export async function main(twenty: Twenty) {
   const query = `query FindManyCampaigns($filter: CampaignFilterInput) {
   campaigns(first: 1000, filter: $filter) {
     edges {
@@ -18,30 +18,25 @@ export async function main(twenty_api_key: string) {
   }
 }`;
 
-  let variables = {
-    "filter": {
-      "campaignStatus": {
-        "in": [
-          "DRAFTED"
-        ]
-      }
+  const variables = {
+    filter: {
+      campaignStatus: {
+        in: ['DRAFTED'],
+      },
     },
-    "personFilter": {
-      "campaignStatus": {
-        "in": [
-          "EMAIL_SCHEDULED"
-        ]
-      }
-    }
+    personFilter: {
+      campaignStatus: {
+        in: ['EMAIL_SCHEDULED'],
+      },
+    },
   };
 
-  let response = await fetch('https://api.twenty.com/graphql', {
+  const response = await fetch(`${twenty.twenty_base_url}/graphql`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${twenty_api_key}`,
-
+      Accept: 'application/json',
+      Authorization: `Bearer ${twenty.twenty_api_key}`,
     },
     body: JSON.stringify({
       query,
@@ -49,5 +44,5 @@ export async function main(twenty_api_key: string) {
     }),
   });
 
-  return await response.json()
+  return await response.json();
 }

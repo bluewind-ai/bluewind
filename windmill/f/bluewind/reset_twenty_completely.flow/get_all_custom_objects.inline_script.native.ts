@@ -1,4 +1,4 @@
-export async function main(twenty_api_key: string) {
+export async function main(twenty: Twenty) {
   const query = `
 query {
   objects(paging: { first: 1000 }, filter: { isCustom: { is: true }}) {
@@ -12,24 +12,23 @@ query {
   }
 }`;
 
-  const url = 'https://api.twenty.com/metadata';
+  const url = `${twenty.twenty_base_url}/metadata`;
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${twenty_api_key}`
+        Authorization: `Bearer ${twenty.twenty_api_key}`,
       },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({ query }),
     });
     if (!response.ok) {
-      throw ("error")
+      throw 'error';
     }
-    const data = await response.json()
+    const data = await response.json();
     // return data
-    return data.data.objects.edges
-
+    return data.data.objects.edges;
   } catch (error) {
-    throw error
+    throw error;
   }
 }

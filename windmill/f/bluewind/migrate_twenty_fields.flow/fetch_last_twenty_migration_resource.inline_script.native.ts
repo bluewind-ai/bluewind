@@ -5,9 +5,7 @@ export async function main() {
 
   const responseClone = response.clone();
 
-
   try {
-
     if (response.status === 200) {
       return await response.json()
     } else {

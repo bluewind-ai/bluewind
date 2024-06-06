@@ -1,4 +1,4 @@
-export async function main(twenty_api_key: string) {
+export async function main(twenty: Twenty) {
   const query = `
 query {
   objects(filter: {isCustom: {is: true}}) {
@@ -13,28 +13,30 @@ query {
 `;
 
   try {
-    const response = await fetch('https://api.twenty.com/metadata', {
+    const response = await fetch(`${twenty.twenty_base_url}/metadata`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${twenty_api_key}`,
+        Authorization: `Bearer ${twenty.twenty_api_key}`,
       },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({ query }),
     });
 
     if (!response.ok) {
       const data = await response.json();
 
-      throw new Error(`HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`);
+      throw new Error(
+        `HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`
+      );
     }
 
     const data = await response.json();
     const filteredObject = data.data.objects.edges.find(
-      (edge: any) => edge.node.nameSingular === "campaignPerson"
+      (edge: any) => edge.node.nameSingular === 'campaignPerson'
     );
 
     return {
-      campaign_people_object_metadata: filteredObject.node.id
+      campaign_people_object_metadata: filteredObject.node.id,
     };
   } catch (error) {
     throw error;

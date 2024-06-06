@@ -1,4 +1,4 @@
-export async function main(idToUpdate: string, twenty_api_key: string) {
+export async function main(idToUpdate: string, twenty: Twenty) {
   const mutation = `
 mutation UpdateOneObjectMetadataItem($idToUpdate: UUID!, $updatePayload: UpdateObjectPayload!) {
   updateOneObject(input: { id: $idToUpdate, update: $updatePayload }) {
@@ -6,26 +6,23 @@ mutation UpdateOneObjectMetadataItem($idToUpdate: UUID!, $updatePayload: UpdateO
   }
 }`;
 
-  let variables = {
+  const variables = {
     idToUpdate,
     updatePayload: {
-      isActive: false
-    }
+      isActive: false,
+    },
   };
 
-  let response = await fetch('https://api.twenty.com/metadata', {
+  const response = await fetch(`${twenty.twenty_base_url}/metadata`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${twenty_api_key}`,
+      Authorization: `Bearer ${twenty.twenty_api_key}`,
     },
     body: JSON.stringify({
       query: mutation,
-      variables: variables
-    })
+      variables: variables,
+    }),
   });
   return await response.json();
-
 }
-
-

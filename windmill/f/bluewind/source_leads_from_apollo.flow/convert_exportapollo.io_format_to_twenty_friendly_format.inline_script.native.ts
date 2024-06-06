@@ -10,7 +10,11 @@ export async function main(data: Array, campaign_name: string) {
       "label": "LinkedIn",
       "url": item.linkedin_url
     },
-    jobTitle: item.title
+    jobTitle: item.title,
+    tags: [
+      "EMAIL_STATUS_UNKNOWN"
+    ],
+    tagsFlattened: "EMAIL_STATUS_UNKNOWN"
   }));
 
   return inputs;

@@ -1,5 +1,3 @@
-// Fetch-only script, no imports allowed but benefits from a dedicated highly efficient runtime
-
 export async function main(twenty: Twenty, field_metadata: Object) {
   const mutation = `
     mutation CreateOneFieldMetadataItem($input: CreateOneFieldMetadataInput!) {
@@ -17,7 +15,7 @@ export async function main(twenty: Twenty, field_metadata: Object) {
   };
 
   const response = await fetch(`${twenty.twenty_base_url}/metadata`, {
-    method: 'POST',
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${twenty.twenty_api_key}`,
