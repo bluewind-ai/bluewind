@@ -24,15 +24,13 @@ value:
       value:
         type: whileloopflow
         modules:
-          - id: dm
-            summary: count email scheduled
+          - id: eg
             value:
               type: flow
               input_transforms:
-                twenty_api_key:
+                twenty:
                   type: javascript
-                  value: '${results.bx.twenty_api_key}'
-                  expr: '`${results.bx.twenty_api_key}`'
+                  expr: results.bx
               path: f/bluewind/count_emails_scheduled
           - id: dr
             summary: ''
