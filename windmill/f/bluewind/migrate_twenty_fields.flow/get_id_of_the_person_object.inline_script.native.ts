@@ -1,4 +1,5 @@
-export async function main(twenty_api_key: string) {
+export async function main(twenty: Twenty, twenty_api_key: string) {
+  // return twenty
   const query = `
 query {
   objects(paging: { first: 1000 }) {
@@ -13,11 +14,11 @@ query {
 `;
 
   try {
-    const response = await fetch('https://api.twenty.com/metadata', {
+    const response = await fetch(`${twenty.twenty_base_url}/metadata`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${twenty_api_key}`,
+        'Authorization': `Bearer ${twenty.twenty_api_key}`,
       },
       body: JSON.stringify({ query })
     });

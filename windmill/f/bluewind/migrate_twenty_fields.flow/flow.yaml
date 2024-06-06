@@ -23,9 +23,9 @@ value:
         type: rawscript
         content: '!inline create_campaign.inline_script.native.ts'
         input_transforms:
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
+          twenty:
+            type: static
+            value: '$res:u/merwanehamadi/twenty'
         lock: ''
         language: nativets
         tag: ''
@@ -47,6 +47,9 @@ value:
         type: rawscript
         content: '!inline get_id_of_the_person_object.inline_script.native.ts'
         input_transforms:
+          twenty:
+            type: static
+            value: '$res:u/merwanehamadi/twenty'
           twenty_api_key:
             type: javascript
             expr: '`${results.bx.twenty_api_key}`'
@@ -343,6 +346,20 @@ value:
           twenty_api_key:
             type: javascript
             expr: results.bx.twenty_api_key
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: ej
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          field_metadata:
+            type: static
+            value: null
+          twenty_api_key:
+            type: static
+            value: null
         lock: ''
         language: nativets
     - id: eg
