@@ -37,9 +37,9 @@ value:
         type: rawscript
         content: '!inline create_campaign_1.inline_script.native.ts'
         input_transforms:
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
+          twenty:
+            type: static
+            value: '$res:u/merwanehamadi/twenty'
         lock: ''
         language: nativets
         tag: ''
