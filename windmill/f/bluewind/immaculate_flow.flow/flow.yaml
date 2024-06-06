@@ -8,9 +8,9 @@ value:
         type: rawscript
         content: '!inline attempt_to_fetch_all_campaigns.inline_script.native.ts'
         input_transforms:
-          twenty_api_key:
+          twenty:
             type: javascript
-            expr: '`${flow_input.twenty_api_key}`'
+            expr: flow_input.twenty
         lock: ''
         language: nativets
         tag: ''
@@ -27,9 +27,9 @@ value:
                   type: rawscript
                   content: '!inline create_campaign.inline_script.native.ts'
                   input_transforms:
-                    twenty_api_key:
+                    twenty:
                       type: javascript
-                      expr: '`${flow_input.twenty_api_key}`'
+                      expr: flow_input.twenty
                   lock: ''
                   language: nativets
                   tag: ''
@@ -41,9 +41,9 @@ value:
                     !inline
                     attempt_to_fetch_all_campaigns_1.inline_script.native.ts
                   input_transforms:
-                    twenty_api_key:
+                    twenty:
                       type: javascript
-                      expr: '`${flow_input.twenty_api_key}`'
+                      expr: flow_input.twenty
                   lock: ''
                   language: nativets
                   tag: ''
@@ -68,12 +68,11 @@ schema:
   order:
     - twenty
   properties:
-    twenty_api_key:
-      type: string
+    twenty:
+      type: object
       description: ''
-      default: ''
       format: ''
-      password: true
+      nullable: false
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
