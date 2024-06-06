@@ -266,10 +266,10 @@ value:
             type: javascript
             expr: |-
               {
-                "description": "Tags are used to store information about an entities and its associated entities.",
+                "description": "Status in the outreach pipeline",
                 "icon": "IconUsers",
-                "label": "Tags",
-                "name": "tags",
+                "label": "Pipeline Status",
+                "name": "Status in the pipeline",
                 "options": [
                   {
                     "color": "blue",
@@ -293,7 +293,7 @@ value:
                     "value": "PIPELINE_DONE"
                   }
                 ],
-                "type": "MULTI_SELECT",
+                "type": "SELECT",
                 "objectMetadataId": results.dv.campaign_people_object_metadata
               }
           twenty:
