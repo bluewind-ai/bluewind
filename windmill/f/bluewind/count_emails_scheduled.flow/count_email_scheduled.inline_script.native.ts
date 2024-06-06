@@ -9,8 +9,8 @@ export async function main(twenty: Object) {
 
   const variables = {
     filter: {
-      campaignStatus: {
-        in: ['EMAIL_SCHEDULED'],
+      pipelineStatus: {
+        in: ['PIPELINE_TODO'],
       },
     },
   };
