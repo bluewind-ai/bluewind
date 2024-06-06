@@ -17,6 +17,7 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_twenty_api_key
+      continue_on_error: false
     - id: dw
       summary: Create Campaign
       value:
@@ -24,8 +25,8 @@ value:
         content: '!inline create_campaign.inline_script.native.ts'
         input_transforms:
           twenty:
-            type: static
-            value: '$res:u/merwanehamadi/twenty'
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
