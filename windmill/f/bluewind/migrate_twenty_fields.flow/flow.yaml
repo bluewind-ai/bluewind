@@ -269,7 +269,7 @@ value:
                 "description": "Status in the outreach pipeline",
                 "icon": "IconUsers",
                 "label": "Pipeline Status",
-                "name": "Status in the pipeline",
+                "name": "pipelineStatus",
                 "options": [
                   {
                     "color": "blue",
