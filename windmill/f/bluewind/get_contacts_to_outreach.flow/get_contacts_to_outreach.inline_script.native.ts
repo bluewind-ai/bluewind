@@ -1,5 +1,5 @@
 export async function main(
-  twenty: Twenty,
+  twenty: Object,
   campaign_id: string,
   number_of_contacts_needed: number
 ) {

@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, relation_to_delete: string) {
+export async function main(twenty: Object, relation_to_delete: string) {
   const query = `mutation DeleteOneRelationMetadataItem($idToDelete: UUID!) {
   deleteOneRelation(input: {id: $idToDelete}) {
     id

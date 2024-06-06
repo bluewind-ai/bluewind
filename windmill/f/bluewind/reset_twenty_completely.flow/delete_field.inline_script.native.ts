@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, field_to_delete_id: string) {
+export async function main(twenty: Object, field_to_delete_id: string) {
   const url = `https://api.twenty.com/rest/metadata/fields/${field_to_delete_id}`;
 
   const response = await fetch(url, {

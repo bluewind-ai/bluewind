@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty) {
+export async function main(twenty: Object) {
   const query = `
 query {
   objects(paging: { first: 1000 }, filter: { isCustom: { is: true }}) {

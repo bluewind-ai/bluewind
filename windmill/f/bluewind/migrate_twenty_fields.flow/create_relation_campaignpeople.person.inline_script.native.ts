@@ -1,7 +1,7 @@
 // Fetch-only script, no imports allowed but benefits from a dedicated highly efficient runtime
 
 export async function main(
-  twenty: Twenty,
+  twenty: Object,
   campaign_people_object_id: string,
   person_object_id: string
 ) {

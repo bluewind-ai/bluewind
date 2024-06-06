@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, campaign_name: string) {
+export async function main(twenty: Object, campaign_name: string) {
   const url = `${twenty.twenty_base_url}/rest/campaigns`;
   const options = {
     method: 'POST',

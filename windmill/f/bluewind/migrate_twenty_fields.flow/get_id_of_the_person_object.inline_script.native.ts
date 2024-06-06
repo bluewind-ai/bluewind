@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, twenty: Twenty) {
+export async function main(twenty: Object, twenty: Object) {
   // return twenty
   const query = `
 query {

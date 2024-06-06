@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty) {
+export async function main(twenty: Object) {
   const query = `
     mutation CreateOneObjectMetadataItem($input: CreateOneObjectInput!) {
       createOneObject(input: $input) {

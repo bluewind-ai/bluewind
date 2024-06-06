@@ -1,4 +1,4 @@
-export async function main(idToUpdate: string, twenty: Twenty) {
+export async function main(idToUpdate: string, twenty: Object) {
   const mutation = `
 mutation UpdateOneObjectMetadataItem($idToUpdate: UUID!, $updatePayload: UpdateObjectPayload!) {
   updateOneObject(input: { id: $idToUpdate, update: $updatePayload }) {
