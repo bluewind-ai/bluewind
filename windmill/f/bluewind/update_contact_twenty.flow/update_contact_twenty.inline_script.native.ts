@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, data, contact_id: string) {
+export async function main(twenty: Object, data, contact_id: string) {
   if (Object.keys(data).length === 0) {
     return {};
   }

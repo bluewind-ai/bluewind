@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, data: Array) {
+export async function main(twenty: Object, data: Array) {
   const mutation = `
 mutation CreatePeople($input: [PersonCreateInput!]!) {
   createPeople(data: $input) {

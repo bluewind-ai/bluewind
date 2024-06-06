@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, field_metadata: Object) {
+export async function main(twenty: Object, field_metadata: Object) {
   const mutation = `
     mutation CreateOneFieldMetadataItem($input: CreateOneFieldMetadataInput!) {
       createOneField(input: $input) {

@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, company_ids_to_delete: Array) {
+export async function main(twenty: Object, company_ids_to_delete: Array) {
   const query = `mutation DeleteManyCompanies($filter: CompanyFilterInput!) {
   deleteCompanies(filter: $filter) {
     id

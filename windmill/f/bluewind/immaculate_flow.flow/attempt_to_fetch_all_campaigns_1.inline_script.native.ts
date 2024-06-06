@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty) {
+export async function main(twenty: Object) {
   const url = `https://api.twenty.com/rest/campaigns`;
 
   const response = await fetch(url, {

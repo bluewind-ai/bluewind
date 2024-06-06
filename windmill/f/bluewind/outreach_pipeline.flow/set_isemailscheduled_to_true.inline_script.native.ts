@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, campaign_person_id: string) {
+export async function main(twenty: Object, campaign_person_id: string) {
   const url = `https://api.twenty.com/rest/campaignsPeople/${campaign_person_id}`;
   const options = {
     method: 'PATCH',

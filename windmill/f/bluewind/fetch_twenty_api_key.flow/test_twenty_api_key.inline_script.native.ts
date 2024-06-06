@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty) {
+export async function main(twenty: Object) {
   const url = `${twenty.twenty_base_url}/rest/apiKeys`;
   const options = {
     method: 'GET',

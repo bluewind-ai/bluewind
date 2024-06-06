@@ -1,5 +1,5 @@
 export async function main(
-  twenty: Twenty,
+  twenty: Object,
   campaign_people_ids_to_delete: Array
 ) {
   const query = `mutation DeleteManyCampaignsPeople($filter: CampaignPersonFilterInput!) {
