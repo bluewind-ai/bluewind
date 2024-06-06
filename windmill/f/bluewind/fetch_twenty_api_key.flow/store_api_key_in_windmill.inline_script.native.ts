@@ -2,7 +2,9 @@ export async function main(all_attempts: Array) {
   const correct_api_key = all_attempts[all_attempts.length - 1].twenty_api_key;
   const data = {
     path: `u/${WM_USERNAME}/twenty`,
-    value: correct_api_key,
+    value: {
+      twenty_api_key: correct_api_key
+    },
     description: '',
     resource_type: 'twenty',
   };
