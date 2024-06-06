@@ -30,6 +30,7 @@ value:
         lock: ''
         language: nativets
         tag: ''
+      continue_on_error: false
     - id: dx
       summary: Create Campaign
       value:
