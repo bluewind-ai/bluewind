@@ -22,7 +22,7 @@ export async function main(twenty: Object) {
   };
 
   try {
-    const response = await fetch(`${twenty.twenty_api_key}/metadata`, {
+    const response = await fetch(`${twenty.twenty_base_url}/metadata`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

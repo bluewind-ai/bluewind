@@ -11,9 +11,9 @@ value:
           field_metadata:
             type: javascript
             expr: flow_input.field_medatadata
-          twenty_api_key:
+          twenty:
             type: javascript
-            expr: '`${flow_input.twenty_api_key}`'
+            expr: flow_input.twenty
         lock: ''
         language: nativets
         tag: ''
@@ -22,7 +22,7 @@ schema:
   additionalProperties: false
   order:
     - field_medatadata
-    - twenty_api_key
+    - twenty
   properties:
     field_medatadata:
       type: object
@@ -46,12 +46,13 @@ schema:
           type: string
           format: uuid
       required: []
-    twenty_api_key:
-      type: string
+    twenty:
+      type: object
       description: ''
-      default: ''
-      format: ''
-      password: true
+      dateFormat: resource-twenty
+      nullable: false
+      properties: {}
+      required: []
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false

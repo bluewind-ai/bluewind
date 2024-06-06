@@ -24,15 +24,13 @@ value:
       value:
         type: whileloopflow
         modules:
-          - id: dm
-            summary: count email scheduled
+          - id: eg
             value:
               type: flow
               input_transforms:
-                twenty_api_key:
+                twenty:
                   type: javascript
-                  value: '${results.bx.twenty_api_key}'
-                  expr: '`${results.bx.twenty_api_key}`'
+                  expr: results.bx
               path: f/bluewind/count_emails_scheduled
           - id: dr
             summary: ''
@@ -54,7 +52,7 @@ value:
                         path: f/bluewind/schedule_more_emails
                       continue_on_error: false
                   expr: |
-                    results.dm.data.campaignsPeople.totalCount < 10
+                    results.eg.data.campaignsPeople.totalCount < 10
               default:
                 - id: ec
                   summary: find a campaign ready for approval

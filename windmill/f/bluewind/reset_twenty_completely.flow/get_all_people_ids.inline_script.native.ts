@@ -24,5 +24,6 @@ export async function main(twenty: Object) {
     }),
   });
   const data = await response.json();
+  return data
   return data.data.people.edges.map((obj) => obj.node.id);
 }

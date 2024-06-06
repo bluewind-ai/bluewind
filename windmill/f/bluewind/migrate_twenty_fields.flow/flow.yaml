@@ -38,8 +38,8 @@ value:
         content: '!inline create_campaign_1.inline_script.native.ts'
         input_transforms:
           twenty:
-            type: static
-            value: '$res:u/merwanehamadi/twenty'
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
@@ -50,8 +50,8 @@ value:
         content: '!inline get_id_of_the_person_object.inline_script.native.ts'
         input_transforms:
           twenty:
-            type: static
-            value: '$res:u/merwanehamadi/twenty'
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
@@ -71,9 +71,9 @@ value:
                 "objectMetadataId": results.ci.person_object_metadata,
                 "type": "TEXT"
               }
-          twenty_api_key:
+          twenty:
             type: javascript
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
     - id: ee
       summary: person.tags
@@ -117,10 +117,9 @@ value:
                 "type": "MULTI_SELECT",
                 "objectMetadataId": results.ci.person_object_metadata
               }
-          twenty_api_key:
+          twenty:
             type: javascript
-            value: '`${results.bx.twenty_api_key}`'
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
     - id: cw
       summary: get id of the campaign object
@@ -129,8 +128,8 @@ value:
         content: '!inline get_id_of_the_campaign_object.inline_script.native.ts'
         input_transforms:
           twenty:
-            type: static
-            value: null
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
@@ -150,9 +149,9 @@ value:
                 "objectMetadataId": results.cw.campaign_object_metadata,
                       "type": "TEXT"
                     }
-          twenty_api_key:
+          twenty:
             type: javascript
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
     - id: ed
       summary: Create campaigns tags
@@ -184,9 +183,9 @@ value:
                 "type": "MULTI_SELECT",
                 "objectMetadataId": results.cw.campaign_object_metadata,
               }
-          twenty_api_key:
+          twenty:
             type: javascript
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
       continue_on_error: false
     - id: eh
@@ -205,9 +204,9 @@ value:
                 "objectMetadataId": results.cw.campaign_object_metadata,
                 "type": "TEXT"
               }
-          twenty_api_key:
+          twenty:
             type: javascript
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
     - id: dv
       summary: get id of the campaignpeople object
@@ -216,8 +215,8 @@ value:
         content: '!inline get_id_of_the_campaignpeople_object.inline_script.native.ts'
         input_transforms:
           twenty:
-            type: static
-            value: null
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
@@ -234,8 +233,8 @@ value:
             type: javascript
             expr: results.ci.person_object_metadata
           twenty:
-            type: static
-            value: null
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
@@ -253,8 +252,8 @@ value:
             type: javascript
             expr: results.dv.campaign_people_object_metadata
           twenty:
-            type: static
-            value: null
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
@@ -267,10 +266,10 @@ value:
             type: javascript
             expr: |-
               {
-                "description": "Tags are used to store information about an entities and its associated entities.",
+                "description": "Status in the outreach pipeline",
                 "icon": "IconUsers",
-                "label": "Tags",
-                "name": "tags",
+                "label": "Pipeline Status",
+                "name": "pipelineStatus",
                 "options": [
                   {
                     "color": "blue",
@@ -294,13 +293,12 @@ value:
                     "value": "PIPELINE_DONE"
                   }
                 ],
-                "type": "MULTI_SELECT",
+                "type": "SELECT",
                 "objectMetadataId": results.dv.campaign_people_object_metadata
               }
-          twenty_api_key:
+          twenty:
             type: javascript
-            value: '${results.bx.twenty_api_key}'
-            expr: '`${results.bx.twenty_api_key}`'
+            expr: results.bx
         path: f/bluewind/create_twenty_field
     - id: ei
       summary: Update campaign tags
@@ -343,24 +341,11 @@ value:
                 "objectMetadataId": results.dv.campaign_people_object_metadata
               }
           twenty:
-            type: static
-            value: null
+            type: javascript
+            expr: results.bx
         lock: ''
         language: nativets
         tag: ''
-    - id: ej
-      value:
-        type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
-        input_transforms:
-          field_metadata:
-            type: static
-            value: null
-          twenty:
-            type: static
-            value: null
-        lock: ''
-        language: nativets
     - id: eg
       summary: campaignPeople.tagsFlattened
       value:
@@ -377,9 +362,9 @@ value:
                 "objectMetadataId": results.dv.campaign_people_object_metadata,
                 "type": "TEXT"
               }
-          twenty_api_key:
+          twenty:
             type: javascript
-            expr: results.bx.twenty_api_key
+            expr: results.bx
         path: f/bluewind/create_twenty_field
   failure_module:
     id: failure

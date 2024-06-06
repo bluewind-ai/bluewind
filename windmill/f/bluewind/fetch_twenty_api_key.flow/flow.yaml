@@ -23,19 +23,16 @@ value:
                 value:
                   type: whileloopflow
                   modules:
-                    - id: an
+                    - id: as
+                      summary: approval prompt
                       value:
                         type: rawscript
-                        content: '!inline inline_script_0.inline_script.bun.ts'
+                        content: '!inline approval_prompt.inline_script.ts'
                         input_transforms: {}
-                        language: bun
-                        path: hub/8712/windmill/approval_prompt
-                        tag: ''
+                        language: deno
+                        tag: null
                       continue_on_error: false
-                      mock:
-                        enabled: false
                       suspend:
-                        hide_cancel: false
                         required_events: 1
                         resume_form:
                           schema:
@@ -43,13 +40,17 @@ value:
                             type: object
                             order:
                               - twenty_api_key
+                              - twenty_base_url
                             properties:
                               twenty_api_key:
                                 type: string
                                 description: ''
                                 default: ''
-                                nullable: false
-                                password: false
+                                password: true
+                              twenty_base_url:
+                                type: string
+                                description: ''
+                                default: ''
                             required: []
                         timeout: 1800
                     - id: ao
@@ -58,9 +59,13 @@ value:
                         type: rawscript
                         content: '!inline test_twenty_api_key.inline_script.native.ts'
                         input_transforms:
-                          twenty_api_key:
+                          twenty:
                             type: javascript
-                            expr: '`${resume.twenty_api_key}`'
+                            expr: |-
+                              {
+                                "twenty_api_key": resume.twenty_api_key,
+                                "twenty_base_url": resume.twenty_base_url
+                              }
                         concurrency_time_window_s: 0
                         language: nativets
                         tag: ''
