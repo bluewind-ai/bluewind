@@ -1,4 +1,3 @@
-
 export async function main(twenty: Twenty) {
   const query = `
     mutation CreateOneObjectMetadataItem($input: CreateOneObjectInput!) {
@@ -10,16 +9,16 @@ export async function main(twenty: Twenty) {
   `;
 
   const variables = {
-    "input": {
-      "object": {
-        "description": "",
-        "icon": "IconAd",
-        "labelPlural": "Campaigns",
-        "labelSingular": "Campaign",
-        "nameSingular": "campaign",
-        "namePlural": "campaigns"
-      }
-    }
+    input: {
+      object: {
+        description: '',
+        icon: 'IconAd',
+        labelPlural: 'Campaigns',
+        labelSingular: 'Campaign',
+        nameSingular: 'campaign',
+        namePlural: 'campaigns',
+      },
+    },
   };
 
   try {
@@ -27,8 +26,8 @@ export async function main(twenty: Twenty) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${twenty.twenty_api_key}`,
+        Accept: 'application/json',
+        Authorization: `Bearer ${twenty.twenty_api_key}`,
       },
       body: JSON.stringify({
         query,
@@ -39,7 +38,9 @@ export async function main(twenty: Twenty) {
     if (!response.ok) {
       const data = await response.json();
 
-      throw new Error(`HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`);
+      throw new Error(
+        `HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`
+      );
     }
 
     return await response.json();

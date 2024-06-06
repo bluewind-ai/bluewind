@@ -1,5 +1,4 @@
-export async function main(twenty_api_key: string, relation_to_delete: string) {
-
+export async function main(twenty: Twenty, relation_to_delete: string) {
   const query = `mutation DeleteOneRelationMetadataItem($idToDelete: UUID!) {
   deleteOneRelation(input: {id: $idToDelete}) {
     id
@@ -8,22 +7,20 @@ export async function main(twenty_api_key: string, relation_to_delete: string) {
 }`;
 
   let variables = {
-    "idToDelete": relation_to_delete
+    idToDelete: relation_to_delete,
   };
 
-
-  let response = await fetch('https://api.twenty.com/metadata', {
+  let response = await fetch(`${twenty.twenty_base_url}/metadata`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${twenty_api_key}`,
-
+      Accept: 'application/json',
+      Authorization: `Bearer ${twenty.twenty_api_key}`,
     },
     body: JSON.stringify({
       query,
       variables,
     }),
   });
-  return await response.json()
+  return await response.json();
 }

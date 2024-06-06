@@ -1,4 +1,4 @@
-export async function main(twenty_api_key: string, data: Array) {
+export async function main(twenty: Twenty, data: Array) {
   const mutation = `
 mutation CreateCampaignsPeople($input: [CampaignPersonCreateInput!]!) {
   createCampaignsPeople(data: $input) {
@@ -7,21 +7,20 @@ mutation CreateCampaignsPeople($input: [CampaignPersonCreateInput!]!) {
 }
 `;
 
-  let variables = {
-    "input": data
+  const variables = {
+    input: data,
   };
 
-  let response = await fetch('https://api.twenty.com/graphql', {
+  const response = await fetch(`${twenty.twenty_base_url}/graphql`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${twenty_api_key}`,
+      Authorization: `Bearer ${twenty.twenty_api_key}`,
     },
     body: JSON.stringify({
       query: mutation,
-      variables: variables
-    })
+      variables: variables,
+    }),
   });
   return await response.json();
-
 }

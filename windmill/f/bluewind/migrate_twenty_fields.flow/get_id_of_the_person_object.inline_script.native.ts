@@ -1,4 +1,4 @@
-export async function main(twenty: Twenty, twenty_api_key: string) {
+export async function main(twenty: Twenty, twenty: Twenty) {
   // return twenty
   const query = `
 query {
@@ -18,24 +18,26 @@ query {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${twenty.twenty_api_key}`,
+        Authorization: `Bearer ${twenty.twenty_api_key}`,
       },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({ query }),
     });
 
     if (!response.ok) {
       const data = await response.json();
 
-      throw new Error(`HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`);
+      throw new Error(
+        `HTTP error! status: ${response.status} error: ${JSON.stringify(data.errors, null, 2)}`
+      );
     }
 
     const data = await response.json();
     const filteredObject = data.data.objects.edges.find(
-      (edge: any) => edge.node.nameSingular === "person"
+      (edge: any) => edge.node.nameSingular === 'person'
     );
 
     return {
-      person_object_metadata: filteredObject.node.id
+      person_object_metadata: filteredObject.node.id,
     };
   } catch (error) {
     throw error;
