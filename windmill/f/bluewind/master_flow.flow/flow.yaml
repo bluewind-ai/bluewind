@@ -52,7 +52,7 @@ value:
                         path: f/bluewind/schedule_more_emails
                       continue_on_error: false
                   expr: |
-                    results.dm.data.campaignsPeople.totalCount < 10
+                    results.eg.data.campaignsPeople.totalCount < 10
               default:
                 - id: ec
                   summary: find a campaign ready for approval
