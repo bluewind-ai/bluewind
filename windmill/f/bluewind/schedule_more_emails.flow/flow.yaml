@@ -19,9 +19,8 @@ value:
       value:
         type: flow
         input_transforms:
-          twenty_api_key:
-            type: javascript
-            expr: results.bx.twenty_api_key
+          twenty:
+            type: static
         path: f/bluewind/immaculate_flow
       continue_on_error: false
     - id: bp
@@ -69,9 +68,9 @@ value:
                     campaign_name:
                       type: javascript
                       expr: resume.campaign_name
-                    twenty_api_key:
-                      type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
+                    twenty:
+                      type: static
+                      value: null
                   lock: ''
                   language: nativets
                   tag: ''
@@ -144,10 +143,8 @@ value:
                       type: javascript
                       value: ''
                       expr: results.cu.smartlead_api_key
-                    twenty_api_key:
-                      type: javascript
-                      value: ''
-                      expr: results.bx.twenty_api_key
+                    twenty:
+                      type: static
                     twenty_campaign_id:
                       type: javascript
                       value: ''
@@ -193,9 +190,8 @@ value:
                           smartlead_api_key:
                             type: javascript
                             expr: results.cu.smartlead_api_key
-                          twenty_api_key:
-                            type: javascript
-                            expr: results.bx.twenty_api_key
+                          twenty:
+                            type: static
                           twenty_campaign_id:
                             type: javascript
                             expr: results.bp.id
@@ -295,9 +291,8 @@ value:
                     campaign_name:
                       type: javascript
                       expr: '`${results.bp.name}`'
-                    twenty_api_key:
-                      type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
+                    twenty:
+                      type: static
                     twenty_campaign_id:
                       type: javascript
                       expr: '`${results.bp.id}`'
