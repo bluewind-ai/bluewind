@@ -11,8 +11,9 @@ export async function main() {
   return {
     resume: resumeUrls["resume"],
     default_args: {
-      twenty_api_key: "YOUR_TWENTY_API_KEY",
-      twenty_base_url: "https://api.twenty.com",
-    }, // optional
+      apiUrl: "https://app.nocodb.com",
+      xc_token: "YOUR_NOCODB_API_KEY",
+      workspace: "wwgjz0d9",
+    },
   };
 }
