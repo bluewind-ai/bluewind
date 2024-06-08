@@ -62,11 +62,19 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - twenty_campaign_id
-    - twenty
+    - campaign_id
+    - nocodb
     - smartlead_api_key
     - campaign_name
   properties:
+    campaign_id:
+      type: string
+      description: ''
+      dateFormat: ''
+      default: ''
+      format: ''
+      nullable: false
+      password: true
     campaign_name:
       type: string
       description: ''
@@ -75,24 +83,19 @@ schema:
       format: ''
       nullable: false
       password: false
+    nocodb:
+      type: object
+      description: ''
+      dateFormat: ''
+      format: ''
+      nullable: false
+      properties: {}
+      required: []
     smartlead_api_key:
       type: string
       description: ''
       default: ''
       format: ''
-      password: true
-    twenty:
-      type: object
-      description: ''
-      format: ''
-      nullable: false
-    twenty_campaign_id:
-      type: string
-      description: ''
-      dateFormat: ''
-      default: ''
-      format: ''
-      nullable: false
       password: true
   required: []
 visible_to_runner_only: false
