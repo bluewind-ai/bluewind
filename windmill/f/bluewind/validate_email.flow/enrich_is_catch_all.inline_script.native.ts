@@ -2,6 +2,6 @@
 
 export async function main() {
   return {
-    "isEmailCatchAll": true,
+    "email_catch_all_status": "CATCH_ALL",
   }
 }

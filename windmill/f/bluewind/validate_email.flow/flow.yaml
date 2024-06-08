@@ -77,7 +77,7 @@ value:
                                       tag: ''
                                 expr: >+
                                   results.bv.email_status === "invalid" ||
-                                  results.bv.email_status === "UNKNOWN" 
+                                  results.bv.email_status === "unknown" 
 
 
                                 parallel: true
@@ -95,9 +95,8 @@ value:
                                       lock: ''
                                       language: nativets
                                       tag: ''
-                                expr: >
-                                  results.bv.email_cath_all_status ===
-                                  "CATCH_ALL"
+                                expr: |
+                                  results.bv.email_status === "catch_all"
                                 parallel: true
                                 skip_failure: true
                               - summary: ''

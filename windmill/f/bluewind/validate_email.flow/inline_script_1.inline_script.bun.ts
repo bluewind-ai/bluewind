@@ -2,7 +2,7 @@
 
 export async function main() {
   return {
-    "isEmailCatchAll": true,
-    "isEmailValid": true,
+    "email_catch_all_status": "CATCH_ALL",
+    "email_validity": "VALID",
   }
 }
