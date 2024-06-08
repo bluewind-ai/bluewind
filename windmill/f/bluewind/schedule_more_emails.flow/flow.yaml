@@ -266,7 +266,7 @@ value:
         input_transforms:
           campaign_id:
             type: javascript
-            expr: '`${results.bp.id}`'
+            expr: '`${results.bp.Id}`'
           nocodb:
             type: javascript
             value: ''
