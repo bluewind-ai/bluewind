@@ -2,18 +2,6 @@ summary: create_campaign_and_link_twenty
 description: ''
 value:
   modules:
-    - id: bx
-      summary: Fetch twenty api key
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/fetch_twenty_api_key
-    - id: cu
-      summary: fetch smartlead api key
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/fetch_smartlead_api_key
     - id: ct
       summary: create smartlead campaign
       value:
@@ -26,6 +14,23 @@ value:
             type: javascript
             expr: flow_input.smartlead_api_key
         path: f/bluewind/brilliant_flow
+    - id: di
+      summary: Add smartlead_campaign_id to nocodb
+      value:
+        type: rawscript
+        content: '!inline add_smartlead_campaign_id_to_nocodb.inline_script.native.ts'
+        input_transforms:
+          campaign_id:
+            type: static
+            value: ''
+          data:
+            type: static
+            value: null
+          nocodb:
+            type: static
+            value: null
+        lock: ''
+        language: nativets
     - id: dh
       summary: add smartleadcampaign id to twenty
       value:
@@ -34,13 +39,13 @@ value:
           campaign_id:
             type: javascript
             value: '${results.ct.}'
-            expr: flow_input.twenty_campaign_id
+            expr: flow_input.campaign_id
           data:
             type: javascript
             expr: '{"smartleadCampaignId": `${results.ct.campaign_id}`}'
           twenty_api_key:
             type: javascript
-            expr: flow_input.twenty_api_key
+            expr: flow_input.nocodb
         path: f/bluewind/update_campaign_twenty
     - id: da
       summary: get smartlead_campaign_id
