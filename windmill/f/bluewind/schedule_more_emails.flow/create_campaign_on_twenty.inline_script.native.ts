@@ -17,7 +17,12 @@ export async function main(nocodb: Object, campaign_name: string) {
     if (!response.ok) {
       throw "error"
     }
-    return await response.json()
+    const data = await response.json()
+    return {
+      Id: data,
+      name: campaign_name,
+      smartlead_campaign_id: null
+    }
   } catch (error) {
     return error;
   }
