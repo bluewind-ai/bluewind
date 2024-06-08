@@ -287,14 +287,15 @@ value:
                 value:
                   type: flow
                   input_transforms:
+                    campaign_id:
+                      type: javascript
+                      expr: results.bp.Id
                     campaign_name:
                       type: javascript
                       expr: '`${results.bp.name}`'
-                    twenty:
-                      type: static
-                    twenty_campaign_id:
+                    nocodb:
                       type: javascript
-                      expr: '`${results.bp.id}`'
+                      expr: results.dr
                   path: f/bluewind/source_leads_from_apollo
               - id: dj
                 summary: get contacts to outreach
