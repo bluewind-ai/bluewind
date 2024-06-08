@@ -23,6 +23,26 @@ value:
                     xc_token: YOUR_NOCODB_API_KEY
                   expr: results.a
               path: f/bluewind/count_emails_scheduled
+          - id: e
+            summary: ''
+            value:
+              type: branchone
+              branches:
+                - summary: ''
+                  modules:
+                    - id: f
+                      summary: reach 10 emails scheduled
+                      value:
+                        type: flow
+                        input_transforms:
+                          email_remaining_to_schedule:
+                            type: javascript
+                            expr: >-
+                              Math.max((10 - results.b.pageInfo.totalRows) * 2,
+                              5)
+                        path: f/bluewind/schedule_more_emails
+                  expr: results.b.pageInfo.totalRows < 10
+              default: []
         skip_failures: false
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
