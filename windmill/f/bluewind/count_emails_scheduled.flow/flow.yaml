@@ -24,10 +24,6 @@ schema:
       type: object
       description: ''
       dateFormat: ''
-      default:
-        apiUrl: 'https://app.nocodb.com'
-        workspace: wwgjz0d9
-        xc_token: YOUR_NOCODB_API_KEY
       format: ''
       nullable: false
       properties: {}
