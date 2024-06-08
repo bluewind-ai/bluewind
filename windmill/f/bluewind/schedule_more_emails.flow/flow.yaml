@@ -13,22 +13,12 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_nocodb_api_key
-    - id: ds
-      value:
-        type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
-        input_transforms:
-          nocodb:
-            type: static
-            value: null
-        lock: ''
-        language: nativets
     - id: br
       summary: Fetch Campaigns
       value:
         type: flow
         input_transforms:
-          nocodb:
+          twenty:
             type: javascript
             expr: results.dr
         path: f/bluewind/immaculate_flow
