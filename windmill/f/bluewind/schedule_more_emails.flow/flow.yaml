@@ -267,12 +267,13 @@ value:
           campaign_id:
             type: javascript
             expr: '`${results.bp.id}`'
+          nocodb:
+            type: javascript
+            value: ''
+            expr: results.dr
           number_of_contacts_needed:
             type: javascript
             expr: flow_input.email_remaining_to_schedule * 2
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/get_contacts_to_outreach
     - id: cg
       summary: ''
@@ -303,12 +304,11 @@ value:
                     campaign_id:
                       type: javascript
                       expr: '`${results.bp.id}`'
+                    nocodb:
+                      type: static
                     number_of_contacts_needed:
                       type: javascript
                       expr: flow_input.email_remaining_to_schedule * 2
-                    twenty_api_key:
-                      type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/get_contacts_to_outreach
             expr: results.di.data.campaignsPeople.edges.length === 0
             parallel: true
