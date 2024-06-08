@@ -1,0 +1,55 @@
+summary: Master flow
+description: ''
+value:
+  modules:
+    - id: dt
+      summary: migrate twenty if needed
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/migrate_twenty_if_needed
+    - id: bx
+      summary: Fetch twenty api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_twenty_api_key
+    - id: cu
+      summary: fetch smartlead api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_smartlead_api_key
+    - id: eh
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_nocodb_api_key
+    - id: ei
+      value:
+        type: whileloopflow
+        modules:
+          - id: ej
+            value:
+              type: flow
+              input_transforms:
+                nocodb:
+                  type: static
+                  value:
+                    apiUrl: 'https://app.nocodb.com'
+                    workspace: wwgjz0d9
+                    xc_token: YOUR_NOCODB_API_KEY
+              path: f/bluewind/count_emails_scheduled
+        skip_failures: false
+  failure_module:
+    id: failure
+    value:
+      type: identity
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order: []
+  properties: {}
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
