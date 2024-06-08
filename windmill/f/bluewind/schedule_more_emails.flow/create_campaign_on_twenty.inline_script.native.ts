@@ -7,10 +7,10 @@ export async function main(nocodb: Object, campaign_name: string) {
       "xc-token": `${nocodb.xc_token}`,
       'Content-Type': 'application/json',
       'Accept': "application/json",
-      body: JSON.stringify({
-        name: campaign_name
-      })
     },
+    body: JSON.stringify({
+      name: campaign_name
+    })
   };
   try {
     const response = await fetch(url, options);
@@ -18,6 +18,7 @@ export async function main(nocodb: Object, campaign_name: string) {
       throw "error"
     }
     const data = await response.json()
+    return data
     return {
       Id: data,
       name: campaign_name,
