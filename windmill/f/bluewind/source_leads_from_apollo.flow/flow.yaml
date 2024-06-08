@@ -160,8 +160,16 @@ schema:
   order:
     - nocodb
     - campaign_name
-    - twenty_campaign_id
+    - campaign_id
   properties:
+    campaign_id:
+      type: string
+      description: ''
+      dateFormat: ''
+      default: ''
+      format: ''
+      nullable: false
+      password: false
     campaign_name:
       type: string
       description: ''
@@ -175,11 +183,6 @@ schema:
       nullable: false
       properties: {}
       required: []
-    twenty_campaign_id:
-      type: string
-      description: ''
-      default: ''
-      format: ''
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
