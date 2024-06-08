@@ -18,7 +18,7 @@ value:
       value:
         type: flow
         input_transforms:
-          twenty:
+          nocodb:
             type: javascript
             expr: results.dr
         path: f/bluewind/immaculate_flow
