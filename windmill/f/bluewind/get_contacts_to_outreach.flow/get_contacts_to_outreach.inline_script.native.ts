@@ -1,61 +1,18 @@
-export async function main(
-  twenty: Object,
-  campaign_id: string,
-  number_of_contacts_needed: number
-) {
-  const query = `query FindManyCampaignsPeople($filter: CampaignPersonFilterInput) {
-  campaignsPeople(first: ${number_of_contacts_needed}, filter: $filter) {
-    edges {
-      node {
-        id
-        tags
-        person {
-          name {
-            firstName
-            lastName
-          }
-          email
-          linkedinLink {
-            label
-            url
-          }
-          jobTitle
-          phone
-          city
-          avatarUrl
-          position
-          id
-          createdAt
-          updatedAt
-          companyId
-          tags
-        }
-      }
-    }
-  }
-}`;
+export async function main(nocodb: Object) {
+  const url = `${nocodb.apiUrl}/api/v2/tables/m59o2tuojdl19od/records?where=${encodeURIComponent("(status,eq,TODO)")}`;
 
-  const variables = {
-    filter: {
-      tagsFlattened: { ilike: '%csdcds%' },
-      campaignId: {
-        eq: campaign_id,
-      },
+  const options = {
+    method: 'GET',
+    headers: {
+      "xc-token": `${nocodb.xc_token}`,
+      'Content-Type': 'application/json',
+      'Accept': "application/json"
     },
   };
-
-  const response = await fetch(`${twenty.twenty_base_url}/graphql`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: `Bearer ${twenty.twenty_api_key}`,
-    },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-  });
-
-  return await response.json();
+  try {
+    const response = await fetch(url, options);
+    return await response.json()
+  } catch (error) {
+    return error;
+  }
 }

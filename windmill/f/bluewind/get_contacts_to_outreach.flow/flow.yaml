@@ -8,15 +8,9 @@ value:
         type: rawscript
         content: '!inline get_contacts_to_outreach.inline_script.native.ts'
         input_transforms:
-          campaign_id:
+          nocodb:
             type: javascript
-            expr: flow_input.campaign_id
-          number_of_contacts_needed:
-            type: javascript
-            expr: flow_input.number_of_contacts_needed
-          twenty:
-            type: static
-            value: null
+            expr: flow_input.nocodb
         lock: ''
         language: nativets
         tag: ''
@@ -39,6 +33,7 @@ schema:
     nocodb:
       type: object
       description: ''
+      format: ''
       nullable: false
     number_of_contacts_needed:
       type: number
