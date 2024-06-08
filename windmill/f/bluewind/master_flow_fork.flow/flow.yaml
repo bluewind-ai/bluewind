@@ -1,7 +1,13 @@
 summary: Master flow
 description: ''
 value:
-  modules: []
+  modules:
+    - id: a
+      summary: fetch nocodb
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_nocodb_api_key
   failure_module:
     id: failure
     value:
