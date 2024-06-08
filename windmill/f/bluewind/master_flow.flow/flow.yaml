@@ -20,10 +20,27 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_smartlead_api_key
+    - id: eh
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_nocodb_api_key
     - id: dp
       value:
         type: whileloopflow
         modules:
+          - id: ei
+            value:
+              type: flow
+              input_transforms:
+                nocodb:
+                  type: javascript
+                  value:
+                    apiUrl: 'https://app.nocodb.com'
+                    workspace: wwgjz0d9
+                    xc_token: YOUR_NOCODB_API_KEY
+                  expr: results.eh
+              path: f/bluewind/count_emails_scheduled
           - id: eg
             value:
               type: flow
