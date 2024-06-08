@@ -9,20 +9,21 @@ value:
         input_transforms: {}
         path: f/bluewind/fetch_smartlead_api_key
     - id: dr
+      summary: Fetch nocodb api key
       value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_nocodb_api_key
-    - id: br
-      summary: Fetch Campaigns
+    - id: ds
       value:
-        type: flow
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
         input_transforms:
-          twenty:
-            type: javascript
-            expr: results.dr
-        path: f/bluewind/immaculate_flow
-      continue_on_error: false
+          nocodb:
+            type: static
+            value: null
+        lock: ''
+        language: nativets
     - id: bp
       summary: ''
       value:
