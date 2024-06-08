@@ -136,20 +136,21 @@ value:
                 value:
                   type: flow
                   input_transforms:
+                    campaign_id:
+                      type: javascript
+                      value: ''
+                      expr: results.bp.Id
                     campaign_name:
                       type: javascript
                       value: ''
                       expr: results.bp.name
+                    nocodb:
+                      type: javascript
+                      expr: results.dr
                     smartlead_api_key:
                       type: javascript
                       value: ''
                       expr: results.cu.smartlead_api_key
-                    twenty:
-                      type: static
-                    twenty_campaign_id:
-                      type: javascript
-                      value: ''
-                      expr: results.bp.id
                   path: f/bluewind/create_campaign_and_link_twenty
             expr: results.bp.smartlead_campaign_id === null
             parallel: true
@@ -182,17 +183,16 @@ value:
                       value:
                         type: flow
                         input_transforms:
+                          campaign_id:
+                            type: static
                           campaign_name:
                             type: javascript
                             expr: results.bp.name
+                          nocodb:
+                            type: static
                           smartlead_api_key:
                             type: javascript
                             expr: results.cu.smartlead_api_key
-                          twenty:
-                            type: static
-                          twenty_campaign_id:
-                            type: javascript
-                            expr: results.bp.id
                         path: f/bluewind/create_campaign_and_link_twenty
                   expr: results.dm.error !== undefined
                   parallel: true

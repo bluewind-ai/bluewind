@@ -18,7 +18,6 @@ export async function main(nocodb: Object, campaign_name: string) {
       throw "error"
     }
     const data = await response.json()
-    return data
     return {
       Id: data,
       name: campaign_name,
