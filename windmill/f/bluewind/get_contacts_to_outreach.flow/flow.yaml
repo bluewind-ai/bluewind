@@ -37,13 +37,9 @@ schema:
       nullable: false
       password: false
     nocodb:
-      type: string
+      type: object
       description: ''
-      dateFormat: ''
-      default: ''
-      format: ''
       nullable: false
-      password: false
     number_of_contacts_needed:
       type: number
       description: ''
