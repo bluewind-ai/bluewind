@@ -8,6 +8,22 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_nocodb_api_key
+    - id: b
+      value:
+        type: whileloopflow
+        modules:
+          - id: c
+            value:
+              type: flow
+              input_transforms:
+                nocodb:
+                  type: static
+                  value:
+                    apiUrl: 'https://app.nocodb.com'
+                    workspace: wwgjz0d9
+                    xc_token: YOUR_NOCODB_API_KEY
+              path: f/bluewind/count_emails_scheduled
+        skip_failures: false
   failure_module:
     id: failure
     value:
