@@ -9,7 +9,8 @@ export async function main(nocodb: Object, smartlead_campaign_id: string, campai
       'Accept': "application/json",
     },
     body: JSON.stringify({
-      Id: smartlead_campaign_id
+      Id: campaign_id,
+      smartlead_campaign_id
     })
   };
   try {
