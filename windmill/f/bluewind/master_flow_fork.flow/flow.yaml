@@ -7,17 +7,23 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_nocodb_api_key
-    - id: b
+    - id: c
       value:
-        type: flow
-        input_transforms:
-          nocodb:
-            type: static
+        type: whileloopflow
+        modules:
+          - id: b
             value:
-              apiUrl: 'https://app.nocodb.com'
-              workspace: wwgjz0d9
-              xc_token: YOUR_NOCODB_API_KEY
-        path: f/bluewind/count_emails_scheduled
+              type: flow
+              input_transforms:
+                nocodb:
+                  type: javascript
+                  value:
+                    apiUrl: 'https://app.nocodb.com'
+                    workspace: wwgjz0d9
+                    xc_token: YOUR_NOCODB_API_KEY
+                  expr: results.a
+              path: f/bluewind/count_emails_scheduled
+        skip_failures: false
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
