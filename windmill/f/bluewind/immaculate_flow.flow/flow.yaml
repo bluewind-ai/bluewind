@@ -8,9 +8,9 @@ value:
         type: rawscript
         content: '!inline attempt_to_fetch_all_campaigns.inline_script.native.ts'
         input_transforms:
-          twenty:
-            type: javascript
-            expr: flow_input.twenty
+          nocodb:
+            type: static
+            value: null
         lock: ''
         language: nativets
         tag: ''
@@ -66,13 +66,16 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - twenty
+    - nocodb
   properties:
-    twenty:
+    nocodb:
       type: object
       description: ''
+      dateFormat: ''
       format: ''
       nullable: false
+      properties: {}
+      required: []
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
