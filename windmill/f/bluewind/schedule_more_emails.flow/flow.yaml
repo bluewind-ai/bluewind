@@ -15,15 +15,17 @@ value:
         input_transforms: {}
         path: f/bluewind/fetch_nocodb_api_key
     - id: ds
+      summary: get all campaigns
       value:
         type: rawscript
-        content: '!inline inline_script_0.inline_script.native.ts'
+        content: '!inline get_all_campaigns.inline_script.native.ts'
         input_transforms:
           nocodb:
-            type: static
-            value: null
+            type: javascript
+            expr: results.dr
         lock: ''
         language: nativets
+        tag: ''
     - id: bp
       summary: ''
       value:
@@ -69,13 +71,13 @@ value:
                     campaign_name:
                       type: javascript
                       expr: resume.campaign_name
-                    twenty:
-                      type: static
-                      value: null
+                    nocodb:
+                      type: javascript
+                      expr: results.dr
                   lock: ''
                   language: nativets
                   tag: ''
-            expr: results.br.data.campaigns.length === 0
+            expr: results.ds.pageInfo.totalRows === 0
             parallel: true
             skip_failure: true
         default:
@@ -87,7 +89,7 @@ value:
               input_transforms:
                 campaigns:
                   type: javascript
-                  expr: results.br.data.campaigns
+                  expr: results.ds.list
               lock: '!inline ask_campaign_to_pick.inline_script.lock'
               language: deno
               path: hub/8713/windmill/default_arguments_in_approval_steps
@@ -120,7 +122,7 @@ value:
                   expr: resume.campaign_to_pick
                 campaigns:
                   type: javascript
-                  expr: results.br.data.campaigns
+                  expr: results.ds.list
               lock: ''
               language: nativets
               tag: ''
