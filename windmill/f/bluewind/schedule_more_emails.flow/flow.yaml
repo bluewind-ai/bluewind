@@ -167,7 +167,7 @@ value:
                   expr: '`${results.cu.smartlead_api_key}`'
                 smartlead_campaign_id:
                   type: javascript
-                  expr: results.bp.smartleadCampaignId
+                  expr: results.bp.smartlead_campaign_id
               lock: ''
               language: nativets
               tag: ''
