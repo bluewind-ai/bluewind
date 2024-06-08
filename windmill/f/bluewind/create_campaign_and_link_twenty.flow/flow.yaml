@@ -20,33 +20,15 @@ value:
         type: rawscript
         content: '!inline add_smartlead_campaign_id_to_nocodb.inline_script.native.ts'
         input_transforms:
-          campaign_id:
-            type: static
-            value: ''
-          data:
-            type: static
-            value: null
           nocodb:
-            type: static
-            value: null
-        lock: ''
-        language: nativets
-    - id: dh
-      summary: add smartleadcampaign id to twenty
-      value:
-        type: flow
-        input_transforms:
-          campaign_id:
-            type: javascript
-            value: '${results.ct.}'
-            expr: flow_input.campaign_id
-          data:
-            type: javascript
-            expr: '{"smartleadCampaignId": `${results.ct.campaign_id}`}'
-          twenty_api_key:
             type: javascript
             expr: flow_input.nocodb
-        path: f/bluewind/update_campaign_twenty
+          smartlead_campaign_id:
+            type: javascript
+            expr: results.ct.campaign_id
+        lock: ''
+        language: nativets
+        tag: ''
     - id: da
       summary: get smartlead_campaign_id
       value:
@@ -73,13 +55,9 @@ schema:
     - campaign_name
   properties:
     campaign_id:
-      type: string
+      type: integer
       description: ''
-      dateFormat: ''
-      default: ''
-      format: ''
       nullable: false
-      password: true
     campaign_name:
       type: string
       description: ''

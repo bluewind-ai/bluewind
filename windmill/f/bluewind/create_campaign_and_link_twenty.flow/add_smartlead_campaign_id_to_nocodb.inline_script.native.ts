@@ -1,17 +1,23 @@
-export async function main(nocodb: Object, data: Object, campaign_id: string) {
-  if (Object.keys(data).length === 0) {
-    return {};
-  }
-  const url = `https://api.twenty.com/rest/campaigns/${campaign_id}`;
+export async function main(nocodb: Object, smartlead_campaign_id: string, campaign_id: number) {
+  const url = `${nocodb.apiUrl}/api/v2/tables/mmbbdm5ek99c71g/records`;
+
   const options = {
     method: 'PATCH',
     headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${twenty.twenty_api_key}`,
+      "xc-token": `${nocodb.xc_token}`,
       'Content-Type': 'application/json',
+      'Accept': "application/json",
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      Id:
+        smartlead_campaign_id: smartlead_campaign_id
+    })
   };
-  const response = await fetch(url, options);
-  return await response.json();
+  try {
+    const response = await fetch(url, options);
+    const data = await response.json()
+    return data
+  } catch (error) {
+    return error;
+  }
 }
