@@ -14,6 +14,9 @@ export async function main(nocodb: Object, campaign_name: string) {
   };
   try {
     const response = await fetch(url, options);
+    if (!response.ok) {
+      throw "error"
+    }
     return await response.json()
   } catch (error) {
     return error;
