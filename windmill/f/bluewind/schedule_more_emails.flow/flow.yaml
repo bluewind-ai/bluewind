@@ -347,15 +347,15 @@ value:
                 leadmagic_api_key:
                   type: javascript
                   expr: '`${results.bt.correct_leadmagic_api_key}`'
+                nocodb:
+                  type: javascript
+                  expr: results.dr
                 smartlead_api_key:
                   type: javascript
                   expr: '`${results.cu.smartlead_api_key}`'
                 smartlead_campaign_id:
                   type: javascript
                   expr: results.cz.smartlead_campaign_id
-                twenty_api_key:
-                  type: javascript
-                  expr: results.dr
               path: f/bluewind/outreach_pipeline
         iterator:
           type: javascript
