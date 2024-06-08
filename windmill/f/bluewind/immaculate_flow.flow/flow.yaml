@@ -9,8 +9,8 @@ value:
         content: '!inline attempt_to_fetch_all_campaigns.inline_script.native.ts'
         input_transforms:
           nocodb:
-            type: static
-            value: null
+            type: javascript
+            expr: flow_input.nocodb
         lock: ''
         language: nativets
         tag: ''

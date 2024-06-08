@@ -1,5 +1,5 @@
 export async function main(nocodb: Object) {
-  const url = `${nocodb.apiUrl}/api/v2/tables/m59o2tuojdl19od/records?where=${encodeURIComponent("(status,eq,SCHEDULED)")}&fields=Id`;
+  const url = `${nocodb.apiUrl}/api/v2/tables/mmbbdm5ek99c71g/records?fields=Id,name`;
 
   const options = {
     method: 'GET',
