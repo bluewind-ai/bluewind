@@ -13,10 +13,7 @@ export async function main(nocodb: Object) {
       return "ok"
       return {};
     }
-    return {
-      xc_token: nocodb.xc_token,
-      apiUrl: nocodb.apiUrl
-    };
+    return nocodb;
   } catch (error) {
     return {};
   }
