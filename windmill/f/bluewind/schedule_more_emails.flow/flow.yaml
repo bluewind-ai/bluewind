@@ -8,13 +8,19 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_smartlead_api_key
+    - id: dr
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_nocodb_api_key
     - id: br
       summary: Fetch Campaigns
       value:
         type: flow
         input_transforms:
           twenty:
-            type: static
+            type: javascript
+            expr: results.dr
         path: f/bluewind/immaculate_flow
       continue_on_error: false
     - id: bp
