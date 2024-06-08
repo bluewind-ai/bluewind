@@ -20,6 +20,9 @@ value:
         type: rawscript
         content: '!inline add_smartlead_campaign_id_to_nocodb.inline_script.native.ts'
         input_transforms:
+          campaign_id:
+            type: static
+            value: null
           nocodb:
             type: javascript
             expr: flow_input.nocodb
