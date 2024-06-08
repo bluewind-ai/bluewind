@@ -161,9 +161,9 @@ value:
                     campaign_person_id:
                       type: javascript
                       expr: flow_input.campaign_person_id
-                    twenty_api_key:
-                      type: javascript
-                      expr: flow_input.twenty_api_key
+                    twenty:
+                      type: static
+                      value: null
                   lock: ''
                   language: nativets
             expr: results.cf.isEmailValid
@@ -179,9 +179,9 @@ value:
           campaign_person_id:
             type: javascript
             expr: flow_input.campaign_person_id
-          twenty_api_key:
-            type: javascript
-            expr: flow_input.twenty_api_key
+          twenty:
+            type: static
+            value: null
         lock: ''
         language: nativets
         tag: ''
@@ -190,7 +190,7 @@ schema:
   additionalProperties: false
   order:
     - campaign_info
-    - twenty_api_key
+    - nocodb
     - leadmagic_api_key
     - smartlead_api_key
     - campaign_person_id
@@ -241,15 +241,16 @@ schema:
       type: string
       description: ''
       format: ''
+    nocodb:
+      type: object
+      description: ''
+      format: ''
+      nullable: false
     smartlead_api_key:
       type: string
       description: ''
       format: ''
     smartlead_campaign_id:
-      type: string
-      description: ''
-      format: ''
-    twenty_api_key:
       type: string
       description: ''
       format: ''
