@@ -38,16 +38,14 @@ value:
                 value:
                   type: rawscript
                   content: '!inline prompt_campaign_name.inline_script.ts'
-                  input_transforms:
-                    campaigns:
-                      type: static
-                      value: null
+                  input_transforms: {}
                   lock: '!inline prompt_campaign_name.inline_script.lock'
                   language: deno
                   path: hub/8713/windmill/default_arguments_in_approval_steps
                   tag: ''
                 continue_on_error: false
                 suspend:
+                  hide_cancel: false
                   required_events: 1
                   resume_form:
                     schema:
@@ -153,10 +151,7 @@ value:
                       value: ''
                       expr: results.bp.id
                   path: f/bluewind/create_campaign_and_link_twenty
-            expr: >-
-              results.bp.smartleadCampaignId === undefined ||
-              results.bp.smartleadCampaignId === null ||
-              results.bp.smartleadCampaignId === ""
+            expr: results.bp.smartlead_campaign_id === null
             parallel: true
             skip_failure: true
         default:
