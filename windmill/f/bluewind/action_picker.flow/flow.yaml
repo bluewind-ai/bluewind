@@ -51,6 +51,8 @@ value:
                   path: u/admin/captivating_flow_fork/g
                   tag_override: null
             expr: flow_input.action_picked === "Create new campaign"
+            parallel: true
+            skip_failure: true
           - summary: Continue a campaign
             modules:
               - id: b
@@ -121,6 +123,8 @@ value:
                       value: ''
                   path: u/admin/incredible_flow
             expr: flow_input.action_picked === "Continue a campaign"
+            parallel: true
+            skip_failure: true
           - summary: Add leads to campaign
             modules:
               - id: s
@@ -335,6 +339,8 @@ value:
                   branches: []
                   default: []
             expr: flow_input.action_picked === "Add leads to campaign"
+            parallel: true
+            skip_failure: true
         default: []
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'

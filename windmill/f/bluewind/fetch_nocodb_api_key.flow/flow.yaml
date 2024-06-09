@@ -1,12 +1,12 @@
-summary: Fetch smartlead api key
+summary: Fetch nocodb api key
 description: ''
 value:
   modules:
     - id: al
-      summary: Fetch smartlead api key if exists
+      summary: Fetch nocodb api key if exists
       value:
         type: rawscript
-        content: '!inline fetch_smartlead_api_key_if_exists.inline_script.native.ts'
+        content: '!inline fetch_nocodb_api_key_if_exists.inline_script.native.ts'
         input_transforms: {}
         lock: ''
         language: nativets
@@ -24,13 +24,13 @@ value:
                   type: whileloopflow
                   modules:
                     - id: as
-                      summary: prompt smartlead api key
+                      summary: approval prompt
                       value:
                         type: rawscript
-                        content: '!inline prompt_smartlead_api_key.inline_script.ts'
+                        content: '!inline approval_prompt.inline_script.ts'
                         input_transforms: {}
                         language: deno
-                        tag: ''
+                        tag: null
                       continue_on_error: false
                       suspend:
                         hide_cancel: false
@@ -40,30 +40,48 @@ value:
                             $schema: 'https://json-schema.org/draft/2020-12/schema'
                             type: object
                             order:
-                              - smartlead_api_key
+                              - xc_token
+                              - apiUrl
+                              - workspace
                             properties:
-                              smartlead_api_key:
+                              apiUrl:
                                 type: string
                                 description: ''
                                 default: ''
+                                nullable: false
+                                password: false
+                              workspace:
+                                type: string
+                                description: ''
+                                default: ''
+                              xc_token:
+                                type: string
+                                description: ''
+                                default: ''
+                                nullable: false
                                 password: true
                             required: []
                         timeout: 1800
                     - id: ao
-                      summary: test smartlead api key
+                      summary: test nocodb api key
                       value:
                         type: rawscript
-                        content: '!inline test_smartlead_api_key.inline_script.native.ts'
+                        content: '!inline test_nocodb_api_key.inline_script.native.ts'
                         input_transforms:
-                          smartlead_api_key:
+                          nocodb:
                             type: javascript
-                            expr: '`${resume.smartlead_api_key}`'
+                            expr: |-
+                              {
+                                "xc_token": resume.xc_token,
+                                "apiUrl": resume.apiUrl,
+                                "workspace": resume.workspace
+                              }
                         concurrency_time_window_s: 0
                         language: nativets
                         tag: ''
                       continue_on_error: false
                       stop_after_if:
-                        expr: result.smartlead_api_key !== undefined
+                        expr: result.xc_token !== undefined
                         skip_if_stopped: false
                   skip_failures: false
               - id: aq
@@ -90,7 +108,7 @@ value:
               type: rawscript
               content: '!inline return_correct_api_key.inline_script.native.ts'
               input_transforms:
-                correct_api_key:
+                twenty_resource:
                   type: javascript
                   expr: results.al
               lock: ''

@@ -233,5 +233,6 @@ policy:
   execution_mode: anonymous
   triggerables_v2:
     'a:flow/u/admin/magic_flow':
+      allow_user_resources: []
       one_of_inputs: {}
       static_inputs: {}

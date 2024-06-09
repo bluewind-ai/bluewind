@@ -1,0 +1,54 @@
+summary: ''
+description: ''
+value:
+  modules:
+    - id: a
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          example_input:
+            type: static
+            value: '$res:u/merwanehamadi/nocodb'
+        lock: ''
+        language: nativets
+        tag: ''
+    - id: c
+      summary: Approval
+      value:
+        type: rawscript
+        content: '!inline approval.inline_script.ts'
+        input_transforms: {}
+        lock: '!inline approval.inline_script.lock'
+        language: deno
+        tag: ''
+      continue_on_error: false
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - test
+            properties:
+              test:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  order:
+    - test
+  properties:
+    test:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+  required: []
+visible_to_runner_only: false
+ws_error_handler_muted: false
