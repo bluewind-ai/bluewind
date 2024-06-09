@@ -1,0 +1,23 @@
+summary: Create contacts
+description: >-
+  This script was edited in place of flow f/bluewind/source_leads_from_apollo 
+  by merwanehamadi.
+lock: ''
+kind: script
+schema:
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
+  type: object
+  properties:
+    data:
+      type: object
+      description: ''
+      default: null
+      format: resource-array
+    nocodb:
+      type: object
+      description: ''
+      default: null
+      format: resource-nocodb
+  required:
+    - nocodb
+    - data
