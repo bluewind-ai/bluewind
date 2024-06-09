@@ -181,7 +181,7 @@ value:
     path: f/app_themes/theme_0
   unusedInlineScripts: []
 policy:
-  execution_mode: anonymous
+  execution_mode: publisher
   triggerables_v2:
     'a:flow/f/bluewind/worth_flow':
       allow_user_resources: []
