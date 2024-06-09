@@ -49,6 +49,8 @@ value:
                   language: nativets
                   tag: ''
             expr: results.b.email_status === "valid"
+            parallel: true
+            skip_failure: true
           - summary: ''
             modules:
               - id: f
@@ -69,6 +71,8 @@ value:
               "unknown" 
 
 
+            parallel: true
+            skip_failure: true
           - summary: ''
             modules:
               - id: c
@@ -86,6 +90,8 @@ value:
                   language: nativets
             expr: |
               results.b.email_status === "catch_all"
+            parallel: true
+            skip_failure: true
         default: []
     - id: g
       value:
