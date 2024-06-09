@@ -114,9 +114,9 @@ value:
           data:
             type: javascript
             expr: results.ax
-          twenty:
+          twenty_api_key:
             type: javascript
-            expr: flow_input.twenty
+            expr: flow_input.twenty_api_key
         lock: ''
         language: nativets
         tag: ''
@@ -148,9 +148,9 @@ value:
           data:
             type: javascript
             expr: results.ba
-          twenty:
+          twenty_api_key:
             type: javascript
-            expr: flow_input.twenty
+            expr: flow_input.twenty_api_key
         lock: ''
         language: nativets
         tag: ''
@@ -158,31 +158,26 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - nocodb
+    - twenty_api_key
     - campaign_name
-    - campaign_id
+    - twenty_campaign_id
   properties:
-    campaign_id:
-      type: string
-      description: ''
-      dateFormat: ''
-      default: ''
-      format: ''
-      nullable: false
-      password: false
     campaign_name:
       type: string
       description: ''
       default: ''
       format: ''
-    nocodb:
-      type: object
+    twenty_api_key:
+      type: string
       description: ''
-      dateFormat: ''
+      default: ''
       format: ''
-      nullable: false
-      properties: {}
-      required: []
+      password: true
+    twenty_campaign_id:
+      type: string
+      description: ''
+      default: ''
+      format: ''
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
