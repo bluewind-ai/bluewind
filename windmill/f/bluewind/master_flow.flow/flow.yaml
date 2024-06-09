@@ -20,27 +20,10 @@ value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_smartlead_api_key
-    - id: eh
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/fetch_nocodb_api_key
     - id: dp
       value:
         type: whileloopflow
         modules:
-          - id: ei
-            value:
-              type: flow
-              input_transforms:
-                nocodb:
-                  type: javascript
-                  value:
-                    apiUrl: 'https://app.nocodb.com'
-                    workspace: wwgjz0d9
-                    xc_token: YOUR_NOCODB_API_KEY
-                  expr: results.eh
-              path: f/bluewind/count_emails_scheduled
           - id: eg
             value:
               type: flow
@@ -64,7 +47,7 @@ value:
                           email_remaining_to_schedule:
                             type: javascript
                             expr: >-
-                              Math.max(results.eg.data.campaignsPeople.totalCount,
+                              Math.max(results.dm.data.campaignsPeople.totalCount,
                               5)
                         path: f/bluewind/schedule_more_emails
                       continue_on_error: false
@@ -118,7 +101,7 @@ value:
                               input_transforms: {}
                               path: f/bluewind/create_one_email_account
                         expr: >-
-                          results.eg.data.campaignsPeople.totalCount >
+                          results.dm.data.campaignsPeople.totalCount >
                           results.dn.length * 300
                     default:
                       - id: eb
@@ -130,7 +113,7 @@ value:
                               type: javascript
                               expr: >-
                                 Math.max(300 -
-                                results.eg.data.campaignsPeople.totalCount, 5)
+                                results.dm.data.campaignsPeople.totalCount, 5)
                           path: f/bluewind/schedule_more_emails
         skip_failures: false
   failure_module:
