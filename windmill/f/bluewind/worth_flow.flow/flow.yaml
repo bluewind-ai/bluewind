@@ -16,7 +16,14 @@ value:
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
-  properties: {}
+  order:
+    - test
+  properties:
+    test:
+      type: string
+      description: ''
+      default: ''
+      format: ''
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false
