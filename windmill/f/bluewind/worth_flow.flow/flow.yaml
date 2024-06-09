@@ -13,6 +13,30 @@ value:
         lock: ''
         language: nativets
         tag: ''
+    - id: c
+      summary: Approval
+      value:
+        type: rawscript
+        content: '!inline approval.inline_script.ts'
+        input_transforms: {}
+        lock: '!inline approval.inline_script.lock'
+        language: deno
+      continue_on_error: false
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - test
+            properties:
+              test:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object

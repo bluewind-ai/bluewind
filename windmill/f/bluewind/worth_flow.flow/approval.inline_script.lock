@@ -1,0 +1,15 @@
+{
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "npm:windmill-client@^1.158.2": "npm:windmill-client@1.340.2"
+    },
+    "npm": {
+      "windmill-client@1.340.2": {
+        "integrity": "sha512-vpoSnMR3mlugKBOmgWvEcIGWlaxZocSpeyMSn1wIgW982Y2zlIJNXHm3BbNyocHV5lk6T9aM8XkCkFU5N16nmw==",
+        "dependencies": {}
+      }
+    }
+  },
+  "remote": {}
+}
