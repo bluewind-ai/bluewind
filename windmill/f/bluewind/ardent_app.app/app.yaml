@@ -143,7 +143,7 @@ value:
         fixed: false
         fullHeight: false
         h: 8
-        w: 6
+        w: 12
         x: 0
         y: 4
       '3':
