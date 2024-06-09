@@ -200,5 +200,6 @@ policy:
   execution_mode: anonymous
   triggerables_v2:
     'b:flow/u/admin/create_hubspot_campaign':
+      allow_user_resources: []
       one_of_inputs: {}
       static_inputs: {}
