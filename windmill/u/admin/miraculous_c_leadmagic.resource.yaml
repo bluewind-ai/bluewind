@@ -1,4 +1,0 @@
-description: ''
-value:
-  leadmagic_api_key: '$var:u/admin/secret_arg/HQvrA2MRsCgL'
-resource_type: c_leadmagic

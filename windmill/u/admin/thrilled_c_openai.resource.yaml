@@ -1,4 +1,0 @@
-description: ''
-value:
-  openai_api_key: '$var:u/admin/secret_arg/4Avpk1eQYckr'
-resource_type: c_openai
