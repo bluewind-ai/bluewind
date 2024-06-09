@@ -21,6 +21,7 @@ value:
         input_transforms: {}
         lock: '!inline approval.inline_script.lock'
         language: deno
+        tag: ''
       continue_on_error: false
       suspend:
         required_events: 1
