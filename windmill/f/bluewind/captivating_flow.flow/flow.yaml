@@ -88,6 +88,8 @@ value:
                   language: nativets
                   tag: ''
             expr: results.w.results === undefined
+            parallel: true
+            skip_failure: true
         default: []
     - id: ah
       summary: consolidated hubspot access token
