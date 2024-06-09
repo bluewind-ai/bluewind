@@ -120,6 +120,35 @@ value:
         lock: ''
         language: nativets
         tag: ''
+    - id: bf
+      summary: ask for list name
+      value:
+        type: rawscript
+        content: '!inline ask_for_list_name.inline_script.ts'
+        input_transforms: {}
+        lock: '!inline ask_for_list_name.inline_script.lock'
+        language: deno
+      continue_on_error: false
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            $schema: 'https://json-schema.org/draft/2020-12/schema'
+            type: object
+            order:
+              - instructions
+              - list_name
+            properties:
+              instructions:
+                type: string
+                description: ''
+                default: ''
+              list_name:
+                type: string
+                description: ''
+                default: ''
+            required: []
+        timeout: 1800
     - id: ba
       summary: create campaignPeople payload
       value:
@@ -138,6 +167,19 @@ value:
         lock: ''
         language: nativets
         tag: ''
+    - id: be
+      value:
+        type: rawscript
+        content: '!inline inline_script_0.inline_script.native.ts'
+        input_transforms:
+          data:
+            type: static
+            value: null
+          nocodb:
+            type: static
+            value: '$res:u/merwanehamadi/nocodb'
+        lock: ''
+        language: nativets
     - id: bc
       summary: create campaignsPeople
       value:

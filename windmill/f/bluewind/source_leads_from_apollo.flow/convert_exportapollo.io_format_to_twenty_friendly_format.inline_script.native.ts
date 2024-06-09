@@ -7,7 +7,8 @@ export async function main(data: Array, campaign_name: string) {
     linkedin_link: item.linkedin_url,
     job_title: item.title,
     email_validity: "UNKNOWN",
-    email_catch_all_status: "UNKNOWN"
+    email_catch_all_status: "UNKNOWN",
+    username: WM_USERNAME
   }));
 
   return inputs;
