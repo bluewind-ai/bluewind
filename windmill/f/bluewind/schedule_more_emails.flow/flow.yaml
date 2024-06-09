@@ -2,28 +2,30 @@ summary: schedule_more_emails
 description: ''
 value:
   modules:
-    - id: bx
-      summary: Fetch twenty api key
-      value:
-        type: flow
-        input_transforms: {}
-        path: f/bluewind/fetch_twenty_api_key
     - id: cu
       summary: fetch smartlead api key
       value:
         type: flow
         input_transforms: {}
         path: f/bluewind/fetch_smartlead_api_key
-    - id: br
-      summary: Fetch Campaigns
+    - id: dr
+      summary: Fetch nocodb api key
       value:
         type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_nocodb_api_key
+    - id: ds
+      summary: get all campaigns
+      value:
+        type: rawscript
+        content: '!inline get_all_campaigns.inline_script.native.ts'
         input_transforms:
-          twenty_api_key:
+          nocodb:
             type: javascript
-            expr: results.bx.twenty_api_key
-        path: f/bluewind/immaculate_flow
-      continue_on_error: false
+            expr: results.dr
+        lock: ''
+        language: nativets
+        tag: ''
     - id: bp
       summary: ''
       value:
@@ -36,16 +38,14 @@ value:
                 value:
                   type: rawscript
                   content: '!inline prompt_campaign_name.inline_script.ts'
-                  input_transforms:
-                    campaigns:
-                      type: static
-                      value: null
+                  input_transforms: {}
                   lock: '!inline prompt_campaign_name.inline_script.lock'
                   language: deno
                   path: hub/8713/windmill/default_arguments_in_approval_steps
                   tag: ''
                 continue_on_error: false
                 suspend:
+                  hide_cancel: false
                   required_events: 1
                   resume_form:
                     schema:
@@ -69,13 +69,13 @@ value:
                     campaign_name:
                       type: javascript
                       expr: resume.campaign_name
-                    twenty_api_key:
+                    nocodb:
                       type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
+                      expr: results.dr
                   lock: ''
                   language: nativets
                   tag: ''
-            expr: results.br.data.campaigns.length === 0
+            expr: results.ds.pageInfo.totalRows === 0
             parallel: true
             skip_failure: true
         default:
@@ -87,7 +87,7 @@ value:
               input_transforms:
                 campaigns:
                   type: javascript
-                  expr: results.br.data.campaigns
+                  expr: results.ds.list
               lock: '!inline ask_campaign_to_pick.inline_script.lock'
               language: deno
               path: hub/8713/windmill/default_arguments_in_approval_steps
@@ -120,7 +120,7 @@ value:
                   expr: resume.campaign_to_pick
                 campaigns:
                   type: javascript
-                  expr: results.br.data.campaigns
+                  expr: results.ds.list
               lock: ''
               language: nativets
               tag: ''
@@ -136,27 +136,23 @@ value:
                 value:
                   type: flow
                   input_transforms:
+                    campaign_id:
+                      type: javascript
+                      value: ''
+                      expr: results.bp.Id
                     campaign_name:
                       type: javascript
                       value: ''
                       expr: results.bp.name
+                    nocodb:
+                      type: javascript
+                      expr: results.dr
                     smartlead_api_key:
                       type: javascript
                       value: ''
                       expr: results.cu.smartlead_api_key
-                    twenty_api_key:
-                      type: javascript
-                      value: ''
-                      expr: results.bx.twenty_api_key
-                    twenty_campaign_id:
-                      type: javascript
-                      value: ''
-                      expr: results.bp.id
                   path: f/bluewind/create_campaign_and_link_twenty
-            expr: >-
-              results.bp.smartleadCampaignId === undefined ||
-              results.bp.smartleadCampaignId === null ||
-              results.bp.smartleadCampaignId === ""
+            expr: results.bp.smartlead_campaign_id === null
             parallel: true
             skip_failure: true
         default:
@@ -171,7 +167,7 @@ value:
                   expr: '`${results.cu.smartlead_api_key}`'
                 smartlead_campaign_id:
                   type: javascript
-                  expr: results.bp.smartleadCampaignId
+                  expr: results.bp.smartlead_campaign_id
               lock: ''
               language: nativets
               tag: ''
@@ -187,18 +183,16 @@ value:
                       value:
                         type: flow
                         input_transforms:
+                          campaign_id:
+                            type: static
                           campaign_name:
                             type: javascript
                             expr: results.bp.name
+                          nocodb:
+                            type: static
                           smartlead_api_key:
                             type: javascript
                             expr: results.cu.smartlead_api_key
-                          twenty_api_key:
-                            type: javascript
-                            expr: results.bx.twenty_api_key
-                          twenty_campaign_id:
-                            type: javascript
-                            expr: results.bp.id
                         path: f/bluewind/create_campaign_and_link_twenty
                   expr: results.dm.error !== undefined
                   parallel: true
@@ -272,13 +266,14 @@ value:
         input_transforms:
           campaign_id:
             type: javascript
-            expr: '`${results.bp.id}`'
+            expr: '`${results.bp.Id}`'
+          nocodb:
+            type: javascript
+            value: ''
+            expr: results.dr
           number_of_contacts_needed:
             type: javascript
             expr: flow_input.email_remaining_to_schedule * 2
-          twenty_api_key:
-            type: javascript
-            expr: '`${results.bx.twenty_api_key}`'
         path: f/bluewind/get_contacts_to_outreach
     - id: cg
       summary: ''
@@ -292,15 +287,15 @@ value:
                 value:
                   type: flow
                   input_transforms:
+                    campaign_id:
+                      type: javascript
+                      expr: results.bp.Id
                     campaign_name:
                       type: javascript
                       expr: '`${results.bp.name}`'
-                    twenty_api_key:
+                    nocodb:
                       type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
-                    twenty_campaign_id:
-                      type: javascript
-                      expr: '`${results.bp.id}`'
+                      expr: results.dr
                   path: f/bluewind/source_leads_from_apollo
               - id: dj
                 summary: get contacts to outreach
@@ -310,14 +305,13 @@ value:
                     campaign_id:
                       type: javascript
                       expr: '`${results.bp.id}`'
+                    nocodb:
+                      type: static
                     number_of_contacts_needed:
                       type: javascript
                       expr: flow_input.email_remaining_to_schedule * 2
-                    twenty_api_key:
-                      type: javascript
-                      expr: '`${results.bx.twenty_api_key}`'
                   path: f/bluewind/get_contacts_to_outreach
-            expr: results.di.data.campaignsPeople.edges.length === 0
+            expr: results.di.pageInfo.totalRows === 0
             parallel: true
             skip_failure: true
         default:
@@ -347,26 +341,26 @@ value:
                   expr: results.cr.campaign_info
                 campaign_person_id:
                   type: javascript
-                  expr: flow_input.iter.value.node.id
+                  expr: flow_input.iter.value.id
                 contact:
                   type: javascript
-                  expr: flow_input.iter.value.node.person
+                  expr: flow_input.iter.value.contacts
                 leadmagic_api_key:
                   type: javascript
                   expr: '`${results.bt.correct_leadmagic_api_key}`'
+                nocodb:
+                  type: javascript
+                  expr: results.dr
                 smartlead_api_key:
                   type: javascript
                   expr: '`${results.cu.smartlead_api_key}`'
                 smartlead_campaign_id:
                   type: javascript
                   expr: results.cz.smartlead_campaign_id
-                twenty_api_key:
-                  type: javascript
-                  expr: '`${results.bx.twenty_api_key}`'
               path: f/bluewind/outreach_pipeline
         iterator:
           type: javascript
-          expr: results.cg.data.campaignsPeople.edges
+          expr: results.cg.list
         parallel: true
         parallelism: 5
         skip_failures: true

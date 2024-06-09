@@ -1,9 +1,5 @@
 export async function main(nocodb: Object) {
-  const nestedFields = "nested[campaigns][fields]"
-  const url = `${nocodb.apiUrl}/api/v2/tables/m59o2tuojdl19od/records?where=` +
-    `${encodeURIComponent("(status,eq,TODO)")}` +
-    `&${encodeURIComponent("nested[campaigns][fields]")}=name` +
-    `&${encodeURIComponent("nested[contacts][fields]")}=first_name,last_name,email_address`;
+  const url = `${nocodb.apiUrl}/api/v2/tables/mmbbdm5ek99c71g/records?fields=Id,name,smartlead_campaign_id`;
 
   const options = {
     method: 'GET',

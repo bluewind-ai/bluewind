@@ -18,7 +18,7 @@ value:
                   lock: ''
                   language: nativets
                   tag: ''
-            expr: flow_input.contact.email === ""
+            expr: flow_input.contact.email_address === ""
             parallel: true
             skip_failure: true
           - summary: If email present
@@ -37,7 +37,7 @@ value:
                             input_transforms:
                               email:
                                 type: javascript
-                                expr: '`${flow_input.contact.email}`'
+                                expr: '`${flow_input.contact.email_address}`'
                               leadmagic_api_key:
                                 type: javascript
                                 expr: '`${flow_input.leadmagic_api_key}`'
@@ -129,8 +129,8 @@ value:
                                   language: nativets
                                   tag: ''
                       expr: >-
-                        flow_input.contact.isEmailValid === null &&
-                        flow_input.contact.isEmailCatchAll === null
+                        flow_input.contact.email_validity === "UNKNOWN" &&
+                        flow_input.contact.email_catch_all_status === "UNKNOWN"
                       parallel: true
                       skip_failure: true
                   default:
@@ -140,16 +140,16 @@ value:
                         type: rawscript
                         content: '!inline return_existing_values.inline_script.native.ts'
                         input_transforms:
-                          isEmailCatchAll:
-                            type: javascript
-                            expr: flow_input.contact.isEmailCatchAll
-                          isEmailValid:
-                            type: javascript
-                            expr: flow_input.contact.isEmailValid
+                          email_catch_all_status:
+                            type: static
+                            value: ''
+                          email_validity:
+                            type: static
+                            value: ''
                         lock: ''
                         language: nativets
                         tag: ''
-            expr: flow_input.contact.email !== undefined
+            expr: flow_input.contact.email_address !== undefined
             parallel: true
             skip_failure: true
         default:

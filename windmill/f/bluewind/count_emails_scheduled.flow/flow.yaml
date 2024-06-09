@@ -8,9 +8,9 @@ value:
         type: rawscript
         content: '!inline count_email_scheduled.inline_script.native.ts'
         input_transforms:
-          twenty:
+          nocodb:
             type: javascript
-            expr: flow_input.twenty
+            expr: flow_input.nocodb
         lock: ''
         language: nativets
         tag: ''
@@ -18,13 +18,16 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - twenty
+    - nocodb
   properties:
-    twenty:
+    nocodb:
       type: object
       description: ''
+      dateFormat: ''
       format: ''
       nullable: false
+      properties: {}
+      required: []
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false

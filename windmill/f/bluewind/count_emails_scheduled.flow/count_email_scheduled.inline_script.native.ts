@@ -1,32 +1,18 @@
-export async function main(twenty: Object) {
-  const query = `query FindManyCampaignsPeople($filter: CampaignPersonFilterInput) {
-  campaignsPeople(filter: $filter) {
-    totalCount
-    __typename
-  }
-}
-`;
+export async function main(nocodb: Object) {
+  const url = `${nocodb.apiUrl}/api/v2/tables/m59o2tuojdl19od/records?where=${encodeURIComponent("(status,eq,SCHEDULED)")}&fields=Id`;
 
-  const variables = {
-    filter: {
-      pipelineStatus: {
-        in: ['PIPELINE_TODO'],
-      },
+  const options = {
+    method: 'GET',
+    headers: {
+      "xc-token": `${nocodb.xc_token}`,
+      'Content-Type': 'application/json',
+      'Accept': "application/json"
     },
   };
-
-  const response = await fetch(`${twenty.twenty_base_url}/graphql`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: `Bearer ${twenty.twenty_api_key}`,
-    },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-  });
-
-  return await response.json();
+  try {
+    const response = await fetch(url, options);
+    return await response.json()
+  } catch (error) {
+    return error;
+  }
 }

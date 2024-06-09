@@ -1,13 +1,18 @@
-export async function main(twenty: Object) {
-  const url = `https://api.twenty.com/rest/campaigns`;
+export async function main(nocodb: Object) {
+  const url = `${nocodb.apiUrl}/api/v2/tables/mmbbdm5ek99c71g/records?fields=Id,name`;
 
-  const response = await fetch(url, {
+  const options = {
     method: 'GET',
     headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${twenty.twenty_api_key}`,
+      "xc-token": `${nocodb.xc_token}`,
+      'Content-Type': 'application/json',
+      'Accept': "application/json"
     },
-  });
-
-  return await response.json();
+  };
+  try {
+    const response = await fetch(url, options);
+    return await response.json()
+  } catch (error) {
+    return error;
+  }
 }

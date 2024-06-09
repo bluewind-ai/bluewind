@@ -1,5 +1,5 @@
 export async function main() {
   return {
-    isEmailValid: false
+    email_validity: "INVALID"
   }
 }
