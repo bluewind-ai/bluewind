@@ -81,6 +81,8 @@ value:
                         language: nativets
                         tag: ''
                   expr: results.n
+                  parallel: true
+                  skip_failure: true
               default: []
         iterator:
           type: javascript

@@ -187,5 +187,6 @@ policy:
   execution_mode: publisher
   triggerables_v2:
     'a:flow/u/admin/action_picker':
+      allow_user_resources: []
       one_of_inputs: {}
       static_inputs: {}
