@@ -1,5 +1,5 @@
 export async function main(nocodb: nocodb, data: Array) {
-  const url = `${nocodb.apiUrl}/api/v2/tables/mm7sdtcwkmxyk43/records`;
+  const url = `${nocodb.apiUrl}/api/v2/tables/mlyhucnebiv3xjw/records`;
 
   const options = {
     method: 'POST',
@@ -8,16 +8,14 @@ export async function main(nocodb: nocodb, data: Array) {
       'Content-Type': 'application/json',
       'Accept': "application/json",
     },
-    body: JSON.stringify([
-      {}
-    ])
+    body: JSON.stringify(data)
   };
   try {
     const response = await fetch(url, options);
     if (!response.ok) {
       throw "error"
     }
-    const data = await response.json()
+    return await response.json()
 
   } catch (error) {
     return error;
