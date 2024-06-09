@@ -105,8 +105,8 @@ value:
         language: nativets
         tag: ''
       continue_on_error: false
-    - id: az
-      summary: Create contacts
+    - id: bd
+      summary: create contacts
       value:
         type: rawscript
         content: '!inline create_contacts.inline_script.native.ts'
@@ -114,13 +114,11 @@ value:
           data:
             type: javascript
             expr: results.ax
-          twenty_api_key:
-            type: javascript
-            expr: flow_input.twenty_api_key
+          nocodb:
+            type: static
+            value: '$res:u/merwanehamadi/nocodb'
         lock: ''
         language: nativets
-        tag: ''
-      continue_on_error: false
     - id: ba
       summary: create campaignPeople payload
       value:
@@ -148,36 +146,17 @@ value:
           data:
             type: javascript
             expr: results.ba
-          twenty_api_key:
-            type: javascript
-            expr: flow_input.twenty_api_key
+          twenty:
+            type: static
+            value: null
         lock: ''
         language: nativets
         tag: ''
 schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
-  order:
-    - twenty_api_key
-    - campaign_name
-    - twenty_campaign_id
-  properties:
-    campaign_name:
-      type: string
-      description: ''
-      default: ''
-      format: ''
-    twenty_api_key:
-      type: string
-      description: ''
-      default: ''
-      format: ''
-      password: true
-    twenty_campaign_id:
-      type: string
-      description: ''
-      default: ''
-      format: ''
+  order: []
+  properties: {}
   required: []
 visible_to_runner_only: false
 ws_error_handler_muted: false

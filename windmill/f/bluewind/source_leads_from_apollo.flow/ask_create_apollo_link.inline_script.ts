@@ -10,8 +10,9 @@ export async function main() {
 
   return {
     default_args: {
-      instructions:
-        "Please go the link below and filter until the people roughly match your target audience. Then put the new link in the form",
+      instructions:`1- Please go the link below and filter until the people roughly match your target audience.
+2- Put the new link in the new_search_link field
+3- Click Resume`,
       go_to_link:
         "https://app.apollo.io/#/people?finderViewId=5b6dfc5a73f47568b2e5f11c",
       new_search_link: "PUT_APOLLO_LINK_HERE",

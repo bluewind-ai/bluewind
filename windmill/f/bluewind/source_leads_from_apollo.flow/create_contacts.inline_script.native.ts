@@ -1,27 +1,25 @@
-export async function main(twenty: Object, data: Array) {
-  const mutation = `
-mutation CreatePeople($input: [PersonCreateInput!]!) {
-  createPeople(data: $input) {
-    id
-    tags
-  }
-}
-`;
+export async function main(nocodb: nocodb, data: Array) {
+  const url = `${nocodb.apiUrl}/api/v2/tables/mm7sdtcwkmxyk43/records`;
 
-  const variables = {
-    input: data,
-  };
-
-  const response = await fetch(`${twenty.twenty_base_url}/graphql`, {
+  const options = {
     method: 'POST',
     headers: {
+      "xc-token": `${nocodb.xc_token}`,
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${twenty.twenty_api_key}`,
+      'Accept': "application/json",
     },
-    body: JSON.stringify({
-      query: mutation,
-      variables: variables,
-    }),
-  });
-  return await response.json();
+    body: JSON.stringify([
+      {}
+    ])
+  };
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw "error"
+    }
+    const data = await response.json()
+
+  } catch (error) {
+    return error;
+  }
 }
