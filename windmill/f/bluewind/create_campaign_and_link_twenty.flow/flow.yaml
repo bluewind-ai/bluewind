@@ -2,6 +2,18 @@ summary: create_campaign_and_link_twenty
 description: ''
 value:
   modules:
+    - id: bx
+      summary: Fetch twenty api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_twenty_api_key
+    - id: cu
+      summary: fetch smartlead api key
+      value:
+        type: flow
+        input_transforms: {}
+        path: f/bluewind/fetch_smartlead_api_key
     - id: ct
       summary: create smartlead campaign
       value:
@@ -14,24 +26,22 @@ value:
             type: javascript
             expr: flow_input.smartlead_api_key
         path: f/bluewind/brilliant_flow
-    - id: di
-      summary: Add smartlead_campaign_id to nocodb
+    - id: dh
+      summary: add smartleadcampaign id to twenty
       value:
-        type: rawscript
-        content: '!inline add_smartlead_campaign_id_to_nocodb.inline_script.native.ts'
+        type: flow
         input_transforms:
           campaign_id:
             type: javascript
-            expr: flow_input.campaign_id
-          nocodb:
+            value: '${results.ct.}'
+            expr: flow_input.twenty_campaign_id
+          data:
             type: javascript
-            expr: flow_input.nocodb
-          smartlead_campaign_id:
+            expr: '{"smartleadCampaignId": `${results.ct.campaign_id}`}'
+          twenty_api_key:
             type: javascript
-            expr: results.ct.campaign_id
-        lock: ''
-        language: nativets
-        tag: ''
+            expr: flow_input.twenty_api_key
+        path: f/bluewind/update_campaign_twenty
     - id: da
       summary: get smartlead_campaign_id
       value:
@@ -52,15 +62,11 @@ schema:
   $schema: 'https://json-schema.org/draft/2020-12/schema'
   type: object
   order:
-    - campaign_id
-    - nocodb
+    - twenty_campaign_id
+    - twenty_api_key
     - smartlead_api_key
     - campaign_name
   properties:
-    campaign_id:
-      type: integer
-      description: ''
-      nullable: false
     campaign_name:
       type: string
       description: ''
@@ -69,19 +75,25 @@ schema:
       format: ''
       nullable: false
       password: false
-    nocodb:
-      type: object
-      description: ''
-      dateFormat: ''
-      format: ''
-      nullable: false
-      properties: {}
-      required: []
     smartlead_api_key:
       type: string
       description: ''
       default: ''
       format: ''
+      password: true
+    twenty_api_key:
+      type: string
+      description: ''
+      default: ''
+      format: ''
+      password: true
+    twenty_campaign_id:
+      type: string
+      description: ''
+      dateFormat: ''
+      default: ''
+      format: ''
+      nullable: false
       password: true
   required: []
 visible_to_runner_only: false
