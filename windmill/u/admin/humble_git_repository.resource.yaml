@@ -1,6 +1,0 @@
-description: ''
-value:
-  branch: main
-  folder: ''
-  url: '$var:u/admin/humble_git_repository'
-resource_type: git_repository

@@ -1,4 +1,0 @@
-description: ''
-value:
-  token: '$var:u/donald/energy_efficient_gsheets'
-resource_type: gsheets

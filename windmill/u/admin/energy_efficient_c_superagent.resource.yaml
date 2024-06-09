@@ -1,4 +1,0 @@
-description: ''
-value:
-  superagent_api_key: '$var:u/admin/secret_arg/McWUEBMfxU6N'
-resource_type: c_superagent
