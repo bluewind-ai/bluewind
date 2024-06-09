@@ -41,6 +41,8 @@ value:
                   type: static
                   value: 2
             expr: results.u === null
+            parallel: true
+            skip_failure: true
         default: []
     - id: ai
       summary: Fetch secrets
