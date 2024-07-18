@@ -1,3 +1,0 @@
-# Find the AI workflow to grow your business automatically
-
-Coming soon...

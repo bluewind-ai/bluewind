@@ -1,0 +1,91 @@
+import Image from "next/image";
+
+export const allAuthors = {
+  maxdeichmann: {
+    firstName: "Max",
+    name: "Max Deichmann",
+    image: "/images/people/maxdeichmann.jpg",
+    twitter: "maxdeichmann",
+  },
+  waynehamadi: {
+    firstName: "Wayne",
+    name: "Wayne Hamadi",
+    image: "/images/people/waynehamadi.jpg",
+    twitter: "waynebluewind",
+  },
+  clemensrawert: {
+    firstName: "Clemens",
+    name: "Clemens Rawert",
+    image: "/images/people/clemensrawert.jpg",
+    twitter: "rawert",
+  },
+  hassiebpakzad: {
+    firstName: "Hassieb",
+    name: "Hassieb Pakzad",
+    image: "/images/people/hassiebpakzad.jpg",
+    twitter: "hassiebpakzad",
+  },
+  richardkruemmel: {
+    firstName: "Richard",
+    name: "Richard Krümmel",
+    image: "/images/people/richardkruemmel.jpg",
+    twitter: "RichardKrue",
+  },
+  marliesmayerhofer: {
+    firstName: "Marlies",
+    name: "Marlies Mayerhofer",
+    image: "/images/people/marliesmayerhofer.jpg",
+    twitter: "marliessophie",
+  },
+  lydiayou: {
+    firstName: "Lydia",
+    name: "Lydia You",
+    image: "/images/people/lydiayou.jpg",
+  },
+} as const;
+
+export const Authors = (props: { authors: (keyof typeof allAuthors)[] }) => {
+  const authors = props.authors.filter((author) => author in allAuthors);
+
+  if (authors.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-5 sm:gap-10 justify-center py-7">
+      {authors.map((author) => (
+        <Author author={author} key={author} />
+      ))}
+    </div>
+  );
+};
+
+export const Author = (props: { author: string }) => {
+  const author =
+    allAuthors[props.author] ??
+    Object.values(allAuthors).find(
+      (author) => author.firstName === props.author
+    );
+
+  if (!author) return null;
+
+  return (
+    <a
+      href={author.twitter ? `https://twitter.com/${author.twitter}` : "#"}
+      className="group shrink-0"
+      target="_blank"
+      key={props.author}
+      rel="noopener noreferrer"
+    >
+      <div className="flex items-center gap-4" key={author.name}>
+        <Image
+          src={author.image}
+          width={40}
+          height={40}
+          className="rounded-full"
+          alt={`Picture ${author.name}`}
+        />
+        <span className="text-primary/60 group-hover:text-primary whitespace-nowrap">
+          {author.name}
+        </span>
+      </div>
+    </a>
+  );
+};
