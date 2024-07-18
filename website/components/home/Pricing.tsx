@@ -15,7 +15,7 @@ const tiers = [
   {
     name: "Hobby",
     id: "tier-hobby",
-    href: "https://cloud.langfuse.com",
+    href: "https://cloud.bluewind.ai",
     featured: false,
     description:
       "Get started, no credit card required. Great for hobby projects and POCs.",
@@ -31,7 +31,7 @@ const tiers = [
   {
     name: "Pro",
     id: "tier-pro",
-    href: "https://cloud.langfuse.com",
+    href: "https://cloud.bluewind.ai",
     featured: true,
     description:
       "For serious projects. Includes access to full history and higher usage.",
@@ -628,7 +628,7 @@ const faqs = [
   {
     question: "What is the easiest way to try Langfuse?",
     answer:
-      "You can view the <a class='underline' href='/demo'>public demo project</a> or sign up for a <a class='underline' href='https://cloud.langfuse.com'>free account</a> to try Langfuse with your own data. The Hobby plan is completeley free and does not require a credit card.",
+      "You can view the <a class='underline' href='/demo'>public demo project</a> or sign up for a <a class='underline' href='https://cloud.bluewind.ai'>free account</a> to try Langfuse with your own data. The Hobby plan is completeley free and does not require a credit card.",
   },
   {
     question: "What is an observation?",
@@ -648,7 +648,7 @@ const faqs = [
   {
     question: "Do you offer discounts?",
     answer:
-      "Yes, we offer discounts for students, academics and open-source projects. If you believe your situation warrants a discount, please contact us at sales@langfuse.com with details about your project.",
+      "Yes, we offer discounts for students, academics and open-source projects. If you believe your situation warrants a discount, please contact us at sales@bluewind.ai with details about your project.",
   },
 ];
 

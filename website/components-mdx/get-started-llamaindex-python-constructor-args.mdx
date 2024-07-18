@@ -6,7 +6,7 @@ from langfuse.llama_index import LlamaIndexCallbackHandler
 langfuse_callback_handler = LlamaIndexCallbackHandler(
     public_key="pk-lf-...",
     secret_key="sk-lf-...",
-    host="https://cloud.langfuse.com"
+    host="https://cloud.bluewind.ai"
 )
 Settings.callback_manager = CallbackManager([langfuse_callback_handler])
 ```

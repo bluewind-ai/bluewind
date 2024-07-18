@@ -2,7 +2,7 @@
 name = "cookbook"
 version = "0.1.0"
 description = "Poetry project to manage dependencies for the Langfuse Cookbook"
-authors = ["Langfuse <contact@langfuse.com>"]
+authors = ["Langfuse <contact@bluewind.ai>"]
 license = "MIT"
 readme = "README.md"
 

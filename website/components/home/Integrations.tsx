@@ -194,7 +194,7 @@ export default function Integrations() {
             <Circle
               ref={inApiRef}
               title="API"
-              href="https://api.reference.langfuse.com/"
+              href="https://api.reference.bluewind.ai/"
             >
               <Code className="h-6 w-6" />
             </Circle>

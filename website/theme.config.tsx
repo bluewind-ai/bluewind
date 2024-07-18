@@ -134,7 +134,7 @@ const config: DocsThemeConfig = {
       (cookbook) => cookbook.path === asPath
     );
     const canonical: string | undefined = cookbook?.canonicalPath
-      ? "https://langfuse.com" + cookbook.canonicalPath
+      ? "https://bluewind.ai" + cookbook.canonicalPath
       : undefined;
 
     return {
@@ -153,7 +153,7 @@ const config: DocsThemeConfig = {
     const { asPath, defaultLocale, locale } = useRouter();
     const { frontMatter, title: pageTitle } = useConfig();
     const url =
-      "https://langfuse.com" +
+      "https://bluewind.ai" +
       (defaultLocale === locale ? asPath : `/${locale}${asPath}`);
 
     const description = frontMatter.description ?? "";
@@ -171,15 +171,15 @@ const config: DocsThemeConfig = {
       : "";
 
     const image = frontMatter.ogImage
-      ? "https://langfuse.com" + frontMatter.ogImage
-      : `https://langfuse.com/api/og?title=${encodeURIComponent(
+      ? "https://bluewind.ai" + frontMatter.ogImage
+      : `https://bluewind.ai/api/og?title=${encodeURIComponent(
           title
         )}&description=${encodeURIComponent(
           description
         )}&section=${encodeURIComponent(section)}`;
 
     const video = frontMatter.ogVideo
-      ? "https://langfuse.com" + frontMatter.ogVideo
+      ? "https://bluewind.ai" + frontMatter.ogVideo
       : null;
 
     return (
@@ -197,8 +197,8 @@ const config: DocsThemeConfig = {
         <meta property="twitter:image" content={image} />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site:domain" content="langfuse.com" />
-        <meta name="twitter:url" content="https://langfuse.com" />
+        <meta name="twitter:site:domain" content="bluewind.ai" />
+        <meta name="twitter:url" content="https://bluewind.ai" />
 
         <style
           dangerouslySetInnerHTML={{

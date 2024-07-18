@@ -9,13 +9,13 @@ import {
 } from "./ui/dropdown-menu";
 
 const continentHostMapping = {
-  AF: "https://cloud.langfuse.com", // Africa
-  AN: "https://cloud.langfuse.com", // Antarctica
-  AS: "https://cloud.langfuse.com", // Asia
-  EU: "https://cloud.langfuse.com", // Europe
-  NA: "https://us.cloud.langfuse.com", // North America
-  OC: "https://cloud.langfuse.com", // Oceania
-  SA: "https://us.cloud.langfuse.com", // South America
+  AF: "https://cloud.bluewind.ai", // Africa
+  AN: "https://cloud.bluewind.ai", // Antarctica
+  AS: "https://cloud.bluewind.ai", // Asia
+  EU: "https://cloud.bluewind.ai", // Europe
+  NA: "https://us.cloud.bluewind.ai", // North America
+  OC: "https://cloud.bluewind.ai", // Oceania
+  SA: "https://us.cloud.bluewind.ai", // South America
 };
 
 export const ToAppButton = () => {
@@ -25,7 +25,7 @@ export const ToAppButton = () => {
 
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
-      fetch("https://us.cloud.langfuse.com/api/auth/session", {
+      fetch("https://us.cloud.bluewind.ai/api/auth/session", {
         credentials: "include",
         mode: "cors",
       })
@@ -37,7 +37,7 @@ export const ToAppButton = () => {
           setSignedInUS(false);
         });
 
-      fetch("https://cloud.langfuse.com/api/auth/session", {
+      fetch("https://cloud.bluewind.ai/api/auth/session", {
         credentials: "include",
         mode: "cors",
       })
@@ -72,10 +72,10 @@ export const ToAppButton = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem asChild key="us">
-            <Link href="https://us.cloud.langfuse.com">US region</Link>
+            <Link href="https://us.cloud.bluewind.ai">US region</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild key="eu">
-            <Link href="https://cloud.langfuse.com">EU region</Link>
+            <Link href="https://cloud.bluewind.ai">EU region</Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -86,8 +86,8 @@ export const ToAppButton = () => {
         <Link
           href={
             signedInUS
-              ? "https://us.cloud.langfuse.com"
-              : "https://cloud.langfuse.com"
+              ? "https://us.cloud.bluewind.ai"
+              : "https://cloud.bluewind.ai"
           }
         >
           To App

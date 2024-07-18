@@ -47,7 +47,7 @@ const nextraConfig = withNextra({
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "static.langfuse.com",
+        hostname: "static.bluewind.ai",
         port: "",
         pathname: "/**",
       },
@@ -154,8 +154,8 @@ const nonPermanentRedirects = [
   ].map((path) => [path, path + "/overview"]),
 
   // Redirects to bridge all kinds of old links to new links
-  ["/docs/reference", "https://api.reference.langfuse.com/"],
-  ["/docs/integrations/api", "https://api.reference.langfuse.com/"],
+  ["/docs/reference", "https://api.reference.bluewind.ai/"],
+  ["/docs/integrations/api", "https://api.reference.bluewind.ai/"],
   ["/docs/integrations/sdk/typescript", "/docs/sdk/typescript"],
   ["/docs/integrations/sdk/python", "/docs/sdk/python"],
   ["/docs/langchain", "/docs/integrations/langchain/tracing"],
@@ -241,7 +241,7 @@ const nonPermanentRedirects = [
   ["/observability", "/docs/tracing"],
   ["/docs/openai", "/docs/integrations/openai/get-started"],
   ["/docs/integrations/openai", "/docs/integrations/openai/get-started"],
-  ["/docs/api", "https://api.reference.langfuse.com/"],
+  ["/docs/api", "https://api.reference.bluewind.ai/"],
   ["/docs/qa-chatbot", "/docs/demo"],
   ["/docs/user-explorer", "/docs/tracing-features/users"],
   ["/docs/sessions", "/docs/tracing-features/sessions"],
