@@ -97,13 +97,7 @@ export const ToAppButton = () => {
   } else {
     return (
       <Button size="xs" asChild className="whitespace-nowrap w-[100px]">
-        <Link
-          href={
-            continentCode ? continentHostMapping[continentCode] : "/waitlist"
-          }
-        >
-          Join Waitlist
-        </Link>
+        <Link href={"/waitlist"}>Join Waitlist</Link>
       </Button>
     );
   }
