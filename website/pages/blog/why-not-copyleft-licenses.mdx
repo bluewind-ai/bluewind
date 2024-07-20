@@ -1,0 +1,33 @@
+---
+title: Why not a copyleft license?
+---
+
+# Why not a copyleft license?
+
+Bluewind is licensed under the MIT license. And we're not planning to make money from [enterprise features either](/blog/enterprise-features).
+
+Copyleft licenses are less permissive than MIT or Apache 2.0 licenses.
+
+tldr: they require you to share your source code if you distribute the software. This is more complex than that but this is a decent summarization.
+
+Elasticsearch and Mongo used these licenses because they wanted to prevent cloud providers from selling their software as a service without giving back to the community.
+
+But in the world of business software copyleft licenses are very restrictive.
+
+Imagine you're an agency and you want to build a CRM for your customers. You fork an open-source CRM and you start building on top of it. You add a lot of features and you make it very specific to your customers.
+
+You sell it to them and they're happy.
+
+One day, you get a call from the original CRM maintainers. They tell you that you have to share your source code because you're distributing the software.
+
+You now have to spend a few weeks to clean your code so that it can be shared publicly or at least available to be shared.
+
+We're seeing a rise of products like GHL, which allow agencies to resell a customized CRM to their customers.
+
+So it's clear that people want that. And this is why copyleft licenses are not really a good fit for a business software that aims to become ubiquitous: you're going to frustrate A LOT of agencies and small business owners.
+
+Also, because some of them are so small, you might not even be able to prosecute them if they resell your work anyway. So you might as well just open source your CRM completely.
+
+In a context where there are less than 1000 cloud providers, we can see how copyleft licenses are fine for things like Elasticsearch or Mongo, because most of their users won't be impacted.
+
+But this is a whole other story for something like a CRM, which is a very common software for people to use AND resell.

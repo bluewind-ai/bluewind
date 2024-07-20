@@ -1,0 +1,23 @@
+---
+title: Standardizing workflows
+---
+
+# Standardizing workflows
+
+All these options start to become ubiquitous:
+
+- postgres as the database
+- postgrest as a REST API for postgres
+- supabase/realtime for real time communication with DBs.
+- supabase/auth (forked from netlify)
+- supabase/storage
+- supabase/functions
+- shadcn
+- next.js ([more on this](/docs/why-next-js-ubiquitous))
+
+One HUGE building block we're still missing is a standard implementation of workflows.
+This is absolutely critical for us to share business processes.
+
+This involves 2 things: agreeing on a way to describe them.
+
+We think Amazon State Machines

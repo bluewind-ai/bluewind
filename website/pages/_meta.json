@@ -33,6 +33,11 @@
       "layout": "raw"
     }
   },
+  "dive-deeper": {
+    "type": "page",
+    "title": "Why?",
+    "display": "hidden"
+  },
   "docs": {
     "type": "page",
     "title": "Why?"
@@ -46,6 +51,14 @@
     "type": "page",
     "title": "FAQ",
     "display": "hidden"
+  },
+  "blog": {
+    "title": "Drafts",
+    "type": "page",
+    "display": "hidden",
+    "theme": {
+      "layout": "full"
+    }
   },
   "cookbook": {
     "type": "page",

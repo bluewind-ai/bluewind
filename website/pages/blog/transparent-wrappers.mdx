@@ -1,0 +1,49 @@
+---
+title: Transparent wrappers
+---
+
+# Transparent wrappers
+
+I think this concept is very important to build ubiquitous software.
+
+Most wrappers give you an interface to interact with the thing they wrap.
+
+<Frame className="my-10" fullWidth>
+  ![Platform
+  Overview](/images/blog/transparent-wrappers/traditional-wrappers.png)
+</Frame>
+
+But sometimes you want to see what's going on under the hood, and you even want to change things.
+
+Transparent wrappers are wrappers that allow you to still have control on the underlying thing they wrap.
+
+<Frame className="my-10" fullWidth>
+  ![Platform
+  Overview](/images/blog/transparent-wrappers/transparent-wrappers.png)
+</Frame>
+
+Here is a few examples of companies that follow this approach:
+
+porter.dev wraps your AWS, Google Cloud (and I think Azure too) instances
+
+Same for flightcontrol.dev.
+
+Supabase wraps YOUR postgresql database but you can still do everything you would be able to do on this DB.
+
+Windmill.dev provides you a low-code experience but everything can be exported to code (workflow as code).
+
+Shadcn gives you these UI components, but you can easily modify all of them.
+
+Salesforce allows gives you a Sales cloud experience, but you can still change everything about this app.
+
+Transparent wrappers are the future of software and companies in general. They fundamentally provide a better user experience than traditional wrappers.
+
+They are fundamentally ubiquitous and they prevent vendor lock-in.
+
+But they're [very hard to build](/docs/difficulty-with-transparent-wrappers).
+
+Which is why for now Bluewind will go multi-tenant. Which goes against the idea of transparent wrappers. Because in a mult-tenant environment we can't give root access to someone's DB since it's shared with other people.
+
+However we will allow customers to export a whole dump of their data.
+
+And we plan to offer single tenancy eventually.

@@ -23,9 +23,9 @@ export const BlogIndex = ({ maxItems }: { maxItems?: number }) => (
           <h2 className="block font-mono mt-8 text-2xl opacity-90 group-hover:opacity-100">
             {page.meta?.title || page.frontMatter?.title || page.name}
           </h2>
-          <div className="opacity-80 mt-2 group-hover:opacity-100">
+          {/* <div className="opacity-80 mt-2 group-hover:opacity-100">
             {page.frontMatter?.description} <span>Read more →</span>
-          </div>
+          </div> */}
           <div className="flex gap-2 flex-wrap mt-3 items-baseline">
             {page.frontMatter?.tag ? (
               <span className="opacity-80 text-xs py-1 px-2 ring-1 ring-gray-300 rounded group-hover:opacity-100">
