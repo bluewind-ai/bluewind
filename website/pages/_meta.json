@@ -42,6 +42,10 @@
     "type": "page",
     "title": "Why?"
   },
+  "pre-seed-round": {
+    "type": "page",
+    "title": "Pre-seed round"
+  },
   "guides": {
     "type": "page",
     "title": "Guides",

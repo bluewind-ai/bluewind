@@ -21,7 +21,13 @@ import IconDiscord from "./components/icons/discord";
 import IconLinkedin from "./components/icons/linkedin";
 import FooterMenu from "./components/FooterMenu";
 import Link from "next/link";
-import { FileCode, LibraryBig, CircleHelp, Clock9 } from "lucide-react";
+import {
+  FileCode,
+  LibraryBig,
+  CircleHelp,
+  Clock9,
+  PiggyBank,
+} from "lucide-react";
 import {
   AvailabilityBanner,
   AvailabilitySidebar,
@@ -88,7 +94,14 @@ const config: DocsThemeConfig = {
       if (type === "separator" && title === "Switcher") {
         return (
           <div className="-mx-2 hidden md:block">
-            {[{ title: "Why?", path: "/docs", Icon: CircleHelp }].map((item) =>
+            {[
+              { title: "Why?", path: "/docs", Icon: CircleHelp },
+              {
+                title: "Pre-seed round",
+                path: "/pre-seed-round",
+                Icon: PiggyBank,
+              },
+            ].map((item) =>
               asPath.startsWith(item.path) ? (
                 <div
                   key={item.path}
