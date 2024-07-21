@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "./submit-button";
+import LoginButton from "../../components/login-google";
 
 export default function Login({
   searchParams,
@@ -51,25 +52,10 @@ export default function Login({
     return redirect("/login?message=Check email to continue sign in process");
   };
 
-  // const signIn = async () => {
-  //   "use client";
-  //   const origin = headers().get("origin");
-
-  //   const supabase = createClient();
-  //   let props = { nextUrl: "" };
-  //   await supabase.auth.signInWithOAuth({
-  //     provider: "google",
-  //     options: {
-  //       redirectTo: `${origin}/auth/callback?next=${props.nextUrl || ""}`,
-  //     },
-  //   });
-  // };
-
-  // return <button onClick={handleLogin}>Login</button>;
-
   return (
     <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
-      <Link
+      <LoginButton />
+      {/* <Link
         href="/"
         className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
       >
@@ -129,8 +115,7 @@ export default function Login({
             {searchParams.message}
           </p>
         )}
-      </form>
-      {/* <button onClick={signIn}>Sign Up Google</button> */}
+      </form> */}
     </div>
   );
 }
