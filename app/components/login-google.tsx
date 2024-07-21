@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "../utils/supabase/client";
+import { Button } from "../components/ui/button";
 
 export default function LoginButton(props: { nextUrl?: string }) {
   const supabase = createClient();
@@ -15,6 +16,5 @@ export default function LoginButton(props: { nextUrl?: string }) {
       },
     });
   };
-
-  return <button onClick={handleLogin}>Login</button>;
+  return <Button onClick={handleLogin}>Login With Google </Button>;
 }
