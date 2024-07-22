@@ -6,9 +6,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@supabase/ssr": "latest",
-    "@supabase/supabase-js": "latest",
+    "@supabase/supabase-js": "^2.44.4",
     "autoprefixer": "10.4.17",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -18,10 +20,12 @@
     "postcss": "8.4.33",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.52.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss": "3.4.1",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "20.11.5",
