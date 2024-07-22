@@ -2,6 +2,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "../lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -32,9 +33,11 @@ export default function RootLayout({
         )}
       >
         {" "}
-        <main className="min-h-screen flex flex-col items-center">
-          {children}
-        </main>
+        <TooltipProvider>
+          <main className="min-h-screen flex flex-col items-center">
+            {children}
+          </main>
+        </TooltipProvider>
       </body>
     </html>
   );
