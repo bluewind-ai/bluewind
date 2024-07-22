@@ -107,6 +107,10 @@ const menuItems: {
         name: "Terms",
         href: "/terms",
       },
+      {
+        name: "Privacy Policy",
+        href: "/privacy-policy",
+      },
     ],
   },
 ];

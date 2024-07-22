@@ -60,6 +60,10 @@ export default function ProfileForm() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    form.reset({
+      subject: "",
+      body: "",
+    });
   }
   // const { data, error } = await supabase.from("messages").select("*");
 
@@ -110,7 +114,7 @@ export default function ProfileForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Submit Draft</Button>
       </form>
     </Form>
   );
