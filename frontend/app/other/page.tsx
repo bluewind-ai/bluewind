@@ -1,6 +1,18 @@
 import Link from "next/link";
 import { CircleUser, Menu, Package2, Search } from "lucide-react";
+import * as React from "react";
+import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 
+const rows: GridRowsProp = [
+  { id: 1, col1: "Hello", col2: "World" },
+  { id: 2, col1: "DataGridPro", col2: "is Awesome" },
+  { id: 3, col1: "MUI", col2: "is Amazing" },
+];
+
+const columns: GridColDef[] = [
+  { field: "col1", headerName: "Column 1", width: 150 },
+  { field: "col2", headerName: "Column 2", width: 150 },
+];
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,7 +50,7 @@ export default function Dashboard() {
         <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <Select>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Theme" />
+              <SelectValue placeholder="Control Pannel" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="light">Control Pannel</SelectItem>
@@ -53,7 +65,7 @@ export default function Dashboard() {
             <Package2 className="h-6 w-6" />
             <span className="sr-only">Acme Inc</span>
           </Link> */}
-          <Link
+          {/* <Link
             href="#"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
@@ -76,9 +88,20 @@ export default function Dashboard() {
             className="text-foreground transition-colors hover:text-foreground"
           >
             Settings
-          </Link>
+          </Link> */}
         </nav>
       </header>
+      <div style={{ height: 300, width: "100%" }}>
+        <DataGrid rows={rows} columns={columns} />
+      </div>
     </div>
   );
 }
+
+// export default function App() {
+//   return (
+//     <div style={{ height: 300, width: "100%" }}>
+//       <DataGrid rows={rows} columns={columns} />
+//     </div>
+//   );
+// }
