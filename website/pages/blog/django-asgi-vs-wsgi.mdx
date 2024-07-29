@@ -1,0 +1,26 @@
+---
+title: Django ASGI vs WSGI
+---
+
+# Django ASGI vs WSGI
+
+It's been a while I didn't touch Django so I looked into ASGI.
+It looks like it's stable, but I am still going to go for WSGI for now.
+
+I find this comment on the Django forum very interesting:
+https://forum.djangoproject.com/t/understanding-a-dev-production-channels-async-setup-with-daphne-and-uvicorn/24259/7
+
+Also, asynchronicity is overrated. Yes, it allows you to serve more requests. But it's not like you can't scale horizontally with WSGI.
+And asynchronicity doesn't necessarilly allow for lower latencies.
+
+So the benefits of ASGI:
+- you get more throughput
+- you get lower latency if you implement things correctly
+
+downsides:
+- relatively new for Django so it's likely I am going to find a django app that doesn't work with ASGI.
+- it's more complex to implement
+
+Boring is good.
+
+PS: you still need ASGI 

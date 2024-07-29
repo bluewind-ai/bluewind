@@ -1,0 +1,161 @@
+---
+title: Choice of the tech stack
+---
+
+# Choice of the tech stack
+
+23, July 2024
+
+I will share why I like Django/Next.
+
+First, I want either typescript or python. I think Ruby on Rails and Laravel are great frameworks but Ruby and PHP are becoming less and less popular. It's a shame because in my opinion Laravel and Rails are the best all batteries included framework on the planet.
+
+Why not Go, Rust, Zig, C#, Java? Overall I think these languages reduce the speed of development.
+
+On the frontend side, I need something that supports server side rendering and static side generation.
+
+I considered a vanilla react app but I think Next.js has a bigger ecosystem now.
+
+I considered Svelte and Solid. And I think it will lack a big ecosystem for a while. Meaning you end up less productive, simply because you have to build a lot of things yourself.
+
+It's a shame because they're great frameworks.
+
+I excluded Angular and Vue because of the smaller ecosystem.
+
+Now the backend side: typescript has no BIG "enterprise app" framework. I think Adonis is great, I just wish more people used it.
+
+And I think Nestjs is too verbose. It's too close to Spring Boot.
+
+I refuse to pick an express or fastify app and assembling my own framework to support the 100s of features I am going to need to build Bluewind. It makes no sense.
+(On a side note: it's incredible to me how much the javascript ecosystem relies on external services for everything, like authentication, background jobs, file storage, etc, etc... I think it's time we show indie developers how easy it is to build all of this in-house. Particularly when you use the right frameworks. Yes, this might not be as easy as using an external service, but at least your app doesn't rely on dozens of external services.)
+
+So I am not going to have a backend written in typescript.
+
+And on the python side the choice is very obvious: the only all-batteries included framework is Django (btw, usually, when there is an obvious choice this is a good sign: it shows that the community is big)
+
+Python is slow and consumes a lot of memory, so does typescript (but Typescript at least has bun coming soon).
+
+So how to deal with the fact that this Django app is going to be very slow?
+I think the first bottleneck in terms of performance is going to be the DB, as always.
+It's going to take time to be in a place where the speed of python becomes a big problem for end users.
+
+And once the features are stable, it's always possible to rewrite the slow parts in a faster language.
+
+So I picked Django. It has some quirks, but it's battle tested. Rippling and Posthog use Django.
+
+django/next.js is not seen very often. Mostly because frontend folks love to stay in javascript territory.
+
+And Django folks tend to use pure React, Vue or even use Django templates. next.js is a relatively early framework too, and the Django community tends to be more conservative (I love Django for this exact reason, I don't need drama in my backend development)
+
+But I personally think it's a great choice. It's fast to develop in, and it's reasonably fast to run.
+
+Obviously, if you want to build a high performance app you use Rust and Qwik/Svelte/Solid. But it doesn't make sense for Bluewind. At least not right now.
+
+Now let's list the downsides of using this stack:
+
+- Python is not very liked by the javascript people. For javascript folks, anything that's not typescript makes no sense, particularly when it's not typed.
+- Django is not fast.
+- Django channels and ASGI don't really interact very well. It's a bit clunky. I also don't like that Django uses a different server for production and development. But this also allows to test more easily (when testing you don't need to make http calls, allowing you to stay in the same process)
+- Next.js is not very stable. But hopefully the app router was their latest big changes. Worse case I just don't migrate from next.js 14 until I know for sure that everything works in next 15
+- Next.js is heavier and slower that the next gen frontend frameworks (Svelte, Solid, Qwik)
+- It's hard to self-host next.js outside of Vercel without losing the benefits of next.js.
+- It's very possible the opinionated nature of both next.js and Django is going to limit me sometimes, but overall it's benefitial too. Because you can more easily contribute to the project. And at least someone whos says he knows Django is more likely to be a good backend developer. This is underrated. Because what does it mean to know express, flask or FastAPI? Not much, honestly. These backend frameworks are too minimalistic.
+
+24, July 2024
+Not gonna lie this blew me away: https://www.youtube.com/watch?v=3GObi93tjZI
+
+Maybe there is a way to NOT have to deal with the mess of the javascript world without losing too much interactivity on a web page.
+
+The fact that HTMX tends to remove code is very appealing too.
+
+25, July 2024
+
+The tech stack is a very important decision. So I give myself some time to digest the implications.
+
+And I found one problem with HTMX given what I am trying to build.
+
+There are roughly 3 ways to consume an application:
+- HTML
+- JSON API, incorrectly called RESTful APIs (google "JSON APIs are not RESTful, HATEOS")
+- graphql APIs
+
+HTML allows you to build the most efficient endpoint given what you need to do.
+In my opinion the best frontend technologies to offer this are Svelte, Solid, Next.js through SSR. And then HTMX offers this because it's literally server rendered.
+
+JSON APIs: They're nice. But sometimes, one page of your app might require you to call 10 different endpoints. And it's very likely going to be faster to ask the backend to return the whole HTML and let the backend run the query.
+But the benefit is that you don't need to write an endpoint just for one page. So sometimes it's more efficient to use it.
+
+GraphQL seems to be the perfect compromise at first. But it's SO easy to hack. I cannot emphasize this enough. GraphQL is very inecure.
+
+Just google graphql security issues and you will see how hard it is to protect a graphql endpoint.
+
+But I think if you use SSR and you white list the servers allowing graphql queries, graphql is probably the fastest way to work when you have a backend and a frontend team.
+
+Because think about it: if you need to create an endpoint for each of the feature requests of your clients, it's going to be very tough.
+
+This is why graphQL is solving a HUGE problem for big companies.
+
+But in these big orgs, the frontend engineers still need to know what they're querying. Because they could write a query and DDOS you.
+
+I am exploring right now if there is a way to rate limit and secure a graphql endpoint declaratively just using postgres.
+
+This is the promise of pg_graphql (look on github). But I hate immature projects. And "REST" is more mature.
+
+As you can see, HTML gives you perfect control but makes reusability more challenging, graphql is selling a dream that I have honestly never been able to truly experience, and JSON is boring because it's reusable but can be very slow compared to graphql (federating endpoints with graphql can lead to optimized queries, but also very slow ones. JSON is more consistent, more average)
+
+---------------
+
+One point against HTMX is that it will be hard to find good frontend engineers using it.
+
+At the same time, maybe that's good. Bluewind is fundamentally a backend initiative. It's all about the datamodel and the workflows.
+I wouldn't mind having backend engineers writing the frontend because I think they will understand Bluewind better.
+
+If I pick next.js, svelte or solid, it's likely there is a silo between the frontend and backend team. Because these next.js folks won't touch Django.
+And Bluewind is all about unifying things in general. It makes a lot of sense to go with HTMX. And it's a business software, it's not a devtool. So it's very important people building the backend also build the frontend.
+
+I just wish HTMX was more mature. It looks like with HTMX combined with alpine.js you can do a lot, but the ecosystem is really small.
+
+26, July 2024
+
+This starts to give me a lot of concerns. I doubt a lot about this. I know this could look like analysis paralysis, but the choice matters a lot.
+
+Django/HTMX
+Pros:
+1. for basic views (90% of my project), the speed of development is unparalleled.
+2. you can optimize everything only for the html page being displayed. No need to create a REST API or graphql endpoint.
+3. Backend engineers can ship full stack in one single environment. No need to have 2 machines running at the same time. (Technically, it's even 3, you have the browser, the backend for the frontend and the actual backend)
+4. Simplified deployment because less machines to run stuff.
+
+Cons:
+1. When you need client rendering, you're limited. You need alpine.js, but it might not be enough. For example a workflow flow builder, site builder or google sheets requires a lot of client interaction. I happen to need a workflow builder. So I either turn to web components which I find very verbose. So I end up needing React, Svelte or Solid.
+2. At some point I am going to need to build a JSON API anyway for integrations. And it's not [easy](https://zapier.com/engineering/when-rest-gets-messy/) to make sure the HTMX logic and the JSON API logic is the same.
+3. Less mature. Less resources available
+
+Django/React/Svelte/Solid 
+Pros:
+1. I know I can do all the stuff I need to do in the frontend.
+2. I am forced to build an API I will end up building no matter what.
+3. My JSON API is more likely to work very well, because I consume it.
+4. Point specific to React: it's more mature than HTMX. More resources available. shadcn is big. I saw a shadcn htmx but it's probably less battle tested than shadcn.
+
+Cons:
+1. Silo between frontend and backend team. And it's very hard to find someone good at both.
+2. Slower development cycles.
+3. It's harder to have performant apps, particularly the app that are very document oriented. Nothing beats server rendered HTML, particularly when you optimize each view to get what you need.
+4. Deployment more complex.
+
+Hybrid solutions: using Django/HTMX and Svelte for example -> this just seems too complex. Too many moving parts.
+
+Maybe I am back to square 1 and I only use JSON APIs... After all this is the safe path. Slow but safe.
+
+I am wondering what's the simplest way to build a workflow builder without going into big frontend framework territory and managing another server.
+
+It's frustrating because I can see there is something fundamentally profound with HTMX. I wish it interoperated better with very complex client states scenario. I wish there was a very good solution for this. Something light weight, easy to manage in the same repo. Any idea?
+
+27, July 2024
+I am glad I take the time to think carefully about this. Because Phoenix LiveView is very interesting.
+
+Django channels will not scale as easily compared to what Phoenix offers. And real time capabilities really matter.
+Also, it's very likely that I end up needing a chat. Python powering a chat will probably feel clunky.
+
+There is a huge benefit to having a single language to perform all backend tasks. And I think python falls short in real time capabilities.

@@ -1,0 +1,61 @@
+---
+title: Aggregates and how they map to a Django project
+---
+
+# Aggregates and how they map to a Django project
+
+Encoding the concept of aggregates in DDD into a Django project is really important.
+
+I think aggregates are the most important concept in DDD. And DDD remains the best tool we have to architect business logic.
+
+What's nice about django is that they have apps that look like microservices, but within the same django project.
+
+It remains a monolith, but the code separations are clear. Which is why Django is one of the best framework to build the majestic monolith DHH loves to mention.
+
+Paradoxically, RoR is not the best fit because the folders are by type.
+
+FYI, all-batteries included "modular" frameworks:
+
+- Django
+- Phoenix
+- .Net
+- Nestjs
+
+FYI, all-batteries included folders by type frameworks:
+
+- RoR
+- Laravel
+- Spring Boot
+
+You have libraries that allow the folder by type frameworks to be modular, but it's not something natively supported. Which means it leads to your project not being compatible with the framework.
+
+Great, we have one the most easy to read language, Python, with a modular framework, which allows us to represent aggregates as Django apps.
+
+There is one problem remaining: do you nest apps within other apps?
+
+Pros:
+
+- clear dependency tree
+- easier to extract each app as a separate service and white label it.
+
+Cons:
+
+- Aggregates are not always linked through a hirarchical structure. Sometimes they're graphs.
+- this is not common in django projects.
+
+The other option is to have 100s of apps at the root level, and find a way to link them, maybe through graph.json that you write and that represents the links between each app.
+It's lesst explicit though.
+
+So I think I am still going to go for the nested apps approach.
+
+Edit: I think a flattened structure is better because I want flexibility. I don't know in advance how one aggregate might be used by other aggregates.
+So I find this better.
+bluewind
+-------- workspace
+-------- messages
+-------- contacts
+-------- opportunities
+-------- notes
+
+
+nothing prevents me from visualizing the dependency graph using pydeps.
