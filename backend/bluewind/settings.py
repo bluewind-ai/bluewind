@@ -55,10 +55,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # LOCAL APPS'
+    'chat_messages',
+    'leads',
+    'tenants',
     # AUTH PROVIDERS
 
     'allauth',
     'allauth.account',
+    'db_graph',
 
     'allauth.socialaccount',
     'allauth.socialaccount.providers.agave',
@@ -189,6 +194,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    'tenants.middleware.TenantMiddleware',
+
 ]
 
 ROOT_URLCONF = 'bluewind.urls'
