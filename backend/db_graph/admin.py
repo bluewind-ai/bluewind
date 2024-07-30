@@ -7,7 +7,7 @@ class DBGraphAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            path('db-graph/', self.admin_site.admin_view(self.db_graph_view), name='db_graph_view'),
+            path('', self.admin_site.admin_view(self.db_graph_view), name='db_graph_dbgraph_changelist'),
         ]
         return custom_urls + urls
 

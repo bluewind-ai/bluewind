@@ -1,0 +1,25 @@
+---
+title: "Python is slow"
+---
+
+# "Python is slow"
+
+"Python is slow"
+
+You're right. We could have picked javascript. Or Go. Or even Rust. But the velocity you get with Python is just too good to pass on.
+
+"What about the day hardware is more expensive that people?"
+
+If this day comes, our codebase will probably be rewritten in Rust in just a year. But I think that python's readibility is irreplaceable.
+
+If anything, I think Rust is going to come to the python world. Granian will help python be a better web server. And the most used libraries will be rewritten in Rust, C, C++ or Zig.
+
+I think, particularly in our case, business software needs code that is fast to write. We're not building infrastructure software. And let's not forget that the bottleneck is usually the DB.
+
+For a proxy it makes total sense to use a low level language, but for something that communicates to a DB as much as Bluewind, there is no reason not to pick python, ruby or PHP.
+
+Also, javascript is fast, but python is very versatile: numpy, pandas, and now pollars are very very fast. Often times faster than naive implementations in low level languages.
+
+And the event loop of javascript can sometimes hurt its performance.
+
+So most javascript codebases end up needing python anyway. The lack of typing is also not as big of an issue on Bluewind, because almost all the data we manipulate is tied to a django model which is typed.

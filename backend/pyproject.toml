@@ -6,8 +6,8 @@ authors = ["Merwane Hamadi <merwanehamadi@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
-django = "^5.0.7"
+python = "^3.10"
+django = "^5.0"
 gunicorn = "^22.0.0"
 django-environ = "^0.11.2"
 whitenoise = "^6.7.0"
@@ -16,6 +16,10 @@ python3-openid = "^3.2.0"
 django-allauth = {extras = ["socialaccount"], version = "^0.63.6"}
 pydeps = "^1.12.20"
 django-multitenant = "^4.1.1"
+django-extensions = "^3.2.3"
+psycopg2-binary = "^2.9.9"
+python-dotenv = "^1.0.1"
+django-tenants = "^3.6.1"
 
 
 [build-system]
