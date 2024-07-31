@@ -6,23 +6,42 @@ from selenium.webdriver.common.by import By
 from workspaces.models import Workspace, WorkspaceUser
 import time
 import logging
+from django.utils import timezone
+
 
 logger = logging.getLogger(__name__)
 
 @given('I am a superuser')
-def step_impl(context):
+def given_i_am_a_superuser(context):
     User = get_user_model()
-    context.user = User.objects.create_superuser(
-        username='admin',
-        email='admin@example.com',
-        password='adminpassword'
-    )
-    context.client = Client()
+    username = 'admin'
+    email = 'admin@example.com'
+    password = 'adminpassword'
     
-    # Create a workspace and set it as default for the superuser
-    workspace = Workspace.objects.create(name="Default Workspace", display_id="default-workspace")
-    WorkspaceUser.objects.create(user=context.user, workspace=workspace, is_default=True)
-    context.default_workspace = workspace
+    # Create superuser if it doesn't exist
+    if not User.objects.filter(username=username).exists():
+        user = User.objects.create_superuser(username=username, email=email, password=password)
+    else:
+        user = User.objects.get(username=username)
+    
+    # Create a workspace if it doesn't exist
+    workspace, created = Workspace.objects.get_or_create(
+        display_id='default-workspace',
+        defaults={
+            'name': 'Default Workspace',
+            'created_at': timezone.now()
+        }
+    )
+    
+    # Assign the user to the workspace
+    WorkspaceUser.objects.get_or_create(
+        user=user,
+        workspace=workspace,
+        defaults={'is_default': True}
+    )
+    
+    context.username = username
+    context.password = password
 
 @when('I log in with my credentials')
 def step_impl(context):
