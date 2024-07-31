@@ -23,6 +23,10 @@ env = environ.Env(
     DEBUG=(bool, False)
 )
 
+import sys
+
+
+    
 # Set the project base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,11 +58,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'workspaces',
+
 
     # LOCAL APPS'
     'chat_messages',
     'leads',
-    'tenants',
+    'django_multitenant',
+
+    # tests
+    'behave_django',
     # AUTH PROVIDERS
 
     'allauth',
@@ -192,10 +201,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    'tenants.middleware.TenantMiddleware',
-    'bluewind.middleware.RedirectMiddleware'
+    'bluewind.middleware.RedirectMiddleware',
+    'workspaces.middleware.WorkspaceAdminMiddleware',
 ]
 
 ROOT_URLCONF = 'bluewind.urls'
@@ -218,6 +228,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bluewind.wsgi.application'
 
+import sys
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -230,9 +242,15 @@ DATABASES = {
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
         'HOST': os.getenv('DATABASE_HOST'),
         'PORT': os.getenv('DATABASE_PORT'),
+        'TEST': {
+            'NAME': 'test_mydatabase',
+        },
     }
 }
 
+if 'test' in sys.argv:
+    DATABASES['default']['USER'] = 'test_user'
+    DATABASES['default']['PASSWORD'] = 'test_password'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -303,7 +321,21 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = '/'  # or where you want users to go after login
+LOGIN_URL='/'
 ACCOUNT_EMAIL_REQUIRED = True  # if you want to require email
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional'
 SITE_ID = 1
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}

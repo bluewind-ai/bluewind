@@ -78,6 +78,7 @@ def setup_database(db_name, db_user, db_password):
         f"psql -d {db_name} -c \"ALTER ROLE {db_user} SET default_transaction_isolation TO 'read committed';\"",
         f"psql -d {db_name} -c \"ALTER ROLE {db_user} SET timezone TO 'UTC';\"",
         f"psql -d {db_name} -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\""
+        f"psql -d {db_name} -c \"ALTER USER {db_user} CREATEDB;\""
     ]
     
     for command in commands:

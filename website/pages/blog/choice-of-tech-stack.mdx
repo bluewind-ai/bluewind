@@ -75,6 +75,7 @@ The tech stack is a very important decision. So I give myself some time to diges
 And I found one problem with HTMX given what I am trying to build.
 
 There are roughly 3 ways to consume an application:
+
 - HTML
 - JSON API, incorrectly called RESTful APIs (google "JSON APIs are not RESTful, HATEOS")
 - graphql APIs
@@ -103,7 +104,7 @@ This is the promise of pg_graphql (look on github). But I hate immature projects
 
 As you can see, HTML gives you perfect control but makes reusability more challenging, graphql is selling a dream that I have honestly never been able to truly experience, and JSON is boring because it's reusable but can be very slow compared to graphql (federating endpoints with graphql can lead to optimized queries, but also very slow ones. JSON is more consistent, more average)
 
----------------
+---
 
 One point against HTMX is that it will be hard to find good frontend engineers using it.
 
@@ -121,24 +122,28 @@ This starts to give me a lot of concerns. I doubt a lot about this. I know this 
 
 Django/HTMX
 Pros:
+
 1. for basic views (90% of my project), the speed of development is unparalleled.
 2. you can optimize everything only for the html page being displayed. No need to create a REST API or graphql endpoint.
 3. Backend engineers can ship full stack in one single environment. No need to have 2 machines running at the same time. (Technically, it's even 3, you have the browser, the backend for the frontend and the actual backend)
 4. Simplified deployment because less machines to run stuff.
 
 Cons:
+
 1. When you need client rendering, you're limited. You need alpine.js, but it might not be enough. For example a workflow flow builder, site builder or google sheets requires a lot of client interaction. I happen to need a workflow builder. So I either turn to web components which I find very verbose. So I end up needing React, Svelte or Solid.
 2. At some point I am going to need to build a JSON API anyway for integrations. And it's not [easy](https://zapier.com/engineering/when-rest-gets-messy/) to make sure the HTMX logic and the JSON API logic is the same.
 3. Less mature. Less resources available
 
-Django/React/Svelte/Solid 
+Django/React/Svelte/Solid
 Pros:
+
 1. I know I can do all the stuff I need to do in the frontend.
 2. I am forced to build an API I will end up building no matter what.
 3. My JSON API is more likely to work very well, because I consume it.
 4. Point specific to React: it's more mature than HTMX. More resources available. shadcn is big. I saw a shadcn htmx but it's probably less battle tested than shadcn.
 
 Cons:
+
 1. Silo between frontend and backend team. And it's very hard to find someone good at both.
 2. Slower development cycles.
 3. It's harder to have performant apps, particularly the app that are very document oriented. Nothing beats server rendered HTML, particularly when you optimize each view to get what you need.
@@ -159,3 +164,29 @@ Django channels will not scale as easily compared to what Phoenix offers. And re
 Also, it's very likely that I end up needing a chat. Python powering a chat will probably feel clunky.
 
 There is a huge benefit to having a single language to perform all backend tasks. And I think python falls short in real time capabilities.
+
+30, July 2024
+
+The Django experience got better over the years and you have amazing packages to get an admin dashboard in minutes. I find this really valuable.
+
+But the deployment story of python and Django in particular is a sad story. Bluewind is going to need real time capabilities:
+
+- chat
+- server sent events (for basic notifications)
+- run background jobs and wait for response -> this means users want to wait for the job to be returned, they don't want a notification. This, in particular, is really painful to do. Because now you need a web server to wait and poll for a job to be done before giving back the response to a user.
+
+Last bullet point is very important. As a user of Windmill, N8N, or Make, I WANT to wait for a run to be finished. I absolutely don't want to be told "hey, we're running this, here is your idea, poll when you need it". This is a very bad experience, particularly for jobs lasting less than a minute (90% of the use cases).
+
+And these real time capabilities require ASGI. I hate having to mix ASGI and WSGI. It's against the belief of Bluewind, which is to unify things.
+
+So I considered going only the Daphne route. And this is also scary: you have to sprinkle a bunch of sync_to_async in your codebase and be careful of all the middlewares you add, because they might not be async friendly.
+
+Here is an example where the age of a framework is a problem. Things will get better over time, but right now it's a mess.
+
+On the other hand the phoenix ecosystem is very unified. Elixir handles every communication protocol, and you even have an integrated solution for the backend: liveview. Django has htmx but it's not Django specific.
+
+What I don't like about Phoenix so far is that it's not used enough, so the ecosystem is smaller. But when the only con you find to a framework is that it's small, this really starts to make you think. Particularly when I consider Bluewind to be a decade worth of effort.
+
+-----------------
+
+Maybe it's not so bad to separate codebase between asynchronous and synchronous endpoints...

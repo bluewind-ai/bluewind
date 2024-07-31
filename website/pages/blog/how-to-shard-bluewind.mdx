@@ -1,0 +1,84 @@
+---
+title: How to shard Bluewind?
+---
+
+# How to shard Bluewind?
+
+Jul 30 2024
+
+I was initially planning to shard by workspace. But a user can have many workspaces.
+
+It means that if I want to know all the users in a given workspace I have to query accross all the shards, potentially.
+
+You could say "Well, if user U1 creates workspace W1, then if he invites user U2 to workspace W1, we just assign its default workspace to W1, easy"
+
+And this would be correct. But what if user U2 first created workspace W2 and then received an invitation from user U1?
+
+He would have 2 workspaces and its default workspace might be in a different shard than the one he receives an invitation for.
+
+So far, I am thinking that shard rebalancing is the only way... But shard rebalancing is a nasty task...
+
+Hopefully this doesn't happen too often, and most people invited by other users will be new users.
+
+But look at Slack, that's clearly not the case.
+
+Something is off, here.
+
+P.S: It might look ridiculous to think about sharding so early, but my belief is that the reason companies can't compound is because their initial technical design is flawed.
+They didn't plant the right seeds:
+
+- autodocumentation
+- great framework with big community
+- think about security from day 1
+- etc, etc...
+
+But it's true that there is no one size fits all in sharding. It depends on how the software is used. Still, it doesn't hurt to make assumptions based on my experience.
+
+In my opinion, sharding by workspace is the right design.
+
+---
+
+Wait, there is another problem: what if user U2 accepts the invitation from user U1?
+Here is what the login process would look like:
+
+- authenticate user either through password or gmail or whatever auth system
+- once user authenticated, since this user is trying to access the workspace W1, it should have a next=workspace_id in the URL.
+- We will look into the database holding the workspace_id, using our routing strategy. Then we search for this workspace, all the users available and try to find user U2.
+- And here is the problem: this user U2 is in the shard holding workspace W2, not W1.
+
+A user has many workspaces, a workspace has many users. This means that there is a table out there, that holds the relationships between both.
+
+Should this table be in the W1 shard or in the W2 shard? Options:
+
+- we pick a shard. But this means that one shard has all the relationships between workspace and users?
+- relations are all on all the shards. Meaning that if a user is "invited in another shard", he will be duplicated.
+
+Is this really a big deal to denormalize this data? It means that when a user U1 sends an invitation to user U2, we need to first check the email of this user.
+
+But what if we send a link and not an email? Then I think that we can just do the duplication WHEN the user accepts the invitation.
+Other problem: the link given to this user only says which workspace to go to, it doesn't say which shard this user belongs to.
+
+This means that anytime a new user comes in, we're forced to query all the shards to find this user by email address?
+
+Wait, is this even a good practice to invite users using a link? ABSOLUTEY NOT. haha, why did I even think of that? Sharing a link to a resource, why not, but inviting someone using a link is ridiculously dangerous.
+
+Ok, here is the flow:
+
+- user U1 invites user U2 to workspace W1 using his email
+- we check if user U2 exists in the database, we're forced to look at all the shards, looking for this user's email.
+- if user present, duplicate its uuid and other infos to the workspace W1
+- send email with link that expires in X hours
+- user U2 clicks on the link, is beeing asked to signup through google or plain email or whatever, and then we authenticate the user.
+
+Consequences: when a user updates its personal data, we need to check if he's present in any other shard and duplicate the data.
+
+And of course, all this data is going to be pseudonymised.
+
+-----------
+
+Other issue. The default workspace id cannot be what I shard with, because if the user changes it I in a bad spot. I will have
+user
+workspace
+workspace_user.workspace_id
+workspace_user.user_id
+workspace_user.is_default -> indicates whether this is the default workspace for this user.

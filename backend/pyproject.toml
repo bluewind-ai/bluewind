@@ -19,7 +19,10 @@ django-multitenant = "^4.1.1"
 django-extensions = "^3.2.3"
 psycopg2-binary = "^2.9.9"
 python-dotenv = "^1.0.1"
-django-tenants = "^3.6.1"
+behave = "^1.2.6"
+django-behave = "^0.1.6"
+behave-django = "^1.4.0"
+webdriver-manager = "^4.0.2"
 
 
 [build-system]
