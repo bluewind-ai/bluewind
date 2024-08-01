@@ -31,10 +31,8 @@ class WorkspaceAdminMiddleware:
         if request.path.startswith('/admin/workspace/'):
             parts = request.path.split('/')
             if len(parts) > 4 and parts[3].isdigit():
-                user_id = parts[3]
                 new_path = '/admin/' + '/'.join(parts[4:])
                 request.path = new_path
                 request.path_info = new_path
-
         response = self.get_response(request)
         return response
