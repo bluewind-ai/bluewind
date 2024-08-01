@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'workspaces',
 
+    # debugging
+    'debug_toolbar',
 
     # LOCAL APPS'
     'chat_messages',
@@ -206,6 +208,9 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     'bluewind.middleware.RedirectMiddleware',
     'workspaces.middleware.WorkspaceAdminMiddleware',
+
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
 ]
 
 ROOT_URLCONF = 'bluewind.urls'
@@ -338,4 +343,16 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
+}
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+DEBUG_TOOLBAR_CONFIG = {
+    # 'EXTRA_SIGNALS': True,
+    'SHOW_TEMPLATE_CONTEXT': True,
+    'ENABLE_STACKTRACES': True,
+    'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    'STACKTRACE_DEPTH': 10000,  # Increase this number as needed
 }
