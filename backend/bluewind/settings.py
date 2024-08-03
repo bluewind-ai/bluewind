@@ -66,7 +66,6 @@ INSTALLED_APPS = [
     # LOCAL APPS'
     'chat_messages',
     'leads',
-    'django_multitenant',
 
     # tests
     'behave_django',

@@ -1,0 +1,7 @@
+make sure there is no nullable charfield
+defensive programming on the filter by tenant: in the model manager and in every query
+pgbadger
+pgstats
+get_absolute_url of resource
+requirements folder 
+mozilla observatory
