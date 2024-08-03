@@ -380,7 +380,7 @@ files = [
 
 [[package]]
 name = "Django"
-version = "5.2.dev20240802192112"
+version = "5.0.8.dev20240731092643"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.10"
@@ -388,7 +388,7 @@ files = []
 develop = true
 
 [package.dependencies]
-asgiref = ">=3.8.1"
+asgiref = ">=3.7.0,<4"
 sqlparse = ">=0.3.1"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
@@ -398,7 +398,7 @@ bcrypt = ["bcrypt"]
 
 [package.source]
 type = "directory"
-url = "django-clone"
+url = "django"
 
 [[package]]
 name = "django-allauth"
@@ -874,4 +874,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "62226e16cc7b8a343a62fa69e6f5a9ae42eb3eb3cbe0293449d4a965b0243168"
+content-hash = "d15eb4574a6f1b49fa19c0d663d3c4d9903abd61ade77bbf3a3dbc41dc5cdd4b"

@@ -13,7 +13,7 @@ sqlparse = "^0.3.1"
 tzdata = {version = "*", markers = "sys_platform == 'win32'"}
 python-dotenv = "^1.0.1"
 django-environ = "^0.11.2"
-django = {path = "django-clone", develop = true}
+django = {path = "django", develop = true}
 django-extensions = "^3.2.3"
 django-debug-toolbar = "^4.4.6"
 behave-django = "^1.4.0"
