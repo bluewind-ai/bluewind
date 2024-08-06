@@ -1,0 +1,50 @@
+---
+title: IDs
+---
+
+# IDs
+
+Picking the right ID system is hard.
+
+I am thinking of picking ULID but I don't want to expose timestamps. Which means I need a public_id.
+And most public_id methods that create the id from the internal one are not secure.
+
+But I can also just generate a random integer and use that as the public_id.
+
+cus_34810471058 for customer 34810471058.
+
+This also increases productivity for people working with ids to debug things.
+
+More info on ids here: https://adileo.github.io/awesome-identifiers/
+
+---------
+uuid v7 seems better simply because there is no need to have a machine and a shard id.
+And the RFC just came out: https://www.rfc-editor.org/rfc/rfc9562.html
+
+I will probably go for uuid v7 everywhere except the workspace, for the workspace I will pick uuid.
+Because for the workspace I don't want to have to deal with a public id, since I shard by workspace_id.
+
+workspace:
+private id: uuidv4
+public id: the uuidv4 in base62
+
+other tables:
+private id: uuidv7
+public id: hash-id -> collisions are more likely but it's fine because these tables are within a workspace.
+
+More resources for you to read:
+https://dev.to/stripe/designing-apis-for-humans-object-ids-3o5a/comments
+
+It's important to note that stripe obviously doesn't use their public ids as the primary key.
+
+---------
+notes:
+1. whatever id I pick, I need to bake in a system for easy redirects. This happened in my previous company and we wasted a lot of engineering time to build the proper solution.
+THis is also very important for CMS: you need to let users change the slug.
+
+2. Apparently Stripe uses the public key to find the right shard. Very interesting. I was wondering how I would do this with my workspaces.
+
+loved this article from Clerk:
+https://clerk.com/blog/generating-sortable-stripe-like-ids-with-segment-ksuids
+
+But it's also confusing: it looks like they use this public id as the primary id.

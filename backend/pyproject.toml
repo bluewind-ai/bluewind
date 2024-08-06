@@ -5,19 +5,17 @@ description = "A high-level Python web framework that encourages rapid developme
 authors = ["Django Software Foundation <foundation@djangoproject.com>"]
 license = "BSD-3-Clause"
 readme = "README.rst"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
+django = {path = "django", develop = true}
 asgiref = "^3.8.1"
 sqlparse = "^0.3.1"
 tzdata = {version = "*", markers = "sys_platform == 'win32'"}
 python-dotenv = "^1.0.1"
 django-environ = "^0.11.2"
-django = {path = "django", develop = true}
-django-extensions = "^3.2.3"
-django-debug-toolbar = "^4.4.6"
 behave-django = "^1.4.0"
-django-allauth = "^64.0.0"
 psycopg2 = "^2.9.9"
 gunicorn = "^22.0.0"
 whitenoise = "^6.7.0"
@@ -28,6 +26,9 @@ requests = "^2.32.3"
 pyjwt = "^2.9.0"
 cryptography = "^43.0.0"
 requests-oauthlib = "^2.0.0"
+factory-boy = "^3.3.0"
+django-allauth = "^64.0.0"
+django-debug-toolbar = "^4.4.6"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"

@@ -14,9 +14,10 @@ from pathlib import Path
 import environ
 import os
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+print(BASE_DIR)
 
 env = environ.Env(
     # set casting, default value
@@ -51,7 +52,7 @@ GOOGLE_OAUTH_CLIENT_SECRET= env.list('GOOGLE_OAUTH_CLIENT_SECRET')
 # Application definition
 
 INSTALLED_APPS = [
-    'django_extensions',
+    # 'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,6 +60,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'workspaces',
+    'public_id',
+    'base_model_admin',
 
     # debugging
     'debug_toolbar',
@@ -191,6 +194,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.okta',
     'allauth.socialaccount.providers.feishu',
     "allauth.socialaccount.providers.atlassian",
+
+    'homepage',
     # 'core',
 ]
 
@@ -202,14 +207,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    'bluewind.middleware.RedirectMiddleware',
-    'workspaces.middleware.WorkspaceAdminMiddleware',
-
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'bluewind.urls'
@@ -355,3 +355,18 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': lambda request: True,
     'STACKTRACE_DEPTH': 10000,  # Increase this number as needed
 }
+
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+]

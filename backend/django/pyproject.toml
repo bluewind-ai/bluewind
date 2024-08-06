@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django"
-version = "0.1.0"
+version = "5.0.8"
 description = "Sub-package description"
 authors = ["Your Name <your.email@example.com>"]
 

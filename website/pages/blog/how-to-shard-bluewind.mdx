@@ -34,7 +34,7 @@ They didn't plant the right seeds:
 
 But it's true that there is no one size fits all in sharding. It depends on how the software is used. Still, it doesn't hurt to make assumptions based on my experience.
 
-In my opinion, sharding by workspace is the right design.
+In my opinion, sharding by workspace is the right design for Bluewind and most SaaS solutions.
 
 ---
 
@@ -74,11 +74,21 @@ Consequences: when a user updates its personal data, we need to check if he's pr
 
 And of course, all this data is going to be pseudonymised.
 
------------
+------
+"""
+A user has many workspaces, a workspace has many users. This means that there is a table out there, that holds the relationships between both.
 
-Other issue. The default workspace id cannot be what I shard with, because if the user changes it I in a bad spot. I will have
-user
-workspace
-workspace_user.workspace_id
-workspace_user.user_id
-workspace_user.is_default -> indicates whether this is the default workspace for this user.
+Should this table be in the W1 shard or in the W2 shard? Options:
+
+- we pick a shard. But this means that one shard has all the relationships between workspace and users?
+- relations are all on all the shards. Meaning that if a user is "invited in another shard", he will be duplicated.
+
+"""
+
+I wrote this.
+
+But there is another simpler option: to get all the users of a workspace, you simply query all the shards.
+
+--------
+doing more reading: https://www.notion.so/blog/sharding-postgres-at-notion
+

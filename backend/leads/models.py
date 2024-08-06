@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class Lead(models.Model):
+from base_model.models import BaseModel
+
+class Lead(BaseModel):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
