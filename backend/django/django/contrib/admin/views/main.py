@@ -1,3 +1,4 @@
+import uuid
 import warnings
 from datetime import datetime, timedelta
 
@@ -84,6 +85,7 @@ class ChangeList:
         sortable_by,
         search_help_text,
     ):
+        self.workspace_id = request.resolver_match.kwargs.get('workspace_id', 27182187218)
         self.model = model
         self.opts = model._meta
         self.lookup_opts = self.opts
@@ -615,11 +617,18 @@ class ChangeList:
                     if field_name != field.get_attname():
                         return True
         return False
-
+    
+    def uuid_to_base10(self, uuid_val):
+        if not isinstance(uuid_val, uuid.UUID):
+            uuid_val = uuid.UUID(str(uuid_val))
+        return str(uuid_val.int)
+    
     def url_for_result(self, result):
+        test = self.params
+
         pk = getattr(result, self.pk_attname)
         return reverse(
             "admin:%s_%s_change" % (self.opts.app_label, self.opts.model_name),
-            args=(quote(pk),),
+            args=(self.workspace_id, quote(pk)),  # 1 is the workspace_id, adjust as needed
             current_app=self.model_admin.admin_site.name,
         )

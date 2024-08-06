@@ -251,8 +251,8 @@ class ArticleAdmin(ArticleAdminWithExtraUrl):
     def order_by_orderby_expression(self, obj):
         return obj.model_year
 
-    def changelist_view(self, request):
-        return super().changelist_view(request, extra_context={"extra_var": "Hello!"})
+    def changelist_view(self, request, workspace_id=None):
+        return super().changelist_view(request, workspace_id=None, extra_context={"extra_var": "Hello!"})
 
     @admin.display(ordering="date", description=None)
     def modeladmin_year(self, obj):
@@ -307,8 +307,8 @@ class CustomArticleAdmin(admin.ModelAdmin):
     )
     popup_response_template = "custom_admin/popup_response.html"
 
-    def changelist_view(self, request):
-        return super().changelist_view(request, extra_context={"extra_var": "Hello!"})
+    def changelist_view(self, request, workspace_id=None):
+        return super().changelist_view(request, workspace_id=None, extra_context={"extra_var": "Hello!"})
 
 
 class ThingAdmin(admin.ModelAdmin):
