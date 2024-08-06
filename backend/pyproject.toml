@@ -29,6 +29,7 @@ requests-oauthlib = "^2.0.0"
 factory-boy = "^3.3.0"
 django-allauth = "^64.0.0"
 django-debug-toolbar = "^4.4.6"
+model-mommy = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"

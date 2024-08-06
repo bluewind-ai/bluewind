@@ -538,6 +538,11 @@ class AdminSite:
             return workspaces["workspaces"][0]["workspace_id"]
         return default
 
+    def uuid_to_base10(self, uuid_val):
+        if not isinstance(uuid_val, uuid.UUID):
+            uuid_val = uuid.UUID(str(uuid_val))
+        return str(uuid_val.int)
+
     @method_decorator(never_cache)
     def login(self, request, extra_context=None):
         """

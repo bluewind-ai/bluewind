@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'workspaces',
     'public_id',
     'base_model_admin',
+    'auto_tests',
 
     # debugging
     'debug_toolbar',

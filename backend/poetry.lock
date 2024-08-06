@@ -521,6 +521,20 @@ files = [
 colors = ["colorama (>=0.4.6)"]
 
 [[package]]
+name = "model-mommy"
+version = "2.0.0"
+description = "Smart object creation facility for Django."
+optional = false
+python-versions = "*"
+files = [
+    {file = "model_mommy-2.0.0-py2.py3-none-any.whl", hash = "sha256:40d6e740aad7509e696a324b94cf2b0a104da93c3d4a7924cea1be3d0eb95b4f"},
+    {file = "model_mommy-2.0.0.tar.gz", hash = "sha256:3d332afce941c57f1990f45b083ba13252ba74fcd1ae43fd047e5af7a70fb312"},
+]
+
+[package.dependencies]
+django = ">=1.11.0"
+
+[[package]]
 name = "mypy-extensions"
 version = "1.0.0"
 description = "Type system extensions for programs checked with the mypy type checker."
@@ -897,4 +911,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a630ac1271d4862619916e28176cbde8e90cecbf2f986c5b0e581b7bc451ffae"
+content-hash = "28f6fecdcb7b8bfbd3f3da6d73d77b5f56edede80ca287f372404ebda75975b3"
