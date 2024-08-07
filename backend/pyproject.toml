@@ -10,6 +10,7 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.10"
 django = {path = "django", develop = true}
+django-user-sessions = {path = "django-user-sessions", develop = true}
 asgiref = "^3.8.1"
 sqlparse = "^0.3.1"
 tzdata = {version = "*", markers = "sys_platform == 'win32'"}

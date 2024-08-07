@@ -56,7 +56,11 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+
+    ## User sessions
+    'user_sessions',
+    ## User sessions
+
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'workspaces',
@@ -65,7 +69,7 @@ INSTALLED_APPS = [
     'auto_tests',
 
     # debugging
-    'debug_toolbar',
+    # 'debug_toolbar',
 
     # LOCAL APPS'
     'chat_messages',
@@ -202,7 +206,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'user_sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -210,7 +214,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'bluewind.urls'
@@ -371,3 +375,5 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
+
+SESSION_ENGINE = 'user_sessions.backends.db'
