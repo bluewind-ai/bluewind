@@ -1,0 +1,26 @@
+---
+title: Why ORMs suck
+---
+
+# Why ORMs suck
+
+Because they hide the database from you.
+
+And they're amazing at it.
+
+My take on ORMs is that if you're willing to look into the original code of the ORM and understand why it's doing what it's doing, you will get tremendous speed and control.
+
+This is usually what happens with ORMs:
+
+- you use them and you move super fast
+- one day you have an issue and you don't understand why. You take time to fix it.
+- another day, you have another issue. You take time to fix it.
+- after a while you either decide it's not worth sticking to the ORM, or you decide to persever and to even modify the internals of the ORM.
+
+If you decide the latter, your work will compound. Because if you use the ORM everywhere, you can change the ORM and then the code will change everywhere.
+
+Obviously, chaning the ORM is VERY VERY HARD. Because one change can potentially break everything. But at the same time, if you manage to do it, you can increase the speed of your whole system by 10% JUST by changing the internals of your ORM.
+
+So yes, ORMs suck, for the same reason all-batteries included frameworks suck.
+
+But if you go past the suckiness, you can truly scale and build robust software systems.

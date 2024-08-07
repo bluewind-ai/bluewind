@@ -216,9 +216,14 @@ class AdminSite:
             return True
         if request.path == "/admin/password_change/done/":
             return True
-        
-        if request.session.get('workspace_id') != request.resolver_match.kwargs.get('workspace_id'):
-            return False
+        if request.resolver_match.kwargs.get('workspace_id'):
+            if 'workspaces' not in request.session or request.session['workspaces'] == []:
+                return False
+            for workspace in request.session['workspaces']:
+                if workspace['workspace_id'] == request.resolver_match.kwargs.get('workspace_id'):
+                    return True
+        else:
+            return Exception("unknown route")
 
         return True
 
@@ -497,47 +502,6 @@ class AdminSite:
             result.append(base62[rem])
         return ''.join(result[::-1])
 
-    def get_workspaces(self, request):
-        """
-        Get all workspaces for the current user from session or database.
-        Stores and returns a dictionary with a list of workspace dictionaries.
-        """
-        # Try to get from session
-        workspaces = request.session.get('workspaces')
-        from workspaces.models import WorkspaceUser
-
-        if workspaces is None:
-            # Not in session, fetch from database
-            workspace_users = WorkspaceUser.objects.filter(user=request.user)
-            
-            if workspace_users.exists():
-                # Create a dictionary with a list of workspace dictionaries
-                workspaces = {
-                    "workspaces": [
-                    {"workspace_id": self.uuid_to_base10(wu.workspace_id)}
-                        for wu in workspace_users
-                    ]
-                }
-                # Store in session for future requests
-                request.session['workspaces'] = workspaces
-            else:
-                # User doesn't have any workspaces, store an empty list
-                workspaces = {"workspaces": []}
-                request.session['workspaces'] = workspaces
-        
-        return workspaces
-
-    def get_default_workspace_id(self, workspaces, default=1):
-        """
-        Get the default workspace_id from the workspaces dict.
-        Returns the first workspace_id if available, otherwise the default.
-        """
-        from workspaces.models import WorkspaceUser
-
-        if workspaces["workspaces"]:
-            return workspaces["workspaces"][0]["workspace_id"]
-        return default
-
     def uuid_to_base10(self, uuid_val):
         if not isinstance(uuid_val, uuid.UUID):
             uuid_val = uuid.UUID(str(uuid_val))
@@ -548,13 +512,26 @@ class AdminSite:
         """
         Display the login form for the given HttpRequest and handle the login process.
         """
+        from workspaces.models import WorkspaceUser
+        from workspaces.models import Workspace
+        
         if request.method == "GET" and self.has_permission(request):
-            # Already logged-in, get or fetch workspaces
-            workspaces = self.get_workspaces(request)
+            assert 'workspaces' in request.session, "The 'workspaces' key is not in the session"
             
-            # Get the default workspace_id (first in the list or a default value)
-            workspace_id = self.get_default_workspace_id(workspaces)
-            
+            if request.session['workspaces'] == []:
+                # This scenario happens when it's not the first time this user used the platform, but for some reasons he doesn't have any workspaces anymore
+                # Maybe because his workspaces were deleted or he was removed from all workspaces
+                # in this case we should create the workspace again
+                workspace = Workspace.objects.create(name="Default Workspace")
+                WorkspaceUser.objects.create(user=request.user, workspace=workspace)
+                
+                workspace_id = self.uuid_to_base10(workspace.id)
+                
+                request.session['workspaces'] = [{
+                    "workspace_id": workspace_id
+                }]
+            else:
+                default_workspace_id = request.session['workspaces'][0]['workspace_id']
             # Redirect to admin index with workspace_id
             index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': workspace_id})
             return HttpResponseRedirect(index_path)
@@ -587,21 +564,33 @@ class AdminSite:
 
         login_view = LoginView.as_view(**defaults)
         response = login_view(request)
-        from workspaces.models import WorkspaceUser
-        from workspaces.models import Workspace
 
         if request.method == "POST" and response.status_code == 302:  # Successful login
             user = request.user
             try:
                 workspace_user = WorkspaceUser.objects.get(user=user)
                 workspace_id = self.uuid_to_base10(workspace_user.workspace_id)
-                request.session['workspace_id'] = workspace_id
+                if 'workspaces' not in request.session:
+                    request.session['workspaces'] = [{
+                        "workspace_id": workspace_id
+                    }]
+                else:
+                    request.session['workspaces'].append(
+                        {
+                        "workspace_id": workspace_id
+                        }
+                    )
             except WorkspaceUser.DoesNotExist:
                 # Handle the case where the user doesn't have a workspace
                 # You might want to redirect to an error page or set a default workspace
                 workspace = Workspace.objects.create(name="Default Workspace")
                 WorkspaceUser.objects.create(user=user, workspace=workspace)
-                request.session['workspace_id'] = self.uuid_to_base10(workspace.id)
+                
+                workspace_id = self.uuid_to_base10(workspace.id)
+                
+                request.session['workspaces'] = [{
+                    "workspace_id": workspace_id
+                }]
 
             # Update the redirect URL to include the workspace_id
             redirect_url = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': workspace_id})

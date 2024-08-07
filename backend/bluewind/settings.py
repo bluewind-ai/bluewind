@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'auto_tests',
 
     # debugging
-    # 'debug_toolbar',
+    'debug_toolbar',
 
     # LOCAL APPS'
     'chat_messages',
@@ -206,7 +206,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    
+    ## third party package
     'user_sessions.middleware.SessionMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -214,7 +217,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
+    
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+
 ]
 
 ROOT_URLCONF = 'bluewind.urls'

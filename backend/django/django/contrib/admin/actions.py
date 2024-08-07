@@ -2,6 +2,7 @@
 Built-in, globally-available admin actions.
 """
 
+import uuid
 from django.contrib import messages
 from django.contrib.admin import helpers
 from django.contrib.admin.decorators import action
@@ -47,8 +48,70 @@ def delete_selected(modeladmin, request, queryset):
         if n:
             for obj in queryset:
                 obj_display = str(obj)
-                modeladmin.log_deletion(request, obj, obj_display)
+                modeladmin.log_deletion(request, obj, obj_display)            
+            from workspaces.models import WorkspaceUser
+
+
+            # TODO, find a way to get workspace users and delete at the same time?
+            # Get all WorkspaceUser objects for the selected workspaces
+            selected_workspace_ids = [uuid.UUID(id_str) for id_str in request.POST.getlist('_selected_action')]
+            from django.contrib.auth.models import User
+
+
+            # workspace_users = WorkspaceUser.objects.filter(
+            #     workspace_id__in=selected_workspace_ids
+            # ).all()
+
+            # Extract user IDs from the WorkspaceUser queryset
+            from user_sessions.models import Session
+            from user_sessions.backends.db import SessionStore
+
+            
+            users = User.objects.filter(workspaceuser__workspace_id__in=selected_workspace_ids)
+            user_ids = list(users.values_list('id', flat=True))
+            print("User IDs:", user_ids)
+
+            sessions = Session.objects.filter(user_id__in=user_ids)
+            print("Sessions count:", sessions.count())
+            print("Session user IDs:", list(sessions.values_list('user_id', flat=True)))
+            
+            # TODO wrap in transaction. Also, I think the log logic above should be inside the delete_queryset method
             modeladmin.delete_queryset(request, queryset)
+            for session in sessions:
+                try:
+                    store = SessionStore(session_key=session.session_key)
+
+                    # Get the current workspaces
+                    current_workspaces = store.get('workspaces', [])
+
+                    # Create a set of workspace IDs to be removed for faster lookup
+                    workspace_ids_to_remove = set()
+                    for id_str in request.POST.getlist('_selected_action'):
+                        workspace_ids_to_remove.add(str(uuid.UUID(id_str).int))
+
+                    # Filter out the workspaces that need to be removed
+                    updated_workspaces = []
+                    for workspace in current_workspaces:
+                        if workspace['workspace_id'] not in workspace_ids_to_remove:
+                            updated_workspaces.append(workspace)
+
+                    # Update the store directly
+                    store['workspaces'] = updated_workspaces
+
+                    # Save the changes
+                    store.save()
+
+                    # Verify the changes
+                    store2 = SessionStore(session_key=session.session_key)
+                    assert len(store2['workspaces']) == len(updated_workspaces)
+
+                    # if session.session_key == current_session_key:
+                    #     request.session['workspaces'] = updated_workspaces
+                    #     request.session.save()
+                    
+                except Exception as e:
+                    print(f"Error processing session {session.session_key}: {str(e)}")
+
             modeladmin.message_user(
                 request,
                 _("Successfully deleted %(count)d %(items)s.")
