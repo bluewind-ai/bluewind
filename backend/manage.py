@@ -6,10 +6,10 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    if 'test' in sys.argv:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_test')
-    else:
+    if os.environ.get('ENVIRONMENT') == 'testing':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings.todo')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

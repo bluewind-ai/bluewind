@@ -531,7 +531,7 @@ class AdminSite:
                     "workspace_id": workspace_id
                 }]
             else:
-                default_workspace_id = request.session['workspaces'][0]['workspace_id']
+                workspace_id = request.session['workspaces'][0]['workspace_id']
             # Redirect to admin index with workspace_id
             index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': workspace_id})
             return HttpResponseRedirect(index_path)
