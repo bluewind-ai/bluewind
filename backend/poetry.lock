@@ -407,26 +407,6 @@ type = "directory"
 url = "django"
 
 [[package]]
-name = "django-allauth"
-version = "64.0.0"
-description = "Integrated set of Django applications addressing authentication, registration, account management as well as 3rd party (social) account authentication."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "django_allauth-64.0.0.tar.gz", hash = "sha256:01952c7540160ef475c12dc881f67a69c7c5e533f4bef6c811bba0417a717588"},
-]
-
-[package.dependencies]
-Django = ">=4.2"
-
-[package.extras]
-mfa = ["fido2 (>=1.1.2)", "qrcode (>=7.0.0)"]
-openid = ["python3-openid (>=3.0.8)"]
-saml = ["python3-saml (>=1.15.0,<2.0.0)"]
-socialaccount = ["pyjwt[crypto] (>=1.7)", "requests (>=2.0.0)", "requests-oauthlib (>=0.3.0)"]
-steam = ["python3-openid (>=3.0.8)"]
-
-[[package]]
 name = "django-debug-toolbar"
 version = "4.4.6"
 description = "A configurable set of panels that display various debug information about the current request/response."
@@ -942,4 +922,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "3f5269864e957bfc6d412de0439c19d0fb479576ddd05c94f2c64710e0a8b5bf"
+content-hash = "26f7305fa1c8c8871a1b46af11ee664e7baf91ebf7638f2c2829052602e2ea02"
