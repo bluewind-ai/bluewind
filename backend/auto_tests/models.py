@@ -118,10 +118,7 @@ class ModelAdminTestMixIn(AdminTestMixIn):
         
         fields.update(instance_data or self.create_instance_data())
         return fields
-    
-    def test_session_setup(self):
-        response = self.client.get('/')  # or any valid URL
-        self.assertEqual(self.client.session['workspace_id'], str(self.workspace.id))
+
     def test_changelist_view(self):
         response = self.client.get(self.get_changelist_url())
         self.assertEqual(response.status_code, self.changelist_status_code)

@@ -9,7 +9,8 @@ def main():
     if os.environ.get('ENVIRONMENT') == 'testing':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings')
     else:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings.todo')
+        print(os.environ)
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_test')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

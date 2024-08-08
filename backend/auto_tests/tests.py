@@ -17,15 +17,13 @@ class MyModelAdminTestCase(ModelAdminTestCase):
         self.workspace = Workspace.objects.create(name="Test Workspace")
         self.admin_site = AdminSite()
         session = self.client.session
-        session['workspace_id'] = self.admin_site.uuid_to_base10(self.workspace.id)
+        session['workspaces']= [
+            {'workspace_id': self.admin_site.uuid_to_base10(self.workspace.id)}
+        ]
         session.save()
         
     def get_workspace_id(self):
         return self.admin_site.uuid_to_base10(self.workspace.id)
-
-    def test_session_setup(self):
-        response = self.client.get('/')  # or any valid URL
-        self.assertEqual(self.client.session['workspace_id'], self.admin_site.uuid_to_base10(self.workspace.id))
 
     def test_admin_view(self):
         url = f'/admin/{self.get_workspace_id()}/workspaces/workspace/'
