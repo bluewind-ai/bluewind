@@ -7,12 +7,10 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings')
-
     # if os.environ.get('ENVIRONMENT') == 'testing':
-    #     return None
+    #     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings')
     # else:
-    #     return None
-    #     # print(os.environ)
+    #     print(os.environ)
     #     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_test')
     try:
         from django.core.management import execute_from_command_line
