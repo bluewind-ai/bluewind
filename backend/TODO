@@ -21,3 +21,7 @@ nice website, I should post bluewind in here too: https://app.fossa.com/projects
 add to naming conventions: adjectives should not be prefixes, they should be suffixes. session_extended over extended_session
 
 visualize autodiscovery to give full control and transparency to the user
+
+think more about folders: clickup and windmill have this concept. There is something useful here. For permissions, but also to give this file hierarchy...
+Clickup decided to limit the number of folders as far as I understand: workspace / space / lists
+I think it's a good balance. nested folders are hard.

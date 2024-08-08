@@ -1,11 +1,18 @@
-# models.py
-from user_sessions.models import Session
-import pprint
+# # models.py
+# from user_sessions.models import Session
 
-class Session(Session):
-    list_display = ['session_key', 'expire_date']
+# # class CustomSession(Session):
+# #     class Meta:
+# #         proxy = True
 
+# # admin.py
+# from django.contrib import admin
+# from .models import CustomSession
 
+# @admin.register(Session)
+# class CustomSessionAdmin(admin.ModelAdmin):
+#     list_display = ['session_key', 'expire_date']
+        
 # class SessionProxy(Session):cdscdscd
 #     class Meta:
 #         proxy = True

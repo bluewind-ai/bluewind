@@ -1,7 +1,10 @@
+import json
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from django.utils.html import format_html
 
 from user_sessions.templatetags.user_sessions import device, location
 
@@ -46,6 +49,7 @@ class SessionAdmin(admin.ModelAdmin):
     raw_id_fields = 'user',
     exclude = 'session_key',
     list_select_related = ['user']
+    readonly_fields = ('decoded_session_data',)
 
     def get_search_fields(self, request):
         User = get_user_model()
@@ -60,6 +64,17 @@ class SessionAdmin(admin.ModelAdmin):
 
     def device(self, obj):
         return device(obj.user_agent) if obj.user_agent else ''
+
+    def decoded_session_data(self, obj):
+        try:
+            decoded_data = obj.get_decoded()
+            # Convert to JSON for pretty formatting
+            json_data = json.dumps(decoded_data, indent=2, cls=DjangoJSONEncoder)
+            # Escape the JSON string and wrap it in a <pre> tag for formatting
+            return format_html('<pre>{}</pre>', json_data)
+        except Exception as e:
+            return f"Error decoding: {str(e)}"
+    decoded_session_data.short_description = 'Session Data'
 
 
 admin.site.register(Session, SessionAdmin)
