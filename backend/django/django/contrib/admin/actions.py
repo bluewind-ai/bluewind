@@ -115,11 +115,12 @@ def new_func(request):
         workspace_users_to_delete = request.POST.getlist('_selected_action')
         selected_workspace_ids = WorkspaceUser.objects.filter(id__in=workspace_users_to_delete).values_list('workspace_id', flat=True)
         selected_workspace_ids_display = [ str(workspace_id) for workspace_id in selected_workspace_ids]
-    else:
+    elif 'workspaces/workspace'in request.path:
         request.POST.getlist('_selected_action')
         selected_workspace_ids_display = request.POST.getlist('_selected_action')
         selected_workspace_ids = [uuid.UUID(id_str) for id_str in selected_workspace_ids_display]
-
+    else:
+        return None
     users = User.objects.filter(workspaceuser__workspace_id__in=selected_workspace_ids)
     
     user_ids = list(users.values_list('id', flat=True))

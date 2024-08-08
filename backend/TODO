@@ -17,3 +17,7 @@ Should you be able to delete your workspace? Probably, see clickup. The problem 
 I have very dangerous tests that should never run in production and others that are very important to run regularly in production
 
 nice website, I should post bluewind in here too: https://app.fossa.com/projects/git%2Bgithub.com%2Ftemporalio%2Ftemporal-helm-charts/refs/branch/master/eac55bff23c021e146d9e608ab895b2ac1f11f9e/preview
+
+add to naming conventions: adjectives should not be prefixes, they should be suffixes. session_extended over extended_session
+
+visualize autodiscovery to give full control and transparency to the user
