@@ -255,7 +255,7 @@ class AdminSite:
         def inner(request, *args, **kwargs):
             if not self.has_permission(request):
                 if request.path == reverse("admin:logout", current_app=self.name):
-                    index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': kwargs.get('workspace_id', 91017349113822292053236764842401387445)})
+                    index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': kwargs.get('workspace_id', 91017349421421113822292053236764842401387445)})
                     return HttpResponseRedirect(index_path)
                 
                 if request.resolver_match.kwargs.get('workspace_id'):
@@ -309,7 +309,7 @@ class AdminSite:
         def inner(request, *args, **kwargs):
             if not self.has_permission(request):
                 if request.path == reverse("admin:logout", current_app=self.name):
-                    index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': 91017349113822292053236764842401387445})
+                    index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': 91017349113832132122292053236764842401387445})
                     return HttpResponseRedirect(index_path)
                 # Inner import to prevent django.contrib.admin (app) from
                 # importing django.contrib.auth.models.User (unrelated model).
@@ -340,23 +340,54 @@ class AdminSite:
             wrapper.admin_site = self
             return update_wrapper(wrapper, view)
 
+        def create_user_specific_pattern(pattern):
+            # List of patterns that should be under  without workspace_id
+            admin_only_patterns = ['login', 'logout', 'password_change', 'password_change_done', 'jsi18n']
+
+            if isinstance(pattern, URLPattern):
+                if pattern.name == 'login':
+                    # Special handling for login to avoid infinite loop
+                    return path('login/', pattern.callback, name=pattern.name)
+                elif pattern.name in admin_only_patterns:
+                    # For logout and password change routes, do not add user-id
+                    new_pattern = f'{pattern.pattern._route}'
+                    return path(new_pattern, pattern.callback, name=pattern.name)
+                
+                if pattern.pattern.regex:
+                    # It's a regex-based pattern (re_path)
+                    new_regex = f'^(?P<workspace_id>[0-9]+)/{pattern.pattern.regex.pattern.lstrip("^")}'
+                    return re_path(new_regex, pattern.callback, name=pattern.name)
+                else:
+                    # It's a path-based pattern
+                    new_pattern = f'<int:workspace_id>/{pattern.pattern._route}'
+                    return path(new_pattern, pattern.callback, name=pattern.name)
+            elif isinstance(pattern, URLResolver):
+                if pattern.pattern.regex:
+                    # It's a regex-based include
+                    new_regex = f'^(?P<workspace_id>[0-9]+)/{pattern.pattern.regex.pattern.lstrip("^")}'
+                    return re_path(new_regex, include(pattern.url_patterns), name=pattern.namespace)
+                else:
+                    # It's a path-based include
+                    new_pattern = f'<int:workspace_id>/{pattern.pattern._route}'
+                    return path(new_pattern, include(pattern.url_patterns), name=pattern.namespace)
+            return pattern
         # Admin-site-wide views.
         urlpatterns = [
-            path("<int:workspace_id>/", wrap(self.index), name="index"),
+            path("", wrap(self.index), name="index"),
             path("login/", self.login, name="login"),
             path("logout/", wrap(self.logout), name="logout"),
             path("password_change/", wrap(self.password_change, cacheable=True), name="password_change"),
             path("password_change/done/", wrap(self.password_change_done, cacheable=True), name="password_change_done"),
-            path("<int:workspace_id>/autocomplete/", wrap(self.autocomplete_view), name="autocomplete"),
+            path("autocomplete/", wrap(self.autocomplete_view), name="autocomplete"),
             path("jsi18n/", wrap(self.i18n_javascript, cacheable=True), name="jsi18n"),
-            path("<int:workspace_id>/r/<int:content_type_id>/<path:object_id>/", wrap(contenttype_views.shortcut), name="view_on_site"),
+            path("r/<int:content_type_id>/<path:object_id>/", wrap(contenttype_views.shortcut), name="view_on_site"),
         ]
 
         # Add in each model's views, and create a list of valid URLS for the app_index
         valid_app_labels = []
         for model, model_admin in self._registry.items():
             urlpatterns += [
-                path("<int:workspace_id>/%s/%s/" % (model._meta.app_label, model._meta.model_name), include(model_admin.urls)),
+                path("%s/%s/" % (model._meta.app_label, model._meta.model_name), include(model_admin.urls)),
             ]
             if model._meta.app_label not in valid_app_labels:
                 valid_app_labels.append(model._meta.app_label)
@@ -364,15 +395,21 @@ class AdminSite:
         # If there were ModelAdmins registered, we should have a list of app
         # labels for which we need to allow access to the app_index view,
         if valid_app_labels:
-            regex = r"^(?P<workspace_id>[0-9]+)/(?P<app_label>" + "|".join(valid_app_labels) + ")/$"
+            regex = r"^(?P<app_label>" + "|".join(valid_app_labels) + ")/$"
             urlpatterns += [
                 re_path(regex, wrap(self.app_index), name="app_list"),
             ]
 
         if self.final_catch_all_view:
-            urlpatterns.append(re_path(r"(?P<workspace_id>[0-9]+)/(?P<url>.*)$", wrap(self.catch_all_view)))
+            urlpatterns.append(re_path(r"(?P<url>.*)$", wrap(self.catch_all_view)))
 
-        return urlpatterns
+        # Create user-specific patterns
+        user_urlpatterns = [create_user_specific_pattern(pattern) for pattern in urlpatterns]
+
+        # Combine original and user-specific patterns
+        # combined_urlpatterns = urlpatterns + user_urlpatterns
+
+        return user_urlpatterns
 
     @property
     def urls(self):
@@ -444,7 +481,7 @@ class AdminSite:
         from django.contrib.auth.views import LogoutView
 
         # Get the workspace_id from the request or session
-        workspace_id = request.session.get('workspace_id', 91017349113822292053236764842401387445)  # Use a default if not set
+        workspace_id = request.session.get('workspace_id', 91017349113822292053236732132164842401387445)  # Use a default if not set
 
         defaults = {
             "extra_context": {
@@ -525,7 +562,7 @@ class AdminSite:
             REDIRECT_FIELD_NAME not in request.GET
             and REDIRECT_FIELD_NAME not in request.POST
         ):
-            context[REDIRECT_FIELD_NAME] = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': 91017349113822292053236764842401387445})
+            context[REDIRECT_FIELD_NAME] = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': 91321321017349113822292053236764842401387445})
         context.update(extra_context or {})
 
         defaults = {
@@ -707,7 +744,7 @@ class AdminSite:
             "subtitle": None,
             "app_list": app_list,
             "app_label": app_label,
-            "workspace_id": 91017349113822292053236764842401387445,
+            "workspace_id": 9101734911382229205323676484323212401387445,
             **(extra_context or {}),
         }
 

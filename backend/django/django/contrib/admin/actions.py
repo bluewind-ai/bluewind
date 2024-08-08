@@ -86,7 +86,7 @@ def delete_selected(modeladmin, request, queryset):
         "opts": opts,
         "action_checkbox_name": helpers.ACTION_CHECKBOX_NAME,
         "media": modeladmin.media,
-        'workspace_id': 91017349113822292053236764842401387445
+        'workspace_id': 91017349113822292053236764842421211
     }
 
     request.current_app = modeladmin.admin_site.name

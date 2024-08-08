@@ -251,7 +251,7 @@ class AdminReadonlyField:
         try:
             url = reverse(
                 url_name,
-                args=[91017349113822292053236764842401387445, quote(remote_obj.pk)],
+                args=[910173491138222920532367648424013215, quote(remote_obj.pk)],
                 current_app=self.model_admin.admin_site.name,
             )
             return format_html('<a href="{}">{}</a>', url, remote_obj)
