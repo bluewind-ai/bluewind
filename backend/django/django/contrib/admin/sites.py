@@ -481,13 +481,13 @@ class AdminSite:
         from django.contrib.auth.views import LogoutView
 
         # Get the workspace_id from the request or session
-        workspace_id = request.session.get('workspace_id', 91017349113822292053236732132164842401387445)  # Use a default if not set
+        # workspace_id = request.session.get('workspace_id', 91017349113822292053236732132164842401387445)  # Use a default if not set
 
         defaults = {
             "extra_context": {
                 **self.each_context(request),
                 "has_permission": False,
-                "workspace_id": workspace_id,
+                # "workspace_id": workspace_id,
                 **(extra_context or {}),
             },
         }
