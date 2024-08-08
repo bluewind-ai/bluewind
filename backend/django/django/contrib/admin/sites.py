@@ -222,6 +222,7 @@ class AdminSite:
             for workspace in request.session['workspaces']:
                 if workspace['workspace_id'] == request.resolver_match.kwargs.get('workspace_id'):
                     return True
+            return False
         else:
             return Exception("unknown route")
 
@@ -256,6 +257,14 @@ class AdminSite:
                 if request.path == reverse("admin:logout", current_app=self.name):
                     index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': kwargs.get('workspace_id', 91017349113822292053236764842401387445)})
                     return HttpResponseRedirect(index_path)
+                
+                if request.resolver_match.kwargs.get('workspace_id'):
+                    if 'workspaces' not in request.session or request.session['workspaces'] == []:
+                        return Exception("TODO: ")
+                    for workspace in request.session['workspaces']:
+                        if workspace['workspace_id'] == request.resolver_match.kwargs.get('workspace_id'):
+                            return Exception("TODO: ")
+                    raise Http404("The requested admin page does not exist.")
                 # Inner import to prevent django.contrib.admin (app) from
                 # importing django.contrib.auth.models.User (unrelated model).
                 from django.contrib.auth.views import redirect_to_login
@@ -407,14 +416,13 @@ class AdminSite:
         return self.get_urls(), "admin", self.name
 
     def each_context(self, request):
-        
         workspace_id = request.resolver_match.kwargs.get('workspace_id') if request.resolver_match else None
-        if workspace_id is None:
-            workspace_id = 1  # or any other default value that makes sense for your application
+        # if workspace_id is None:
+        #     workspace_id = 91017349113822292053236764842401387443  # or any other default value that makes sense for your application
         
         script_name = request.META['SCRIPT_NAME']
         site_url = script_name if self.site_url == '/' and script_name else self.site_url
-        return {
+        context = {
             'site_title': self.site_title,
             'site_header': self.site_header,
             'site_url': site_url,
@@ -422,9 +430,11 @@ class AdminSite:
             'available_apps': self.get_app_list(request),
             'is_popup': False,
             'is_nav_sidebar_enabled': self.enable_nav_sidebar,
-            'workspace_id': workspace_id,  # This will now always have a value
             "log_entries": self.get_log_entries(request),
         }
+        if workspace_id:
+            context['workspace_id'] = workspace_id
+        return context
 
     def password_change(self, request, extra_context=None):
         """
@@ -622,7 +632,7 @@ class AdminSite:
         
         # If workspace_id is not available, use a default value (e.g., 1)
         if workspace_id is None:
-            workspace_id = 1  # You might want to change this default value
+            workspace_id = 11017349113822292053236764842401387443  # You might want to change this default value
 
         if label:
             models = {

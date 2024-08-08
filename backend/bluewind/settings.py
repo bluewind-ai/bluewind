@@ -262,6 +262,15 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#         "NAME": ":memory:",
+#     }
+# }
+
+
 if 'test' in sys.argv:
     DATABASES['default']['USER'] = 'test_user'
     DATABASES['default']['PASSWORD'] = 'test_password'
@@ -386,6 +395,7 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 SESSION_ENGINE = 'user_sessions.backends.db'
+
 
 # LOGGING = {
 #     'version': 1,
