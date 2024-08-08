@@ -340,6 +340,8 @@ ACCOUNT_EMAIL_REQUIRED = True  # if you want to require email
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional'
 SITE_ID = 1
 
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -348,9 +350,11 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
     },
 }
 

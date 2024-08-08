@@ -16,6 +16,9 @@ class Workspace(BaseModel):
     created_at = models.DateTimeField(default=timezone.now)
     users = models.ManyToManyField(User, through='WorkspaceUser')
 
+    def __str__(self):
+        return f"Workspace object ({self.id.int})"
+
 class WorkspaceUser(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
@@ -23,3 +26,5 @@ class WorkspaceUser(BaseModel):
 
     class Meta:
         unique_together = ('user', 'workspace')
+
+        
