@@ -4,8 +4,8 @@ version = "0.1.0"  # You might want to change this to match your Django version
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 authors = ["Django Software Foundation <foundation@djangoproject.com>"]
 license = "BSD-3-Clause"
-readme = "README.rst"
-package-mode = false
+readme = "README.md"
+package-mode = true
 
 [tool.poetry.dependencies]
 python = "^3.10"
