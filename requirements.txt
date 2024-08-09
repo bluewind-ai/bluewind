@@ -1,5 +1,5 @@
--e file:///Users/merwanehamadi/code/bluewind/django ; python_version >= "3.10" and python_version < "4.0"
--e file:///Users/merwanehamadi/code/bluewind/django-user-sessions ; python_version >= "3.10" and python_version < "4.0"
+-e django ; python_version >= "3.10" and python_version < "4.0"
+-e django-user-sessions ; python_version >= "3.10" and python_version < "4.0"
 asgiref==3.8.1 ; python_version >= "3.10" and python_version < "4.0"
 beautifulsoup4==4.12.3 ; python_version >= "3.10" and python_version < "4.0"
 behave-django==1.4.0 ; python_version >= "3.10" and python_version < "4.0"
