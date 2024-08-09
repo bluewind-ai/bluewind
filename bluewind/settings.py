@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
     ## User sessions
     'user_sessions',
+    'api_providers',
     ## User sessions
 
     'django.contrib.messages',
