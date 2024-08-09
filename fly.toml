@@ -1,13 +1,16 @@
-# fly.toml app configuration file generated for backend-autumn-wildflower-9782 on 2024-07-24T11:59:50-07:00
+# fly.toml app configuration file generated for backend-empty-rain-2843 on 2024-08-08T18:35:27-07:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'backend-autumn-wildflower-9782'
+app = 'backend-empty-rain-2843'
 primary_region = 'sjc'
 console_command = '/code/manage.py shell'
 
 [build]
+
+[deploy]
+  release_command = 'python manage.py migrate --noinput'
 
 [env]
   PORT = '8000'
