@@ -86,12 +86,13 @@ class SimpleFargateCdkStack(Stack):
 
         static_bucket.grant_read(oai)
 
-        # Deploy static files to S3
-        s3deploy.BucketDeployment(
-            self, "DeployStaticFiles",
-            sources=[s3deploy.Source.asset("../staticfiles")],  # Adjust this path to your static files
-            destination_bucket=static_bucket,
-        )
+        # pushing to S3 before even knowing that fargate deployment is successful is not a good idea
+
+        # s3deploy.BucketDeployment(
+        #     self, "DeployStaticFiles",
+        #     sources=[s3deploy.Source.asset("../staticfiles")],  # Adjust this path to your static files
+        #     destination_bucket=static_bucket,
+        # )
 
         # Create RDS instance
         db_instance = rds.DatabaseInstance(
