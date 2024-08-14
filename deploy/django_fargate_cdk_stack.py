@@ -108,7 +108,6 @@ class SimpleFargateCdkStack(Stack):
             backup_retention=config["backup_retention"],
             multi_az=False,
             publicly_accessible=True,
-            health_check_grace_period=Duration.seconds(60),  # Add this line
         )
 
         fargate_service.target_group.configure_health_check(
@@ -160,6 +159,7 @@ class SimpleFargateCdkStack(Stack):
                 },
             ),
             public_load_balancer=True,
+            health_check_grace_period=Duration.seconds(60),  # This is now in the correct place
         )
 
         # Get the load balancer's DNS name
