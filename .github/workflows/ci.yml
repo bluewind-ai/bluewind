@@ -11,6 +11,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/staging' && 'staging' || 'dev' }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -39,18 +41,6 @@ jobs:
         run: |
           poetry install
 
-      - name: Set environment variable
-        run: |
-          if [ ${{ github.ref }} = 'refs/heads/main' ]; then
-            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
-          elif [ ${{ github.ref }} = 'refs/heads/staging' ]; then
-            echo "ENVIRONMENT=staging" >> $GITHUB_ENV
-          elif [ ${{ github.ref }} = 'refs/heads/dev' ]; then
-            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
-          else
-            echo "ENVIRONMENT=unknown" >> $GITHUB_ENV
-          fi
-
       - name: Run deploy script
         working-directory: ./deploy
         env:
@@ -64,4 +54,4 @@ jobs:
 
           poetry run cdk bootstrap aws://${AWS_ACCOUNT_ID}/us-west-2
 
-          poetry run cdk deploy --require-approval never --context environment=${{ env.ENVIRONMENT }}
+          poetry run cdk deploy --require-approval never --context environment=${{ github.job.environment }}
