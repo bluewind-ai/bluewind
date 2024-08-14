@@ -1,0 +1,21 @@
+---
+title: Backends as a service
+---
+
+# Backends as a service
+
+https://www.youtube.com/watch?v=kK-iR6g-V1g
+
+There are a lot of sound arguments in this video from Theo. But there is one point that I disagree with.
+
+People do not use AWS necessarilly to save money. but to have a single source of truth for their application.
+
+The biggest downside of using third party services is not that they will cost you a lot at scale.
+
+It's that you have a fragmented application. You connect to service X to do auth, service Y for your DB, service Z for your serverless functions, service T to host your backend, etc, etc...
+
+Before you know it, you keep switching between tabs, and when you need to make a change, your github repo is not even your source of truth. Your source of truth is spread across your github repo and the 5 other third-party apps you use.
+
+So yes I am using AWS for everything, but it's not to save money. It's to have a single source of truth for my app.
+
+I would be curious to know if Theo has a different perspective on this topic today.

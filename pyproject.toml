@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "Bluewind"
+version = "0.1.0"  # You might want to change this to match your Django version
+description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
+authors = ["Django Software Foundation <foundation@djangoproject.com>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+package-mode = true
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = {path = "django", develop = true}
+django-user-sessions = {path = "django-user-sessions", develop = true}
+asgiref = "^3.8.1"
+sqlparse = "^0.3.1"
+tzdata = {version = "*", markers = "sys_platform == 'win32'"}
+python-dotenv = "^1.0.1"
+django-environ = "^0.11.2"
+behave-django = "^1.4.0"
+psycopg2 = "^2.9.9"
+gunicorn = "^22.0.0"
+whitenoise = "^6.7.0"
+pydeps = "^1.12.20"
+python3-openid = "^3.2.0"
+requests = "^2.32.3"
+pyjwt = "^2.9.0"
+cryptography = "^43.0.0"
+requests-oauthlib = "^2.0.0"
+factory-boy = "^3.3.0"
+django-debug-toolbar = "^4.4.6"
+model-mommy = "^2.0.0"
+dj-database-url = "^2.2.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+isort = "*"
+pygraphviz = "^1.13"
+
+
+[tool.poetry.extras]
+argon2 = ["argon2-cffi"]
+bcrypt = ["bcrypt"]
+
+[tool.poetry.scripts]
+django-admin = "django.core.management:execute_from_command_line"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+target-version = ["py310"]
+force-exclude = "tests/test_runner_apps/tagged/tests_syntax_error.py"
+
+[tool.isort]
+profile = "black"
+default_section = "THIRDPARTY"
+known_first_party = "django"

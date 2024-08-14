@@ -1,0 +1,59 @@
+---
+title: The cloud provider
+---
+
+# The cloud provider
+
+PaaS pros:
+- super quick to get going
+
+PaaS cons:
+
+- compliance
+- cost
+- flexibility in the future
+- tends to be a small ecosystem: the biggest ecosystem also happens to be the worse vendor (Heroku)
+
+I excluded Azure and GCP from the get go simply because if I pick one of the big 3, I want as much resources as possible on the web.
+
+So if it's a big 3 it's AWS.
+
+Bare metal providers pros:
+
+- extremely cost efficient
+- you can have 7 giant machines (3 kubernetes master nodes, 2 web servers/worker nodes, 2 database nodes) that serve 10k+ requests for seconds. And you can shove your whole stack in there: Postgres, ELK or Clickhouse, minio (S3)
+
+Cons:
+
+- you have to manage everything
+- the ecosystem is very scattered: on AWS there is usually a recommened way to do things, but not here. It's kind of the same problem with linux and all the distros.
+- managing the security updates is a pain
+
+other cloud provider that's not a big 3 pros:
+
+- get great machines for cheaper
+- beefier machines
+
+Cons:
+
+- not as many resources on the web
+- security
+
+So I am thinking of AWS.
+
+Now, within AWS there are 2 big options I have identified.
+
+Either go with ECS or EKS. And picking one or the other affects the possible directions.
+
+Option 1. ECS + fargate and pick all the managed services from AWS and then rely on cloudwatch for observability.
+
+Option 2. EKS + fargate or EKS + EC2. And pick whatever you want. You can pick amazon RDS or spin up your own EC2 postgres instances, and there are great kube operators for a lot of things.
+
+Option 1 is quicker to get going. And I wouldn't add "vendor lock-in" as a con because I think you vendor lock even with option 2. The real con, in my opinion, is that these kube operators and this cloud native ecosystem is really getting traction and have a bigger community than AWS. And at the end of the day, you can run everything on EC2s.
+
+There is option 3. which involves picking EKS + fargate but try to stick as much as possible with AWS managed services initially, and then migrate if frustrated: I expect to be very frustrated with cloudwatch for example. Or also Opensearch's price (the AWS Elasticsearch offering).
+
+
+
+For the infrastructure as code, Cloudformation is very verbous but very close to AWS. CDK using python is appealing. SAM and other serverless options are not relevant for my stack I think.
+Pulumi is vendor agostic but imperative. And terraform is overall still very strong.

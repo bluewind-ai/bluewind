@@ -1,6 +1,0 @@
-{% extends "admin/base_site.html" %} {% load i18n %} {% block userlinks %} {% if
-workspace_path %}
-<a href="{{ workspace_path }}password_change/">{% trans 'Change password' %}</a>
-/
-<a href="{{ workspace_path }}logout/">{% trans 'Log out' %}</a>
-{% else %} {{ block.super }} {% endif %} {% endblock %}

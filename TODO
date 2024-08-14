@@ -1,0 +1,31 @@
+make sure there is no nullable charfield
+defensive programming on the filter by tenant: in the model manager and in every query
+pgbadger
+pgstats
+get_absolute_url of resource
+requirements folder 
+mozilla observatory
+checkout django webtest
+
+feature ascension: cli / django admin / api / beautiful web client
+use django-ajax-datatable
+should you name table.id or table.uuid, if you use uuids?
+easy redirect after id change
+
+Should you be able to delete your workspace? Probably, see clickup. The problem is that my admin page depends on a workspace. The workspace resource should be under /admin/settings or something. This way after deleting your workspace, you remain on the page.
+
+I have very dangerous tests that should never run in production and others that are very important to run regularly in production
+
+nice website, I should post bluewind in here too: https://app.fossa.com/projects/git%2Bgithub.com%2Ftemporalio%2Ftemporal-helm-charts/refs/branch/master/eac55bff23c021e146d9e608ab895b2ac1f11f9e/preview
+
+add to naming conventions: adjectives should not be prefixes, they should be suffixes. session_extended over extended_session
+
+visualize autodiscovery to give full control and transparency to the user
+
+think more about folders: clickup and windmill have this concept. There is something useful here. For permissions, but also to give this file hierarchy...
+Clickup decided to limit the number of folders as far as I understand: workspace / space / lists
+I think it's a good balance. nested folders are hard.
+
+remove id 91017349113822292053236764842401387445
+
+URGENT: put project in root folder

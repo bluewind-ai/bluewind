@@ -55,3 +55,12 @@ yarn-error.log*
 .vscode
 # Sentry Config File
 .sentryclirc
+
+*/__pycache__/*
+__pycache__
+
+.env*
+
+deploy/cdk.out/
+*venv/
+deploy/cdk1.out

@@ -1,0 +1,67 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install AWS CDK
+        run: |
+          npm install -g aws-cdk
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: ./deploy
+        run: |
+          poetry install
+
+      - name: Set environment variable
+        run: |
+          if [ ${{ github.ref }} = 'refs/heads/main' ]; then
+            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+          elif [ ${{ github.ref }} = 'refs/heads/staging' ]; then
+            echo "ENVIRONMENT=staging" >> $GITHUB_ENV
+          elif [ ${{ github.ref }} = 'refs/heads/dev' ]; then
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+          else
+            echo "ENVIRONMENT=unknown" >> $GITHUB_ENV
+          fi
+
+      - name: Run deploy script
+        working-directory: ./deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set default.region us-west-2
+
+          poetry run cdk bootstrap aws://${AWS_ACCOUNT_ID}/us-west-2
+
+          poetry run cdk deploy --require-approval never --context environment=${{ env.ENVIRONMENT }}
