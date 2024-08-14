@@ -42,7 +42,7 @@ class SimpleFargateCdkStack(Stack):
                 "removal_policy": RemovalPolicy.DESTROY,
                 "max_azs": 2,
                 "domain_name": "staging.bluewind.ai",
-
+                "certificate_arn": "arn:aws:acm:us-east-1:361769569102:certificate/86fcf103-7bf3-4c23-9a45-ade7d397d6e7"
             },
             "prod": {
                 "debug": "False",
@@ -55,11 +55,17 @@ class SimpleFargateCdkStack(Stack):
                 "removal_policy": RemovalPolicy.RETAIN,
                 "max_azs": 2,
                 "domain_name": "app.bluewind.ai",
+                "certificate_arn": "arn:aws:acm:us-east-1:361769569102:certificate/86fcf103-7bf3-4c23-9a45-ade7d397d6e7"
             },
         }
         env = os.environ.get('ENVIRONMENT')
 
         config = configs[env]
+
+        certificate = acm.Certificate.from_certificate_arn(
+            self, "Certificate",
+            certificate_arn=config["certificate_arn"]
+        )
 
         vpc = ec2.Vpc(self, "MyVPC", max_azs=config["max_azs"])
 
@@ -176,6 +182,8 @@ class SimpleFargateCdkStack(Stack):
             enable_logging=True,
             log_bucket=cloudfront_logs_bucket,
             log_file_prefix="cloudfront-logs/",
+            domain_names=[config["domain_name"]],  # Add this line
+            certificate=certificate,  # Add this line
         )
 
         # Update the container's environment variables
