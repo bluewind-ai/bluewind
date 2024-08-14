@@ -18,9 +18,9 @@ def main():
         ) from exc
     print(sys.argv)
 
-    if 'runserver' in sys.argv:
-        from bluewind.pre_setup import pre_setup
-        pre_setup()
+    # if 'runserver' in sys.argv:
+    #     from bluewind.pre_setup import pre_setup
+    #     pre_setup()
 
     execute_from_command_line(sys.argv)
 

@@ -13,7 +13,8 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings')
 
-from bluewind.pre_setup import pre_setup
-pre_setup()
-
 application = get_wsgi_application()
+
+if __name__ == "__main__":
+    from bluewind.pre_setup import pre_setup
+    pre_setup()

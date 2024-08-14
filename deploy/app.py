@@ -8,7 +8,7 @@ load_dotenv()
 
 app = App()
 
-SimpleFargateCdkStack(app, "DjangoFargateCdkStack5",
+SimpleFargateCdkStack(app, "DjangoFargateCdkStack6",
     env=Environment(
         account="361769569102",
         region="us-west-2"
