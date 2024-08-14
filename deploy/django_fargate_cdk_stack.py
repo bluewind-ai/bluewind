@@ -34,8 +34,8 @@ class SimpleFargateCdkStack(Stack):
             "staging": {
                 "debug": "True",
                 "instance_type": ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
-                "cpu": 1024,
-                "memory_limit_mib": 2048,
+                "cpu": 256,
+                "memory_limit_mib": 1024,
                 "desired_count": 1,
                 "cache_policy": cloudfront.CachePolicy.CACHING_DISABLED,
                 "backup_retention": Duration.days(7),
@@ -157,7 +157,7 @@ class SimpleFargateCdkStack(Stack):
             path="/health/",  # Adjust this to match your health check endpoint
             healthy_http_codes="200",
             interval=Duration.seconds(30),
-            timeout=Duration.seconds(5),
+            timeout=Duration.seconds(15),
             healthy_threshold_count=2,
             unhealthy_threshold_count=3,
         )
