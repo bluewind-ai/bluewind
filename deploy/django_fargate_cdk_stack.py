@@ -34,7 +34,7 @@ class SimpleFargateCdkStack(Stack):
             "staging": {
                 "debug": "True",
                 "instance_type": ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
-                "cpu": 256,
+                "cpu": 1024,
                 "memory_limit_mib": 512,
                 "desired_count": 1,
                 "cache_policy": cloudfront.CachePolicy.CACHING_DISABLED,

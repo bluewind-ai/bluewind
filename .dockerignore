@@ -4,3 +4,4 @@ fly.toml
 website/*
 .env
 deploy/*
+staticfiles/*
