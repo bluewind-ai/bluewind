@@ -55,7 +55,7 @@ class SimpleFargateCdkStack(Stack):
                 "removal_policy": RemovalPolicy.RETAIN,
                 "max_azs": 2,
                 "domain_name": "app.bluewind.ai",
-                "certificate_arn": "arn:aws:acm:us-east-1:361769569102:certificate/86fcf103-7bf3-4c23-9a45-ade7d397d6e7"
+                "certificate_arn": "arn:aws:acm:us-east-1:484907521409:certificate/c8fcaf6d-0f2f-482c-850f-c0494e32464c"
             },
         }
         env = os.environ.get('ENVIRONMENT')
