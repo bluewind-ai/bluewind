@@ -9,7 +9,6 @@ package-mode = true
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = {path = "django", develop = true}
 django-user-sessions = {path = "django-user-sessions", develop = true}
 asgiref = "^3.8.1"
 sqlparse = "^0.3.1"
@@ -30,6 +29,7 @@ factory-boy = "^3.3.0"
 django-debug-toolbar = "^4.4.6"
 model-mommy = "^2.0.0"
 dj-database-url = "^2.2.0"
+django = "^5.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
