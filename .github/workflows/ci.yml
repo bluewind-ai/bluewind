@@ -38,6 +38,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
+      - name: Install dependencies
+        working-directory: ./deploy
+        run: |
+          echo "Current branch: ${{ github.ref }}"
+          echo "Current environment: ${{ github.job.environment }}"
+          echo "ENVIRONMENT variable: ${{ env.ENVIRONMENT }}"
+          echo "All environment variables:"
+          env | sort
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
