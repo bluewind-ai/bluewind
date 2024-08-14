@@ -42,7 +42,7 @@ class SimpleFargateCdkStack(Stack):
                 "removal_policy": RemovalPolicy.DESTROY,
                 "max_azs": 2,
                 "domain_name": "staging.bluewind.ai",
-                "certificate_arn": "arn:aws:acm:us-east-1:361769569102:certificate/86fcf103-7bf3-4c23-9a45-ade7d397d6e7"
+                "certificate_arn": "arn:aws:acm:us-east-1:361769569102:certificate/e12139f7-7309-49b7-bf0d-01ba2a3b7a20"
             },
             "prod": {
                 "debug": "False",
