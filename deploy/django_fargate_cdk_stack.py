@@ -107,6 +107,16 @@ class SimpleFargateCdkStack(Stack):
             backup_retention=config["backup_retention"],
             multi_az=False,
             publicly_accessible=True,
+            health_check_grace_period=Duration.seconds(60),  # Add this line
+        )
+
+        fargate_service.target_group.configure_health_check(
+            path="/health/",  # Adjust this to match your health check endpoint
+            healthy_http_codes="200",
+            interval=Duration.seconds(30),
+            timeout=Duration.seconds(5),
+            healthy_threshold_count=2,
+            unhealthy_threshold_count=3,
         )
 
         # Allow incoming traffic on the database port from anywhere
