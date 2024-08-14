@@ -38,15 +38,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-      - name: Install dependencies
-        working-directory: ./deploy
-        run: |
-          echo "TEST variable: ${{ vars.TEST }}"
-          echo "Current branch: ${{ github.ref }}"
-          echo "Current environment: ${{ github.job.environment }}"
-          echo "ENVIRONMENT variable: ${{ env.ENVIRONMENT }}"
-          echo "All environment variables:"
-          env | sort
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -74,8 +65,6 @@ jobs:
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         run: |
-          aws sts get-caller-identity
-
           poetry run cdk bootstrap aws://${AWS_ACCOUNT_ID}/us-west-2
 
           poetry run cdk deploy --require-approval never --context environment=${{ env.ENVIRONMENT }}
