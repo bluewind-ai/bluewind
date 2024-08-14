@@ -110,15 +110,6 @@ class SimpleFargateCdkStack(Stack):
             publicly_accessible=True,
         )
 
-        fargate_service.target_group.configure_health_check(
-            path="/health/",  # Adjust this to match your health check endpoint
-            healthy_http_codes="200",
-            interval=Duration.seconds(30),
-            timeout=Duration.seconds(5),
-            healthy_threshold_count=2,
-            unhealthy_threshold_count=3,
-        )
-
         # Allow incoming traffic on the database port from anywhere
         db_instance.connections.allow_from(ec2.Peer.any_ipv4(), ec2.Port.tcp(5432))
         
@@ -160,6 +151,15 @@ class SimpleFargateCdkStack(Stack):
             ),
             public_load_balancer=True,
             health_check_grace_period=Duration.seconds(60),  # This is now in the correct place
+        )
+
+        fargate_service.target_group.configure_health_check(
+            path="/health/",  # Adjust this to match your health check endpoint
+            healthy_http_codes="200",
+            interval=Duration.seconds(30),
+            timeout=Duration.seconds(5),
+            healthy_threshold_count=2,
+            unhealthy_threshold_count=3,
         )
 
         # Get the load balancer's DNS name
