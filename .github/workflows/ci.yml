@@ -41,6 +41,7 @@ jobs:
       - name: Install dependencies
         working-directory: ./deploy
         run: |
+          echo "TEST variable: ${{ vars.TEST }}"
           echo "Current branch: ${{ github.ref }}"
           echo "Current environment: ${{ github.job.environment }}"
           echo "ENVIRONMENT variable: ${{ env.ENVIRONMENT }}"
