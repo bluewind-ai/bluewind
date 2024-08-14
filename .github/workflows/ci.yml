@@ -29,6 +29,7 @@ jobs:
 
       - name: Install AWS CDK
         run: |
+          echo ${{ secrets.AWS_ACCOUNT_ID }}
           npm install -g aws-cdk
 
       - name: Install Poetry
