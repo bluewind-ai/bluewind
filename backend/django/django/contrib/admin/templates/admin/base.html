@@ -54,9 +54,9 @@
                     {% endif %}
                 {% endif %}
                 {% if user.has_usable_password %}
-                <a href="{% url 'admin:password_change'%}">{% translate 'Change password' %}</a> /
+                <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a> /
                 {% endif %}
-                <form id="logout-form" method="post" action="{% url 'admin:logout'%}">
+                <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
                     {% csrf_token %}
                     <button type="submit">{% translate 'Log out' %}</button>
                 </form>
@@ -73,7 +73,7 @@
       <nav aria-label="{% translate 'Breadcrumbs' %}">
         {% block breadcrumbs %}
           <div class="breadcrumbs">
-            <a href="{% url 'admin:index' workspace_id=workspace_id %}">{% translate 'Home' %}</a>
+            <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
             {% if title %} &rsaquo; {{ title }}{% endif %}
           </div>
         {% endblock %}

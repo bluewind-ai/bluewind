@@ -147,9 +147,9 @@ class UserAdmin(admin.ModelAdmin):
         }
         extra_context.update(defaults)
         return super().add_view(request, form_url, extra_context)
-    
+
     @sensitive_post_parameters_m
-    def user_change_password(self, request, id, form_url="", workspace_id=None):
+    def user_change_password(self, request, id, form_url=""):
         user = self.get_object(request, unquote(id))
         if not self.has_change_permission(request, user):
             raise PermissionDenied

@@ -153,7 +153,7 @@ def get_deleted_objects(objs, request, admin_site):
                     "%s:%s_%s_change"
                     % (admin_site.name, opts.app_label, opts.model_name),
                     None,
-                    (request.resolver_match.kwargs.get('workspace_id', 91017343213219113822292053236764842401387445), quote(obj.pk),),
+                    (quote(obj.pk),),
                 )
             except NoReverseMatch:
                 # Change url doesn't exist -- don't display link to edit
