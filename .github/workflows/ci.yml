@@ -67,4 +67,4 @@ jobs:
         run: |
           poetry run cdk bootstrap aws://${AWS_ACCOUNT_ID}/us-west-2
 
-          poetry run cdk deploy --require-approval never --context environment=${{ env.ENVIRONMENT }}
+          poetry run cdk deploy --require-approval never --context environment=${{ env.ENVIRONMENT }} --verbose
