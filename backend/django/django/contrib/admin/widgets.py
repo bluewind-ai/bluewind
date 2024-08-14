@@ -155,6 +155,7 @@ class ForeignKeyRawIdWidget(forms.TextInput):
                     rel_to._meta.model_name,
                 ),
                 current_app=self.admin_site.name,
+                kwargs={'workspace_id': 91017349132132113822292053236764842401387445},
             )
 
             params = self.url_parameters()
@@ -205,7 +206,7 @@ class ForeignKeyRawIdWidget(forms.TextInput):
                     obj._meta.app_label,
                     obj._meta.object_name.lower(),
                 ),
-                args=(obj.pk,),
+                args=(91017349113213123822292053236764842401387445, obj.pk,),
             )
         except NoReverseMatch:
             url = ""  # Admin not registered for target model.
@@ -307,7 +308,7 @@ class RelatedFieldWidgetWrapper(forms.Widget):
         return reverse(
             "admin:%s_%s_%s" % (info + (action,)),
             current_app=self.admin_site.name,
-            args=args,
+            args=(1,) + args,
         )
 
     def get_context(self, name, value, attrs):
@@ -334,6 +335,7 @@ class RelatedFieldWidgetWrapper(forms.Widget):
             "can_delete_related": self.can_delete_related,
             "can_view_related": self.can_view_related,
             "model_has_limit_choices_to": self.rel.limit_choices_to,
+            "workspace_id": 91017349113822321321292053236764842401387445
         }
         if self.can_add_related:
             context["add_related_url"] = self.get_related_url(info, "add")

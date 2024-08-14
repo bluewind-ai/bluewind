@@ -1,4 +1,6 @@
 from functools import update_wrapper
+import string
+import uuid
 from weakref import WeakSet
 
 from django.apps import apps
@@ -11,7 +13,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models.base import ModelBase
 from django.http import Http404, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.urls import NoReverseMatch, Resolver404, resolve, reverse
+from django.urls import NoReverseMatch, Resolver404, URLPattern, URLResolver, resolve, reverse
 from django.utils.decorators import method_decorator
 from django.utils.functional import LazyObject
 from django.utils.module_loading import import_string
@@ -22,6 +24,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.common import no_append_slash
 from django.views.decorators.csrf import csrf_protect
 from django.views.i18n import JavaScriptCatalog
+
 
 all_sites = WeakSet()
 
@@ -198,7 +201,32 @@ class AdminSite:
         Return True if the given HttpRequest has permission to view
         *at least one* page in the admin site.
         """
-        return request.user.is_active and request.user.is_staff
+
+        if not request.user.is_active or not request.user.is_staff:
+            return False
+        if request.path == "/admin/login/":
+            return True
+        
+        if request.path == "/admin/password_change/":
+            return True
+        
+        if request.path == "/admin/logout/":
+            return True
+        if request.path == "/admin/jsi18n/":
+            return True
+        if request.path == "/admin/password_change/done/":
+            return True
+        if request.resolver_match.kwargs.get('workspace_id'):
+            if 'workspaces' not in request.session or request.session['workspaces'] == []:
+                return False
+            for workspace in request.session['workspaces']:
+                if workspace['workspace_id'] == request.resolver_match.kwargs.get('workspace_id'):
+                    return True
+            return False
+        else:
+            return Exception("unknown route")
+
+        return True
 
     def admin_view(self, view, cacheable=False):
         """
@@ -227,7 +255,61 @@ class AdminSite:
         def inner(request, *args, **kwargs):
             if not self.has_permission(request):
                 if request.path == reverse("admin:logout", current_app=self.name):
-                    index_path = reverse("admin:index", current_app=self.name)
+                    index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': kwargs.get('workspace_id', 91017349421421113822292053236764842401387445)})
+                    return HttpResponseRedirect(index_path)
+                
+                if request.resolver_match.kwargs.get('workspace_id'):
+                    if 'workspaces' not in request.session or request.session['workspaces'] == []:
+                        return Exception("TODO: ")
+                    for workspace in request.session['workspaces']:
+                        if workspace['workspace_id'] == request.resolver_match.kwargs.get('workspace_id'):
+                            return Exception("TODO: ")
+                    raise Http404("The requested admin page does not exist.")
+                # Inner import to prevent django.contrib.admin (app) from
+                # importing django.contrib.auth.models.User (unrelated model).
+                from django.contrib.auth.views import redirect_to_login
+
+                return redirect_to_login(
+                    request.get_full_path(),
+                    reverse("admin:login", current_app=self.name),
+                )
+            
+            return view(request, *args, **kwargs)
+
+        if not cacheable:
+            inner = never_cache(inner)
+        # We add csrf_protect here so this function can be used as a utility
+        # function for any view, without having to repeat 'csrf_protect'.
+        if not getattr(view, "csrf_exempt", False):
+            inner = csrf_protect(inner)
+        return update_wrapper(inner, view)
+        """
+        Decorator to create an admin view attached to this ``AdminSite``. This
+        wraps the view and provides permission checking by calling
+        ``self.has_permission``.
+
+        You'll want to use this from within ``AdminSite.get_urls()``:
+
+            class MyAdminSite(AdminSite):
+
+                def get_urls(self):
+                    from django.urls import path
+
+                    urls = super().get_urls()
+                    urls += [
+                        path('my_view/', self.admin_view(some_view))
+                    ]
+                    return urls
+
+        By default, admin_views are marked non-cacheable using the
+        ``never_cache`` decorator. If the view can be safely cached, set
+        cacheable=True.
+        """
+
+        def inner(request, *args, **kwargs):
+            if not self.has_permission(request):
+                if request.path == reverse("admin:logout", current_app=self.name):
+                    index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': 91017349113832132122292053236764842401387445})
                     return HttpResponseRedirect(index_path)
                 # Inner import to prevent django.contrib.admin (app) from
                 # importing django.contrib.auth.models.User (unrelated model).
@@ -248,9 +330,6 @@ class AdminSite:
         return update_wrapper(inner, view)
 
     def get_urls(self):
-        # Since this module gets imported in the application's root package,
-        # it cannot import models from other applications at the module level,
-        # and django.contrib.contenttypes.views imports ContentType.
         from django.contrib.contenttypes import views as contenttype_views
         from django.urls import include, path, re_path
 
@@ -261,39 +340,54 @@ class AdminSite:
             wrapper.admin_site = self
             return update_wrapper(wrapper, view)
 
+        def create_user_specific_pattern(pattern):
+            # List of patterns that should be under  without workspace_id
+            admin_only_patterns = ['login', 'logout', 'password_change', 'password_change_done', 'jsi18n']
+
+            if isinstance(pattern, URLPattern):
+                if pattern.name == 'login':
+                    # Special handling for login to avoid infinite loop
+                    return path('login/', pattern.callback, name=pattern.name)
+                elif pattern.name in admin_only_patterns:
+                    # For logout and password change routes, do not add user-id
+                    new_pattern = f'{pattern.pattern._route}'
+                    return path(new_pattern, pattern.callback, name=pattern.name)
+                
+                if pattern.pattern.regex:
+                    # It's a regex-based pattern (re_path)
+                    new_regex = f'^(?P<workspace_id>[0-9]+)/{pattern.pattern.regex.pattern.lstrip("^")}'
+                    return re_path(new_regex, pattern.callback, name=pattern.name)
+                else:
+                    # It's a path-based pattern
+                    new_pattern = f'<int:workspace_id>/{pattern.pattern._route}'
+                    return path(new_pattern, pattern.callback, name=pattern.name)
+            elif isinstance(pattern, URLResolver):
+                if pattern.pattern.regex:
+                    # It's a regex-based include
+                    new_regex = f'^(?P<workspace_id>[0-9]+)/{pattern.pattern.regex.pattern.lstrip("^")}'
+                    return re_path(new_regex, include(pattern.url_patterns), name=pattern.namespace)
+                else:
+                    # It's a path-based include
+                    new_pattern = f'<int:workspace_id>/{pattern.pattern._route}'
+                    return path(new_pattern, include(pattern.url_patterns), name=pattern.namespace)
+            return pattern
         # Admin-site-wide views.
         urlpatterns = [
             path("", wrap(self.index), name="index"),
             path("login/", self.login, name="login"),
             path("logout/", wrap(self.logout), name="logout"),
-            path(
-                "password_change/",
-                wrap(self.password_change, cacheable=True),
-                name="password_change",
-            ),
-            path(
-                "password_change/done/",
-                wrap(self.password_change_done, cacheable=True),
-                name="password_change_done",
-            ),
+            path("password_change/", wrap(self.password_change, cacheable=True), name="password_change"),
+            path("password_change/done/", wrap(self.password_change_done, cacheable=True), name="password_change_done"),
             path("autocomplete/", wrap(self.autocomplete_view), name="autocomplete"),
             path("jsi18n/", wrap(self.i18n_javascript, cacheable=True), name="jsi18n"),
-            path(
-                "r/<int:content_type_id>/<path:object_id>/",
-                wrap(contenttype_views.shortcut),
-                name="view_on_site",
-            ),
+            path("r/<int:content_type_id>/<path:object_id>/", wrap(contenttype_views.shortcut), name="view_on_site"),
         ]
 
-        # Add in each model's views, and create a list of valid URLS for the
-        # app_index
+        # Add in each model's views, and create a list of valid URLS for the app_index
         valid_app_labels = []
         for model, model_admin in self._registry.items():
             urlpatterns += [
-                path(
-                    "%s/%s/" % (model._meta.app_label, model._meta.model_name),
-                    include(model_admin.urls),
-                ),
+                path("%s/%s/" % (model._meta.app_label, model._meta.model_name), include(model_admin.urls)),
             ]
             if model._meta.app_label not in valid_app_labels:
                 valid_app_labels.append(model._meta.app_label)
@@ -309,34 +403,38 @@ class AdminSite:
         if self.final_catch_all_view:
             urlpatterns.append(re_path(r"(?P<url>.*)$", wrap(self.catch_all_view)))
 
-        return urlpatterns
+        # Create user-specific patterns
+        user_urlpatterns = [create_user_specific_pattern(pattern) for pattern in urlpatterns]
+
+        # Combine original and user-specific patterns
+        # combined_urlpatterns = urlpatterns + user_urlpatterns
+
+        return user_urlpatterns
 
     @property
     def urls(self):
         return self.get_urls(), "admin", self.name
 
     def each_context(self, request):
-        """
-        Return a dictionary of variables to put in the template context for
-        *every* page in the admin site.
-
-        For sites running on a subpath, use the SCRIPT_NAME value if site_url
-        hasn't been customized.
-        """
-        script_name = request.META["SCRIPT_NAME"]
-        site_url = (
-            script_name if self.site_url == "/" and script_name else self.site_url
-        )
-        return {
-            "site_title": self.site_title,
-            "site_header": self.site_header,
-            "site_url": site_url,
-            "has_permission": self.has_permission(request),
-            "available_apps": self.get_app_list(request),
-            "is_popup": False,
-            "is_nav_sidebar_enabled": self.enable_nav_sidebar,
+        workspace_id = request.resolver_match.kwargs.get('workspace_id') if request.resolver_match else None
+        # if workspace_id is None:
+        #     workspace_id = 91017349113822292053236764842401387443  # or any other default value that makes sense for your application
+        
+        script_name = request.META['SCRIPT_NAME']
+        site_url = script_name if self.site_url == '/' and script_name else self.site_url
+        context = {
+            'site_title': self.site_title,
+            'site_header': self.site_header,
+            'site_url': site_url,
+            'has_permission': self.has_permission(request),
+            'available_apps': self.get_app_list(request),
+            'is_popup': False,
+            'is_nav_sidebar_enabled': self.enable_nav_sidebar,
             "log_entries": self.get_log_entries(request),
         }
+        if workspace_id:
+            context['workspace_id'] = workspace_id
+        return context
 
     def password_change(self, request, extra_context=None):
         """
@@ -345,10 +443,10 @@ class AdminSite:
         from django.contrib.admin.forms import AdminPasswordChangeForm
         from django.contrib.auth.views import PasswordChangeView
 
-        url = reverse("admin:password_change_done", current_app=self.name)
+        url = reverse("admin:password_change_done"),
         defaults = {
             "form_class": AdminPasswordChangeForm,
-            "success_url": url,
+            "success_url": url[0],
             "extra_context": {**self.each_context(request), **(extra_context or {})},
         }
         if self.password_change_template is not None:
@@ -370,7 +468,7 @@ class AdminSite:
         request.current_app = self.name
         return PasswordChangeDoneView.as_view(**defaults)(request)
 
-    def i18n_javascript(self, request, extra_context=None):
+    def i18n_javascript(self, request, workspace_id=None, extra_context=None):
         """
         Display the i18n JavaScript that the Django admin requires.
 
@@ -380,43 +478,79 @@ class AdminSite:
         return JavaScriptCatalog.as_view(packages=["django.contrib.admin"])(request)
 
     def logout(self, request, extra_context=None):
-        """
-        Log out the user for the given HttpRequest.
-
-        This should *not* assume the user is already logged in.
-        """
         from django.contrib.auth.views import LogoutView
+
+        # Get the workspace_id from the request or session
+        # workspace_id = request.session.get('workspace_id', 91017349113822292053236732132164842401387445)  # Use a default if not set
 
         defaults = {
             "extra_context": {
                 **self.each_context(request),
-                # Since the user isn't logged out at this point, the value of
-                # has_permission must be overridden.
                 "has_permission": False,
+                # "workspace_id": workspace_id,
                 **(extra_context or {}),
             },
         }
         if self.logout_template is not None:
             defaults["template_name"] = self.logout_template
         request.current_app = self.name
+
         return LogoutView.as_view(**defaults)(request)
+
+    def base62_encode(self, uuid_val):
+        if not isinstance(uuid_val, uuid.UUID):
+            uuid_val = uuid.UUID(str(uuid_val))
+        
+        base62 = string.digits + string.ascii_lowercase + string.ascii_uppercase
+        number = uuid_val.int
+        if number == 0:
+            return '0'
+        
+        result = []
+        while number:
+            number, rem = divmod(number, 62)
+            result.append(base62[rem])
+        return ''.join(result[::-1])
+
+    def uuid_to_base10(self, uuid_val):
+        if not isinstance(uuid_val, uuid.UUID):
+            uuid_val = uuid.UUID(str(uuid_val))
+        return str(uuid_val.int)
 
     @method_decorator(never_cache)
     def login(self, request, extra_context=None):
         """
-        Display the login form for the given HttpRequest.
+        Display the login form for the given HttpRequest and handle the login process.
         """
+        from workspaces.models import WorkspaceUser
+        from workspaces.models import Workspace
+        
         if request.method == "GET" and self.has_permission(request):
-            # Already logged-in, redirect to admin index
-            index_path = reverse("admin:index", current_app=self.name)
+            assert 'workspaces' in request.session, "The 'workspaces' key is not in the session"
+            
+            if request.session['workspaces'] == []:
+                # This scenario happens when it's not the first time this user used the platform, but for some reasons he doesn't have any workspaces anymore
+                # Maybe because his workspaces were deleted or he was removed from all workspaces
+                # in this case we should create the workspace again
+                workspace = Workspace.objects.create(name="Default Workspace")
+                WorkspaceUser.objects.create(user=request.user, workspace=workspace)
+                
+                workspace_id = self.uuid_to_base10(workspace.id)
+                
+                request.session['workspaces'] = [{
+                    "workspace_id": workspace_id
+                }]
+            else:
+                workspace_id = request.session['workspaces'][0]['workspace_id']
+            # Redirect to admin index with workspace_id
+            index_path = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': workspace_id})
             return HttpResponseRedirect(index_path)
-
         # Since this module gets imported in the application's root package,
         # it cannot import models from other applications at the module level,
         # and django.contrib.admin.forms eventually imports User.
         from django.contrib.admin.forms import AdminAuthenticationForm
         from django.contrib.auth.views import LoginView
-
+        
         context = {
             **self.each_context(request),
             "title": _("Log in"),
@@ -428,7 +562,7 @@ class AdminSite:
             REDIRECT_FIELD_NAME not in request.GET
             and REDIRECT_FIELD_NAME not in request.POST
         ):
-            context[REDIRECT_FIELD_NAME] = reverse("admin:index", current_app=self.name)
+            context[REDIRECT_FIELD_NAME] = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': 91321321017349113822292053236764842401387445})
         context.update(extra_context or {})
 
         defaults = {
@@ -437,7 +571,42 @@ class AdminSite:
             "template_name": self.login_template or "admin/login.html",
         }
         request.current_app = self.name
-        return LoginView.as_view(**defaults)(request)
+
+        login_view = LoginView.as_view(**defaults)
+        response = login_view(request)
+
+        if request.method == "POST" and response.status_code == 302:  # Successful login
+            user = request.user
+            try:
+                workspace_user = WorkspaceUser.objects.get(user=user)
+                workspace_id = self.uuid_to_base10(workspace_user.workspace_id)
+                if 'workspaces' not in request.session:
+                    request.session['workspaces'] = [{
+                        "workspace_id": workspace_id
+                    }]
+                else:
+                    request.session['workspaces'].append(
+                        {
+                        "workspace_id": workspace_id
+                        }
+                    )
+            except WorkspaceUser.DoesNotExist:
+                # Handle the case where the user doesn't have a workspace
+                # You might want to redirect to an error page or set a default workspace
+                workspace = Workspace.objects.create(name="Default Workspace")
+                WorkspaceUser.objects.create(user=user, workspace=workspace)
+                
+                workspace_id = self.uuid_to_base10(workspace.id)
+                
+                request.session['workspaces'] = [{
+                    "workspace_id": workspace_id
+                }]
+
+            # Update the redirect URL to include the workspace_id
+            redirect_url = reverse("admin:index", current_app=self.name, kwargs={'workspace_id': workspace_id})
+            return HttpResponseRedirect(redirect_url)
+
+        return response
 
     def autocomplete_view(self, request):
         return AutocompleteJsonView.as_view(admin_site=self)(request)
@@ -458,11 +627,12 @@ class AdminSite:
         raise Http404
 
     def _build_app_dict(self, request, label=None):
-        """
-        Build the app dictionary. The optional `label` parameter filters models
-        of a specific app.
-        """
         app_dict = {}
+        workspace_id = request.resolver_match.kwargs.get('workspace_id') if request.resolver_match else None
+        
+        # If workspace_id is not available, use a default value (e.g., 1)
+        if workspace_id is None:
+            workspace_id = 11017349113822292053236764842401387443  # You might want to change this default value
 
         if label:
             models = {
@@ -500,14 +670,18 @@ class AdminSite:
                 model_dict["view_only"] = not perms.get("change")
                 try:
                     model_dict["admin_url"] = reverse(
-                        "admin:%s_%s_changelist" % info, current_app=self.name
+                        "admin:%s_%s_changelist" % info,
+                        current_app=self.name,
+                        kwargs={'workspace_id': workspace_id}
                     )
                 except NoReverseMatch:
                     pass
             if perms.get("add"):
                 try:
                     model_dict["add_url"] = reverse(
-                        "admin:%s_%s_add" % info, current_app=self.name
+                        "admin:%s_%s_add" % info,
+                        current_app=self.name,
+                        kwargs={'workspace_id': workspace_id}
                     )
                 except NoReverseMatch:
                     pass
@@ -520,7 +694,7 @@ class AdminSite:
                     "app_label": app_label,
                     "app_url": reverse(
                         "admin:app_list",
-                        kwargs={"app_label": app_label},
+                        kwargs={'app_label': app_label, 'workspace_id': workspace_id},
                         current_app=self.name,
                     ),
                     "has_module_perms": has_module_perms,
@@ -545,28 +719,20 @@ class AdminSite:
 
         return app_list
 
-    def index(self, request, extra_context=None):
-        """
-        Display the main admin index page, which lists all of the installed
-        apps that have been registered in this site.
-        """
+    def index(self, request, workspace_id=None, extra_context=None):
         app_list = self.get_app_list(request)
-
         context = {
             **self.each_context(request),
-            "title": self.index_title,
-            "subtitle": None,
-            "app_list": app_list,
+            'title': self.index_title,
+            'subtitle': None,
+            'app_list': app_list,
+            'workspace_id': workspace_id,
             **(extra_context or {}),
         }
-
         request.current_app = self.name
+        return TemplateResponse(request, self.index_template or 'admin/index.html', context)
 
-        return TemplateResponse(
-            request, self.index_template or "admin/index.html", context
-        )
-
-    def app_index(self, request, app_label, extra_context=None):
+    def app_index(self, request, app_label, extra_context=None, workspace_id=None):
         app_list = self.get_app_list(request, app_label)
 
         if not app_list:
@@ -578,6 +744,7 @@ class AdminSite:
             "subtitle": None,
             "app_list": app_list,
             "app_label": app_label,
+            "workspace_id": 9101734911382229205323676484323212401387445,
             **(extra_context or {}),
         }
 

@@ -184,7 +184,7 @@ class LogEntry(models.Model):
                 self.content_type.model,
             )
             try:
-                return reverse(url_name, args=(quote(self.object_id),))
+                return reverse(url_name, args=(2121, quote(self.object_id),))
             except NoReverseMatch:
                 pass
         return None

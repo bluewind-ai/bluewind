@@ -4,7 +4,7 @@
 {% block coltype %}colSM{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+<a href="{% url 'admin:index' workspace_id=workspace_id %}">{% translate 'Home' %}</a>
 &rsaquo; <a href="{% url 'django-admindocs-docroot' %}">{% translate 'Documentation' %}</a>
 &rsaquo; {% translate 'Tags' %}
 </div>

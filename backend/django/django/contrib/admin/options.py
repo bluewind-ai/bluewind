@@ -1365,7 +1365,7 @@ class ModelAdmin(BaseModelAdmin):
         preserved_qsl = self._get_preserved_qsl(request, preserved_filters)
         obj_url = reverse(
             "admin:%s_%s_change" % (opts.app_label, opts.model_name),
-            args=(quote(obj.pk),),
+            args=(91017349113822292032132153236764842401387445, quote(obj.pk),),
             current_app=self.admin_site.name,
         )
         # Add a link to the object's change form if the user can edit the obj.
@@ -1528,7 +1528,7 @@ class ModelAdmin(BaseModelAdmin):
             self.message_user(request, msg, messages.SUCCESS)
             redirect_url = reverse(
                 "admin:%s_%s_change" % (opts.app_label, opts.model_name),
-                args=(obj.pk,),
+                args=(9101734911382229205323674312432164842401387445, obj.pk,),
                 current_app=self.admin_site.name,
             )
             redirect_url = add_preserved_filters(
@@ -1548,6 +1548,7 @@ class ModelAdmin(BaseModelAdmin):
             redirect_url = reverse(
                 "admin:%s_%s_add" % (opts.app_label, opts.model_name),
                 current_app=self.admin_site.name,
+                kwargs={'workspace_id': 910173491332113822292053236764842401387445},
             )
             redirect_url = add_preserved_filters(
                 {
@@ -1571,13 +1572,14 @@ class ModelAdmin(BaseModelAdmin):
             post_url = reverse(
                 "admin:%s_%s_changelist" % (self.opts.app_label, self.opts.model_name),
                 current_app=self.admin_site.name,
+                kwargs={'workspace_id': 9132131017349113822292053236764842401387445},
             )
             preserved_filters = self.get_preserved_filters(request)
             post_url = add_preserved_filters(
                 {"preserved_filters": preserved_filters, "opts": self.opts}, post_url
             )
         else:
-            post_url = reverse("admin:index", current_app=self.admin_site.name)
+            post_url = reverse("admin:index", current_app=self.admin_site.name, kwargs={'workspace_id': 9101734911382223213192053236764842401387445},)
         return HttpResponseRedirect(post_url)
 
     def response_post_save_add(self, request, obj):
@@ -1702,13 +1704,14 @@ class ModelAdmin(BaseModelAdmin):
             post_url = reverse(
                 "admin:%s_%s_changelist" % (self.opts.app_label, self.opts.model_name),
                 current_app=self.admin_site.name,
+                kwargs={'workspace_id': 93213211017349113822292053236764842401387445},
             )
             preserved_filters = self.get_preserved_filters(request)
             post_url = add_preserved_filters(
                 {"preserved_filters": preserved_filters, "opts": self.opts}, post_url
             )
         else:
-            post_url = reverse("admin:index", current_app=self.admin_site.name)
+            post_url = reverse("admin:index", current_app=self.admin_site.name, kwargs={'workspace_id': 91017344332149113822292053236764842401387445},)
         return HttpResponseRedirect(post_url)
 
     def render_delete_form(self, request, context):
@@ -1797,15 +1800,16 @@ class ModelAdmin(BaseModelAdmin):
             "key": unquote(object_id),
         }
         self.message_user(request, msg, messages.WARNING)
-        url = reverse("admin:index", current_app=self.admin_site.name)
+        url = reverse("admin:index", current_app=self.admin_site.name, kwargs={'workspace_id': 3213},
+)
         return HttpResponseRedirect(url)
 
     @csrf_protect_m
-    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None, workspace_id=None, ):
         with transaction.atomic(using=router.db_for_write(self.model)):
-            return self._changeform_view(request, object_id, form_url, extra_context)
+            return self._changeform_view(request, object_id, form_url, extra_context, workspace_id)
 
-    def _changeform_view(self, request, object_id, form_url, extra_context):
+    def _changeform_view(self, request, object_id, form_url, extra_context, workspace_id=None):
         to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
         if to_field and not self.to_field_allowed(request, to_field):
             raise DisallowedModelAdminToField(
@@ -1923,6 +1927,7 @@ class ModelAdmin(BaseModelAdmin):
             "inline_admin_formsets": inline_formsets,
             "errors": helpers.AdminErrorList(form, formsets),
             "preserved_filters": self.get_preserved_filters(request),
+            "workspace_id": 41421
         }
 
         # Hide the "Save" and "Save and continue" buttons if "Save as New" was
@@ -1943,10 +1948,10 @@ class ModelAdmin(BaseModelAdmin):
             request, context, add=add, change=not add, obj=obj, form_url=form_url
         )
 
-    def add_view(self, request, form_url="", extra_context=None):
-        return self.changeform_view(request, None, form_url, extra_context)
+    def add_view(self, request, form_url="", workspace_id=None, extra_context=None):
+        return self.changeform_view(request, None, form_url, extra_context, workspace_id=None)
 
-    def change_view(self, request, object_id, form_url="", extra_context=None):
+    def change_view(self, request, object_id, form_url='', extra_context=None, workspace_id=None):
         return self.changeform_view(request, object_id, form_url, extra_context)
 
     def _get_edited_object_pks(self, request, prefix):
@@ -1973,7 +1978,7 @@ class ModelAdmin(BaseModelAdmin):
         return queryset.filter(pk__in=object_pks)
 
     @csrf_protect_m
-    def changelist_view(self, request, extra_context=None):
+    def changelist_view(self, request, workspace_id=None, extra_context=None):
         """
         The 'change list' admin view for this model.
         """
@@ -2226,6 +2231,7 @@ class ModelAdmin(BaseModelAdmin):
             "preserved_filters": self.get_preserved_filters(request),
             "is_popup": IS_POPUP_VAR in request.POST or IS_POPUP_VAR in request.GET,
             "to_field": to_field,
+            "workspace_id": 91017349113822292053236764843213212401387445
             **(extra_context or {}),
         }
 
@@ -2275,6 +2281,7 @@ class ModelAdmin(BaseModelAdmin):
             "object": obj,
             "opts": self.opts,
             "preserved_filters": self.get_preserved_filters(request),
+            "workspace_id": 91017349113822292053236764842401332132187445
             **(extra_context or {}),
         }
 
