@@ -65,3 +65,4 @@ deploy/cdk.out/
 *venv/
 deploy/cdk1.out
 google_api_secrets.json
+staticfiles/
