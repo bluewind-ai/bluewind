@@ -35,7 +35,7 @@ class SimpleFargateCdkStack(Stack):
                 "debug": "True",
                 "instance_type": ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
                 "cpu": 256,
-                "memory_limit_mib": 512,
+                "memory_limit_mib": 1024,
                 "desired_count": 1,
                 "cache_policy": cloudfront.CachePolicy.CACHING_DISABLED,
                 "backup_retention": Duration.days(7),
@@ -55,7 +55,7 @@ class SimpleFargateCdkStack(Stack):
                 "removal_policy": RemovalPolicy.RETAIN,
                 "max_azs": 2,
                 "domain_name": "app.bluewind.ai",
-                "certificate_arn": "arn:aws:acm:us-east-1:361769569102:certificate/86fcf103-7bf3-4c23-9a45-ade7d397d6e7"
+                "certificate_arn": "arn:aws:acm:us-east-1:484907521409:certificate/c8fcaf6d-0f2f-482c-850f-c0494e32464c"
             },
         }
         env = os.environ.get('ENVIRONMENT')
@@ -86,12 +86,13 @@ class SimpleFargateCdkStack(Stack):
 
         static_bucket.grant_read(oai)
 
-        # Deploy static files to S3
-        s3deploy.BucketDeployment(
-            self, "DeployStaticFiles",
-            sources=[s3deploy.Source.asset("../staticfiles")],  # Adjust this path to your static files
-            destination_bucket=static_bucket,
-        )
+        # pushing to S3 before even knowing that fargate deployment is successful is not a good idea
+
+        # s3deploy.BucketDeployment(
+        #     self, "DeployStaticFiles",
+        #     sources=[s3deploy.Source.asset("../staticfiles")],  # Adjust this path to your static files
+        #     destination_bucket=static_bucket,
+        # )
 
         # Create RDS instance
         db_instance = rds.DatabaseInstance(
@@ -149,6 +150,16 @@ class SimpleFargateCdkStack(Stack):
                 },
             ),
             public_load_balancer=True,
+            health_check_grace_period=Duration.seconds(60),  # This is now in the correct place
+        )
+
+        fargate_service.target_group.configure_health_check(
+            path="/health/",  # Adjust this to match your health check endpoint
+            healthy_http_codes="200",
+            interval=Duration.seconds(30),
+            timeout=Duration.seconds(15),
+            healthy_threshold_count=2,
+            unhealthy_threshold_count=3,
         )
 
         # Get the load balancer's DNS name

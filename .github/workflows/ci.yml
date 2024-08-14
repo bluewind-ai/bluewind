@@ -11,7 +11,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/staging' && 'staging' || 'dev' }}
+
     steps:
+      - name: Set environment variable
+        run: |
+          if [ ${{ github.ref }} = 'refs/heads/main' ]; then
+            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+          elif [ ${{ github.ref }} = 'refs/heads/staging' ]; then
+            echo "ENVIRONMENT=staging" >> $GITHUB_ENV
+          elif [ ${{ github.ref }} = 'refs/heads/dev' ]; then
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+          else
+            echo "ENVIRONMENT=unknown" >> $GITHUB_ENV
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -24,6 +38,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
 
       - name: Install AWS CDK
         run: |
@@ -39,29 +60,11 @@ jobs:
         run: |
           poetry install
 
-      - name: Set environment variable
-        run: |
-          if [ ${{ github.ref }} = 'refs/heads/main' ]; then
-            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
-          elif [ ${{ github.ref }} = 'refs/heads/staging' ]; then
-            echo "ENVIRONMENT=staging" >> $GITHUB_ENV
-          elif [ ${{ github.ref }} = 'refs/heads/dev' ]; then
-            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
-          else
-            echo "ENVIRONMENT=unknown" >> $GITHUB_ENV
-          fi
-
       - name: Run deploy script
         working-directory: ./deploy
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         run: |
-          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-          aws configure set default.region us-west-2
-
           poetry run cdk bootstrap aws://${AWS_ACCOUNT_ID}/us-west-2
 
-          poetry run cdk deploy --require-approval never --context environment=${{ env.ENVIRONMENT }}
+          poetry run cdk deploy --require-approval never --context environment=${{ env.ENVIRONMENT }} --verbose
