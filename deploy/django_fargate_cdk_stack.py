@@ -67,7 +67,17 @@ class SimpleFargateCdkStack(Stack):
             certificate_arn=config["certificate_arn"]
         )
 
-        vpc = ec2.Vpc(self, "MyVPC", max_azs=config["max_azs"])
+        vpc = ec2.Vpc(self, "MyVPC", 
+            max_azs=config["max_azs"],
+            nat_gateways=0,
+            subnet_configuration=[
+                ec2.SubnetConfiguration(
+                    name="public",
+                    subnet_type=ec2.SubnetType.PUBLIC,
+                    cidr_mask=24
+                )
+            ]
+        )
 
         cluster = ecs.Cluster(self, "MyCluster", vpc=vpc)
         
@@ -150,6 +160,8 @@ class SimpleFargateCdkStack(Stack):
                 },
             ),
             public_load_balancer=True,
+            assign_public_ip=True,  # Add this line
+            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
             health_check_grace_period=Duration.seconds(60),  # This is now in the correct place
         )
 
@@ -221,6 +233,3 @@ class SimpleFargateCdkStack(Stack):
         fargate_service.task_definition.default_container.add_environment(
             "STATIC_URL", f"https://{config['domain_name']}/staticfiles/,https://{distribution.distribution_domain_name}/staticfiles/"
         )
-
-        # Grant the Fargate task permission to access the RDS instance
-        db_instance.connections.allow_default_port_from(fargate_service.service.connections)
