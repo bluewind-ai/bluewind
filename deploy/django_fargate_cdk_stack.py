@@ -138,7 +138,7 @@ class SimpleFargateCdkStack(Stack):
             memory_limit_mib=config["memory_limit_mib"],
             desired_count=config["desired_count"],
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
-                image=ecs.ContainerImage.from_asset("../", build_args=build_args),
+                image=ecs.ContainerImage.from_asset("../"),
                 container_port=8000,
                 secrets={
                     "DB_USERNAME": ecs.Secret.from_secrets_manager(rds_secret, field="username"),
