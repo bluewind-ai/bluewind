@@ -115,20 +115,22 @@ class SimpleFargateCdkStack(Stack):
         
         rds_secret = db_instance.secret
         secret_name = f"{self.stack_name}-{env}-django-admin-credentials"
-
+        email = f"{env}-admin@bluewind.ai"
+        
         django_superuser_secret = secretsmanager.Secret(
             self, "DjangoAdminSecretCreation",
             secret_name=secret_name,
             generate_secret_string=secretsmanager.SecretStringGenerator(
                 secret_string_template=json.dumps({
-                    "DJANGO_SUPERUSER_EMAIL": "admin@bluewind.ai",
-                    "DJANGO_SUPERUSER_USERNAME": "admin@bluewind.ai",
+                    "DJANGO_SUPERUSER_EMAIL": email,
+                    "DJANGO_SUPERUSER_USERNAME": email,
                 }),
                 generate_string_key="DJANGO_SUPERUSER_PASSWORD",
                 exclude_punctuation=True,
                 password_length=32
             )
         )
+        print(email)
 
         fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self, "MyFargateService",
