@@ -49,7 +49,7 @@ class SimpleFargateCdkStack(Stack):
                 "instance_type": ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.SMALL),
                 "cpu": 256,
                 "memory_limit_mib": 1024,
-                "desired_count": 2,
+                "desired_count": 1,
                 "cache_policy": cloudfront.CachePolicy.CACHING_OPTIMIZED,
                 "backup_retention": Duration.days(30),
                 "removal_policy": RemovalPolicy.RETAIN,
@@ -115,7 +115,7 @@ class SimpleFargateCdkStack(Stack):
         
         rds_secret = db_instance.secret
         secret_name = f"{self.stack_name}-{env}-django-admin-credentials"
-        email = "admin@bluewind.ai"
+        email = f"{env}-admin@bluewind.ai"
         
         django_superuser_secret = secretsmanager.Secret(
             self, "DjangoAdminSecretCreation",
