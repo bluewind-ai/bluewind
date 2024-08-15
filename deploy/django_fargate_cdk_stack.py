@@ -49,7 +49,7 @@ class SimpleFargateCdkStack(Stack):
                 "instance_type": ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.SMALL),
                 "cpu": 256,
                 "memory_limit_mib": 1024,
-                "desired_count": 2,
+                "desired_count": 1,
                 "cache_policy": cloudfront.CachePolicy.CACHING_OPTIMIZED,
                 "backup_retention": Duration.days(30),
                 "removal_policy": RemovalPolicy.RETAIN,
