@@ -48,7 +48,7 @@ class SimpleFargateCdkStack(Stack):
                 "debug": "False",
                 "instance_type": ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.SMALL),
                 "cpu": 256,
-                "memory_limit_mib": 512,
+                "memory_limit_mib": 1024,
                 "desired_count": 2,
                 "cache_policy": cloudfront.CachePolicy.CACHING_OPTIMIZED,
                 "backup_retention": Duration.days(30),
@@ -115,14 +115,15 @@ class SimpleFargateCdkStack(Stack):
         
         rds_secret = db_instance.secret
         secret_name = f"{self.stack_name}-{env}-django-admin-credentials"
-
+        email = "admin@bluewind.ai"
+        
         django_superuser_secret = secretsmanager.Secret(
             self, "DjangoAdminSecretCreation",
             secret_name=secret_name,
             generate_secret_string=secretsmanager.SecretStringGenerator(
                 secret_string_template=json.dumps({
-                    "DJANGO_SUPERUSER_EMAIL": "admin@bluewind.ai",
-                    "DJANGO_SUPERUSER_USERNAME": "admin@bluewind.ai",
+                    "DJANGO_SUPERUSER_EMAIL": email,
+                    "DJANGO_SUPERUSER_USERNAME": email,
                 }),
                 generate_string_key="DJANGO_SUPERUSER_PASSWORD",
                 exclude_punctuation=True,
@@ -137,7 +138,7 @@ class SimpleFargateCdkStack(Stack):
             memory_limit_mib=config["memory_limit_mib"],
             desired_count=config["desired_count"],
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
-                image=ecs.ContainerImage.from_asset("../", build_args=build_args),
+                image=ecs.ContainerImage.from_asset("../"),
                 container_port=8000,
                 secrets={
                     "DB_USERNAME": ecs.Secret.from_secrets_manager(rds_secret, field="username"),

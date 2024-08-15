@@ -29,3 +29,6 @@ I think it's a good balance. nested folders are hard.
 remove id 91017349113822292053236764842401387445
 
 URGENT: put project in root folder
+
+I need to do something like this: https://www.reddit.com/r/aws/comments/mrpexd/finding_resources_outside_of_cloudformation_stacks/
+Because I have dangling resources, things outside of my cloudformation stack
