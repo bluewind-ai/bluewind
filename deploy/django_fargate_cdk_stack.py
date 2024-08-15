@@ -40,7 +40,7 @@ class SimpleFargateCdkStack(Stack):
                 "cache_policy": cloudfront.CachePolicy.CACHING_DISABLED,
                 "backup_retention": Duration.days(7),
                 "removal_policy": RemovalPolicy.DESTROY,
-                "max_azs": 1,
+                "max_azs": 2,
                 "domain_name": "staging.bluewind.ai",
                 "certificate_arn": "arn:aws:acm:us-east-1:361769569102:certificate/e12139f7-7309-49b7-bf0d-01ba2a3b7a20"
             },
@@ -130,7 +130,6 @@ class SimpleFargateCdkStack(Stack):
                 password_length=32
             )
         )
-        print(email)
 
         fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self, "MyFargateService",
