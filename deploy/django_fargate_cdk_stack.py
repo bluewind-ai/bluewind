@@ -161,7 +161,7 @@ class SimpleFargateCdkStack(Stack):
             ),
             public_load_balancer=True,
             assign_public_ip=True,  # Add this line
-            task_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
+            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
             health_check_grace_period=Duration.seconds(60),  # This is now in the correct place
         )
 
@@ -233,6 +233,3 @@ class SimpleFargateCdkStack(Stack):
         fargate_service.task_definition.default_container.add_environment(
             "STATIC_URL", f"https://{config['domain_name']}/staticfiles/,https://{distribution.distribution_domain_name}/staticfiles/"
         )
-
-        # Grant the Fargate task permission to access the RDS instance
-        db_instance.connections.allow_default_port_from(fargate_service.service.connections)
