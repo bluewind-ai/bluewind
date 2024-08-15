@@ -115,7 +115,7 @@ class SimpleFargateCdkStack(Stack):
         
         rds_secret = db_instance.secret
         secret_name = f"{self.stack_name}-{env}-django-admin-credentials"
-        email = "admin@bluewind.ai"
+        email = f"{env}-admin@bluewind.ai"
         
         django_superuser_secret = secretsmanager.Secret(
             self, "DjangoAdminSecretCreation",
