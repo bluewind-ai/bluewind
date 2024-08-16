@@ -56,7 +56,17 @@ class SimpleFargateCdkStack(Stack):
             certificate_arn=config["certificate_arn"]
         )
 
-        vpc = ec2.Vpc(self, "MyVPC", max_azs=config["max_azs"])
+        vpc = ec2.Vpc(self, "MyVPC",
+            max_azs=config["max_azs"],
+            nat_gateways=0,
+            subnet_configuration=[
+                ec2.SubnetConfiguration(
+                    name="Public",
+                    subnet_type=ec2.SubnetType.PUBLIC,
+                    cidr_mask=24
+                )
+            ]
+        )
         cluster = ecs.Cluster(self, "MyCluster", vpc=vpc)
         
         static_bucket = s3.Bucket(
@@ -126,6 +136,7 @@ class SimpleFargateCdkStack(Stack):
             ),
             public_load_balancer=True,
             health_check_grace_period=Duration.seconds(60),
+            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),  # Add this line
         )
 
         fargate_service.target_group.configure_health_check(
