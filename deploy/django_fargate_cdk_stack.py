@@ -136,7 +136,7 @@ class SimpleFargateCdkStack(Stack):
             ),
             public_load_balancer=True,
             health_check_grace_period=Duration.seconds(60),
-            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),  # Add this line
+            task_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),  # Use task_subnets instead of vpc_subnets
         )
 
         fargate_service.target_group.configure_health_check(
