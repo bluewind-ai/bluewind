@@ -66,3 +66,4 @@ deploy/cdk.out/
 deploy/cdk1.out
 google_api_secrets.json
 staticfiles/
+token.pickle

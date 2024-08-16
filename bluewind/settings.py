@@ -32,7 +32,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Take environment variables from .env file
 if os.environ.get('ENVIRONMENT') != 'prod' and os.environ.get('ENVIRONMENT') != 'staging':
-    environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+    if os.environ.get('ENVIRONMENT') == 'test':
+        environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+        os.environ['ENVIRONMENT'] = 'test'
+    else:
+        environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -128,22 +135,6 @@ import sys
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': os.getenv('DATABASE_ENGINE'),
-#         'NAME': os.getenv('DATABASE_NAME'),
-#         'USER': os.getenv('DATABASE_USER'),
-#         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-#         'HOST': os.getenv('DATABASE_HOST'),
-#         'PORT': os.getenv('DATABASE_PORT'),
-#         'TEST': {
-#             'NAME': 'test_mydatabase',
-#         },
-#     }
-# }
-
-import dj_database_url
-
 DB_USERNAME = os.environ.get('DB_USERNAME')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
 DB_HOST = os.environ.get('DB_HOST')
@@ -173,14 +164,14 @@ if os.environ.get('ENVIRONMENT') != 'prod':
 
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#         "NAME": ":memory:",
-#     }
-# }
+if os.environ.get('ENVIRONMENT') == 'test':
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            'NAME': BASE_DIR / 'db.sqlite3',
+            "NAME": ":memory:",
+        }
+    }
 
 
 # if 'test' in sys.argv:

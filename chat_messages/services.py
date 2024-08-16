@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from django.contrib.auth.models import User
 
 # Load environment variables
-load_dotenv()
+
 
 # Print current working directory and client secret file path for debugging
 print("Current working directory:", os.getcwd())
@@ -19,6 +19,7 @@ print("GMAIL_CLIENT_SECRET_FILE:", os.getenv('GMAIL_CLIENT_SECRET_FILE'))
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 def get_gmail_service():
+    load_dotenv()
     creds = None
     # The file token.pickle stores the user's access and refresh tokens
     if os.path.exists('token.pickle'):
