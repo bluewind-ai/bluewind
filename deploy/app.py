@@ -9,7 +9,7 @@ load_dotenv()
 
 app = App()
 
-SimpleFargateCdkStack(app, "DjangoFargateCdkStack2",
+SimpleFargateCdkStack(app, "DjangoFargateCdkStack3",
     env=Environment(
         account=os.getenv("AWS_ACCOUNT_ID"),
         region="us-west-2"

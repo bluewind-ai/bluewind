@@ -148,6 +148,11 @@ class SimpleFargateCdkStack(Stack):
             unhealthy_threshold_count=3,
         )
 
+        fargate_service.target_group.set_attribute(
+            key="deregistration_delay.timeout_seconds",
+            value="5"
+        )
+
         lb_dns_name = fargate_service.load_balancer.load_balancer_dns_name
         cloudfront_logs_bucket = s3.Bucket(
             self, "CloudFrontLogsBucket",
@@ -178,8 +183,8 @@ class SimpleFargateCdkStack(Stack):
             enable_logging=True,
             log_bucket=cloudfront_logs_bucket,
             log_file_prefix="cloudfront-logs/",
-            domain_names=[config["domain_name"]],
-            certificate=certificate,
+            # domain_names=[config["domain_name"]],
+            # certificate=certificate,
         )
 
         fargate_service.task_definition.default_container.add_environment("SECRET_KEY", "TO_BE_REPLACED")
