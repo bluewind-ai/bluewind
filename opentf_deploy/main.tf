@@ -1,3 +1,7 @@
+variable "aws_access_key_id" {}
+variable "aws_secret_access_key" {}
+variable "aws_session_token" {}
+
 variable "region" {
   description = "The AWS region to deploy resources in"
   type        = string
@@ -71,7 +75,7 @@ resource "aws_ecs_cluster" "main" {
 
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app" {
-  family                   = "app-bluewind-task"
+  family                   = "app-bluewind-task-1"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
@@ -230,10 +234,33 @@ resource "null_resource" "push_image" {
 
   provisioner "local-exec" {
     command = <<EOF
+      set -e
+      echo "Building Docker image..."
+      IMAGE_ID=$(docker build -q ../)
+      
+      SHORT_ID=$${IMAGE_ID:7:12}
+      
+      echo "Image built with ID: $${IMAGE_ID}"
+      echo "Short ID: $${SHORT_ID}"
+      
+      echo "Tagging image..."
+      docker tag $${IMAGE_ID} ${aws_ecr_repository.app.repository_url}:$${SHORT_ID}
+      
+      echo "Logging into ECR..."
       aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${aws_ecr_repository.app.repository_url}
-      docker build -t ${aws_ecr_repository.app.repository_url}:latest ../
-      docker push ${aws_ecr_repository.app.repository_url}:latest
+      
+      echo "Pushing image to ECR..."
+      docker push ${aws_ecr_repository.app.repository_url}:$${SHORT_ID}
+      
+      echo "Image pushed successfully with tag: $${SHORT_ID}"
+      echo $${SHORT_ID} > image_tag.txt
     EOF
+
+    environment = {
+      AWS_ACCESS_KEY_ID     = var.aws_access_key_id
+      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
+      AWS_SESSION_TOKEN     = var.aws_session_token
+    }
   }
 }
 
