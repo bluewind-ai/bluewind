@@ -262,24 +262,23 @@ resource "null_resource" "push_image" {
     command = <<EOF
       set -e
       echo "Building Docker image..."
-      IMAGE_ID=$(docker build ../)
+      docker build -t app-bluewind:latest ../
       
-      SHORT_ID=$${IMAGE_ID:7:12}
+      IMAGE_ID=$(docker images -q app-bluewind:latest)
       
       echo "Image built with ID: $${IMAGE_ID}"
-      echo "Short ID: $${SHORT_ID}"
       
       echo "Tagging image..."
-      docker tag $${IMAGE_ID} ${aws_ecr_repository.app.repository_url}:$${SHORT_ID}
+      docker tag $${IMAGE_ID} ${aws_ecr_repository.app.repository_url}:$${IMAGE_ID}
       
       echo "Logging into ECR..."
       aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${aws_ecr_repository.app.repository_url}
       
       echo "Pushing image to ECR..."
-      docker push ${aws_ecr_repository.app.repository_url}:$${SHORT_ID}
+      docker push ${aws_ecr_repository.app.repository_url}:$${IMAGE_ID}
       
-      echo "Image pushed successfully with tag: $${SHORT_ID}"
-      echo "$${SHORT_ID}" > ${path.module}/image_tag.txt
+      echo "Image pushed successfully with tag: $${IMAGE_ID}"
+      echo "$${IMAGE_ID}" > ${path.module}/image_tag.txt
     EOF
 
     environment = {
