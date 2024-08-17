@@ -1,6 +1,12 @@
+variable "region" {
+  description = "The AWS region to deploy resources in"
+  type        = string
+  default     = "us-west-2"  # You can change this default value if needed
+}
+
 # Provider configuration
 provider "aws" {
-  region  = "us-west-2"
+  region  = var.region
   profile = "ci-cd-admin"
 }
 
@@ -191,5 +197,19 @@ resource "aws_ecr_repository" "app" {
   
   tags = {
     Name = "app-bluewind-ecr-repo"
+  }
+}
+
+resource "null_resource" "push_image" {
+  triggers = {
+    ecr_repository_url = aws_ecr_repository.app.repository_url
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+      aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${aws_ecr_repository.app.repository_url}
+      docker build -t ${aws_ecr_repository.app.repository_url}:latest ../
+      docker push ${aws_ecr_repository.app.repository_url}:latest
+    EOF
   }
 }
