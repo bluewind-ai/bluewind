@@ -178,3 +178,18 @@ resource "aws_security_group" "ecs_sg" {
 
 # Data source for AZs
 data "aws_availability_zones" "available" {}
+
+# ECR Repository
+# ECR Repository
+resource "aws_ecr_repository" "app" {
+  name                 = "app-bluewind-repository"
+  image_tag_mutability = "IMMUTABLE"
+  
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+  
+  tags = {
+    Name = "app-bluewind-ecr-repo"
+  }
+}
