@@ -3,7 +3,7 @@ defensive programming on the filter by tenant: in the model manager and in every
 pgbadger
 pgstats
 get_absolute_url of resource
-requirements folder 
+requirements folder
 mozilla observatory
 checkout django webtest
 
@@ -34,3 +34,5 @@ I need to do something like this: https://www.reddit.com/r/aws/comments/mrpexd/f
 Because I have dangling resources, things outside of my cloudformation stack
 
 Run tests on previous commits to see if they still work, to see if changes are backwards compatible.
+
+add vantage to AWS accounts

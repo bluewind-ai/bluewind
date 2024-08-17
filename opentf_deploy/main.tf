@@ -83,8 +83,8 @@ resource "aws_ecs_task_definition" "app" {
   family                   = "app-bluewind-gunicorn"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = "1024"
+  memory                   = "1024"
 
   container_definitions = jsonencode([
     {
@@ -154,13 +154,13 @@ resource "aws_iam_role_policy_attachment" "ecs_agent" {
 
 
 data "aws_ssm_parameter" "ecs_optimized_ami" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended/image_id"
 }
 # Launch Template
 resource "aws_launch_template" "ecs_lt" {
   name_prefix   = "app-bluewind-ecs-template"
   image_id      = data.aws_ssm_parameter.ecs_optimized_ami.value
-  instance_type = "t3.micro"
+  instance_type = "t4g.small"
 
   iam_instance_profile {
     name = aws_iam_instance_profile.ecs_agent.name
@@ -191,23 +191,21 @@ resource "aws_ecs_service" "app" {
   desired_count   = 1
   depends_on      = [null_resource.push_image]
 
-  ordered_placement_strategy {
-    type  = "spread"
-    field = "instanceId"
-  }
+  deployment_maximum_percent         = 100
+  deployment_minimum_healthy_percent = 0
 
   deployment_circuit_breaker {
-    enable   = true
-    rollback = true
+    enable   = false
+    rollback = false
   }
 
   deployment_controller {
     type = "ECS"
   }
 
-  # Add this block to adjust deployment configuration
-  deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
+  # Remove the ordered_placement_strategy block
+
+  force_new_deployment = true
 }
 
 # Security Group for ECS instances
@@ -293,9 +291,9 @@ resource "null_resource" "push_image" {
 resource "aws_autoscaling_group" "ecs" {
   name                = "app-bluewind-ecs-asg"
   vpc_zone_identifier = aws_subnet.public[*].id
-  min_size            = 1
+  min_size            = 2
   max_size            = 3
-  desired_capacity    = 1
+  desired_capacity    = 2
 
   launch_template {
     id      = aws_launch_template.ecs_lt.id
@@ -339,66 +337,66 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_cp_association" {
 
 # check deployment status
 
-resource "null_resource" "check_ecs_deployment" {
-  depends_on = [null_resource.push_image, aws_ecs_service.app, aws_ecs_task_definition.app]
+# resource "null_resource" "check_ecs_deployment" {
+#   depends_on = [null_resource.push_image, aws_ecs_service.app, aws_ecs_task_definition.app]
 
-  triggers = {
-    always_run = "${timestamp()}"
-  }
+#   triggers = {
+#     always_run = "${timestamp()}"
+#   }
 
-  provisioner "local-exec" {
-    command = <<EOF
-      #!/bin/bash
-      set -e
+#   provisioner "local-exec" {
+#     command = <<EOF
+#       #!/bin/bash
+#       set -e
 
-      cluster_name="${aws_ecs_cluster.main.name}"
-      service_name="${aws_ecs_service.app.name}"
-      max_attempts=20
-      sleep_time=1
+#       cluster_name="${aws_ecs_cluster.main.name}"
+#       service_name="${aws_ecs_service.app.name}"
+#       max_attempts=20
+#       sleep_time=1
 
-      for ((i=1; i<=max_attempts; i++)); do
-        echo "Attempt $i/$max_attempts: Checking ECS service status..."
+#       for ((i=1; i<=max_attempts; i++)); do
+#         echo "Attempt $i/$max_attempts: Checking ECS service status..."
         
-        deployment_status=$(aws ecs describe-services \
-          --cluster "$cluster_name" \
-          --services "$service_name" \
-          --query 'services[0].deployments[0].rolloutState' \
-          --output text)
+#         deployment_status=$(aws ecs describe-services \
+#           --cluster "$cluster_name" \
+#           --services "$service_name" \
+#           --query 'services[0].deployments[0].rolloutState' \
+#           --output text)
 
-        if [ "$deployment_status" == "COMPLETED" ]; then
-          echo "Deployment completed successfully!"
-          exit 0
-        elif [ "$deployment_status" == "FAILED" ]; then
-          echo "Deployment failed. Fetching task details..."
-          task_arn=$(aws ecs list-tasks \
-            --cluster "$cluster_name" \
-            --service-name "$service_name" \
-            --desired-status STOPPED \
-            --query 'taskArns[0]' \
-            --output text)
+#         if [ "$deployment_status" == "COMPLETED" ]; then
+#           echo "Deployment completed successfully!"
+#           exit 0
+#         elif [ "$deployment_status" == "FAILED" ]; then
+#           echo "Deployment failed. Fetching task details..."
+#           task_arn=$(aws ecs list-tasks \
+#             --cluster "$cluster_name" \
+#             --service-name "$service_name" \
+#             --desired-status STOPPED \
+#             --query 'taskArns[0]' \
+#             --output text)
           
-          if [ "$task_arn" != "None" ]; then
-            aws ecs describe-tasks \
-              --cluster "$cluster_name" \
-              --tasks "$task_arn"
-          fi
+#           if [ "$task_arn" != "None" ]; then
+#             aws ecs describe-tasks \
+#               --cluster "$cluster_name" \
+#               --tasks "$task_arn"
+#           fi
           
-          exit 1
-        else
-          echo "Deployment status: $deployment_status. Waiting..."
-          sleep $sleep_time
-        fi
-      done
+#           exit 1
+#         else
+#           echo "Deployment status: $deployment_status. Waiting..."
+#           sleep $sleep_time
+#         fi
+#       done
 
-      echo "Deployment did not complete within the expected time."
-      exit 1
-    EOF
+#       echo "Deployment did not complete within the expected time."
+#       exit 1
+#     EOF
 
-    environment = {
-      AWS_ACCESS_KEY_ID     = var.aws_access_key_id
-      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
-      AWS_SESSION_TOKEN     = var.aws_session_token
-      AWS_DEFAULT_REGION    = var.region
-    }
-  }
-}
+#     environment = {
+#       AWS_ACCESS_KEY_ID     = var.aws_access_key_id
+#       AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
+#       AWS_SESSION_TOKEN     = var.aws_session_token
+#       AWS_DEFAULT_REGION    = var.region
+#     }
+#   }
+# }
