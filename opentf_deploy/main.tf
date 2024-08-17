@@ -77,14 +77,33 @@ resource "aws_ecs_task_definition" "app" {
   cpu                      = "256"
   memory                   = "512"
 
-  container_definitions = jsonencode([{
-    name  = "app-bluewind-container"
-    image = "${aws_ecr_repository.app.repository_url}:latest"
-    portMappings = [{
-      containerPort = 8000  # or whatever port your application uses
-      hostPort      = 0
-    }]
-  }])
+  container_definitions = jsonencode([
+    {
+      name  = "app-bluewind-container"
+      image = "${aws_ecr_repository.app.repository_url}:latest"
+      portMappings = [{
+        containerPort = 8080  # Adjust this to match your application's port
+        hostPort      = 0
+      }]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs_logs.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_cloudwatch_log_group" "ecs_logs" {
+  name              = "/ecs/app-bluewind"
+  retention_in_days = 30  # Adjust this value as needed
+
+  tags = {
+    Name = "app-bluewind-logs"
+  }
 }
 
 # EC2 Instance Profile
@@ -202,7 +221,7 @@ resource "aws_ecr_repository" "app" {
 
 resource "null_resource" "push_image" {
   triggers = {
-    ecr_repository_url = aws_ecr_repository.app.repository_url
+    always_run = "${timestamp()}"  # This will always be different, triggering a run every time
   }
 
   provisioner "local-exec" {
