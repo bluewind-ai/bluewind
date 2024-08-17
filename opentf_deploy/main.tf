@@ -94,6 +94,20 @@ resource "aws_ecs_task_definition" "app" {
         containerPort = 8000  # Adjust this to match your application's port
         hostPort      = 0
       }]
+      environment = [
+        {
+          name  = "DEBUG"
+          value = "1"
+        },
+        {
+          name  = "SECRET_KEY"
+          value = "your_secret_key_here"
+        },
+        {
+          name  = "ALLOWED_HOSTS"
+          value = "localhost,127.0.0.1"
+        }
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {

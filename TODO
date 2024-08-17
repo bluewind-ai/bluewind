@@ -36,3 +36,4 @@ Because I have dangling resources, things outside of my cloudformation stack
 Run tests on previous commits to see if they still work, to see if changes are backwards compatible.
 
 add vantage to AWS accounts
+add in the CI a step that checks if things work ok.
