@@ -136,10 +136,14 @@ resource "aws_iam_role_policy_attachment" "ecs_agent" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
+
+data "aws_ssm_parameter" "ecs_optimized_ami" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+}
 # Launch Template
 resource "aws_launch_template" "ecs_lt" {
   name_prefix   = "app-bluewind-ecs-template"
-  image_id      = "ami-0fe19057e9cb4efd8"
+  image_id      = data.aws_ssm_parameter.ecs_optimized_ami.value
   instance_type = "t3.micro"
 
   iam_instance_profile {
@@ -230,5 +234,53 @@ resource "null_resource" "push_image" {
       docker build -t ${aws_ecr_repository.app.repository_url}:latest ../
       docker push ${aws_ecr_repository.app.repository_url}:latest
     EOF
+  }
+}
+
+# Auto Scaling Group
+resource "aws_autoscaling_group" "ecs" {
+  name                = "app-bluewind-ecs-asg"
+  vpc_zone_identifier = aws_subnet.public[*].id
+  min_size            = 1
+  max_size            = 3
+  desired_capacity    = 1
+
+  launch_template {
+    id      = aws_launch_template.ecs_lt.id
+    version = "$Latest"
+  }
+
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = true
+    propagate_at_launch = true
+  }
+}
+
+# ECS Capacity Provider
+resource "aws_ecs_capacity_provider" "ecs_cp" {
+  name = "app-bluewind-ecs-cp"
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.ecs.arn
+    
+    managed_scaling {
+      maximum_scaling_step_size = 1000
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+  }
+}
+
+# Associate Capacity Provider with ECS Cluster
+resource "aws_ecs_cluster_capacity_providers" "ecs_cp_association" {
+  cluster_name       = aws_ecs_cluster.main.name
+  capacity_providers = [aws_ecs_capacity_provider.ecs_cp.name]
+
+  default_capacity_provider_strategy {
+    base              = 1
+    weight            = 100
+    capacity_provider = aws_ecs_capacity_provider.ecs_cp.name
   }
 }
