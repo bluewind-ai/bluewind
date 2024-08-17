@@ -79,9 +79,9 @@ resource "aws_ecs_task_definition" "app" {
 
   container_definitions = jsonencode([{
     name  = "app-bluewind-container"
-    image = "nginx:latest"
+    image = "${aws_ecr_repository.app.repository_url}:latest"
     portMappings = [{
-      containerPort = 80
+      containerPort = 8000  # or whatever port your application uses
       hostPort      = 0
     }]
   }])
