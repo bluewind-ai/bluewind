@@ -8,3 +8,4 @@ staticfiles/*
 opentf_deploy/*
 .gitignore
 TODO
+deploy.sh
