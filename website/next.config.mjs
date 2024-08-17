@@ -102,7 +102,7 @@ const nextraConfig = withNextra({
 });
 
 const nonPermanentRedirects = [
-  ["/discord", "https://discord.gg/BSxfM3Up"],
+  ["/discord", "https://discord.gg/DDMVTYrrKy"],
   ["/demo", "/docs/demo"],
   ["/video", "/guides/videos/introducing-langfuse-2.0"],
   ["/docs/video", "/guides/videos/introducing-langfuse-2.0"],
