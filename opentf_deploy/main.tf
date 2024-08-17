@@ -189,8 +189,7 @@ resource "aws_ecs_service" "app" {
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = 1
-  depends_on = [null_resource.push_image]
-
+  depends_on      = [null_resource.push_image]
 
   ordered_placement_strategy {
     type  = "spread"
@@ -205,6 +204,10 @@ resource "aws_ecs_service" "app" {
   deployment_controller {
     type = "ECS"
   }
+
+  # Add this block to adjust deployment configuration
+  deployment_maximum_percent         = 200
+  deployment_minimum_healthy_percent = 100
 }
 
 # Security Group for ECS instances
@@ -259,7 +262,7 @@ resource "null_resource" "push_image" {
     command = <<EOF
       set -e
       echo "Building Docker image..."
-      IMAGE_ID=$(docker build -q ../)
+      IMAGE_ID=$(docker build ../)
       
       SHORT_ID=$${IMAGE_ID:7:12}
       
@@ -351,8 +354,8 @@ resource "null_resource" "check_ecs_deployment" {
 
       cluster_name="${aws_ecs_cluster.main.name}"
       service_name="${aws_ecs_service.app.name}"
-      max_attempts=30
-      sleep_time=20
+      max_attempts=20
+      sleep_time=1
 
       for ((i=1; i<=max_attempts; i++)); do
         echo "Attempt $i/$max_attempts: Checking ECS service status..."

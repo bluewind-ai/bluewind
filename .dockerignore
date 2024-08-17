@@ -6,3 +6,4 @@ website/*
 deploy/*
 staticfiles/*
 opentf_deploy/*
+.gitignore
