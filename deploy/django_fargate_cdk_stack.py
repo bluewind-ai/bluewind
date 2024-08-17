@@ -10,14 +10,13 @@ from aws_cdk import (
     aws_cloudfront_origins as origins,
     aws_secretsmanager as secretsmanager,
     aws_certificatemanager as acm,
-    aws_autoscaling as autoscaling,
     RemovalPolicy,
     Duration,
 )
 from constructs import Construct
 import json
 
-class SimpleEcsCdkStack(Stack):
+class SimpleFargateCdkStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         
@@ -68,24 +67,7 @@ class SimpleEcsCdkStack(Stack):
                 )
             ]
         )
-
         cluster = ecs.Cluster(self, "MyCluster", vpc=vpc)
-
-        auto_scaling_group = autoscaling.AutoScalingGroup(
-            self, "ASG",
-            vpc=vpc,
-            instance_type=config["instance_type"],
-            machine_image=ecs.EcsOptimizedImage.amazon_linux2(),
-            min_capacity=1,
-            max_capacity=3,
-            desired_capacity=config["desired_count"],
-        )
-
-        capacity_provider = ecs.AsgCapacityProvider(
-            self, "AsgCapacityProvider",
-            auto_scaling_group=auto_scaling_group
-        )
-        cluster.add_asg_capacity_provider(capacity_provider)
         
         static_bucket = s3.Bucket(
             self, "StaticBucket",
@@ -133,54 +115,45 @@ class SimpleEcsCdkStack(Stack):
             )
         )
 
-        task_definition = ecs.Ec2TaskDefinition(
-            self, "TaskDef",
-            network_mode=ecs.NetworkMode.AWS_VPC,
-        )
-
-        container = task_definition.add_container(
-            "web",
-            image=ecs.ContainerImage.from_asset("../"),
-            memory_limit_mib=config["memory_limit_mib"],
-            cpu=config["cpu"],
-            secrets={
-                "DB_USERNAME": ecs.Secret.from_secrets_manager(rds_secret, field="username"),
-                "DB_PASSWORD": ecs.Secret.from_secrets_manager(rds_secret, field="password"),
-                "DB_HOST": ecs.Secret.from_secrets_manager(rds_secret, field="host"),
-                "DB_PORT": ecs.Secret.from_secrets_manager(rds_secret, field="port"),
-                "DJANGO_SUPERUSER_EMAIL": ecs.Secret.from_secrets_manager(django_superuser_secret, field="DJANGO_SUPERUSER_EMAIL"),
-                "DJANGO_SUPERUSER_USERNAME": ecs.Secret.from_secrets_manager(django_superuser_secret, field="DJANGO_SUPERUSER_USERNAME"),
-                "DJANGO_SUPERUSER_PASSWORD": ecs.Secret.from_secrets_manager(django_superuser_secret, field="DJANGO_SUPERUSER_PASSWORD"),
-            },
-            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
-        )
-
-        container.add_port_mappings(ecs.PortMapping(container_port=8000))
-
-        ec2_service = ecs_patterns.ApplicationLoadBalancedEc2Service(
-            self, "EC2Service",
+        fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
+            self, "MyFargateService",
             cluster=cluster,
-            task_definition=task_definition,
+            cpu=config["cpu"],
+            memory_limit_mib=config["memory_limit_mib"],
             desired_count=config["desired_count"],
+            task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
+                image=ecs.ContainerImage.from_asset("../"),
+                container_port=8000,
+                secrets={
+                    "DB_USERNAME": ecs.Secret.from_secrets_manager(rds_secret, field="username"),
+                    "DB_PASSWORD": ecs.Secret.from_secrets_manager(rds_secret, field="password"),
+                    "DB_HOST": ecs.Secret.from_secrets_manager(rds_secret, field="host"),
+                    "DB_PORT": ecs.Secret.from_secrets_manager(rds_secret, field="port"),
+                    "DJANGO_SUPERUSER_EMAIL": ecs.Secret.from_secrets_manager(django_superuser_secret, field="DJANGO_SUPERUSER_EMAIL"),
+                    "DJANGO_SUPERUSER_USERNAME": ecs.Secret.from_secrets_manager(django_superuser_secret, field="DJANGO_SUPERUSER_USERNAME"),
+                    "DJANGO_SUPERUSER_PASSWORD": ecs.Secret.from_secrets_manager(django_superuser_secret, field="DJANGO_SUPERUSER_PASSWORD"),
+                },
+            ),
             public_load_balancer=True,
             health_check_grace_period=Duration.seconds(60),
+            task_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),  # Use task_subnets instead of vpc_subnets
         )
 
-        ec2_service.target_group.configure_health_check(
+        fargate_service.target_group.configure_health_check(
             path="/health/",
             healthy_http_codes="200",
-            interval=Duration.seconds(5),
-            timeout=Duration.seconds(2),
+            interval=Duration.seconds(30),
+            timeout=Duration.seconds(15),
             healthy_threshold_count=2,
             unhealthy_threshold_count=3,
         )
 
-        ec2_service.target_group.set_attribute(
+        fargate_service.target_group.set_attribute(
             key="deregistration_delay.timeout_seconds",
             value="5"
         )
 
-        lb_dns_name = ec2_service.load_balancer.load_balancer_dns_name
+        lb_dns_name = fargate_service.load_balancer.load_balancer_dns_name
         cloudfront_logs_bucket = s3.Bucket(
             self, "CloudFrontLogsBucket",
             removal_policy=RemovalPolicy.RETAIN,
@@ -192,7 +165,7 @@ class SimpleEcsCdkStack(Stack):
             self, "MyDistribution",
             default_behavior=cloudfront.BehaviorOptions(
                 origin=origins.LoadBalancerV2Origin(
-                    ec2_service.load_balancer,
+                    fargate_service.load_balancer,
                     protocol_policy=cloudfront.OriginProtocolPolicy.HTTP_ONLY,
                 ),
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -214,17 +187,17 @@ class SimpleEcsCdkStack(Stack):
             # certificate=certificate,
         )
 
-        container.add_environment("SECRET_KEY", "TO_BE_REPLACED")
-        container.add_environment("DEBUG", config["debug"])
-        container.add_environment("ENVIRONMENT", env)
-        container.add_environment(
+        fargate_service.task_definition.default_container.add_environment("SECRET_KEY", "TO_BE_REPLACED")
+        fargate_service.task_definition.default_container.add_environment("DEBUG", "True")
+        fargate_service.task_definition.default_container.add_environment("ENVIRONMENT", "staging")
+        fargate_service.task_definition.default_container.add_environment(
             "ALLOWED_HOSTS", f"{config['domain_name']},{lb_dns_name},localhost,127.0.0.1,localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,*"
         )
-        container.add_environment(
+        fargate_service.task_definition.default_container.add_environment(
             "CSRF_TRUSTED_ORIGINS", f"https://{config['domain_name']},http://{lb_dns_name},https://{lb_dns_name},https://{distribution.distribution_domain_name}"
         )
-        container.add_environment(
+        fargate_service.task_definition.default_container.add_environment(
             "STATIC_URL", f"https://{config['domain_name']}/staticfiles/,https://{distribution.distribution_domain_name}/staticfiles/"
         )
 
-        db_instance.connections.allow_default_port_from(ec2_service.service)
+        db_instance.connections.allow_default_port_from(fargate_service.service.connections)
