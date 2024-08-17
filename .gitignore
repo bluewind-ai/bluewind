@@ -72,3 +72,4 @@ opentf_deploy/.terraform/providers/registry.opentofu.org/hashicorp/null
 opentf_deploy/terraform.tfstate
 opentf_deploy/terraform.tfstate.backup
 opentf_deploy/image_tag.txt
+opentf_deploy/.terraform/providers/registry.opentofu.org/hashicorp/local

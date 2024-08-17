@@ -1,3 +1,8 @@
+data "local_file" "image_tag" {
+  depends_on = [null_resource.push_image]
+  filename   = "${path.module}/image_tag.txt"
+}
+
 variable "aws_access_key_id" {}
 variable "aws_secret_access_key" {}
 variable "aws_session_token" {}
@@ -75,7 +80,7 @@ resource "aws_ecs_cluster" "main" {
 
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app" {
-  family                   = "app-bluewind-task-2"
+  family                   = "app-bluewind-gunicorn"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
@@ -84,7 +89,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name  = "app-bluewind-container"
-      image = "${aws_ecr_repository.app.repository_url}:latest"
+      image = "${aws_ecr_repository.app.repository_url}:${trimspace(data.local_file.image_tag.content)}"
       portMappings = [{
         containerPort = 8000  # Adjust this to match your application's port
         hostPort      = 0
@@ -184,6 +189,8 @@ resource "aws_ecs_service" "app" {
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = 1
+  depends_on = [null_resource.push_image]
+
 
   ordered_placement_strategy {
     type  = "spread"
@@ -269,7 +276,7 @@ resource "null_resource" "push_image" {
       docker push ${aws_ecr_repository.app.repository_url}:$${SHORT_ID}
       
       echo "Image pushed successfully with tag: $${SHORT_ID}"
-      echo $${SHORT_ID} > image_tag.txt
+      echo "$${SHORT_ID}" > ${path.module}/image_tag.txt
     EOF
 
     environment = {
@@ -331,7 +338,7 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_cp_association" {
 # check deployment status
 
 resource "null_resource" "check_ecs_deployment" {
-  depends_on = [null_resource.push_image, aws_ecs_service.app]
+  depends_on = [null_resource.push_image, aws_ecs_service.app, aws_ecs_task_definition.app]
 
   triggers = {
     always_run = "${timestamp()}"
