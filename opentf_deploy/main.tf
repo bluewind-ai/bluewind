@@ -75,7 +75,7 @@ resource "aws_ecs_cluster" "main" {
 
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app" {
-  family                   = "app-bluewind-task-1"
+  family                   = "app-bluewind-task-2"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
@@ -325,5 +325,71 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_cp_association" {
     base              = 1
     weight            = 100
     capacity_provider = aws_ecs_capacity_provider.ecs_cp.name
+  }
+}
+
+# check deployment status
+
+resource "null_resource" "check_ecs_deployment" {
+  depends_on = [null_resource.push_image, aws_ecs_service.app]
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+      #!/bin/bash
+      set -e
+
+      cluster_name="${aws_ecs_cluster.main.name}"
+      service_name="${aws_ecs_service.app.name}"
+      max_attempts=30
+      sleep_time=20
+
+      for ((i=1; i<=max_attempts; i++)); do
+        echo "Attempt $i/$max_attempts: Checking ECS service status..."
+        
+        deployment_status=$(aws ecs describe-services \
+          --cluster "$cluster_name" \
+          --services "$service_name" \
+          --query 'services[0].deployments[0].rolloutState' \
+          --output text)
+
+        if [ "$deployment_status" == "COMPLETED" ]; then
+          echo "Deployment completed successfully!"
+          exit 0
+        elif [ "$deployment_status" == "FAILED" ]; then
+          echo "Deployment failed. Fetching task details..."
+          task_arn=$(aws ecs list-tasks \
+            --cluster "$cluster_name" \
+            --service-name "$service_name" \
+            --desired-status STOPPED \
+            --query 'taskArns[0]' \
+            --output text)
+          
+          if [ "$task_arn" != "None" ]; then
+            aws ecs describe-tasks \
+              --cluster "$cluster_name" \
+              --tasks "$task_arn"
+          fi
+          
+          exit 1
+        else
+          echo "Deployment status: $deployment_status. Waiting..."
+          sleep $sleep_time
+        fi
+      done
+
+      echo "Deployment did not complete within the expected time."
+      exit 1
+    EOF
+
+    environment = {
+      AWS_ACCESS_KEY_ID     = var.aws_access_key_id
+      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
+      AWS_SESSION_TOKEN     = var.aws_session_token
+      AWS_DEFAULT_REGION    = var.region
+    }
   }
 }
