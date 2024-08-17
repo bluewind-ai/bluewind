@@ -86,7 +86,7 @@ resource "aws_ecs_task_definition" "app" {
       name  = "app-bluewind-container"
       image = "${aws_ecr_repository.app.repository_url}:latest"
       portMappings = [{
-        containerPort = 8080  # Adjust this to match your application's port
+        containerPort = 8000  # Adjust this to match your application's port
         hostPort      = 0
       }]
       logConfiguration = {
@@ -98,7 +98,7 @@ resource "aws_ecs_task_definition" "app" {
         }
       }
       healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+        command     = ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
         interval    = 5
         timeout     = 2
         retries     = 10
