@@ -1,6 +1,6 @@
 # Provider configuration
 provider "aws" {
-  region = "us-west-2"  # Adjust as needed
+  region  = "us-west-2"  # Adjust as needed
   profile = "ci-cd-admin"
 }
 
@@ -66,32 +66,109 @@ resource "aws_ecs_cluster" "main" {
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app" {
   family                   = "app-task"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 1024
+  network_mode             = "bridge"
+  requires_compatibilities = ["EC2"]
+  cpu                      = "256"
+  memory                   = "512"
 
   container_definitions = jsonencode([{
     name  = "app"
     image = "nginx:latest"  # Replace with your app image
     portMappings = [{
       containerPort = 80
-      hostPort      = 80
+      hostPort      = 0
     }]
   }])
+}
+
+# EC2 Instance Profile
+resource "aws_iam_instance_profile" "ecs_agent" {
+  name = "ecs-agent"
+  role = aws_iam_role.ecs_agent.name
+}
+
+# IAM Role for EC2 ECS Agent
+resource "aws_iam_role" "ecs_agent" {
+  name = "ecs-agent"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# Attach ECS Agent policy to the role
+resource "aws_iam_role_policy_attachment" "ecs_agent" {
+  role       = aws_iam_role.ecs_agent.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+# Launch Template
+resource "aws_launch_template" "ecs_lt" {
+  name_prefix   = "ecs-template"
+  image_id      = "ami-0fe19057e9cb4efd8"  # Amazon ECS-Optimized AMI for us-east-1, update as needed
+  instance_type = "t3.micro"
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ecs_agent.name
+  }
+
+  vpc_security_group_ids = [aws_security_group.ecs_sg.id]
+
+  user_data = base64encode(<<-EOF
+              #!/bin/bash
+              echo ECS_CLUSTER=${aws_ecs_cluster.main.name} >> /etc/ecs/ecs.config
+              EOF
+  )
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "ECS Instance"
+    }
+  }
 }
 
 # ECS Service
 resource "aws_ecs_service" "app" {
   name            = "app-service"
+  launch_type     = "EC2"  # Explicitly set the launch type to EC2
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
-  launch_type     = "FARGATE"
   desired_count   = 1
 
-  network_configuration {
-    subnets         = aws_subnet.public[*].id
-    assign_public_ip = true
+  ordered_placement_strategy {
+    type  = "spread"
+    field = "instanceId"
+  }
+}
+
+# Security Group for ECS instances
+resource "aws_security_group" "ecs_sg" {
+  name        = "ecs-sg"
+  description = "Allow inbound traffic for ECS"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
