@@ -67,3 +67,7 @@ deploy/cdk1.out
 google_api_secrets.json
 staticfiles/
 token.pickle
+opentf_deploy/.terraform/providers/registry.opentofu.org/hashicorp/aws
+opentf_deploy/.terraform/providers/registry.opentofu.org/hashicorp/null
+opentf_deploy/terraform.tfstate
+opentf_deploy/terraform.tfstate.backup

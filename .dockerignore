@@ -5,3 +5,4 @@ website/*
 .env
 deploy/*
 staticfiles/*
+opentf_deploy/*
