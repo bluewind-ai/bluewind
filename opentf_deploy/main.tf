@@ -97,6 +97,13 @@ resource "aws_ecs_task_definition" "app" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
+      healthCheck = {
+        command     = ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+        interval    = 5
+        timeout     = 2
+        retries     = 10
+        startPeriod = 1
+      }
     }
   ])
 }
@@ -181,6 +188,15 @@ resource "aws_ecs_service" "app" {
   ordered_placement_strategy {
     type  = "spread"
     field = "instanceId"
+  }
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
+  deployment_controller {
+    type = "ECS"
   }
 }
 
