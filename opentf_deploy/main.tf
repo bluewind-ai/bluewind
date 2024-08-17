@@ -1,6 +1,6 @@
 # Provider configuration
 provider "aws" {
-  region  = "us-west-2"  # Adjust as needed
+  region  = "us-west-2"
   profile = "ci-cd-admin"
 }
 
@@ -11,7 +11,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = {
-    Name = "MyVPC"
+    Name = "app-bluewind-vpc"
   }
 }
 
@@ -24,7 +24,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "Public Subnet ${count.index + 1}"
+    Name = "app-bluewind-public-subnet-${count.index + 1}"
   }
 }
 
@@ -33,7 +33,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "Main IGW"
+    Name = "app-bluewind-igw"
   }
 }
 
@@ -47,7 +47,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "Public Route Table"
+    Name = "app-bluewind-public-route-table"
   }
 }
 
@@ -60,20 +60,20 @@ resource "aws_route_table_association" "public" {
 
 # ECS Cluster
 resource "aws_ecs_cluster" "main" {
-  name = "MyCluster"
+  name = "app-bluewind-cluster"
 }
 
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app" {
-  family                   = "app-task"
+  family                   = "app-bluewind-task"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "512"
 
   container_definitions = jsonencode([{
-    name  = "app"
-    image = "nginx:latest"  # Replace with your app image
+    name  = "app-bluewind-container"
+    image = "nginx:latest"
     portMappings = [{
       containerPort = 80
       hostPort      = 0
@@ -83,13 +83,13 @@ resource "aws_ecs_task_definition" "app" {
 
 # EC2 Instance Profile
 resource "aws_iam_instance_profile" "ecs_agent" {
-  name = "ecs-agent"
+  name = "app-bluewind-ecs-agent-profile"
   role = aws_iam_role.ecs_agent.name
 }
 
 # IAM Role for EC2 ECS Agent
 resource "aws_iam_role" "ecs_agent" {
-  name = "ecs-agent"
+  name = "app-bluewind-ecs-agent-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -113,8 +113,8 @@ resource "aws_iam_role_policy_attachment" "ecs_agent" {
 
 # Launch Template
 resource "aws_launch_template" "ecs_lt" {
-  name_prefix   = "ecs-template"
-  image_id      = "ami-0fe19057e9cb4efd8"  # Amazon ECS-Optimized AMI for us-east-1, update as needed
+  name_prefix   = "app-bluewind-ecs-template"
+  image_id      = "ami-0fe19057e9cb4efd8"
   instance_type = "t3.micro"
 
   iam_instance_profile {
@@ -132,15 +132,15 @@ resource "aws_launch_template" "ecs_lt" {
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = "ECS Instance"
+      Name = "app-bluewind-ecs-instance"
     }
   }
 }
 
 # ECS Service
 resource "aws_ecs_service" "app" {
-  name            = "app-service"
-  launch_type     = "EC2"  # Explicitly set the launch type to EC2
+  name            = "app-bluewind-service"
+  launch_type     = "EC2"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = 1
@@ -153,7 +153,7 @@ resource "aws_ecs_service" "app" {
 
 # Security Group for ECS instances
 resource "aws_security_group" "ecs_sg" {
-  name        = "ecs-sg"
+  name        = "app-bluewind-ecs-sg"
   description = "Allow inbound traffic for ECS"
   vpc_id      = aws_vpc.main.id
 
@@ -169,6 +169,10 @@ resource "aws_security_group" "ecs_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "app-bluewind-ecs-sg"
   }
 }
 
