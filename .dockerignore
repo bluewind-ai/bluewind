@@ -10,3 +10,4 @@ opentf_deploy/*
 TODO
 deploy.sh
 logs/*
+.aws

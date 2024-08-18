@@ -74,3 +74,4 @@ opentf_deploy/terraform.tfstate.backup
 opentf_deploy/image_tag.txt
 opentf_deploy/.terraform/providers/registry.opentofu.org/hashicorp/local
 logs/*
+.aws

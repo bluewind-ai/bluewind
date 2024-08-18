@@ -10,7 +10,6 @@ data "local_file" "image_tag" {
 
 variable "aws_access_key_id" {}
 variable "aws_secret_access_key" {}
-variable "aws_session_token" {}
 
 variable "region" {
   description = "The AWS region to deploy resources in"
@@ -418,7 +417,6 @@ resource "null_resource" "push_image" {
     environment = {
       AWS_ACCESS_KEY_ID     = var.aws_access_key_id
       AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
-      AWS_SESSION_TOKEN     = var.aws_session_token
     }
   }
 }

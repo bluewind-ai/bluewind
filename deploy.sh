@@ -44,10 +44,14 @@ run_docker_tests() {
 run_opentofu() {
     echo "Running OpenTofu commands..."
     if (
+        if [ -f .aws ]; then
+            echo "Loading AWS credentials from .aws file"
+            source .aws
+        else
+            echo "Warning: .aws file not found. Using existing environment variables."
+        fi
         cd opentf_deploy
-        aws sso login --profile ci-cd-admin
-        eval "$(aws configure export-credentials --profile ci-cd-admin --format env)"
-        export TF_VAR_aws_access_key_id=$AWS_ACCESS_KEY_ID TF_VAR_aws_secret_access_key=$AWS_SECRET_ACCESS_KEY TF_VAR_aws_session_token=$AWS_SESSION_TOKEN
+        export TF_VAR_aws_access_key_id=$AWS_ACCESS_KEY_ID TF_VAR_aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
         tofu apply --auto-approve
     ) > "$LOG_DIR/opentofu.log" 2>&1; then
         echo "OpenTofu apply completed successfully. Log file: $LOG_DIR/opentofu.log"
