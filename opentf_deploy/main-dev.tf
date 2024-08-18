@@ -659,6 +659,7 @@ resource "aws_instance" "dev_instance" {
 
   vpc_security_group_ids = [aws_security_group.dev_sg.id]
   subnet_id              = aws_subnet.public[0].id
+  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
   tags = {
     Name = "app-bluewind-dev-instance"
@@ -671,12 +672,75 @@ resource "aws_instance" "dev_instance" {
               systemctl start docker
               systemctl enable docker
               usermod -aG docker ec2-user
+
+              # Wait for docker to start
+              while ! docker info > /dev/null 2>&1; do
+                echo "Waiting for docker to start..."
+                sleep 1
+              done
+
+              # Authenticate with ECR
+              aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${aws_ecr_repository.app.repository_url}
+
+              # Pull the specific image
+              docker pull ${aws_ecr_repository.app.repository_url}:${trimspace(data.local_file.image_tag.content)}
+
+              # Run the container
+              docker run -d -p 8000:8000 \
+                -e DEBUG=1 \
+                -e SECRET_KEY="your_secret_key_here" \
+                -e ALLOWED_HOSTS="localhost,127.0.0.1" \
+                -e DATABASE_ENGINE="django.db.backends.postgresql" \
+                -e DB_USERNAME="dbadmin" \
+                -e DB_PASSWORD="changeme123" \
+                -e DB_HOST="${aws_db_instance.default.address}" \
+                -e DB_PORT="${aws_db_instance.default.port}" \
+                -e DB_NAME="postgres" \
+                -e DJANGO_SUPERUSER_EMAIL="admin@example.com" \
+                -e DJANGO_SUPERUSER_USERNAME="admin@example.com" \
+                -e DJANGO_SUPERUSER_PASSWORD="admin123" \
+                -e ENVIRONMENT="staging" \
+                ${aws_ecr_repository.app.repository_url}:${trimspace(data.local_file.image_tag.content)}
               EOF
+
+  environment = {
+      AWS_ACCESS_KEY_ID     = var.aws_access_key_id
+      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
+      AWS_SESSION_TOKEN     = var.aws_session_token
+    }
+  depends_on = [null_resource.push_image, aws_db_instance.default, ]
 }
 
 # Output the public IP of the dev instance
 output "dev_instance_public_ip" {
   value = aws_instance.dev_instance.public_ip
+}
+
+resource "aws_iam_role" "ec2_ecr_access_role" {
+  name = "ec2-ecr-access-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.ec2_ecr_access_role.name
+}
+
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "ec2-ecr-profile"
+  role = aws_iam_role.ec2_ecr_access_role.name
 }
 
 
