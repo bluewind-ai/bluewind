@@ -601,6 +601,84 @@ output "rds_endpoint" {
   value       = aws_db_instance.default.endpoint
 }
 
+# DEV EC2 Instance
+
+# Create a key pair for SSH access
+variable "ssh_public_key" {
+  description = "The public key for SSH access to the dev instance"
+  type        = string
+}
+
+resource "aws_key_pair" "dev_key" {
+  key_name   = "app-bluewind-dev-key"
+  public_key = var.ssh_public_key
+}
+
+variable "your_ip_address" {
+  description = "Your IP address for SSH access"
+  type        = string
+}
+
+# Security Group for Dev EC2 instance
+resource "aws_security_group" "dev_sg" {
+  name        = "app-bluewind-dev-sg"
+  description = "Security group for development EC2 instance"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${var.your_ip_address}/32"]
+  }
+
+  ingress {
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "app-bluewind-dev-sg"
+  }
+}
+
+# EC2 Instance for development
+resource "aws_instance" "dev_instance" {
+  ami           = data.aws_ssm_parameter.ecs_optimized_ami.value
+  instance_type = "t4g.micro"
+  key_name      = aws_key_pair.dev_key.key_name
+
+  vpc_security_group_ids = [aws_security_group.dev_sg.id]
+  subnet_id              = aws_subnet.public[0].id
+
+  tags = {
+    Name = "app-bluewind-dev-instance"
+  }
+
+  user_data = <<-EOF
+              #!/bin/bash
+              yum update -y
+              yum install -y docker
+              systemctl start docker
+              systemctl enable docker
+              usermod -aG docker ec2-user
+              EOF
+}
+
+# Output the public IP of the dev instance
+output "dev_instance_public_ip" {
+  value = aws_instance.dev_instance.public_ip
+}
+
 
 # check deployment status
 
