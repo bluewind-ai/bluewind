@@ -1,3 +1,8 @@
+# output "alb_http_url" {
+#   description = "The HTTP URL of the Application Load Balancer"
+#   value       = "http://${aws_lb.app.dns_name}"
+# }
+
 data "local_file" "image_tag" {
   depends_on = [null_resource.push_image]
   filename   = "${path.module}/image_tag.txt"
@@ -83,8 +88,8 @@ resource "aws_ecs_task_definition" "app" {
   family                   = "app-bluewind-gunicorn"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
-  cpu                      = "1024"
-  memory                   = "1024"
+  cpu                      = "256"
+  memory                   = "512"
 
   container_definitions = jsonencode([
     {
@@ -105,6 +110,7 @@ resource "aws_ecs_task_definition" "app" {
         },
         {
           name  = "ALLOWED_HOSTS"
+          # value = "localhost,127.0.0.1,${aws_lb.app.dns_name}"
           value = "localhost,127.0.0.1"
         }
       ]
@@ -174,7 +180,7 @@ data "aws_ssm_parameter" "ecs_optimized_ami" {
 resource "aws_launch_template" "ecs_lt" {
   name_prefix   = "app-bluewind-ecs-template"
   image_id      = data.aws_ssm_parameter.ecs_optimized_ami.value
-  instance_type = "t4g.small"
+  instance_type = "t4g.micro"
 
   iam_instance_profile {
     name = aws_iam_instance_profile.ecs_agent.name
@@ -216,6 +222,12 @@ resource "aws_ecs_service" "app" {
   deployment_controller {
     type = "ECS"
   }
+
+  # load_balancer {
+  #   target_group_arn = aws_lb_target_group.app.arn
+  #   container_name   = "app-bluewind-container"
+  #   container_port   = 8000
+  # }
 
   # Remove the ordered_placement_strategy block
 
@@ -308,6 +320,7 @@ resource "aws_autoscaling_group" "ecs" {
   min_size            = 2
   max_size            = 3
   desired_capacity    = 2
+  health_check_grace_period = 0
 
   launch_template {
     id      = aws_launch_template.ecs_lt.id
@@ -348,6 +361,75 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_cp_association" {
     capacity_provider = aws_ecs_capacity_provider.ecs_cp.name
   }
 }
+
+# resource "aws_lb" "app" {
+#   name               = "app-bluewind-alb"
+#   internal           = false
+#   load_balancer_type = "application"
+#   security_groups    = [aws_security_group.alb_sg.id]
+#   subnets            = aws_subnet.public[*].id
+
+#   tags = {
+#     Name = "app-bluewind-alb"
+#   }
+# }
+
+# # ALB Listener
+# resource "aws_lb_listener" "app" {
+#   load_balancer_arn = aws_lb.app.arn
+#   port              = 80
+#   protocol          = "HTTP"
+
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.app.arn
+#   }
+# }
+
+# # ALB Target Group
+# resource "aws_lb_target_group" "app" {
+#   name        = "app-bluewind-tg"
+#   port        = 8000
+#   protocol    = "HTTP"
+#   vpc_id      = aws_vpc.main.id
+#   target_type = "instance"
+#   deregistration_delay = 5  # Set to 5 seconds
+
+#   health_check {
+#     path                = "/health"
+#     healthy_threshold   = 2
+#     unhealthy_threshold = 10
+#     timeout             = 5
+#     interval            = 10
+#     matcher             = "200"
+#   }
+# }
+
+# # Security Group for ALB
+# resource "aws_security_group" "alb_sg" {
+#   name        = "app-bluewind-alb-sg"
+#   description = "Security group for ALB"
+#   vpc_id      = aws_vpc.main.id
+
+#   ingress {
+#     from_port   = 80
+#     to_port     = 80
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+
+#   tags = {
+#     Name = "app-bluewind-alb-sg"
+#   }
+# }
+
 
 # check deployment status
 
