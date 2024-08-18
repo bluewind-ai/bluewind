@@ -8,8 +8,22 @@ REVERSE_TIMESTAMP=$(printf '%010d' $((9999999999-$(date +%s))))
 LOG_DIR="./logs/${REVERSE_TIMESTAMP}_${READABLE_TIMESTAMP}"
 mkdir -p "$LOG_DIR"
 
+run_local_server() {
+    echo "Starting local server..."
+    if gunicorn --bind :8002 --workers 1 bluewind.wsgi > "$LOG_DIR/local_server.log" 2>&1 & then
+        SERVER_PID=$!
+        echo $SERVER_PID > "$LOG_DIR/server.pid"
+        return 0
+    else
+        echo "Failed to start local server. Check log file: $LOG_DIR/local_server.log"
+        return 1
+    fi
+}
+
 # Function to run tests locally
 run_local_tests() {
+    sleep 2
+
     echo "Running tests locally..."
     if ENVIRONMENT=test python3 manage.py test > "$LOG_DIR/local_tests.log" 2>&1; then
         echo "Local tests completed successfully. Log file: $LOG_DIR/local_tests.log"
@@ -77,6 +91,9 @@ run_opentofu() {
 # Run all processes in parallel
 echo "Starting all processes..."
 
+run_local_server &
+LOCAL_SERVER_PID=$!
+
 run_local_tests &
 LOCAL_TESTS_PID=$!
 
@@ -89,10 +106,24 @@ DOCKER_TESTS_PID=$!
 run_opentofu &
 OPENTOFU_PID=$!
 
-# Wait for all background processes to complete
+# Wait for local tests to complete
 wait $LOCAL_TESTS_PID
 LOCAL_TESTS_STATUS=$?
 
+# Stop the local server after local tests are done, regardless of test result
+if [ -f "$LOG_DIR/server.pid" ]; then
+    SERVER_PID=$(cat "$LOG_DIR/server.pid")
+    kill $SERVER_PID
+    if [ $LOCAL_TESTS_STATUS -eq 0 ]; then
+        echo "Local server terminated. Log file: $LOG_DIR/local_server.log"
+    else
+        echo "Local server terminated. Check logs for details: $LOG_DIR/local_server.log"
+    fi
+else
+    echo "Server PID file not found. Server may have stopped unexpectedly."
+fi
+
+# Wait for other background processes to complete
 wait $STAGING_TESTS_PID
 STAGING_TESTS_STATUS=$?
 
