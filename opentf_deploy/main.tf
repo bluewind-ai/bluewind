@@ -81,6 +81,11 @@ resource "aws_route_table_association" "public" {
 # ECS Cluster
 resource "aws_ecs_cluster" "main" {
   name = "app-bluewind-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 # ECS Task Definition
@@ -90,6 +95,7 @@ resource "aws_ecs_task_definition" "app" {
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "512"
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
@@ -152,7 +158,7 @@ resource "aws_ecs_task_definition" "app" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.ecs_logs.name
+          "awslogs-group"         = "/ecs/app-bluewind"
           "awslogs-region"        = var.region
           "awslogs-stream-prefix" = "ecs"
         }
@@ -168,7 +174,7 @@ resource "aws_ecs_task_definition" "app" {
   ])
 }
 
-resource "aws_cloudwatch_log_group" "ecs_logs" {
+resource "aws_cloudwatch_log_group" "ecs_tasks" {
   name              = "/ecs/app-bluewind"
   retention_in_days = 30  # Adjust this value as needed
 
@@ -177,12 +183,63 @@ resource "aws_cloudwatch_log_group" "ecs_logs" {
   }
 }
 
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "app-bluewind-ecs-task-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+
 # EC2 Instance Profile
 resource "aws_iam_instance_profile" "ecs_agent" {
   name = "app-bluewind-ecs-agent-profile"
   role = aws_iam_role.ecs_agent.name
 }
 
+resource "aws_cloudwatch_log_group" "ecs_agent_logs" {
+  name              = "/ecs/ecs-agent-logs"
+  retention_in_days = 30
+
+  tags = {
+    Name = "app-bluewind-ecs-agent-logs"
+  }
+}
+
+resource "aws_iam_role_policy" "ecs_agent_cloudwatch_logs" {
+  name = "ecs-agent-cloudwatch-logs"
+  role = aws_iam_role.ecs_agent.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = "${aws_cloudwatch_log_group.ecs_agent_logs.arn}:*"
+      }
+    ]
+  })
+}
 
 # IAM Role for EC2 ECS Agent
 resource "aws_iam_role" "ecs_agent" {
@@ -227,6 +284,10 @@ resource "aws_launch_template" "ecs_lt" {
   user_data = base64encode(<<-EOF
               #!/bin/bash
               echo ECS_CLUSTER=${aws_ecs_cluster.main.name} >> /etc/ecs/ecs.config
+              echo ECS_LOGLEVEL=debug >> /etc/ecs/ecs.config
+              echo ECS_LOGFILE=/var/log/ecs/ecs-agent.log >> /etc/ecs/ecs.config
+              echo ECS_ENABLE_CONTAINER_METADATA=true >> /etc/ecs/ecs.config
+              systemctl restart ecs
               EOF
   )
 
