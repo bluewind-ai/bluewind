@@ -318,11 +318,14 @@ resource "aws_ecs_service" "app" {
   desired_count   = 1
   depends_on      = [null_resource.push_image]
 
-  deployment_maximum_percent         = 100
+  deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 0
+  health_check_grace_period_seconds = 0
+
+
 
   deployment_circuit_breaker {
-    enable   = false
+    enable   = true
     rollback = false
   }
 
@@ -439,6 +442,7 @@ resource "aws_autoscaling_group" "ecs" {
     value               = true
     propagate_at_launch = true
   }
+  force_delete = true
 }
 
 # ECS Capacity Provider
@@ -505,9 +509,9 @@ resource "aws_lb_target_group" "app" {
   health_check {
     path                = "/health"
     healthy_threshold   = 2
-    unhealthy_threshold = 10
-    timeout             = 5
-    interval            = 10
+    unhealthy_threshold = 2
+    timeout             = 2
+    interval            = 5
     matcher             = "200"
   }
 }
