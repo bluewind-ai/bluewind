@@ -20,6 +20,18 @@ run_local_tests() {
     fi
 }
 
+# Function to run tests against staging
+run_tests_against_staging() {
+    echo "Running tests against staging..."
+    if ENVIRONMENT=test TEST_HOST=app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com ALLOWED_HOSTS=app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com, python3 manage.py test > "$LOG_DIR/staging_tests.log" 2>&1; then
+        echo "Staging tests completed successfully. Log file: $LOG_DIR/staging_tests.log"
+        return 0
+    else
+        echo "Staging tests failed. Check log file: $LOG_DIR/staging_tests.log"
+        return 1
+    fi
+}
+
 # Function to build and run Docker tests
 run_docker_tests() {
     echo "Building Docker image and running tests..."
@@ -68,6 +80,9 @@ echo "Starting all processes..."
 run_local_tests &
 LOCAL_TESTS_PID=$!
 
+run_tests_against_staging &
+STAGING_TESTS_PID=$!
+
 run_docker_tests &
 DOCKER_TESTS_PID=$!
 
@@ -78,6 +93,9 @@ OPENTOFU_PID=$!
 wait $LOCAL_TESTS_PID
 LOCAL_TESTS_STATUS=$?
 
+wait $STAGING_TESTS_PID
+STAGING_TESTS_STATUS=$?
+
 wait $DOCKER_TESTS_PID
 DOCKER_TESTS_STATUS=$?
 
@@ -87,11 +105,12 @@ OPENTOFU_STATUS=$?
 # Summary
 echo "--- Deployment Summary ---"
 [ $LOCAL_TESTS_STATUS -eq 0 ] && echo "Local tests: SUCCESS" || echo "Local tests: FAILED"
+[ $STAGING_TESTS_STATUS -eq 0 ] && echo "Staging tests: SUCCESS" || echo "Staging tests: FAILED"
 [ $DOCKER_TESTS_STATUS -eq 0 ] && echo "Docker tests: SUCCESS" || echo "Docker tests: FAILED"
 [ $OPENTOFU_STATUS -eq 0 ] && echo "OpenTofu apply: SUCCESS" || echo "OpenTofu apply: FAILED"
 
 # Overall status
-if [ $LOCAL_TESTS_STATUS -eq 0 ] && [ $DOCKER_TESTS_STATUS -eq 0 ] && [ $OPENTOFU_STATUS -eq 0 ]; then
+if [ $LOCAL_TESTS_STATUS -eq 0 ] && [ $STAGING_TESTS_STATUS -eq 0 ] && [ $DOCKER_TESTS_STATUS -eq 0 ] && [ $OPENTOFU_STATUS -eq 0 ]; then
     echo "All processes completed successfully."
     exit 0
 else
