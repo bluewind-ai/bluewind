@@ -89,20 +89,21 @@ resource "aws_ecs_cluster" "main" {
 }
 
 # ECS Task Definition
+# ECS Task Definition
 resource "aws_ecs_task_definition" "app" {
   family                   = "app-bluewind-gunicorn"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "512"
-  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
       name  = "app-bluewind-container"
       image = "${aws_ecr_repository.app.repository_url}:${trimspace(data.local_file.image_tag.content)}"
       portMappings = [{
-        containerPort = 8000  # Adjust this to match your application's port
+        containerPort = 8000
         hostPort      = 0
       }]
       environment = [
@@ -153,6 +154,15 @@ resource "aws_ecs_task_definition" "app" {
         {
           name  = "DJANGO_SUPERUSER_PASSWORD"
           value = "admin123"
+        },
+        {
+          name  = "ENVIRONMENT"
+          value = "staging"
+        },
+        {
+          name  = "CSRF_TRUSTED_ORIGINS"
+          # value = "https://${var.domain_name},http://${aws_lb.app.dns_name},https://${aws_lb.app.dns_name},https://${aws_cloudfront_distribution.app_distribution.domain_name}"
+          value = "http://${aws_lb.app.dns_name},https://${aws_lb.app.dns_name}"
         }
       ]
       logConfiguration = {
