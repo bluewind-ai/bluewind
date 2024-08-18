@@ -111,7 +111,42 @@ resource "aws_ecs_task_definition" "app" {
         {
           name  = "ALLOWED_HOSTS"
           value = "localhost,127.0.0.1,${aws_lb.app.dns_name}"
-          # value = "localhost,127.0.0.1"
+        },
+        {
+          name  = "DATABASE_ENGINE"
+          value = "django.db.backends.postgresql"
+        },
+        {
+          name  = "DB_USERNAME"
+          value = "dbadmin"
+        },
+        {
+          name  = "DB_PASSWORD"
+          value = "changeme123"
+        },
+        {
+          name  = "DB_HOST"
+          value = "app-bluewind-db.c50acykqkhaw.us-west-2.rds.amazonaws.com"
+        },
+        {
+          name  = "DB_PORT"
+          value = "5432"
+        },
+        {
+          name  = "DB_NAME"
+          value = "postgres"
+        },
+        {
+          name  = "DJANGO_SUPERUSER_EMAIL"
+          value = "admin@example.com"
+        },
+        {
+          name  = "DJANGO_SUPERUSER_USERNAME"
+          value = "admin@example.com"
+        },
+        {
+          name  = "DJANGO_SUPERUSER_PASSWORD"
+          value = "admin123"
         }
       ]
       logConfiguration = {
@@ -147,6 +182,7 @@ resource "aws_iam_instance_profile" "ecs_agent" {
   name = "app-bluewind-ecs-agent-profile"
   role = aws_iam_role.ecs_agent.name
 }
+
 
 # IAM Role for EC2 ECS Agent
 resource "aws_iam_role" "ecs_agent" {
@@ -428,6 +464,66 @@ resource "aws_security_group" "alb_sg" {
   tags = {
     Name = "app-bluewind-alb-sg"
   }
+}
+
+# RDS Instance
+resource "aws_db_instance" "default" {
+  identifier           = "app-bluewind-db"
+  engine               = "postgres"
+  engine_version       = "16"
+  instance_class       = "db.t4g.micro"
+  allocated_storage    = 20
+  storage_type         = "gp2"
+  db_name              = "appbluewinddb"
+  username             = "dbadmin"
+  password             = "changeme123"  # Please change this password
+  parameter_group_name = "default.postgres16"
+  skip_final_snapshot  = true
+  publicly_accessible  = true
+
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.default.name
+}
+
+# DB Subnet Group
+resource "aws_db_subnet_group" "default" {
+  name       = "app-bluewind-db-subnet-group"
+  subnet_ids = aws_subnet.public[*].id
+
+  tags = {
+    Name = "App BlueWind DB subnet group"
+  }
+}
+
+# Security Group for RDS
+resource "aws_security_group" "rds_sg" {
+  name        = "app-bluewind-rds-sg"
+  description = "Allow inbound traffic for RDS"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "app-bluewind-rds-sg"
+  }
+}
+
+# Output the RDS endpoint
+output "rds_endpoint" {
+  description = "The connection endpoint for the RDS instance"
+  value       = aws_db_instance.default.endpoint
 }
 
 

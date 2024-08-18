@@ -19,7 +19,7 @@ if 'gunicorn' in os.environ.get('SERVER_SOFTWARE', ''):
     # this hack allows us to run migrations and build static files when the fargate worker starts
     # Why do this? Because it's incredibly simpler than doing it in github actions.
     # We have this if statement to avoid running this code when wsgi is just imported.
-    # from bluewind.pre_setup import pre_setup
-    # pre_setup()
+    from bluewind.pre_setup import pre_setup
+    pre_setup()
 
 application = get_wsgi_application()
