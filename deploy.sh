@@ -25,7 +25,7 @@ run_local_tests() {
     sleep 2
 
     echo "Running tests locally..."
-    if ENVIRONMENT=test python3 manage.py test > "$LOG_DIR/local_tests.log" 2>&1; then
+    if ENVIRONMENT=test TEST_HOST=localhost ALLOWED_HOSTS=localhost, TEST_PORT=8002 python3 manage.py test > "$LOG_DIR/local_tests.log" 2>&1; then
         echo "Local tests completed successfully. Log file: $LOG_DIR/local_tests.log"
         return 0
     else
@@ -106,31 +106,46 @@ DOCKER_TESTS_PID=$!
 run_opentofu &
 OPENTOFU_PID=$!
 
+# Function to wait for a process with timeout
+wait_for_process() {
+    local pid=$1
+    local timeout=1800  # 30 minutes timeout
+    local start_time=$(date +%s)
+
+    while kill -0 $pid 2>/dev/null; do
+        if [ $(($(date +%s) - start_time)) -ge $timeout ]; then
+            echo "Process $pid timed out after $timeout seconds."
+            kill -9 $pid 2>/dev/null
+            return 1
+        fi
+        sleep 5
+    done
+
+    wait $pid
+    return $?
+}
+
 # Wait for local tests to complete
-wait $LOCAL_TESTS_PID
+wait_for_process $LOCAL_TESTS_PID
 LOCAL_TESTS_STATUS=$?
 
 # Stop the local server after local tests are done, regardless of test result
 if [ -f "$LOG_DIR/server.pid" ]; then
     SERVER_PID=$(cat "$LOG_DIR/server.pid")
-    kill $SERVER_PID
-    if [ $LOCAL_TESTS_STATUS -eq 0 ]; then
-        echo "Local server terminated. Log file: $LOG_DIR/local_server.log"
-    else
-        echo "Local server terminated. Check logs for details: $LOG_DIR/local_server.log"
-    fi
+    kill $SERVER_PID 2>/dev/null
+    echo "Local server terminated. Log file: $LOG_DIR/local_server.log"
 else
     echo "Server PID file not found. Server may have stopped unexpectedly."
 fi
 
 # Wait for other background processes to complete
-wait $STAGING_TESTS_PID
+wait_for_process $STAGING_TESTS_PID
 STAGING_TESTS_STATUS=$?
 
-wait $DOCKER_TESTS_PID
+wait_for_process $DOCKER_TESTS_PID
 DOCKER_TESTS_STATUS=$?
 
-wait $OPENTOFU_PID
+wait_for_process $OPENTOFU_PID
 OPENTOFU_STATUS=$?
 
 # Summary
