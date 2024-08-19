@@ -139,27 +139,44 @@ resource "aws_launch_template" "ecs_lt" {
   }
 
    user_data = base64encode(<<-EOF
-        #!/bin/bash
-        set -x
+#!/bin/bash
+set -x
 
-        # Enable verbose logging
-        exec > >(tee /var/log/user-data.log) 2>&1
+# Gather system information
+INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+INSTANCE_TYPE=$(curl -s http://169.254.169.254/latest/meta-data/instance-type)
+AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
+PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+SECURITY_GROUPS=$(curl -s http://169.254.169.254/latest/meta-data/security-groups)
 
-        # Install and configure EC2 Instance Connect
-        yum install -y ec2-instance-connect
-        systemctl start ec2-instance-connect
-        systemctl enable ec2-instance-connect
+# Check EC2 Instance Connect status
+EIC_STATUS=$(systemctl is-active ec2-instance-connect)
+EIC_ENABLED=$(systemctl is-enabled ec2-instance-connect)
 
-        # Gather basic system info
-        INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-        SYSTEM_INFO=$(uname -a; cat /etc/os-release; ifconfig; systemctl status ec2-instance-connect)
+# Check SSH configuration
+SSH_CONFIG=$(grep -v '^#' /etc/ssh/sshd_config | tr '\n' '|')
 
-        # Send data to httpbin.org
-        curl -X POST -H "Content-Type: application/json" -d "{\"instance_id\": \"$INSTANCE_ID\", \"system_info\": \"$SYSTEM_INFO\"}" https://httpbin.org/post
+# Check iptables rules
+IPTABLES_RULES=$(sudo iptables -L -n | tr '\n' '|')
 
-        echo "User data script completed"
-        EOF
-        )
+# Check if IMDSv2 is required
+IMDS_V2_REQUIRED=$(curl -s http://169.254.169.254/latest/meta-data/instance-identity/document | grep -q "availabilityZone" && echo "No" || echo "Yes")
+
+# Send GET request with debug info in headers
+curl -X GET https://webhook.site/d9181df7-47b4-497f-badb-7c4da3a05ea8 \
+    -H "X-Instance-ID: $INSTANCE_ID" \
+    -H "X-Instance-Type: $INSTANCE_TYPE" \
+    -H "X-AZ: $AZ" \
+    -H "X-Public-IP: $PUBLIC_IP" \
+    -H "X-Security-Groups: $SECURITY_GROUPS" \
+    -H "X-EIC-Status: $EIC_STATUS" \
+    -H "X-EIC-Enabled: $EIC_ENABLED" \
+    -H "X-SSH-Config: $SSH_CONFIG" \
+    -H "X-IPTables-Rules: $IPTABLES_RULES" \
+    -H "X-IMDSv2-Required: $IMDS_V2_REQUIRED"
+
+EOF
+)
 
   tag_specifications {
     resource_type = "instance"
