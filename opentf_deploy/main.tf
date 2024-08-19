@@ -98,9 +98,10 @@ resource "aws_ecs_task_definition" "my_task" {
 }
 
 resource "aws_ecs_service" "my_service" {
-  name            = "my-service"
-  cluster         = aws_ecs_cluster.my_cluster.id
+  name          = "my-service"
+  cluster       = aws_ecs_cluster.my_cluster.id
   desired_count = 1
+
   deployment_controller {
     type = "EXTERNAL"
   }
@@ -110,7 +111,18 @@ resource "aws_ecs_service" "my_service" {
     weight            = 100
   }
 
-  # Remove the task_definition attribute
+  lifecycle {
+    ignore_changes = [
+      desired_count,
+      task_definition,
+      load_balancer,
+      network_configuration,
+      capacity_provider_strategy,
+    ]
+    create_before_destroy = true
+  }
+
+  depends_on = [aws_ecs_capacity_provider.main]
 }
 
 output "ecs_key_pair_name" {
