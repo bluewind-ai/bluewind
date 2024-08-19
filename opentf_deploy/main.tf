@@ -111,18 +111,16 @@ resource "aws_ecs_service" "my_service" {
     weight            = 100
   }
 
-  lifecycle {
-    ignore_changes = [
-      desired_count,
-      task_definition,
-      load_balancer,
-      network_configuration,
-      capacity_provider_strategy,
-    ]
-    create_before_destroy = true
-  }
-
-  depends_on = [aws_ecs_capacity_provider.main]
+  # lifecycle {
+  #   ignore_changes = [
+  #     desired_count,
+  #     task_definition,
+  #     load_balancer,
+  #     network_configuration,
+  #     capacity_provider_strategy,
+  #   ]
+  #   create_before_destroy = true
+  # }
 }
 
 data "aws_ssm_parameter" "ecs_optimized_ami" {
@@ -215,68 +213,68 @@ resource "aws_ecs_task_definition" "test_task" {
   ])
 }
 
-resource "null_resource" "test_deployment" {
-  triggers = {
-    always_run = timestamp()
-  }
+# resource "null_resource" "test_deployment" {
+#    triggers = {
+#     never = uuid()
+#   }
 
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo "Starting test deployment at $(date)"
+#   provisioner "local-exec" {
+#     command = <<-EOT
+#       echo "Starting test deployment at $(date)"
       
-      # Create a new task set
-      TASK_SET_ID=$(aws ecs create-task-set \
-        --cluster ${aws_ecs_cluster.my_cluster.name} \
-        --service ${aws_ecs_service.my_service.name} \
-        --task-definition ${aws_ecs_task_definition.test_task.arn} \
-        --external-id $(date +%s) \
-        --launch-type EC2 \
-        --scale value=100,unit=PERCENT \
-        --query 'taskSet.id' \
-        --output text)
+#       # Create a new task set
+#       TASK_SET_ID=$(aws ecs create-task-set \
+#         --cluster ${aws_ecs_cluster.my_cluster.name} \
+#         --service ${aws_ecs_service.my_service.name} \
+#         --task-definition ${aws_ecs_task_definition.test_task.arn} \
+#         --external-id $(date +%s) \
+#         --launch-type EC2 \
+#         --scale value=100,unit=PERCENT \
+#         --query 'taskSet.id' \
+#         --output text)
       
-      echo "Created task set: $TASK_SET_ID"
+#       echo "Created task set: $TASK_SET_ID"
       
-      # Update the service to use the new task set
-      aws ecs update-service-primary-task-set \
-        --cluster ${aws_ecs_cluster.my_cluster.name} \
-        --service ${aws_ecs_service.my_service.name} \
-        --primary-task-set $TASK_SET_ID
+#       # Update the service to use the new task set
+#       aws ecs update-service-primary-task-set \
+#         --cluster ${aws_ecs_cluster.my_cluster.name} \
+#         --service ${aws_ecs_service.my_service.name} \
+#         --primary-task-set $TASK_SET_ID
       
-      echo "Updated service primary task set"
+#       echo "Updated service primary task set"
       
-      # Wait for the service to become stable
-      aws ecs wait services-stable \
-        --cluster ${aws_ecs_cluster.my_cluster.name} \
-        --services ${aws_ecs_service.my_service.name}
+#       # Wait for the service to become stable
+#       aws ecs wait services-stable \
+#         --cluster ${aws_ecs_cluster.my_cluster.name} \
+#         --services ${aws_ecs_service.my_service.name}
       
-      echo "Service is stable"
+#       echo "Service is stable"
       
-      # Fetch the service status
-      aws ecs describe-services \
-        --cluster ${aws_ecs_cluster.my_cluster.name} \
-        --services ${aws_ecs_service.my_service.name} \
-        --query 'services[0].{status:status,runningCount:runningCount,desiredCount:desiredCount,events:events[0].message}' \
-        --output json > deployment_status.json
+#       # Fetch the service status
+#       aws ecs describe-services \
+#         --cluster ${aws_ecs_cluster.my_cluster.name} \
+#         --services ${aws_ecs_service.my_service.name} \
+#         --query 'services[0].{status:status,runningCount:runningCount,desiredCount:desiredCount,events:events[0].message}' \
+#         --output json > deployment_status.json
       
-      cat deployment_status.json
-    EOT
-    environment = {
-      AWS_ACCESS_KEY_ID     = var.aws_access_key_id
-      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
-    }
-  }
-}
+#       cat deployment_status.json
+#     EOT
+#     environment = {
+#       AWS_ACCESS_KEY_ID     = var.aws_access_key_id
+#       AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
+#     }
+#   }
+# }
 
-data "local_file" "deployment_status" {
-  filename = "${path.module}/deployment_status.json"
-  depends_on = [null_resource.test_deployment]
-}
+# data "local_file" "deployment_status" {
+#   filename = "${path.module}/deployment_status.json"
+#   depends_on = [null_resource.test_deployment]
+# }
 
-output "test_deployment_result" {
-  description = "Status of the ECS service after test deployment"
-  value = jsondecode(data.local_file.deployment_status.content)
-}
+# output "test_deployment_result" {
+#   description = "Status of the ECS service after test deployment"
+#   value = jsondecode(data.local_file.deployment_status.content)
+# }
 
 
 resource "aws_iam_role" "ecs_instance_role" {

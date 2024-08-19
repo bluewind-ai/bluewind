@@ -1,6 +1,6 @@
 {
     "status": "ACTIVE",
-    "runningCount": 1,
+    "runningCount": 0,
     "desiredCount": 1,
-    "events": "(service my-service) was unable to place a task because no container instance met all of its requirements. The closest matching (container-instance b9a4b61b45ff480caa61242780d9891f) has insufficient memory available. For more information, see the Troubleshooting section of the Amazon ECS Developer Guide."
+    "events": null
 }
