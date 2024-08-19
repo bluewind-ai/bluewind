@@ -112,22 +112,19 @@ resource "aws_ecs_service" "my_service" {
   # Remove the task_definition attribute
 }
 
-data "aws_ssm_parameter" "ecs_optimized_ami" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
-}
-
 output "ecs_key_pair_name" {
   description = "Name of the key pair used for ECS instances"
   value       = aws_key_pair.ecs_key_pair.key_name
 }
-
+data "aws_ssm_parameter" "ecs_optimized_ami" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+}
 
 resource "aws_launch_template" "ecs_lt" {
   name_prefix   = "ecs-launch-template"
   image_id      = data.aws_ssm_parameter.ecs_optimized_ami.value
   instance_type = "t3.micro"
-  key_name = aws_key_pair.ecs_key_pair.key_name
-
+  key_name      = aws_key_pair.ecs_key_pair.key_name
 
   iam_instance_profile {
     name = aws_iam_instance_profile.ecs_instance_profile.name
@@ -138,22 +135,9 @@ resource "aws_launch_template" "ecs_lt" {
     security_groups             = [aws_security_group.ecs_sg.id]
   }
 
-   user_data = base64encode(<<-EOF
+  user_data = base64encode(<<-EOF
 #!/bin/bash
-set -ex
-
-# Install necessary tools
-yum update -y
-yum install -y aws-cli jq ec2-instance-connect
-
-# Configure and start EC2 Instance Connect
-systemctl start ec2-instance-connect
-systemctl enable ec2-instance-connect
-
-# Configure ECS agent
-sudo echo "ECS_CLUSTER=${aws_ecs_cluster.my_cluster.name}" >> /etc/ecs/ecs.config
-systemctl restart ecs
-
+echo ECS_CLUSTER=${aws_ecs_cluster.my_cluster.name} >> /etc/ecs/ecs.config
 EOF
   )
 
@@ -161,6 +145,7 @@ EOF
     resource_type = "instance"
     tags = {
       Name = "ecs-instance"
+      AmazonECSManaged = ""
     }
   }
 }
