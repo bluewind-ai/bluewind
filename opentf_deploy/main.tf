@@ -296,6 +296,8 @@ resource "aws_launch_template" "ecs_lt" {
               echo ECS_LOGLEVEL=debug >> /etc/ecs/ecs.config
               echo ECS_LOGFILE=/var/log/ecs/ecs-agent.log >> /etc/ecs/ecs.config
               echo ECS_ENABLE_CONTAINER_METADATA=true >> /etc/ecs/ecs.config
+              echo ECS_ENABLE_TASK_IAM_ROLE=true >> /etc/ecs/ecs.config
+              echo ECS_ENABLE_TASK_ENI=true >> /etc/ecs/ecs.config
               systemctl restart ecs
               EOF
   )
@@ -311,22 +313,21 @@ resource "aws_launch_template" "ecs_lt" {
 # ECS Service
 resource "aws_ecs_service" "app" {
   name            = "app-bluewind-service"
-  launch_type     = "EC2"
   cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.app.arn
   desired_count   = 1
-  depends_on      = [null_resource.push_image]
+  launch_type     = "EC2"
 
-  health_check_grace_period_seconds = 0
-
-  deployment_controller {
-    type = "EXTERNAL"
+  network_configuration {
+    subnets         = aws_subnet.public[*].id
+    security_groups = [aws_security_group.ecs_sg.id]
   }
 
-  # load_balancer {
-  #   target_group_arn = aws_lb_target_group.app.arn
-  #   container_name   = "app-bluewind-container"
-  #   container_port   = 8000
-  # }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.app.arn
+    container_name   = "app-bluewind-container"
+    container_port   = 8000
+  }
 }
 
 # Security Group for ECS instances
@@ -621,6 +622,11 @@ resource "null_resource" "deploy_ecs_service" {
       fi
 
       echo "New task set created successfully!"
+      aws ecs update-service \
+        --cluster ${aws_ecs_cluster.main.name} \
+        --service ${aws_ecs_service.app.name} \
+        --task-definition $TASK_DEFINITION_ARN \
+        --force-new-deployment
     EOF
 
     environment = {
