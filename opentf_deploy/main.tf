@@ -111,6 +111,10 @@ resource "aws_launch_template" "ecs_lt" {
   image_id      = "ami-0c0ba4e76e4392ce9"  # Amazon ECS-optimized AMI for us-west-2
   instance_type = "t3.micro"
 
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ecs_instance_profile.name
+  }
+
   network_interfaces {
     associate_public_ip_address = true
     security_groups             = [aws_security_group.ecs_sg.id]
@@ -149,12 +153,11 @@ resource "aws_security_group" "ecs_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
 resource "aws_autoscaling_group" "ecs_asg" {
   vpc_zone_identifier = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
   desired_capacity    = 2
-  max_size            = 2
-  min_size            = 2
+  max_size            = 4
+  min_size            = 1
 
   launch_template {
     id      = aws_launch_template.ecs_lt.id
@@ -163,10 +166,11 @@ resource "aws_autoscaling_group" "ecs_asg" {
 
   tag {
     key                 = "AmazonECSManaged"
-    value               = "true"
+    value               = ""
     propagate_at_launch = true
   }
 }
+
 
 resource "aws_ecs_task_definition" "test_task" {
   family                   = "test-task"
@@ -202,20 +206,28 @@ resource "null_resource" "test_deployment" {
         --cluster ${aws_ecs_cluster.my_cluster.name} \
         --service ${aws_ecs_service.my_service.name} \
         --task-definition ${aws_ecs_task_definition.test_task.arn} \
-        --network-configuration "awsvpcConfiguration={subnets=[${aws_subnet.subnet_1.id},${aws_subnet.subnet_2.id}],assignPublicIp=DISABLED}" \
+        --external-id $(date +%s) \
+        --launch-type EC2 \
+        --scale value=100,unit=PERCENT \
         --query 'taskSet.id' \
         --output text)
+      
+      echo "Created task set: $TASK_SET_ID"
       
       # Update the service to use the new task set
       aws ecs update-service-primary-task-set \
         --cluster ${aws_ecs_cluster.my_cluster.name} \
         --service ${aws_ecs_service.my_service.name} \
-        --task-set $TASK_SET_ID
+        --primary-task-set $TASK_SET_ID
+      
+      echo "Updated service primary task set"
       
       # Wait for the service to become stable
       aws ecs wait services-stable \
         --cluster ${aws_ecs_cluster.my_cluster.name} \
         --services ${aws_ecs_service.my_service.name}
+      
+      echo "Service is stable"
       
       # Fetch the service status
       aws ecs describe-services \
@@ -241,4 +253,32 @@ data "local_file" "deployment_status" {
 output "test_deployment_result" {
   description = "Status of the ECS service after test deployment"
   value = jsondecode(data.local_file.deployment_status.content)
+}
+
+
+resource "aws_iam_role" "ecs_instance_role" {
+  name = "ecs-instance-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_instance_role_policy" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "ecs_instance_profile" {
+  name = "ecs-instance-profile"
+  role = aws_iam_role.ecs_instance_role.name
 }
