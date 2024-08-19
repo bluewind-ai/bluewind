@@ -20,7 +20,7 @@ variable "region" {
 # Provider configuration
 provider "aws" {
   region  = var.region
-  profile = "ci-cd-admin"
+  profile = "ci-cd-admin-2"
 }
 
 # VPC
@@ -91,7 +91,7 @@ resource "aws_ecs_cluster" "main" {
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app" {
   family                   = "app-bluewind-gunicorn"
-  network_mode             = "bridge"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "512"
@@ -103,7 +103,7 @@ resource "aws_ecs_task_definition" "app" {
       image = "${aws_ecr_repository.app.repository_url}:${trimspace(data.local_file.image_tag.content)}"
       portMappings = [{
         containerPort = 8000
-        hostPort      = 0
+        hostPort      = 8000
       }]
       environment = [
         {
@@ -322,11 +322,11 @@ resource "aws_ecs_service" "app" {
     type = "EXTERNAL"
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.app.arn
-    container_name   = "app-bluewind-container"
-    container_port   = 8000
-  }
+  # load_balancer {
+  #   target_group_arn = aws_lb_target_group.app.arn
+  #   container_name   = "app-bluewind-container"
+  #   container_port   = 8000
+  # }
 }
 
 # Security Group for ECS instances
@@ -586,7 +586,7 @@ output "rds_endpoint" {
 }
 
 resource "null_resource" "deploy_ecs_service" {
-  depends_on = [null_resource.push_image, aws_ecs_service.app]
+  depends_on = [aws_ecs_task_definition.app, null_resource.push_image, aws_ecs_service.app]
 
   triggers = {
     always_run = "${timestamp()}"
@@ -600,18 +600,27 @@ resource "null_resource" "deploy_ecs_service" {
       # Get the latest task definition
       TASK_DEFINITION_ARN=$(aws ecs list-task-definitions --family-prefix app-bluewind-gunicorn --sort DESC --max-items 1 --query 'taskDefinitionArns[0]' --output text)
 
-      # Update the service with the new task definition
-      aws ecs update-service \
+      if [ -z "$TASK_DEFINITION_ARN" ]; then
+        echo "Error: No task definition found for family app-bluewind-gunicorn"
+        exit 1
+      fi
+
+      echo "Using task definition: $TASK_DEFINITION_ARN"
+
+      # Create a new task set
+      aws ecs create-task-set \
         --cluster ${aws_ecs_cluster.main.name} \
         --service ${aws_ecs_service.app.name} \
-        --task-definition $TASK_DEFINITION_ARN
+        --task-definition $TASK_DEFINITION_ARN \
+        --external-id $(uuidgen) \
+        --network-configuration "awsvpcConfiguration={subnets=[${join(",", aws_subnet.public[*].id)}],securityGroups=[${aws_security_group.ecs_sg.id}],assignPublicIp=ENABLED}"
 
-      # Wait for service to stabilize
-      aws ecs wait services-stable \
-        --cluster ${aws_ecs_cluster.main.name} \
-        --services ${aws_ecs_service.app.name}
+      if [ $? -ne 0 ]; then
+        echo "Error: Failed to create task set"
+        exit 1
+      fi
 
-      echo "Deployment completed successfully!"
+      echo "New task set created successfully!"
     EOF
 
     environment = {
