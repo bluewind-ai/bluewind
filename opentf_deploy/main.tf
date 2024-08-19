@@ -1,3 +1,8 @@
+module "bluewind" {
+  source = "./bluewind"
+}
+
+
 provider "aws" {
   region  = "us-west-2"  # or your preferred region
   profile = "ci-cd-admin-2"
@@ -108,8 +113,6 @@ resource "aws_ecs_service" "my_service" {
     capacity_provider = aws_ecs_capacity_provider.main.name
     weight            = 100
   }
-
-  # Remove the task_definition attribute
 }
 
 output "ecs_key_pair_name" {
@@ -188,6 +191,13 @@ resource "aws_security_group" "ecs_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 resource "aws_autoscaling_group" "ecs_asg" {
   vpc_zone_identifier = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
@@ -229,9 +239,9 @@ resource "aws_ecs_task_definition" "test_task" {
 }
 
 resource "null_resource" "test_deployment" {
-  triggers = {
-    always_run = timestamp()
-  }
+  # triggers = {
+  #   always_run = timestamp()
+  # }
 
   provisioner "local-exec" {
     command = <<-EOT
@@ -363,4 +373,40 @@ resource "aws_iam_role_policy" "ec2_instance_connect" {
       }
     ]
   })
+}
+
+resource "aws_lb" "ecs_alb" {
+  name               = "ecs-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.ecs_sg.id]
+  subnets            = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
+}
+
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.ecs_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ecs_tg.arn
+  }
+}
+
+resource "aws_lb_target_group" "ecs_tg" {
+  name        = "ecs-target-group"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+
+  health_check {
+    path = "/"
+  }
+}
+
+output "alb_dns_name" {
+  description = "The DNS name of the Application Load Balancer"
+  value       = "http://${aws_lb.ecs_alb.dns_name}"
 }
