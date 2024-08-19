@@ -104,6 +104,13 @@ resource "aws_ecs_service" "my_service" {
   deployment_controller {
     type = "EXTERNAL"
   }
+
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.main.name
+    weight            = 100
+  }
+
+  # Remove the task_definition attribute
 }
 
 resource "aws_launch_template" "ecs_lt" {
@@ -123,6 +130,7 @@ resource "aws_launch_template" "ecs_lt" {
   user_data = base64encode(<<-EOF
               #!/bin/bash
               echo ECS_CLUSTER=${aws_ecs_cluster.my_cluster.name} >> /etc/ecs/ecs.config
+              systemctl enable --now ecs
               EOF
   )
 
@@ -281,4 +289,31 @@ resource "aws_iam_role_policy_attachment" "ecs_instance_role_policy" {
 resource "aws_iam_instance_profile" "ecs_instance_profile" {
   name = "ecs-instance-profile"
   role = aws_iam_role.ecs_instance_role.name
+}
+
+resource "aws_ecs_capacity_provider" "main" {
+  name = "main-capacity-provider"
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.ecs_asg.arn
+    
+    managed_scaling {
+      maximum_scaling_step_size = 1000
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "main" {
+  cluster_name = aws_ecs_cluster.my_cluster.name
+
+  capacity_providers = [aws_ecs_capacity_provider.main.name]
+
+  default_capacity_provider_strategy {
+    base              = 1
+    weight            = 100
+    capacity_provider = aws_ecs_capacity_provider.main.name
+  }
 }

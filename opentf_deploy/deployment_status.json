@@ -2,5 +2,5 @@
     "status": "ACTIVE",
     "runningCount": 0,
     "desiredCount": 2,
-    "events": "(service my-service) has reached a steady state."
+    "events": "(service my-service) was unable to place a task because no container instance met all of its requirements. Reason: No Container Instances were found in your cluster. For more information, see the Troubleshooting section of the Amazon ECS Developer Guide."
 }
