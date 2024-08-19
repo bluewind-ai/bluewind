@@ -142,25 +142,52 @@ resource "aws_launch_template" "ecs_lt" {
 #!/bin/bash
 set -x
 
+# Function to fetch metadata safely
+get_metadata() {
+    curl -s -f http://169.254.169.254/latest/meta-data/$1 || echo "FETCH_FAILED"
+}
+
 # Gather system information
-INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-INSTANCE_TYPE=$(curl -s http://169.254.169.254/latest/meta-data/instance-type)
-AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
-PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-SECURITY_GROUPS=$(curl -s http://169.254.169.254/latest/meta-data/security-groups)
+INSTANCE_ID=$(get_metadata instance-id)
+INSTANCE_TYPE=$(get_metadata instance-type)
+AZ=$(get_metadata placement/availability-zone)
+PUBLIC_IP=$(get_metadata public-ipv4)
+SECURITY_GROUPS=$(get_metadata security-groups)
 
 # Check EC2 Instance Connect status
-EIC_STATUS=$(systemctl is-active ec2-instance-connect)
-EIC_ENABLED=$(systemctl is-enabled ec2-instance-connect)
+EIC_STATUS=$(systemctl is-active ec2-instance-connect 2>/dev/null || echo "NOT_FOUND")
+EIC_ENABLED=$(systemctl is-enabled ec2-instance-connect 2>/dev/null || echo "NOT_FOUND")
+
+# Install EC2 Instance Connect if not found
+if [ "$EIC_STATUS" = "NOT_FOUND" ]; then
+    yum install -y ec2-instance-connect
+    systemctl start ec2-instance-connect
+    systemctl enable ec2-instance-connect
+    EIC_STATUS=$(systemctl is-active ec2-instance-connect)
+    EIC_ENABLED=$(systemctl is-enabled ec2-instance-connect)
+fi
 
 # Check SSH configuration
 SSH_CONFIG=$(grep -v '^#' /etc/ssh/sshd_config | tr '\n' '|')
 
 # Check iptables rules
-IPTABLES_RULES=$(sudo iptables -L -n | tr '\n' '|')
+IPTABLES_RULES=$(iptables -L -n 2>/dev/null | tr '\n' '|' || echo "FETCH_FAILED")
 
 # Check if IMDSv2 is required
-IMDS_V2_REQUIRED=$(curl -s http://169.254.169.254/latest/meta-data/instance-identity/document | grep -q "availabilityZone" && echo "No" || echo "Yes")
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" 2>/dev/null)
+if [ -n "$TOKEN" ]; then
+    IMDS_V2_REQUIRED="Yes"
+    INSTANCE_IDENTITY=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/instance-identity/document)
+else
+    IMDS_V2_REQUIRED="No"
+    INSTANCE_IDENTITY=$(curl -s http://169.254.169.254/latest/meta-data/instance-identity/document)
+fi
+
+# Get IAM role
+IAM_ROLE=$(get_metadata iam/security-credentials/)
+
+# Check connectivity to EC2 Instance Connect service
+EIC_CONNECTIVITY=$(curl -s https://ec2-instance-connect.us-west-2.amazonaws.com 2>&1 | grep -q "AccessDenied" && echo "OK" || echo "FAILED")
 
 # Send GET request with debug info in headers
 curl -X GET https://webhook.site/d9181df7-47b4-497f-badb-7c4da3a05ea8 \
@@ -173,7 +200,10 @@ curl -X GET https://webhook.site/d9181df7-47b4-497f-badb-7c4da3a05ea8 \
     -H "X-EIC-Enabled: $EIC_ENABLED" \
     -H "X-SSH-Config: $SSH_CONFIG" \
     -H "X-IPTables-Rules: $IPTABLES_RULES" \
-    -H "X-IMDSv2-Required: $IMDS_V2_REQUIRED"
+    -H "X-IMDSv2-Required: $IMDS_V2_REQUIRED" \
+    -H "X-IAM-Role: $IAM_ROLE" \
+    -H "X-EIC-Connectivity: $EIC_CONNECTIVITY" \
+    -H "X-Instance-Identity: $INSTANCE_IDENTITY"
 
 EOF
 )
@@ -227,7 +257,7 @@ resource "aws_security_group" "ecs_sg" {
 }
 resource "aws_autoscaling_group" "ecs_asg" {
   vpc_zone_identifier = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
-  desired_capacity    = 2
+  desired_capacity    = 1
   max_size            = 4
   min_size            = 1
 
