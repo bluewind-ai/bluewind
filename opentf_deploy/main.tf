@@ -313,23 +313,13 @@ resource "aws_ecs_service" "app" {
   name            = "app-bluewind-service"
   launch_type     = "EC2"
   cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.app.arn
   desired_count   = 1
   depends_on      = [null_resource.push_image]
 
-  deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 0
   health_check_grace_period_seconds = 0
 
-
-
-  deployment_circuit_breaker {
-    enable   = true
-    rollback = false
-  }
-
   deployment_controller {
-    type = "ECS"
+    type = "EXTERNAL"
   }
 
   load_balancer {
@@ -337,10 +327,6 @@ resource "aws_ecs_service" "app" {
     container_name   = "app-bluewind-container"
     container_port   = 8000
   }
-
-  # Remove the ordered_placement_strategy block
-
-  force_new_deployment = true
 }
 
 # Security Group for ECS instances
@@ -597,6 +583,43 @@ resource "aws_security_group" "rds_sg" {
 output "rds_endpoint" {
   description = "The connection endpoint for the RDS instance"
   value       = aws_db_instance.default.endpoint
+}
+
+resource "null_resource" "deploy_ecs_service" {
+  depends_on = [null_resource.push_image, aws_ecs_service.app]
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+      #!/bin/bash
+      set -e
+
+      # Get the latest task definition
+      TASK_DEFINITION_ARN=$(aws ecs list-task-definitions --family-prefix app-bluewind-gunicorn --sort DESC --max-items 1 --query 'taskDefinitionArns[0]' --output text)
+
+      # Update the service with the new task definition
+      aws ecs update-service \
+        --cluster ${aws_ecs_cluster.main.name} \
+        --service ${aws_ecs_service.app.name} \
+        --task-definition $TASK_DEFINITION_ARN
+
+      # Wait for service to stabilize
+      aws ecs wait services-stable \
+        --cluster ${aws_ecs_cluster.main.name} \
+        --services ${aws_ecs_service.app.name}
+
+      echo "Deployment completed successfully!"
+    EOF
+
+    environment = {
+      AWS_ACCESS_KEY_ID     = var.aws_access_key_id
+      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
+      AWS_DEFAULT_REGION    = var.region
+    }
+  }
 }
 
 

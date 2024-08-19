@@ -78,6 +78,8 @@ run_opentofu() {
         fi
         cd opentf_deploy
         export TF_VAR_aws_access_key_id=$AWS_ACCESS_KEY_ID TF_VAR_aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
+        echo "cdscds"
+        echo $AWS_SECRET_ACCESS_KEY
         tofu apply --auto-approve
     ) > "$LOG_DIR/opentofu.log" 2>&1; then
         echo "OpenTofu apply completed successfully. Log file: $LOG_DIR/opentofu.log"
