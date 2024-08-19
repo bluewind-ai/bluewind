@@ -104,8 +104,6 @@ resource "aws_ecs_service" "my_service" {
   deployment_controller {
     type = "EXTERNAL"
   }
-
-  # Remove network_configuration block for external deployment controller
 }
 
 resource "aws_launch_template" "ecs_lt" {
@@ -235,7 +233,12 @@ resource "null_resource" "test_deployment" {
   }
 }
 
+data "local_file" "deployment_status" {
+  filename = "${path.module}/deployment_status.json"
+  depends_on = [null_resource.test_deployment]
+}
+
 output "test_deployment_result" {
   description = "Status of the ECS service after test deployment"
-  value = jsondecode(file("${path.module}/deployment_status.json"))
+  value = jsondecode(data.local_file.deployment_status.content)
 }

@@ -1,0 +1,6 @@
+{
+    "status": "ACTIVE",
+    "runningCount": 0,
+    "desiredCount": 2,
+    "events": "(service my-service) has reached a steady state."
+}
