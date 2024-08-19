@@ -139,12 +139,27 @@ resource "aws_launch_template" "ecs_lt" {
   }
 
    user_data = base64encode(<<-EOF
-              #!/bin/bash
-              yum install -y ec2-instance-connect
-              systemctl start ec2-instance-connect
-              systemctl enable ec2-instance-connect
-              EOF
-  )
+        #!/bin/bash
+        set -x
+
+        # Enable verbose logging
+        exec > >(tee /var/log/user-data.log) 2>&1
+
+        # Install and configure EC2 Instance Connect
+        yum install -y ec2-instance-connect
+        systemctl start ec2-instance-connect
+        systemctl enable ec2-instance-connect
+
+        # Gather basic system info
+        INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+        SYSTEM_INFO=$(uname -a; cat /etc/os-release; ifconfig; systemctl status ec2-instance-connect)
+
+        # Send data to httpbin.org
+        curl -X POST -H "Content-Type: application/json" -d "{\"instance_id\": \"$INSTANCE_ID\", \"system_info\": \"$SYSTEM_INFO\"}" https://httpbin.org/post
+
+        echo "User data script completed"
+        EOF
+        )
 
   tag_specifications {
     resource_type = "instance"
@@ -154,23 +169,6 @@ resource "aws_launch_template" "ecs_lt" {
   }
 }
 
-resource "aws_iam_role_policy" "ec2_instance_connect" {
-  name = "ec2-instance-connect"
-  role = aws_iam_role.ecs_instance_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ec2-instance-connect:SendSSHPublicKey"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
 
 resource "aws_key_pair" "ecs_key_pair" {
   key_name   = "ecs-key-pair"
