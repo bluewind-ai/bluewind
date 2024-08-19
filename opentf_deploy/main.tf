@@ -3,6 +3,7 @@ provider "aws" {
   profile = "ci-cd-admin-2"
 }
 
+variable "app_name" {}
 variable "aws_access_key_id" {}
 variable "aws_secret_access_key" {}
 
@@ -13,7 +14,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = {
-    Name = "ecs-vpc"
+    Name = "${var.aws_secret_access_key}-ecs-vpc"
   }
 }
 
@@ -24,7 +25,7 @@ resource "aws_subnet" "subnet_1" {
   availability_zone = "us-west-2a"  # Replace with an AZ in your region
 
   tags = {
-    Name = "ecs-subnet-1"
+    Name = "${var.app_name}-ecs-subnet-1"
   }
 }
 
@@ -34,7 +35,7 @@ resource "aws_subnet" "subnet_2" {
   availability_zone = "us-west-2b"  # Replace with a different AZ in your region
 
   tags = {
-    Name = "ecs-subnet-2"
+    Name = "${var.app_name}-ecs-subnet-2"
   }
 }
 
@@ -43,7 +44,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "ecs-igw"
+    Name = "${var.app_name}-ecs-igw"
   }
 }
 
@@ -57,7 +58,7 @@ resource "aws_route_table" "main" {
   }
 
   tags = {
-    Name = "ecs-route-table"
+    Name = "${var.app_name}-ecs-route-table"
   }
 }
 
@@ -73,7 +74,7 @@ resource "aws_route_table_association" "subnet_2" {
 }
 
 resource "aws_ecs_cluster" "my_cluster" {
-  name = "my-cluster"
+  name = "${var.app_name}-my-cluster"
 }
 
 resource "aws_ecs_task_definition" "my_task" {
@@ -144,7 +145,7 @@ EOF
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = "ecs-instance"
+      Name = "${var.app_name}-ecs-instance"
       AmazonECSManaged = ""
     }
   }
@@ -293,7 +294,7 @@ output "test_deployment_result" {
 
 
 resource "aws_iam_role" "ecs_instance_role" {
-  name = "ecs-instance-role"
+  name = "${var.app_name}-ecs-instance-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -315,13 +316,13 @@ resource "aws_iam_role_policy_attachment" "ecs_instance_role_policy" {
 }
 
 resource "aws_iam_instance_profile" "ecs_instance_profile" {
-  name = "ecs-instance-profile"
+  name = "${var.app_name}-ecs-instance-profile"
   role = aws_iam_role.ecs_instance_role.name
 }
 
 
 resource "aws_ecs_capacity_provider" "main" {
-  name = "main-capacity-provider"
+  name = "${var.app_name}-main-capacity-provider"
 
   auto_scaling_group_provider {
     auto_scaling_group_arn = aws_autoscaling_group.ecs_asg.arn
@@ -348,7 +349,7 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
 }
 
 resource "aws_iam_role_policy" "ec2_instance_connect" {
-  name = "ec2-instance-connect"
+  name = "${var.app_name}-ec2-instance-connect"
   role = aws_iam_role.ecs_instance_role.id
 
   policy = jsonencode({
