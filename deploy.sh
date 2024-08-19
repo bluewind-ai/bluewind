@@ -80,6 +80,7 @@ run_opentofu() {
         export TF_VAR_aws_access_key_id=$AWS_ACCESS_KEY_ID TF_VAR_aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
         echo "cdscds"
         echo $AWS_SECRET_ACCESS_KEY
+        
         tofu apply --auto-approve
     ) > "$LOG_DIR/opentofu.log" 2>&1; then
         echo "OpenTofu apply completed successfully. Log file: $LOG_DIR/opentofu.log"
@@ -95,18 +96,28 @@ echo "Starting all processes..."
 
 run_local_server &
 LOCAL_SERVER_PID=$!
+echo "Local Server PID: $LOCAL_SERVER_PID"
+
 
 run_local_tests &
 LOCAL_TESTS_PID=$!
 
+echo "Local Tests PID: $LOCAL_TESTS_PID"
+
+
 run_tests_against_staging &
 STAGING_TESTS_PID=$!
+
+echo "Staging Tests PID : $STAGING_TESTS_PID"
 
 run_docker_tests &
 DOCKER_TESTS_PID=$!
 
+echo "Docker Tests PID: $DOCKER_TESTS_PID"
+
 run_opentofu &
 OPENTOFU_PID=$!
+echo "OpenTofu PID: $OPENTOFU_PID"
 
 # Function to wait for a process with timeout
 wait_for_process() {
