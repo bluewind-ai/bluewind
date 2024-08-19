@@ -99,8 +99,7 @@ resource "aws_ecs_task_definition" "my_task" {
 resource "aws_ecs_service" "my_service" {
   name            = "my-service"
   cluster         = aws_ecs_cluster.my_cluster.id
-  desired_count   = 2
-
+  desired_count = 1
   deployment_controller {
     type = "EXTERNAL"
   }
@@ -113,10 +112,22 @@ resource "aws_ecs_service" "my_service" {
   # Remove the task_definition attribute
 }
 
+data "aws_ssm_parameter" "ecs_optimized_ami" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+}
+
+output "ecs_key_pair_name" {
+  description = "Name of the key pair used for ECS instances"
+  value       = aws_key_pair.ecs_key_pair.key_name
+}
+
+
 resource "aws_launch_template" "ecs_lt" {
   name_prefix   = "ecs-launch-template"
-  image_id      = "ami-0c0ba4e76e4392ce9"  # Amazon ECS-optimized AMI for us-west-2
+  image_id      = data.aws_ssm_parameter.ecs_optimized_ami.value
   instance_type = "t3.micro"
+  key_name = aws_key_pair.ecs_key_pair.key_name
+
 
   iam_instance_profile {
     name = aws_iam_instance_profile.ecs_instance_profile.name
@@ -142,6 +153,11 @@ resource "aws_launch_template" "ecs_lt" {
   }
 }
 
+resource "aws_key_pair" "ecs_key_pair" {
+  key_name   = "ecs-key-pair"
+  public_key = file("${path.module}/ecs-key.pub")
+}
+
 resource "aws_security_group" "ecs_sg" {
   name        = "ecs-security-group"
   description = "Security group for ECS instances"
@@ -152,6 +168,20 @@ resource "aws_security_group" "ecs_sg" {
     to_port     = 65535
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+   ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["18.237.140.160/29"]  # EC2 Instance Connect IP range for us-west-2
+  }
+  
+   ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["12.1.37.210"]
   }
 
   egress {
@@ -291,6 +321,7 @@ resource "aws_iam_instance_profile" "ecs_instance_profile" {
   role = aws_iam_role.ecs_instance_role.name
 }
 
+
 resource "aws_ecs_capacity_provider" "main" {
   name = "main-capacity-provider"
 
@@ -316,4 +347,22 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
     weight            = 100
     capacity_provider = aws_ecs_capacity_provider.main.name
   }
+}
+
+resource "aws_iam_role_policy" "ec2_instance_connect" {
+  name = "ec2-instance-connect"
+  role = aws_iam_role.ecs_instance_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2-instance-connect:SendSSHPublicKey"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 }
