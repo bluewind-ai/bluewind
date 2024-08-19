@@ -77,26 +77,6 @@ resource "aws_ecs_cluster" "my_cluster" {
   name = "${var.app_name}-my-cluster"
 }
 
-resource "aws_ecs_task_definition" "my_task" {
-  family                   = "my-task"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["EC2"]
-  
-  container_definitions = jsonencode([
-    {
-      name  = "my-container"
-      image = "nginx:latest"
-      memory = 512
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 80
-        }
-      ]
-    }
-  ])
-}
-
 resource "aws_ecs_service" "my_service" {
   name          = "my-service"
   cluster       = aws_ecs_cluster.my_cluster.id
@@ -111,16 +91,11 @@ resource "aws_ecs_service" "my_service" {
     weight            = 100
   }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count,
-  #     task_definition,
-  #     load_balancer,
-  #     network_configuration,
-  #     capacity_provider_strategy,
-  #   ]
-  #   create_before_destroy = true
-  # }
+  lifecycle {
+    ignore_changes = [
+      capacity_provider_strategy,
+    ]
+  }
 }
 
 data "aws_ssm_parameter" "ecs_optimized_ami" {

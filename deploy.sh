@@ -1,18 +1,23 @@
 #!/bin/bash
 
-set -e  # Exit immediately if a command exits with a non-zero status.
+set -e # Exit immediately if a command exits with a non-zero status.
 
 # Create a reverse-chronological timestamped log directory
+TAIL_LOGS=false
+if [[ "$1" == "--tofu" ]]; then
+    TAIL_LOGS=true
+fi
+
 READABLE_TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-REVERSE_TIMESTAMP=$(printf '%010d' $((9999999999-$(date +%s))))
+REVERSE_TIMESTAMP=$(printf '%010d' $((9999999999 - $(date +%s))))
 LOG_DIR="./logs/${REVERSE_TIMESTAMP}_${READABLE_TIMESTAMP}"
 mkdir -p "$LOG_DIR"
 
 run_local_server() {
     echo "Starting local server..."
-    if gunicorn --bind :8002 --workers 1 bluewind.wsgi > "$LOG_DIR/local_server.log" 2>&1 & then
+    if gunicorn --bind :8002 --workers 1 bluewind.wsgi >"$LOG_DIR/local_server.log" 2>&1 & then
         SERVER_PID=$!
-        echo $SERVER_PID > "$LOG_DIR/server.pid"
+        echo $SERVER_PID >"$LOG_DIR/server.pid"
         return 0
     else
         echo "Failed to start local server. Check log file: $LOG_DIR/local_server.log"
@@ -25,7 +30,7 @@ run_local_tests() {
     sleep 2
 
     echo "Running tests locally..."
-    if ENVIRONMENT=test TEST_HOST=localhost ALLOWED_HOSTS=localhost, TEST_PORT=8002 python3 manage.py test > "$LOG_DIR/local_tests.log" 2>&1; then
+    if ENVIRONMENT=test TEST_HOST=localhost ALLOWED_HOSTS=localhost, TEST_PORT=8002 python3 manage.py test >"$LOG_DIR/local_tests.log" 2>&1; then
         echo "Local tests completed successfully. Log file: $LOG_DIR/local_tests.log"
         return 0
     else
@@ -37,7 +42,7 @@ run_local_tests() {
 # Function to run tests against staging
 run_tests_against_staging() {
     echo "Running tests against staging..."
-    if ENVIRONMENT=test TEST_HOST=app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com ALLOWED_HOSTS=app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com, python3 manage.py test > "$LOG_DIR/staging_tests.log" 2>&1; then
+    if ENVIRONMENT=test TEST_HOST=app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com ALLOWED_HOSTS=app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com, python3 manage.py test >"$LOG_DIR/staging_tests.log" 2>&1; then
         echo "Staging tests completed successfully. Log file: $LOG_DIR/staging_tests.log"
         return 0
     else
@@ -52,12 +57,12 @@ run_docker_tests() {
     if (
         docker build -t my-django-app .
         docker run -e ENVIRONMENT=test \
-          -e DEBUG=1 \
-          -e SECRET_KEY=your_secret_key_here \
-          -e ALLOWED_HOSTS=localhost,127.0.0.1 \
-          -e CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1 \
-          my-django-app python3 manage.py test
-    ) > "$LOG_DIR/docker_tests.log" 2>&1; then
+            -e DEBUG=1 \
+            -e SECRET_KEY=your_secret_key_here \
+            -e ALLOWED_HOSTS=localhost,127.0.0.1 \
+            -e CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1 \
+            my-django-app python3 manage.py test
+    ) >"$LOG_DIR/docker_tests.log" 2>&1; then
         echo "Docker tests completed successfully. Log file: $LOG_DIR/docker_tests.log"
         return 0
     else
@@ -83,7 +88,7 @@ run_opentofu() {
         tofu apply --auto-approve
 
         # tofu apply --auto-approve
-    ) > "$LOG_DIR/opentofu.log" 2>&1; then
+    ) >"$LOG_DIR/opentofu.log" 2>&1; then
         echo "OpenTofu apply completed successfully. Log file: $LOG_DIR/opentofu.log"
         return 0
     else
@@ -99,12 +104,10 @@ run_local_server &
 LOCAL_SERVER_PID=$!
 echo "Local Server PID: $LOCAL_SERVER_PID"
 
-
 run_local_tests &
 LOCAL_TESTS_PID=$!
 
 echo "Local Tests PID: $LOCAL_TESTS_PID"
-
 
 run_tests_against_staging &
 STAGING_TESTS_PID=$!
@@ -123,7 +126,7 @@ echo "OpenTofu PID: $OPENTOFU_PID"
 # Function to wait for a process with timeout
 wait_for_process() {
     local pid=$1
-    local timeout=1800  # 30 minutes timeout
+    local timeout=1800 # 30 minutes timeout
     local start_time=$(date +%s)
 
     while kill -0 $pid 2>/dev/null; do
@@ -143,6 +146,12 @@ wait_for_process() {
 wait_for_process $LOCAL_TESTS_PID
 LOCAL_TESTS_STATUS=$?
 
+if [ "$TAIL_LOGS" = true ]; then
+    echo "Tailing OpenTofu logs..."
+    tail -f "$LOG_DIR/opentofu.log"
+else
+    echo "Starting all processes..."
+fi
 # Stop the local server after local tests are done, regardless of test result
 if [ -f "$LOG_DIR/server.pid" ]; then
     SERVER_PID=$(cat "$LOG_DIR/server.pid")
