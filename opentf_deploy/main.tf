@@ -138,10 +138,11 @@ resource "aws_launch_template" "ecs_lt" {
     security_groups             = [aws_security_group.ecs_sg.id]
   }
 
-  user_data = base64encode(<<-EOF
+   user_data = base64encode(<<-EOF
               #!/bin/bash
-              echo ECS_CLUSTER=${aws_ecs_cluster.my_cluster.name} >> /etc/ecs/ecs.config
-              systemctl enable --now ecs
+              yum install -y ec2-instance-connect
+              systemctl start ec2-instance-connect
+              systemctl enable ec2-instance-connect
               EOF
   )
 
@@ -153,9 +154,27 @@ resource "aws_launch_template" "ecs_lt" {
   }
 }
 
+resource "aws_iam_role_policy" "ec2_instance_connect" {
+  name = "ec2-instance-connect"
+  role = aws_iam_role.ecs_instance_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2-instance-connect:SendSSHPublicKey"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_key_pair" "ecs_key_pair" {
   key_name   = "ecs-key-pair"
-  public_key = file("${path.module}/ecs-key.pub")
+  public_key = file("~/.ssh/id_rsa.pub")
 }
 
 resource "aws_security_group" "ecs_sg" {
@@ -181,7 +200,7 @@ resource "aws_security_group" "ecs_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["12.1.37.210"]
+    cidr_blocks = ["12.1.37.210/32"]
   }
 
   egress {
