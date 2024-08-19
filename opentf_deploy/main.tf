@@ -151,7 +151,7 @@ systemctl start ec2-instance-connect
 systemctl enable ec2-instance-connect
 
 # Configure ECS agent
-echo "ECS_CLUSTER=${aws_ecs_cluster.my_cluster.name}" >> /etc/ecs/ecs.config
+sudo echo "ECS_CLUSTER=${aws_ecs_cluster.my_cluster.name}" >> /etc/ecs/ecs.config
 systemctl restart ecs
 
 EOF
