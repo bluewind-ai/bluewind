@@ -5,7 +5,7 @@ from datetime import datetime
 import time
 from datetime import timedelta
 import click
-from botocore.exceptions import ClientError
+from botocore.exceptions import WaiterError, ClientError
 import boto3
 import botocore
 
@@ -93,6 +93,24 @@ async def run_process(command, env, log_file, display_output=False):
     return process
 
 
+async def check_service_stability(ecs_client, cluster_arn, service_name, max_attempts=40, delay=15):
+    for _ in range(max_attempts):
+        response = ecs_client.describe_services(cluster=cluster_arn, services=[service_name])
+        service = response['services'][0]
+        
+        if service['runningCount'] == service['desiredCount']:
+            # Check if all task sets are stable
+            all_task_sets_stable = all(
+                task_set['stabilityStatus'] == 'STEADY_STATE'
+                for task_set in service['taskSets']
+            )
+            if all_task_sets_stable:
+                return True
+        
+        await asyncio.sleep(delay)
+    
+    return False
+
 async def run_deploy(log_dir, display_output=False):
     click.echo(f"Running OpenTofu commands...")
     env = os.environ.copy()
@@ -156,50 +174,66 @@ async def run_deploy(log_dir, display_output=False):
     
     click.echo("Waiting for service to stabilize...")
     try:
-        waiter = ecs_client.get_waiter('services_stable')
-        
-        # Add a describe_services call before waiting
-        click.echo("Describing service before waiting...")
-        service_description = ecs_client.describe_services(
-            cluster=cluster_arn,
-            services=[service_name]
-        )
-        click.echo(f"Service description: {json.dumps(service_description, default=str, indent=2)}")
-        
-        waiter.wait(
-            cluster=cluster_arn,
-            services=[service_name],
-            WaiterConfig={
-                'Delay': 15,
-                'MaxAttempts': 40
-            }
-        )
-        click.echo("Service has stabilized.")
-        click.echo("Deployment completed successfully.")
-        return True
-    except WaiterError as e:
-        click.echo(f"WaiterError while waiting for service to stabilize: {str(e)}")
-        click.echo("Last response from waiter:")
-        click.echo(json.dumps(e.last_response, default=str, indent=2))
-    except ClientError as e:
-        click.echo(f"ClientError during deployment: {str(e)}")
-        if e.response and 'Error' in e.response:
-            click.echo(f"Error Code: {e.response['Error'].get('Code')}")
-            click.echo(f"Error Message: {e.response['Error'].get('Message')}")
+        is_stable = await check_service_stability(ecs_client, cluster_arn, service_name)
+        if is_stable:
+            click.echo("Service has stabilized.")
+            success = True
+        else:
+            click.echo("Service failed to stabilize within the expected time.")
+            success = False
     except Exception as e:
         click.echo(f"Unexpected error during deployment: {str(e)}")
+        success = False
     
-    click.echo("Attempting to fetch final service details...")
-    try:
-        final_service_details = ecs_client.describe_services(
+    if success:
+        click.echo("Checking final task set percentages...")
+        
+        # Create ECS client
+        ecs_client = boto3.client('ecs',
+            aws_access_key_id=env['AWS_ACCESS_KEY_ID'],
+            aws_secret_access_key=env['AWS_SECRET_ACCESS_KEY'],
+            region_name='us-west-2'
+        )
+        
+                # After describing the service to get task set information
+        response = ecs_client.describe_services(
             cluster=cluster_arn,
             services=[service_name]
         )
-        click.echo(f"Final service details: {json.dumps(final_service_details, default=str, indent=2)}")
-    except Exception as inner_e:
-        click.echo(f"Failed to fetch final service details: {str(inner_e)}")
-    
+
+        # Extract task set information
+        task_sets = response['services'][0]['taskSets']
+        task_set_a_percentage = None
+        task_set_b_percentage = None
+
+        for task_set in task_sets:
+            if task_set['id'] in task_set_a_id:
+                task_set_a_percentage = task_set['scale']['value']
+            elif task_set['id'] in task_set_b_id:
+                task_set_b_percentage = task_set['scale']['value']
+
+        if task_set_a_percentage is not None:
+            click.echo(f"Task set A percentage: {task_set_a_percentage}")
+        else:
+            click.echo("Task set A not found in the response")
+
+        if task_set_b_percentage is not None:
+            click.echo(f"Task set B percentage: {task_set_b_percentage}")
+        else:
+            click.echo("Task set B not found in the response")
+
+        # Verify that one task set is at 100% and the other is at 0%
+        if task_set_a_percentage is not None and task_set_b_percentage is not None:
+            if (task_set_a_percentage == 100 and task_set_b_percentage == 0) or \
+            (task_set_a_percentage == 0 and task_set_b_percentage == 100):
+                click.echo(click.style("Deployment verified successfully.", fg='green'))
+            else:
+                click.echo(click.style(f"Warning: Unexpected task set percentages. A: {task_set_a_percentage}%, B: {task_set_b_percentage}%", fg='yellow'))
+        else:
+            click.echo(click.style("Warning: Could not verify deployment. One or both task sets not found.", fg='yellow'))
+        return True
     click.echo("Deployment failed.")
+
     return False
 
 
