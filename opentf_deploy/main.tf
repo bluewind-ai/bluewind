@@ -293,4 +293,6 @@ resource "aws_ecs_task_set" "my_task_set" {
   lifecycle {
     create_before_destroy = true
   }
+  depends_on = [aws_ecs_service.my_service]
+
 }
