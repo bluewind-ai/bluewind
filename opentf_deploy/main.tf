@@ -349,3 +349,34 @@ resource "null_resource" "update_task_set_b" {
     EOT
   }
 }
+
+## output relevant info
+
+## output relevant info
+
+output "ecs_cluster_arn" {
+  value = aws_ecs_cluster.my_cluster.arn
+}
+
+output "ecs_service_name" {
+  value = aws_ecs_service.my_service.name
+}
+
+
+output "task_set_a_arn" {
+  value = aws_ecs_task_set.task_set_a.arn
+}
+
+output "task_set_b_arn" {
+  value = aws_ecs_task_set.task_set_b.arn
+}
+
+output "task_set_a_scale" {
+  description = "The current scale of task set A"
+  value       = aws_ecs_task_set.task_set_a.scale[0].value
+}
+
+output "task_set_b_scale" {
+  description = "The current scale of task set B"
+  value       = aws_ecs_task_set.task_set_b.scale[0].value
+}
