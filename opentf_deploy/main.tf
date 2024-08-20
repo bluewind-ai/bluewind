@@ -1,3 +1,4 @@
+
 provider "aws" {
   region  = "us-west-2"  # or your preferred region
   profile = "ci-cd-admin-2"
@@ -167,59 +168,59 @@ resource "aws_autoscaling_group" "ecs_asg" {
   }
 }
 
-resource "null_resource" "deploy_and_cleanup" {
-  triggers = {
-    task_definition_arn = aws_ecs_task_definition.test_task.arn
-  }
+# resource "null_resource" "deploy_and_cleanup" {
+#   triggers = {
+#     task_definition_arn = aws_ecs_task_definition.test_task.arn
+#   }
 
-  provisioner "local-exec" {
-    command = <<-EOT
-      # Create new task set
-      NEW_TASK_SET=$(aws ecs create-task-set \
-        --service ${aws_ecs_service.my_service.name} \
-        --cluster ${aws_ecs_cluster.my_cluster.id} \
-        --task-definition ${aws_ecs_task_definition.test_task.arn} \
-        --launch-type EC2 \
-        --scale unit=PERCENT,value=100 \
-        --region us-west-2 \
-        --query 'taskSet.id' \
-        --output text)
+#   provisioner "local-exec" {
+#     command = <<-EOT
+#       # Create new task set
+#       NEW_TASK_SET=$(aws ecs create-task-set \
+#         --service ${aws_ecs_service.my_service.name} \
+#         --cluster ${aws_ecs_cluster.my_cluster.id} \
+#         --task-definition ${aws_ecs_task_definition.test_task.arn} \
+#         --launch-type EC2 \
+#         --scale unit=PERCENT,value=100 \
+#         --region us-west-2 \
+#         --query 'taskSet.id' \
+#         --output text)
 
-      # Update primary task set
-      aws ecs update-service-primary-task-set \
-        --cluster ${aws_ecs_cluster.my_cluster.id} \
-        --service ${aws_ecs_service.my_service.name} \
-        --primary-task-set $NEW_TASK_SET \
-        --region us-west-2
+#       # Update primary task set
+      # aws ecs update-service-primary-task-set \
+      #   --cluster ${aws_ecs_cluster.my_cluster.id} \
+      #   --service ${aws_ecs_service.my_service.name} \
+      #   --primary-task-set $NEW_TASK_SET \
+      #   --region us-west-2
 
-      # Get list of task sets
-      TASK_SETS=$(aws ecs list-task-sets \
-        --cluster ${aws_ecs_cluster.my_cluster.id} \
-        --service ${aws_ecs_service.my_service.name} \
-        --region us-west-2 \
-        --query 'taskSets[]' \
-        --output text)
+#       # Get list of task sets
+#       TASK_SETS=$(aws ecs list-task-sets \
+#         --cluster ${aws_ecs_cluster.my_cluster.id} \
+#         --service ${aws_ecs_service.my_service.name} \
+#         --region us-west-2 \
+#         --query 'taskSets[]' \
+#         --output text)
 
-      # Delete old task sets
-      for TASK_SET in $TASK_SETS
-      do
-        if [ "$TASK_SET" != "$NEW_TASK_SET" ]; then
-          aws ecs delete-task-set \
-            --cluster ${aws_ecs_cluster.my_cluster.id} \
-            --service ${aws_ecs_service.my_service.name} \
-            --task-set $TASK_SET \
-            --region us-west-2
-        fi
-      done
-    EOT
-    environment = {
-      AWS_ACCESS_KEY_ID     = var.aws_access_key_id
-      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
-    }
-  }
+#       # Delete old task sets
+#       for TASK_SET in $TASK_SETS
+#       do
+#         if [ "$TASK_SET" != "$NEW_TASK_SET" ]; then
+#           aws ecs delete-task-set \
+#             --cluster ${aws_ecs_cluster.my_cluster.id} \
+#             --service ${aws_ecs_service.my_service.name} \
+#             --task-set $TASK_SET \
+#             --region us-west-2
+#         fi
+#       done
+#     EOT
+#     environment = {
+#       AWS_ACCESS_KEY_ID     = var.aws_access_key_id
+#       AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
+#     }
+#   }
 
-  depends_on = [aws_ecs_service.my_service, aws_ecs_task_definition.test_task]
-}
+#   depends_on = [aws_ecs_service.my_service, aws_ecs_task_definition.test_task]
+# }
 
 # data "local_file" "deployment_status" {
 #   filename = "${path.module}/deployment_status.json"
@@ -287,35 +288,58 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   }
 }
 
-resource "aws_ecs_task_set" "my_task_set" {
+resource "aws_ecs_task_set" "task_set_a" {
   service         = aws_ecs_service.my_service.id
   cluster         = aws_ecs_cluster.my_cluster.id
-  task_definition = aws_ecs_task_definition.test_task.arn
+  task_definition = aws_ecs_task_definition.task_definition_a.arn
   
   launch_type = "EC2"
-  
-  scale {
-    unit  = "PERCENT"
-    value = 100
-  }
 
-  # If you need to wait for stability, you can use a lifecycle rule
   lifecycle {
     create_before_destroy = true
   }
-  depends_on = [aws_ecs_service.my_service]
 }
 
+resource "aws_ecs_task_set" "task_set_b" {
+  service         = aws_ecs_service.my_service.id
+  cluster         = aws_ecs_cluster.my_cluster.id
+  task_definition = aws_ecs_task_definition.task_definition_b.arn
+  
+  launch_type = "EC2"
 
-resource "aws_ecs_task_definition" "test_task" {
-  family                   = "test-task"
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_ecs_task_definition" "task_definition_a" {
+  family                   = "task-a"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   
   container_definitions = jsonencode([
     {
-      name  = "test-container"
-      image = "nginx:latest"
+      name  = "container-a"
+      memory = 512
+      cpu = 128
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 0  # Dynamic port mapping
+        }
+      ]
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "task_definition_b" {
+  family                   = "task-b"
+  network_mode             = "bridge"
+  requires_compatibilities = ["EC2"]
+  
+  container_definitions = jsonencode([
+    {
+      name  = "container-b"
       memory = 512
       cpu = 128
       portMappings = [

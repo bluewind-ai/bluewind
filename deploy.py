@@ -1,39 +1,45 @@
 import os
-import subprocess
-import time
+import asyncio
 from datetime import datetime
+import time
+from datetime import timedelta
 import click
 
-def create_log_directory():
+async def create_log_directory():
     readable_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     reverse_timestamp = str(9999999999 - int(time.time())).zfill(10)
     log_dir = f"./logs/{reverse_timestamp}_{readable_timestamp}"
     os.makedirs(log_dir, exist_ok=True)
     return log_dir
 
-def run_command(command, log_file, env=None):
+async def run_command(command, log_file, env=None):
     with open(log_file, 'w') as f:
-        process = subprocess.Popen(command, stdout=f, stderr=subprocess.STDOUT, shell=True, env=env)
+        process = await asyncio.create_subprocess_shell(
+            command,
+            stdout=f,
+            stderr=asyncio.subprocess.STDOUT,
+            env=env
+        )
         return process
 
-def wait_for_process(process, timeout=1800):
-    start_time = time.time()
-    while process.poll() is None:
-        if time.time() - start_time >= timeout:
-            process.kill()
-            return False
-        time.sleep(1)
-    return process.returncode == 0
+async def wait_for_process(process, timeout=1800):
+    try:
+        await asyncio.wait_for(process.wait(), timeout=timeout)
+        return process.returncode == 0
+    except asyncio.TimeoutError:
+        process.terminate()
+        await process.wait()
+        return False
 
-def run_local_server(log_dir):
+async def run_local_server(log_dir):
     click.echo("Starting local server...")
     server_log = f"{log_dir}/local_server.log"
-    process = run_command(f"gunicorn --bind :8002 --workers 1 bluewind.wsgi", server_log)
+    process = await run_command(f"gunicorn --bind :8002 --workers 1 bluewind.wsgi", server_log)
     with open(f"{log_dir}/server.pid", 'w') as f:
         f.write(str(process.pid))
     return process
 
-def run_local_tests(log_dir):
+async def run_local_tests(log_dir):
     click.echo("Running tests locally...")
     env = os.environ.copy()
     env.update({
@@ -42,9 +48,9 @@ def run_local_tests(log_dir):
         "ALLOWED_HOSTS": "localhost,",
         "TEST_PORT": "8002"
     })
-    return run_command("python3 manage.py test", f"{log_dir}/local_tests.log", env=env)
+    return await run_command("python3 manage.py test", f"{log_dir}/local_tests.log", env=env)
 
-def run_tests_against_staging(log_dir):
+async def run_tests_against_staging(log_dir):
     click.echo("Running tests against staging...")
     env = os.environ.copy()
     env.update({
@@ -52,9 +58,9 @@ def run_tests_against_staging(log_dir):
         "TEST_HOST": "app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com",
         "ALLOWED_HOSTS": "app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com,"
     })
-    return run_command("python3 manage.py test", f"{log_dir}/staging_tests.log", env=env)
+    return await run_command("python3 manage.py test", f"{log_dir}/staging_tests.log", env=env)
 
-def run_docker_tests(log_dir):
+async def run_docker_tests(log_dir):
     click.echo("Building Docker image and running tests...")
     commands = [
         "docker build -t my-django-app .",
@@ -62,10 +68,10 @@ def run_docker_tests(log_dir):
         "-e ALLOWED_HOSTS=localhost,127.0.0.1 -e CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1 "
         "my-django-app python3 manage.py test"
     ]
-    return run_command(" && ".join(commands), f"{log_dir}/docker_tests.log")
+    return await run_command(" && ".join(commands), f"{log_dir}/docker_tests.log")
 
-def run_opentofu(log_dir, display_output=False):
-    click.echo("Running OpenTofu commands...")
+async def run_opentofu(log_dir, display_output=False):
+    click.echo(f"Running OpenTofu commands...")
     env = os.environ.copy()
 
     if os.path.exists('.aws'):
@@ -84,32 +90,36 @@ def run_opentofu(log_dir, display_output=False):
     commands = [
         "cd opentf_deploy",
         "tofu init",
-        "tofu apply -lock=false --auto-approve"
+        f"tofu apply -lock=false --auto-approve"
     ]
     
     command = " && ".join(commands)
     log_file = f"{log_dir}/opentofu.log"
 
     if display_output:
-        # Run the command and display output in real-time
+        process = await asyncio.create_subprocess_shell(
+            command,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT,
+            env=env
+        )
         with open(log_file, 'w') as f:
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, env=env, universal_newlines=True)
-            for line in process.stdout:
+            async for line in process.stdout:
+                line = line.decode()
                 click.echo(line, nl=False)
                 f.write(line)
-            process.wait()
+        await process.wait()
         return process
     else:
-        # Run the command and log output to file
-        return run_command(command, log_file, env=env)
+        return await run_command(command, log_file, env=env)
 
-import time
-from datetime import timedelta
-from click import style
 @click.command()
 @click.option('--tofu', is_flag=True, help="Only run OpenTofu and display its output")
 def main(tofu):
-    log_dir = create_log_directory()
+    asyncio.run(async_main(tofu))
+
+async def async_main(tofu):
+    log_dir = await create_log_directory()
     click.echo(f"Log directory: {log_dir}")
 
     if tofu:
@@ -118,12 +128,16 @@ def main(tofu):
         opentofu_log = f"{log_dir}/opentofu.log"
         click.echo(f"OpenTofu log: {opentofu_log}")
         start_time = time.time()
-        opentofu_process = run_opentofu(log_dir, display_output=True)
-        success = wait_for_process(opentofu_process)
+        opentofu_process = await run_opentofu(log_dir, display_output=True)
+        success = await wait_for_process(opentofu_process)
+        sleep_done = await asyncio.sleep(10)
+        opentofu_process = await run_opentofu(log_dir, display_output=True)
+
+        success = await wait_for_process(opentofu_process)
         end_time = time.time()
         duration = timedelta(seconds=int(end_time - start_time))
 
-        status = style('SUCCESS', fg='green') if success else style('FAILED', fg='red')
+        status = click.style('SUCCESS', fg='green') if success else click.style('FAILED', fg='red')
         click.echo(f"OpenTofu: {status}")
         click.echo(f"Log file: {opentofu_log}")
         click.echo(f"Duration: {duration}")
@@ -144,35 +158,41 @@ def main(tofu):
             click.echo(f"Starting {name}")
             click.echo(f"{name} log: {log_path}")
             start_times[name] = time.time()
-            process = run_func(log_dir)
+            process = await run_func(log_dir)
             running_processes[name] = process
             click.echo(f"{name} PID: {process.pid}")
 
-        time.sleep(1)  # Wait for local server to start
+        await asyncio.sleep(1)  # Wait for local server to start
 
         results = {}
         durations = {}
         for name, process in running_processes.items():
-            results[name] = wait_for_process(process)
+            results[name] = await wait_for_process(process)
             end_time = time.time()
             durations[name] = timedelta(seconds=int(end_time - start_times[name]))
 
         if "Local Server" in running_processes:
-            running_processes["Local Server"].terminate()
+            try:
+                running_processes["Local Server"].terminate()
+                await running_processes["Local Server"].wait()
+            except ProcessLookupError:
+                click.echo("Local server process has already terminated.")
+            except Exception as e:
+                click.echo(f"Error terminating local server: {e}")
 
         # Run OpenTofu last
         click.echo("Starting OpenTofu")
         opentofu_log = f"{log_dir}/opentofu.log"
         click.echo(f"OpenTofu log: {opentofu_log}")
         start_time = time.time()
-        opentofu_process = run_opentofu(log_dir, display_output=False)
-        results["OpenTofu"] = wait_for_process(opentofu_process)
+        opentofu_process = await run_opentofu(log_dir, display_output=False)
+        results["OpenTofu"] = await wait_for_process(opentofu_process)
         end_time = time.time()
         durations["OpenTofu"] = timedelta(seconds=int(end_time - start_time))
 
         click.echo("--- Deployment Summary ---")
         for name, success in results.items():
-            status = style('SUCCESS', fg='green') if success else style('FAILED', fg='red')
+            status = click.style('SUCCESS', fg='green') if success else click.style('FAILED', fg='red')
             click.echo(f"{name}: {status}")
             log_file = opentofu_log if name == "OpenTofu" else processes.get(name, (None, None))[1]
             click.echo(f"Log file: {log_file}")
@@ -180,12 +200,11 @@ def main(tofu):
             click.echo("")  # Add a blank line for readability
 
         if all(results.values()):
-            click.echo(style("All processes completed successfully.", fg='green'))
+            click.echo(click.style("All processes completed successfully.", fg='green'))
             exit(0)
         else:
-            click.echo(style("One or more processes failed. Check the logs for details.", fg='red'))
+            click.echo(click.style("One or more processes failed. Check the logs for details.", fg='red'))
             exit(1)
-
 
 if __name__ == "__main__":
     main()
