@@ -276,3 +276,21 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
     capacity_provider = aws_ecs_capacity_provider.main.name
   }
 }
+
+resource "aws_ecs_task_set" "my_task_set" {
+  service         = aws_ecs_service.my_service.id
+  cluster         = aws_ecs_cluster.my_cluster.id
+  task_definition = aws_ecs_task_definition.test_task.arn
+  
+  launch_type = "EC2"
+  
+  scale {
+    unit  = "PERCENT"
+    value = 100
+  }
+
+  # If you need to wait for stability, you can use a lifecycle rule
+  lifecycle {
+    create_before_destroy = true
+  }
+}
