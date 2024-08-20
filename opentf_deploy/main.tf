@@ -188,52 +188,22 @@ resource "aws_ecs_task_definition" "test_task" {
   ])
 }
 
-# resource "null_resource" "test_deployment" {
-#    triggers = {
-#     never = uuid()
+# resource "null_resource" "deploy_task_definition" {
+#   triggers = {
+#     task_definition_arn = aws_ecs_task_definition.test_task.arn
 #   }
 
 #   provisioner "local-exec" {
 #     command = <<-EOT
-#       echo "Starting test deployment at $(date)"
       
-#       # Create a new task set
-#       TASK_SET_ID=$(aws ecs create-task-set \
+#       # Update the service to use the new task definition
+#       aws ecs update-service \
 #         --cluster ${aws_ecs_cluster.my_cluster.name} \
 #         --service ${aws_ecs_service.my_service.name} \
 #         --task-definition ${aws_ecs_task_definition.test_task.arn} \
-#         --external-id $(date +%s) \
-#         --launch-type EC2 \
-#         --scale value=100,unit=PERCENT \
-#         --query 'taskSet.id' \
-#         --output text)
-      
-#       echo "Created task set: $TASK_SET_ID"
-      
-#       # Update the service to use the new task set
-#       aws ecs update-service-primary-task-set \
-#         --cluster ${aws_ecs_cluster.my_cluster.name} \
-#         --service ${aws_ecs_service.my_service.name} \
-#         --primary-task-set $TASK_SET_ID
-      
-#       echo "Updated service primary task set"
-      
-#       # Wait for the service to become stable
-#       aws ecs wait services-stable \
-#         --cluster ${aws_ecs_cluster.my_cluster.name} \
-#         --services ${aws_ecs_service.my_service.name}
-      
-#       echo "Service is stable"
-      
-#       # Fetch the service status
-#       aws ecs describe-services \
-#         --cluster ${aws_ecs_cluster.my_cluster.name} \
-#         --services ${aws_ecs_service.my_service.name} \
-#         --query 'services[0].{status:status,runningCount:runningCount,desiredCount:desiredCount,events:events[0].message}' \
-#         --output json > deployment_status.json
-      
-#       cat deployment_status.json
+#         --force-new-deployment
 #     EOT
+    
 #     environment = {
 #       AWS_ACCESS_KEY_ID     = var.aws_access_key_id
 #       AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key

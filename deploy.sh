@@ -86,7 +86,7 @@ run_opentofu() {
         export TF_VAR_aws_access_key_id=$AWS_ACCESS_KEY_ID TF_VAR_aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
         export TF_VAR_app_name=bluewind-app
         tofu init
-        tofu apply --auto-approve
+        tofu apply -lock=false --auto-approve
 
         # tofu apply --auto-approve
     ) 2>&1 | if [ "$display_output" = true ]; then
