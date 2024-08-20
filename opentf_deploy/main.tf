@@ -93,7 +93,7 @@ resource "aws_ecs_service" "my_service" {
 
   lifecycle {
     ignore_changes = [
-      capacity_provider_strategy,
+      capacity_provider_strategy, desired_count, task_definition,
     ]
   }
 }
@@ -188,28 +188,27 @@ resource "aws_ecs_task_definition" "test_task" {
   ])
 }
 
-# resource "null_resource" "deploy_task_definition" {
-#   triggers = {
-#     task_definition_arn = aws_ecs_task_definition.test_task.arn
-#   }
+resource "null_resource" "update_primary_task_set" {
+  triggers = {
+    task_set_id = split(",", aws_ecs_task_set.my_task_set.id)[0]
+  }
 
-#   provisioner "local-exec" {
-#     command = <<-EOT
-      
-#       # Update the service to use the new task definition
-#       aws ecs update-service \
-#         --cluster ${aws_ecs_cluster.my_cluster.name} \
-#         --service ${aws_ecs_service.my_service.name} \
-#         --task-definition ${aws_ecs_task_definition.test_task.arn} \
-#         --force-new-deployment
-#     EOT
-    
-#     environment = {
-#       AWS_ACCESS_KEY_ID     = var.aws_access_key_id
-#       AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
-#     }
-#   }
-# }
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws ecs update-service-primary-task-set \
+        --cluster ${aws_ecs_cluster.my_cluster.id} \
+        --service ${aws_ecs_service.my_service.name} \
+        --primary-task-set ${split(",", aws_ecs_task_set.my_task_set.id)[0]} \
+        --region us-west-2
+    EOT
+    environment = {
+      AWS_ACCESS_KEY_ID     = var.aws_access_key_id
+      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
+    }
+  }
+
+  depends_on = [aws_ecs_task_set.my_task_set]
+}
 
 # data "local_file" "deployment_status" {
 #   filename = "${path.module}/deployment_status.json"
@@ -294,5 +293,4 @@ resource "aws_ecs_task_set" "my_task_set" {
     create_before_destroy = true
   }
   depends_on = [aws_ecs_service.my_service]
-
 }
