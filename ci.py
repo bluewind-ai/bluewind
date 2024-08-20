@@ -7,7 +7,7 @@ from datetime import timedelta
 import click
 from botocore.exceptions import ClientError
 import boto3
-
+import botocore
 
 def create_log_directory():
     readable_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -92,17 +92,16 @@ async def run_process(command, env, log_file, display_output=False):
     await process.wait()
     return process
 
+
 async def run_deploy(log_dir, display_output=False):
     click.echo(f"Running OpenTofu commands...")
     env = os.environ.copy()
-
     if os.path.exists('.aws'):
         with open('.aws', 'r') as f:
             for line in f:
                 if '=' in line:
                     key, value = line.strip().split('=', 1)
                     env[key] = value
-
     env.update({
         "TF_VAR_aws_access_key_id": env.get("AWS_ACCESS_KEY_ID", ""),
         "TF_VAR_aws_secret_access_key": env.get("AWS_SECRET_ACCESS_KEY", ""),
@@ -117,30 +116,19 @@ async def run_deploy(log_dir, display_output=False):
     ]
     
     command = " && ".join(commands)
-
-    # Run tofu apply once
-    process = await run_process(
-        command,
-        env,
-        f"{log_dir}/tofu_full.log",
-        display_output
-    )
+    process = await run_process(command, env, f"{log_dir}/tofu_full.log", display_output)
     await process.wait()
-
-    # Read the Terraform output
     with open(f"{log_dir}/tofu_output.json", 'r') as f:
         output_data = json.load(f)
     
     cluster_arn = output_data['ecs_cluster_arn']['value']
     service_name = output_data['ecs_service_name']['value']
-    task_set_a_arn = output_data['task_set_a_arn']['value']
-    task_set_b_arn = output_data['task_set_b_arn']['value']
+    task_set_a_id = output_data['task_set_a_id']['value']
+    task_set_b_id = output_data['task_set_b_id']['value']
     task_set_a_scale = output_data['task_set_a_scale']['value']
     task_set_b_scale = output_data['task_set_b_scale']['value']
-
     assert task_set_a_scale == 0 or task_set_b_scale == 0, "Both versions are currently running at the same time, we can't deploy"
     if task_set_a_scale == 0 and task_set_b_scale == 0:
-        # we never deployed anything into this environment, so it doesn't matter which task set to pick
         a_is_old = True
     else:
         if task_set_a_scale:
@@ -150,48 +138,70 @@ async def run_deploy(log_dir, display_output=False):
             assert task_set_b_scale == 100, "Task set B is the old version, but it's not scaled to 100%"
             a_is_old = False
     
-    if a_is_old:
-        task_set_to_update = task_set_a_arn
-    else:
-        task_set_to_update = task_set_b_arn
-
-    # Use botocore to update the task set
+    task_set_to_update = task_set_a_id.split(',')[0] if a_is_old else task_set_b_id.split(',')[0]
     click.echo(f"Updating task set {task_set_to_update} to 100% scale...")
+    
     ecs_client = boto3.client('ecs',
         aws_access_key_id=env['AWS_ACCESS_KEY_ID'],
         aws_secret_access_key=env['AWS_SECRET_ACCESS_KEY'],
         region_name='us-west-2'
     )
-    ecs_client.update_task_set(
+    response = ecs_client.update_task_set(
         cluster=cluster_arn,
         service=service_name,
         taskSet=task_set_to_update,
         scale={'value': 100, 'unit': 'PERCENT'}
     )
-
-    # Wait for service stabilization
-    click.echo("Waiting for service to stabilize...")
-    response = await ecs_client.describe_services(
-        cluster=cluster_arn,
-        services=[service_name]
-    )
-    print(response)
+    click.echo(f"Update task set response: {response}")
     
-    # waiter = ecs_client.get_waiter('services_stable')
-    # waiter.wait(
-    #     cluster=cluster_arn,
-    #     services=[service_name],
-    #     WaiterConfig={
-    #         'Delay': 15,
-    #         'MaxAttempts': 40
-    #     }
-    # )
-    click.echo("Service has stabilized.")
+    click.echo("Waiting for service to stabilize...")
+    try:
+        waiter = ecs_client.get_waiter('services_stable')
+        
+        # Add a describe_services call before waiting
+        click.echo("Describing service before waiting...")
+        service_description = ecs_client.describe_services(
+            cluster=cluster_arn,
+            services=[service_name]
+        )
+        click.echo(f"Service description: {json.dumps(service_description, default=str, indent=2)}")
+        
+        waiter.wait(
+            cluster=cluster_arn,
+            services=[service_name],
+            WaiterConfig={
+                'Delay': 15,
+                'MaxAttempts': 40
+            }
+        )
+        click.echo("Service has stabilized.")
+        click.echo("Deployment completed successfully.")
+        return True
+    except WaiterError as e:
+        click.echo(f"WaiterError while waiting for service to stabilize: {str(e)}")
+        click.echo("Last response from waiter:")
+        click.echo(json.dumps(e.last_response, default=str, indent=2))
+    except ClientError as e:
+        click.echo(f"ClientError during deployment: {str(e)}")
+        if e.response and 'Error' in e.response:
+            click.echo(f"Error Code: {e.response['Error'].get('Code')}")
+            click.echo(f"Error Message: {e.response['Error'].get('Message')}")
+    except Exception as e:
+        click.echo(f"Unexpected error during deployment: {str(e)}")
+    
+    click.echo("Attempting to fetch final service details...")
+    try:
+        final_service_details = ecs_client.describe_services(
+            cluster=cluster_arn,
+            services=[service_name]
+        )
+        click.echo(f"Final service details: {json.dumps(final_service_details, default=str, indent=2)}")
+    except Exception as inner_e:
+        click.echo(f"Failed to fetch final service details: {str(inner_e)}")
+    
+    click.echo("Deployment failed.")
+    return False
 
-    click.echo("Deployment completed successfully.")
-    return True
-
-    return True
 
 @click.group()
 def cli():

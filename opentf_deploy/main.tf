@@ -361,13 +361,12 @@ output "ecs_service_name" {
   value = aws_ecs_service.my_service.name
 }
 
-
-output "task_set_a_arn" {
-  value = aws_ecs_task_set.task_set_a.arn
+output "task_set_a_id" {
+  value = aws_ecs_task_set.task_set_a.id
 }
 
-output "task_set_b_arn" {
-  value = aws_ecs_task_set.task_set_b.arn
+output "task_set_b_id" {
+  value = aws_ecs_task_set.task_set_b.id
 }
 
 output "task_set_a_scale" {
