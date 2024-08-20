@@ -5,6 +5,9 @@ from datetime import datetime
 import time
 from datetime import timedelta
 import click
+from botocore.exceptions import ClientError
+import boto3
+
 
 def create_log_directory():
     readable_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -110,32 +113,38 @@ async def run_deploy(log_dir, display_output=False):
         "cd opentf_deploy",
         "tofu init",
         f"tofu apply -lock=false --auto-approve",
+        f"tofu output -json > ../{log_dir}/tofu_output.json"
     ]
     
     command = " && ".join(commands)
 
     # First run
-    
-    # process = await run_process(
-    #     command + f" && tofu output -json > ../{log_dir}/tofu_output_1.json",
-    #     env,
-    #     f"{log_dir}/tofu_full.log",
-    #     display_output
-    # )
-    # await process.wait()
 
-    # with open(f"{log_dir}/tofu_output_1.json", 'r') as f:
-    #     output_data = json.load(f)
+    process = await run_process(
+        command + f" && tofu output -json > ../{log_dir}/tofu_output.json",
+        env,
+        f"{log_dir}/tofu_full.log",
+        display_output
+    )
+    await process.wait()
+
+    with open(f"{log_dir}/tofu_output.json", 'r') as f:
+        output_data = json.load(f)
     
-    # task_set_a_scale = output_data.get('task_set_a_scale', {}).get('value')
-    # task_set_b_scale = output_data.get('task_set_b_scale', {}).get('value')
-    # assert task_set_a_scale == 0 or task_set_b_scale == 0, "Both versions are currently running at the same time, we can't deploy"
-    # if task_set_a_scale:
-    #     assert task_set_a_scale == 100, "Task set A is the old version, but it's not scaled to 100%"
-    #     a_is_old = True
-    # else:
-    #     assert task_set_b_scale == 100, "Task set B is the old version, but it's not scaled to 100%"
-    #     a_is_old = False
+    cluster_arn = output_data.get('cluster_arn', {}).get('value')
+    service_arn = output_data.get('service_arn', {}).get('value')
+    task_set_a_arn = output_data.get('task_set_a_arn', {}).get('value')
+    task_set_b_arn = output_data.get('task_set_b_arn', {}).get('value')
+    task_set_a_scale = output_data.get('task_set_a_scale', {}).get('value')
+    task_set_b_scale = output_data.get('task_set_b_scale', {}).get('value')
+    
+    assert task_set_a_scale == 0 or task_set_b_scale == 0, "Both versions are currently running at the same time, we can't deploy"
+    if task_set_a_scale:
+        assert task_set_a_scale == 100, "Task set A is the old version, but it's not scaled to 100%"
+        a_is_old = True
+    else:
+        assert task_set_b_scale == 100, "Task set B is the old version, but it's not scaled to 100%"
+        a_is_old = False
 
     a_is_old = True
     if a_is_old:

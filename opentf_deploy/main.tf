@@ -1,4 +1,3 @@
-
 provider "aws" {
   region  = "us-west-2"  # or your preferred region
   profile = "ci-cd-admin-2"
