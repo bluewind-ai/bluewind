@@ -11,3 +11,4 @@ TODO
 deploy.sh
 logs/*
 .aws
+deploy.py

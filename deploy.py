@@ -22,7 +22,7 @@ def wait_for_process(process, timeout=1800):
         if time.time() - start_time >= timeout:
             process.kill()
             return False
-        time.sleep(5)
+        time.sleep(1)
     return process.returncode == 0
 
 def run_local_server(log_dir):
@@ -103,56 +103,88 @@ def run_opentofu(log_dir, display_output=False):
         # Run the command and log output to file
         return run_command(command, log_file, env=env)
 
+import time
+from datetime import timedelta
 from click import style
-
 @click.command()
-@click.option('--tofu', is_flag=True, help="Display OpenTofu output")
+@click.option('--tofu', is_flag=True, help="Only run OpenTofu and display its output")
 def main(tofu):
     log_dir = create_log_directory()
     click.echo(f"Log directory: {log_dir}")
 
     if tofu:
+        # Only run OpenTofu
+        click.echo("Running OpenTofu only")
         opentofu_log = f"{log_dir}/opentofu.log"
         click.echo(f"OpenTofu log: {opentofu_log}")
-        run_opentofu(log_dir, display_output=True)
+        start_time = time.time()
+        opentofu_process = run_opentofu(log_dir, display_output=True)
+        success = wait_for_process(opentofu_process)
+        end_time = time.time()
+        duration = timedelta(seconds=int(end_time - start_time))
 
-    processes = {
-        "Local Server": (run_local_server, f"{log_dir}/local_server.log"),
-        "Local Tests": (run_local_tests, f"{log_dir}/local_tests.log"),
-        "Staging Tests": (run_tests_against_staging, f"{log_dir}/staging_tests.log"),
-        "Docker Tests": (run_docker_tests, f"{log_dir}/docker_tests.log"),
-        "OpenTofu": (run_opentofu, f"{log_dir}/opentofu.log")
-    }
-
-    running_processes = {}
-    for name, (run_func, log_path) in processes.items():
-        click.echo(f"Starting {name}")
-        click.echo(f"{name} log: {log_path}")
-        process = run_func(log_dir)
-        running_processes[name] = process
-        click.echo(f"{name} PID: {process.pid}")
-
-    time.sleep(2)  # Wait for local server to start
-
-    results = {}
-    for name, process in running_processes.items():
-        results[name] = wait_for_process(process)
-
-    if "Local Server" in running_processes:
-        running_processes["Local Server"].terminate()
-
-    click.echo("--- Deployment Summary ---")
-    for name, success in results.items():
         status = style('SUCCESS', fg='green') if success else style('FAILED', fg='red')
-        click.echo(f"{name}: {status}")
-        click.echo(f"Log file: {processes[name][1]}")
+        click.echo(f"OpenTofu: {status}")
+        click.echo(f"Log file: {opentofu_log}")
+        click.echo(f"Duration: {duration}")
 
-    if all(results.values()):
-        click.echo(style("All processes completed successfully.", fg='green'))
-        exit(0)
+        exit(0 if success else 1)
     else:
-        click.echo(style("One or more processes failed. Check the logs for details.", fg='red'))
-        exit(1)
+        # Run all other processes
+        processes = {
+            "Local Server": (run_local_server, f"{log_dir}/local_server.log"),
+            "Local Tests": (run_local_tests, f"{log_dir}/local_tests.log"),
+            "Staging Tests": (run_tests_against_staging, f"{log_dir}/staging_tests.log"),
+            "Docker Tests": (run_docker_tests, f"{log_dir}/docker_tests.log"),
+        }
+
+        running_processes = {}
+        start_times = {}
+        for name, (run_func, log_path) in processes.items():
+            click.echo(f"Starting {name}")
+            click.echo(f"{name} log: {log_path}")
+            start_times[name] = time.time()
+            process = run_func(log_dir)
+            running_processes[name] = process
+            click.echo(f"{name} PID: {process.pid}")
+
+        time.sleep(1)  # Wait for local server to start
+
+        results = {}
+        durations = {}
+        for name, process in running_processes.items():
+            results[name] = wait_for_process(process)
+            end_time = time.time()
+            durations[name] = timedelta(seconds=int(end_time - start_times[name]))
+
+        if "Local Server" in running_processes:
+            running_processes["Local Server"].terminate()
+
+        # Run OpenTofu last
+        click.echo("Starting OpenTofu")
+        opentofu_log = f"{log_dir}/opentofu.log"
+        click.echo(f"OpenTofu log: {opentofu_log}")
+        start_time = time.time()
+        opentofu_process = run_opentofu(log_dir, display_output=False)
+        results["OpenTofu"] = wait_for_process(opentofu_process)
+        end_time = time.time()
+        durations["OpenTofu"] = timedelta(seconds=int(end_time - start_time))
+
+        click.echo("--- Deployment Summary ---")
+        for name, success in results.items():
+            status = style('SUCCESS', fg='green') if success else style('FAILED', fg='red')
+            click.echo(f"{name}: {status}")
+            log_file = opentofu_log if name == "OpenTofu" else processes.get(name, (None, None))[1]
+            click.echo(f"Log file: {log_file}")
+            click.echo(f"Duration: {durations[name]}")
+            click.echo("")  # Add a blank line for readability
+
+        if all(results.values()):
+            click.echo(style("All processes completed successfully.", fg='green'))
+            exit(0)
+        else:
+            click.echo(style("One or more processes failed. Check the logs for details.", fg='red'))
+            exit(1)
 
 
 if __name__ == "__main__":
