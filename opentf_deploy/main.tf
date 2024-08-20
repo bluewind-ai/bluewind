@@ -168,50 +168,6 @@ resource "aws_autoscaling_group" "ecs_asg" {
   }
 }
 
-variable "scale_value_task_set_a" {
-  description = "The scale value for the task set a"
-  type        = number
-  default     = 100
-}
-
-resource "null_resource" "update_task_set_a" {
-  triggers = {
-    scale_value = var.scale_value_task_set_a
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      aws ecs update-task-set \
-        --cluster ${aws_ecs_cluster.my_cluster.id} \
-        --service ${aws_ecs_service.my_service.name} \
-        --task-set ecs-svc/7475941401522225199 \
-        --scale unit=PERCENT,value=${var.scale_value_task_set_a}
-    EOT
-  }
-}
-
-variable "scale_value_task_set_b" {
-  description = "The scale value for the task set b"
-  type        = number
-  default     = 100
-}
-
-resource "null_resource" "update_task_set_b" {
-  triggers = {
-    scale_value = var.scale_value_task_set_b
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      aws ecs update-task-set \
-        --cluster ${aws_ecs_cluster.my_cluster.id} \
-        --service ${aws_ecs_service.my_service.name} \
-        --task-set ecs-svc/6599489214048156953 \
-        --scale unit=PERCENT,value=${var.scale_value_task_set_b}
-    EOT
-  }
-}
-
 # data "local_file" "deployment_status" {
 #   filename = "${path.module}/deployment_status.json"
 #   depends_on = [null_resource.test_deployment]
@@ -278,6 +234,8 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   }
 }
 
+## BLUE GREEN DEPLOYMENT
+
 resource "aws_ecs_task_set" "task_set_a" {
   service         = aws_ecs_service.my_service.id
   cluster         = aws_ecs_cluster.my_cluster.id
@@ -342,4 +300,52 @@ resource "aws_ecs_task_definition" "task_definition_b" {
       ]
     }
   ])
+}
+
+variable "scale_value_task_set_a" {
+  description = "The scale value for the task set a. Set to null to skip applying."
+  type        = number
+  default     = null
+}
+
+resource "null_resource" "update_task_set_a" {
+  count = var.scale_value_task_set_a != null ? 1 : 0
+
+  triggers = {
+    scale_value = var.scale_value_task_set_a
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws ecs update-task-set \
+        --cluster ${aws_ecs_cluster.my_cluster.id} \
+        --service ${aws_ecs_service.my_service.name} \
+        --task-set ecs-svc/7475941401522225199 \
+        --scale unit=PERCENT,value=${var.scale_value_task_set_a}
+    EOT
+  }
+}
+
+variable "scale_value_task_set_b" {
+  description = "The scale value for the task set b. Set to null to skip applying."
+  type        = number
+  default     = null
+}
+
+resource "null_resource" "update_task_set_b" {
+  count = var.scale_value_task_set_b != null ? 1 : 0
+
+  triggers = {
+    scale_value = var.scale_value_task_set_b
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws ecs update-task-set \
+        --cluster ${aws_ecs_cluster.my_cluster.id} \
+        --service ${aws_ecs_service.my_service.name} \
+        --task-set ecs-svc/6599489214048156953 \
+        --scale unit=PERCENT,value=${var.scale_value_task_set_b}
+    EOT
+  }
 }
