@@ -34,6 +34,8 @@ google-auth-oauthlib = "^1.2.1"
 google-auth-httplib2 = "^0.2.0"
 google-api-python-client = "^2.140.0"
 django-unfold = "^0.35.0"
+botocore = "^1.35.2"
+boto3 = "^1.35.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"

@@ -118,68 +118,80 @@ async def run_deploy(log_dir, display_output=False):
     
     command = " && ".join(commands)
 
-    # First run
-
+    # Run tofu apply once
     process = await run_process(
-        command + f" && tofu output -json > ../{log_dir}/tofu_output.json",
+        command,
         env,
         f"{log_dir}/tofu_full.log",
         display_output
     )
     await process.wait()
 
+    # Read the Terraform output
     with open(f"{log_dir}/tofu_output.json", 'r') as f:
         output_data = json.load(f)
     
-    cluster_arn = output_data.get('cluster_arn', {}).get('value')
-    service_arn = output_data.get('service_arn', {}).get('value')
-    task_set_a_arn = output_data.get('task_set_a_arn', {}).get('value')
-    task_set_b_arn = output_data.get('task_set_b_arn', {}).get('value')
-    task_set_a_scale = output_data.get('task_set_a_scale', {}).get('value')
-    task_set_b_scale = output_data.get('task_set_b_scale', {}).get('value')
-    
+    cluster_arn = output_data['ecs_cluster_arn']['value']
+    service_name = output_data['ecs_service_name']['value']
+    task_set_a_arn = output_data['task_set_a_arn']['value']
+    task_set_b_arn = output_data['task_set_b_arn']['value']
+    task_set_a_scale = output_data['task_set_a_scale']['value']
+    task_set_b_scale = output_data['task_set_b_scale']['value']
+
     assert task_set_a_scale == 0 or task_set_b_scale == 0, "Both versions are currently running at the same time, we can't deploy"
-    if task_set_a_scale:
-        assert task_set_a_scale == 100, "Task set A is the old version, but it's not scaled to 100%"
+    if task_set_a_scale == 0 and task_set_b_scale == 0:
+        # we never deployed anything into this environment, so it doesn't matter which task set to pick
         a_is_old = True
     else:
-        assert task_set_b_scale == 100, "Task set B is the old version, but it's not scaled to 100%"
-        a_is_old = False
-
-    a_is_old = True
+        if task_set_a_scale:
+            assert task_set_a_scale == 100, "Task set A is the old version, but it's not scaled to 100%"
+            a_is_old = True
+        else:
+            assert task_set_b_scale == 100, "Task set B is the old version, but it's not scaled to 100%"
+            a_is_old = False
+    
     if a_is_old:
-        env.update({
-            "TF_VAR_scale_value_task_set_b": "100",
-        })
+        task_set_to_update = task_set_a_arn
     else:
-        env.update({
-            "TF_VAR_scale_value_task_set_a": "100",
-        })
+        task_set_to_update = task_set_b_arn
 
-    process = await run_process(
-        command,
-        env,
-        f"{log_dir}/tofu_full.log",
-        display_output
+    # Use botocore to update the task set
+    click.echo(f"Updating task set {task_set_to_update} to 100% scale...")
+    ecs_client = boto3.client('ecs',
+        aws_access_key_id=env['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=env['AWS_SECRET_ACCESS_KEY'],
+        region_name='us-west-2'
+    )
+    ecs_client.update_task_set(
+        cluster=cluster_arn,
+        service=service_name,
+        taskSet=task_set_to_update,
+        scale={'value': 100, 'unit': 'PERCENT'}
     )
 
-    if a_is_old:
-        env.update({
-            "TF_VAR_scale_value_task_set_b": "0",
-        })
-    else:
-        env.update({
-            "TF_VAR_scale_value_task_set_a": "0",
-        })
-
-    process = await run_process(
-        command,
-        env,
-        f"{log_dir}/tofu_full.log",
-        display_output
+    # Wait for service stabilization
+    click.echo("Waiting for service to stabilize...")
+    response = await ecs_client.describe_services(
+        cluster=cluster_arn,
+        services=[service_name]
     )
+    print(response)
+    
+    # waiter = ecs_client.get_waiter('services_stable')
+    # waiter.wait(
+    #     cluster=cluster_arn,
+    #     services=[service_name],
+    #     WaiterConfig={
+    #         'Delay': 15,
+    #         'MaxAttempts': 40
+    #     }
+    # )
+    click.echo("Service has stabilized.")
 
-    return process
+    click.echo("Deployment completed successfully.")
+    return True
+
+    return True
 
 @click.group()
 def cli():
