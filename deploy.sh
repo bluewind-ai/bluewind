@@ -3,9 +3,9 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 
 # Create a reverse-chronological timestamped log directory
-TAIL_LOGS=false
+SHOW_TOFU=false
 if [[ "$1" == "--tofu" ]]; then
-    TAIL_LOGS=true
+    SHOW_TOFU=true
 fi
 
 READABLE_TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
@@ -73,8 +73,9 @@ run_docker_tests() {
 
 # Function to run OpenTofu commands
 run_opentofu() {
+    local display_output=$1
     echo "Running OpenTofu commands..."
-    if (
+    (
         if [ -f .aws ]; then
             echo "Loading AWS credentials from .aws file"
             source .aws
@@ -88,7 +89,15 @@ run_opentofu() {
         tofu apply --auto-approve
 
         # tofu apply --auto-approve
-    ) >"$LOG_DIR/opentofu.log" 2>&1; then
+    ) 2>&1 | if [ "$display_output" = true ]; then
+        tee "$LOG_DIR/opentofu.log"
+        exit 0
+    else
+        tee "$LOG_DIR/opentofu.log" >/dev/null
+    fi
+
+    local tofu_exit_status=${PIPESTATUS[0]}
+    if [ $tofu_exit_status -eq 0 ]; then
         echo "OpenTofu apply completed successfully. Log file: $LOG_DIR/opentofu.log"
         return 0
     else
@@ -99,6 +108,9 @@ run_opentofu() {
 
 # Run all processes in parallel
 echo "Starting all processes..."
+if [ "$SHOW_TOFU" = true ]; then
+    run_opentofu true
+fi
 
 run_local_server &
 LOCAL_SERVER_PID=$!
@@ -146,12 +158,6 @@ wait_for_process() {
 wait_for_process $LOCAL_TESTS_PID
 LOCAL_TESTS_STATUS=$?
 
-if [ "$TAIL_LOGS" = true ]; then
-    echo "Tailing OpenTofu logs..."
-    tail -f "$LOG_DIR/opentofu.log"
-else
-    echo "Starting all processes..."
-fi
 # Stop the local server after local tests are done, regardless of test result
 if [ -f "$LOG_DIR/server.pid" ]; then
     SERVER_PID=$(cat "$LOG_DIR/server.pid")
