@@ -70,7 +70,7 @@ async def run_docker_tests(log_dir):
     ]
     return await run_command(" && ".join(commands), f"{log_dir}/docker_tests.log")
 
-async def run_opentofu(log_dir, display_output=False):
+async def run_opentofu(log_dir, display_output=False, extra_vars=None):
     click.echo(f"Running OpenTofu commands...")
     env = os.environ.copy()
 
@@ -86,6 +86,8 @@ async def run_opentofu(log_dir, display_output=False):
         "TF_VAR_aws_secret_access_key": env.get("AWS_SECRET_ACCESS_KEY", ""),
         "TF_VAR_app_name": "bluewind-app"
     })
+    if extra_vars:
+        env.update(extra_vars)
     
     commands = [
         "cd opentf_deploy",
@@ -94,7 +96,7 @@ async def run_opentofu(log_dir, display_output=False):
     ]
     
     command = " && ".join(commands)
-    log_file = f"{log_dir}/opentofu.log"
+    log_file = f"{log_dir}/opentofu_{int(time.time())}.log"
 
     if display_output:
         process = await asyncio.create_subprocess_shell(
@@ -129,9 +131,7 @@ async def async_main(tofu):
         click.echo(f"OpenTofu log: {opentofu_log}")
         start_time = time.time()
         opentofu_process = await run_opentofu(log_dir, display_output=True)
-        success = await wait_for_process(opentofu_process)
-        sleep_done = await asyncio.sleep(10)
-        opentofu_process = await run_opentofu(log_dir, display_output=True)
+        
 
         success = await wait_for_process(opentofu_process)
         end_time = time.time()
@@ -142,7 +142,23 @@ async def async_main(tofu):
         click.echo(f"Log file: {opentofu_log}")
         click.echo(f"Duration: {duration}")
 
+        if success:
+            click.echo("Running OpenTofu to update task set scales")
+            extra_vars = {
+                "TF_VAR_scale_value_task_set_a": "50",
+                "TF_VAR_scale_value_task_set_b": "50"
+            }
+            start_time = time.time()
+            opentofu_process = await run_opentofu(log_dir, display_output=True, extra_vars=extra_vars)
+            success = await wait_for_process(opentofu_process)
+            end_time = time.time()
+            duration = timedelta(seconds=int(end_time - start_time))
+
+            status = click.style('SUCCESS', fg='green') if success else click.style('FAILED', fg='red')
+            click.echo(f"OpenTofu task set update: {status}")
+            click.echo(f"Duration: {duration}")
         exit(0 if success else 1)
+
     else:
         # Run all other processes
         processes = {

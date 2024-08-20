@@ -168,59 +168,49 @@ resource "aws_autoscaling_group" "ecs_asg" {
   }
 }
 
-# resource "null_resource" "deploy_and_cleanup" {
-#   triggers = {
-#     task_definition_arn = aws_ecs_task_definition.test_task.arn
-#   }
+variable "scale_value_task_set_a" {
+  description = "The scale value for the task set a"
+  type        = number
+  default     = 100
+}
 
-#   provisioner "local-exec" {
-#     command = <<-EOT
-#       # Create new task set
-#       NEW_TASK_SET=$(aws ecs create-task-set \
-#         --service ${aws_ecs_service.my_service.name} \
-#         --cluster ${aws_ecs_cluster.my_cluster.id} \
-#         --task-definition ${aws_ecs_task_definition.test_task.arn} \
-#         --launch-type EC2 \
-#         --scale unit=PERCENT,value=100 \
-#         --region us-west-2 \
-#         --query 'taskSet.id' \
-#         --output text)
+resource "null_resource" "update_task_set_a" {
+  triggers = {
+    scale_value = var.scale_value_task_set_a
+  }
 
-#       # Update primary task set
-      # aws ecs update-service-primary-task-set \
-      #   --cluster ${aws_ecs_cluster.my_cluster.id} \
-      #   --service ${aws_ecs_service.my_service.name} \
-      #   --primary-task-set $NEW_TASK_SET \
-      #   --region us-west-2
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws ecs update-task-set \
+        --cluster ${aws_ecs_cluster.my_cluster.id} \
+        --service ${aws_ecs_service.my_service.name} \
+        --task-set ecs-svc/7475941401522225199 \
+        --scale unit=PERCENT,value=${var.scale_value_task_set_a}
+    EOT
+  }
+}
 
-#       # Get list of task sets
-#       TASK_SETS=$(aws ecs list-task-sets \
-#         --cluster ${aws_ecs_cluster.my_cluster.id} \
-#         --service ${aws_ecs_service.my_service.name} \
-#         --region us-west-2 \
-#         --query 'taskSets[]' \
-#         --output text)
+variable "scale_value_task_set_b" {
+  description = "The scale value for the task set b"
+  type        = number
+  default     = 100
+}
 
-#       # Delete old task sets
-#       for TASK_SET in $TASK_SETS
-#       do
-#         if [ "$TASK_SET" != "$NEW_TASK_SET" ]; then
-#           aws ecs delete-task-set \
-#             --cluster ${aws_ecs_cluster.my_cluster.id} \
-#             --service ${aws_ecs_service.my_service.name} \
-#             --task-set $TASK_SET \
-#             --region us-west-2
-#         fi
-#       done
-#     EOT
-#     environment = {
-#       AWS_ACCESS_KEY_ID     = var.aws_access_key_id
-#       AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
-#     }
-#   }
+resource "null_resource" "update_task_set_b" {
+  triggers = {
+    scale_value = var.scale_value_task_set_b
+  }
 
-#   depends_on = [aws_ecs_service.my_service, aws_ecs_task_definition.test_task]
-# }
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws ecs update-task-set \
+        --cluster ${aws_ecs_cluster.my_cluster.id} \
+        --service ${aws_ecs_service.my_service.name} \
+        --task-set ecs-svc/6599489214048156953 \
+        --scale unit=PERCENT,value=${var.scale_value_task_set_b}
+    EOT
+  }
+}
 
 # data "local_file" "deployment_status" {
 #   filename = "${path.module}/deployment_status.json"
@@ -320,6 +310,7 @@ resource "aws_ecs_task_definition" "task_definition_a" {
   container_definitions = jsonencode([
     {
       name  = "container-a"
+      image = "nginx:latest"
       memory = 512
       cpu = 128
       portMappings = [
@@ -340,6 +331,7 @@ resource "aws_ecs_task_definition" "task_definition_b" {
   container_definitions = jsonencode([
     {
       name  = "container-b"
+      image = "nginx:latest"
       memory = 512
       cpu = 128
       portMappings = [

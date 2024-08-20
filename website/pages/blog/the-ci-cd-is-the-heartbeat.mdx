@@ -11,7 +11,7 @@ I strongly believe that if you lose your source code and you only have your CI/C
 
 Let's talk about the technical choices. I think things like Cloudfront, ALB, S3, and RDS are pretty much a given for the project.
 
-Most of my thinking had to go into which container orchestrator (ECS vs EKS, vs bare bones), which compute offering (app runner, fargate, EC2, beanstalk, lambda), and which IAC (CDK, opentofu, pullumi. I am not even putting cloudformation in there haha) to pick.
+Most of my thinking had to go into which container orchestrator (ECS vs EKS, vs bare bones), which compute offering (app runner, fargate, EC2, beanstalk, lambda), and which IAC (CDK, opentofu, pulumi. I am not even putting cloudformation in there haha) to pick.
 
 I initially started with ECS + fargate + CDK. And it was slow to deploy + I had no control over these abstractions.
 Fargate is an abstraction over ECS on EC2, The CDK is an abstraction over cloudformation and cloudformation is an abstraction over the AWS API.
