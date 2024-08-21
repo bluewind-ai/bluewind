@@ -167,16 +167,6 @@ resource "aws_autoscaling_group" "ecs_asg" {
   }
 }
 
-# data "local_file" "deployment_status" {
-#   filename = "${path.module}/deployment_status.json"
-#   depends_on = [null_resource.test_deployment]
-# }
-
-# output "test_deployment_result" {
-#   description = "Status of the ECS service after test deployment"
-#   value = jsondecode(data.local_file.deployment_status.content)
-# }
-
 
 resource "aws_iam_role" "ecs_instance_role" {
   name = "${var.app_name}-ecs-instance-role"
@@ -238,7 +228,7 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
 resource "aws_ecs_task_set" "task_set_a" {
   service         = aws_ecs_service.my_service.id
   cluster         = aws_ecs_cluster.my_cluster.id
-  task_definition = aws_ecs_task_definition.task_definition_a.arn
+  task_definition = aws_ecs_task_definition.app_task_definition.arn
   
   launch_type = "EC2"
 
@@ -250,7 +240,7 @@ resource "aws_ecs_task_set" "task_set_a" {
 resource "aws_ecs_task_set" "task_set_b" {
   service         = aws_ecs_service.my_service.id
   cluster         = aws_ecs_cluster.my_cluster.id
-  task_definition = aws_ecs_task_definition.task_definition_b.arn
+  task_definition = aws_ecs_task_definition.app_task_definition.arn
   
   launch_type = "EC2"
 
@@ -259,15 +249,15 @@ resource "aws_ecs_task_set" "task_set_b" {
   }
 }
 
-resource "aws_ecs_task_definition" "task_definition_a" {
-  family                   = "task-a"
+resource "aws_ecs_task_definition" "app_task_definition" {
+  family                   = "app-task"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   
   container_definitions = jsonencode([
     {
-      name  = "container-a"
-      image = "nginx:latest"
+      name  = "app-container"
+      image = "nginx:1.23.3"  # Replace with your application image
       memory = 512
       cpu = 512
       portMappings = [
@@ -280,26 +270,6 @@ resource "aws_ecs_task_definition" "task_definition_a" {
   ])
 }
 
-resource "aws_ecs_task_definition" "task_definition_b" {
-  family                   = "task-b"
-  network_mode             = "bridge"
-  requires_compatibilities = ["EC2"]
-  
-  container_definitions = jsonencode([
-    {
-      name  = "container-b"
-      image = "nginx:latest"
-      memory = 512
-      cpu = 512
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 0  # Dynamic port mapping
-        }
-      ]
-    }
-  ])
-}
 
 variable "scale_value_task_set_a" {
   description = "The scale value for the task set a. Set to null to skip applying."
@@ -307,23 +277,6 @@ variable "scale_value_task_set_a" {
   default     = null
 }
 
-resource "null_resource" "update_task_set_a" {
-  count = var.scale_value_task_set_a != null ? 1 : 0
-
-  triggers = {
-    scale_value = var.scale_value_task_set_a
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      aws ecs update-task-set \
-        --cluster ${aws_ecs_cluster.my_cluster.id} \
-        --service ${aws_ecs_service.my_service.name} \
-        --task-set ecs-svc/7475941401522225199 \
-        --scale unit=PERCENT,value=${var.scale_value_task_set_a}
-    EOT
-  }
-}
 
 variable "scale_value_task_set_b" {
   description = "The scale value for the task set b. Set to null to skip applying."
@@ -331,25 +284,6 @@ variable "scale_value_task_set_b" {
   default     = null
 }
 
-resource "null_resource" "update_task_set_b" {
-  count = var.scale_value_task_set_b != null ? 1 : 0
-
-  triggers = {
-    scale_value = var.scale_value_task_set_b
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      aws ecs update-task-set \
-        --cluster ${aws_ecs_cluster.my_cluster.id} \
-        --service ${aws_ecs_service.my_service.name} \
-        --task-set ecs-svc/6599489214048156953 \
-        --scale unit=PERCENT,value=${var.scale_value_task_set_b}
-    EOT
-  }
-}
-
-## output relevant info
 
 ## output relevant info
 
