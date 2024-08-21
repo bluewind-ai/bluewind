@@ -1,4 +1,9 @@
 {
+  "ecr_repository_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "361769569102.dkr.ecr.us-west-2.amazonaws.com/app-bluewind-repository"
+  },
   "ecs_cluster_arn": {
     "sensitive": false,
     "type": "string",
@@ -12,6 +17,6 @@
   "task_definition_name_and_revision": {
     "sensitive": false,
     "type": "string",
-    "value": "app-task:app-task:9"
+    "value": "app-task:app-task:10"
   }
 }

@@ -100,13 +100,13 @@ resource "aws_ecs_service" "my_service" {
 }
 
 data "aws_ssm_parameter" "ecs_optimized_ami" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended/image_id"
 }
 
 resource "aws_launch_template" "ecs_lt" {
   name_prefix   = "ecs-launch-template"
   image_id      = data.aws_ssm_parameter.ecs_optimized_ami.value
-  instance_type = "t3.small"
+  instance_type = "t4g.small"
 
   iam_instance_profile {
     name = aws_iam_instance_profile.ecs_instance_profile.name
@@ -224,6 +224,8 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   }
 }
 
+
+
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                   = "app-task"
   network_mode             = "bridge"
@@ -232,15 +234,13 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   container_definitions = jsonencode([
     {
       name  = "app-container"
-      image = "nginx:latest"  # Replace with your application image
-      memory = 512
-      cpu = 512
-      portMappings = [
-        {
+      image = "${aws_ecr_repository.app.repository_url}"
+      memory = 1024
+      cpu = 1024
+      portMappings = [{
           containerPort = 80
           hostPort      = 0  # Dynamic port mapping
-        }
-      ]
+      }]
     }
   ])
 }
@@ -258,4 +258,22 @@ output "task_definition_name_and_revision" {
     aws_ecs_task_definition.app_task_definition.family,
     split("/", aws_ecs_task_definition.app_task_definition.arn)[1]
   )
+}
+
+resource "aws_ecr_repository" "app" {
+  name                 = "app-bluewind-repository"
+  image_tag_mutability = "IMMUTABLE"
+  
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+  
+  tags = {
+    Name = "${var.app_name}-ecr-repo"
+  }
+}
+
+output "ecr_repository_url" {
+  value       = aws_ecr_repository.app.repository_url
+  description = "The URL of the ECR repository"
 }
