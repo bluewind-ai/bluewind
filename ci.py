@@ -4,6 +4,8 @@ from datetime import datetime
 import time
 import click
 
+from deploy_stack import run_deploy
+
 async def run_command(command, log_file, env=None, background=False):
     with open(log_file, 'w') as f:
         process = await asyncio.create_subprocess_shell(
@@ -59,7 +61,7 @@ async def run_docker_tests(log_file):
     return success
 
 @click.command()
-@click.argument('command', type=click.Choice(['local', 'staging', 'docker']))
+@click.argument('command', type=click.Choice(['local', 'staging', 'docker', 'deploy']))
 @click.option('--log-dir', default=None, help='Log directory path')
 def cli(command, log_dir):
     if log_dir is None:
@@ -79,6 +81,8 @@ def cli(command, log_dir):
         success = asyncio.run(run_tests_against_staging(log_file))
     elif command == 'docker':
         success = asyncio.run(run_docker_tests(log_file))
+    elif command == 'deploy':
+        success = asyncio.run(run_deploy(log_file))
 
     if success:
         click.echo(click.style(f"{command.capitalize()} tests completed successfully.", fg='green'))

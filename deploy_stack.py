@@ -1,15 +1,11 @@
-from asyncio import subprocess
-import base64
-import logging
 import os
 import asyncio
 import boto3
-import click
 import json
-from datetime import datetime
 from botocore.exceptions import ClientError
 
-async def run_deploy():
+async def run_deploy(log_file):
+    print('running logs in', log_file)
     print("Starting deployment process")
     
     env = os.environ.copy()
