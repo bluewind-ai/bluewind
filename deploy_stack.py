@@ -177,11 +177,10 @@ async def run_deploy():
     print(f"New task set created with ID: {new_task_set_id}")
 
     if len(active_task_sets) == 0:
-        print("No existing task sets found. Deployment complete.")
-        return 
+        print("No task was running in this environment previously")
         
     print("Waiting for new task set to reach steady state")
-    max_attempts = 60
+    max_attempts = 30
     delay = 1
 
     for attempt in range(1, max_attempts + 1):
@@ -194,14 +193,19 @@ async def run_deploy():
         if response['taskSets'][0]['stabilityStatus'] == "STEADY_STATE":
             print("New task set reached steady state")
             print("Deleting old task set")
-            ecs_client.delete_task_set(
-                cluster=cluster_arn,
-                service=service_name,
-                taskSet=active_task_sets[0]["taskSetArn"]
-            )
+            if len(active_task_sets) == 1:
+                ecs_client.delete_task_set(
+                    cluster=cluster_arn,
+                    service=service_name,
+                    taskSet=active_task_sets[0]["taskSetArn"]
+                )
             print("Deployment completed successfully")
             return True
         await asyncio.sleep(delay)
-
+    ecs_client.delete_task_set(
+        cluster=cluster_arn,
+        service=service_name,
+        taskSet=new_task_set_id,
+    )
     print("Deployment failed: New task set did not reach steady state within the timeout period")
     return False

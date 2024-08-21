@@ -274,7 +274,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   container_definitions = jsonencode([
     {
       name  = "app-container"
-      image = "nginx:latest"
+      image = "${aws_ecr_repository.app.repository_url}"
       memory = 1024
       cpu = 1024
       portMappings = [{
