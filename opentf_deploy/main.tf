@@ -120,47 +120,6 @@ resource "aws_launch_template" "ecs_lt" {
   user_data = base64encode(<<-EOF
 #!/bin/bash
 echo ECS_CLUSTER=${aws_ecs_cluster.my_cluster.name} >> /etc/ecs/ecs.config
-echo ECS_LOGLEVEL=debug >> /etc/ecs/ecs.config
-echo ECS_AVAILABLE_LOGGING_DRIVERS='["json-file","awslogs"]' >> /etc/ecs/ecs.config
-echo ECS_ENABLE_CONTAINER_METADATA=true >> /etc/ecs/ecs.config
-echo ECS_ENABLE_TASK_IAM_ROLE=true >> /etc/ecs/ecs.config
-echo ECS_ENABLE_TASK_IAM_ROLE_NETWORK_HOST=true >> /etc/ecs/ecs.config
-yum install -y awslogs
-systemctl enable awslogsd.service
-systemctl start awslogsd.service
-
-# Configure CloudWatch Logs
-cat <<'EOT' > /etc/awslogs/awslogs.conf
-[general]
-state_file = /var/lib/awslogs/agent-state
-
-[/var/log/messages]
-file = /var/log/messages
-log_group_name = /ec2/messages
-log_stream_name = {instance_id}
-datetime_format = %b %d %H:%M:%S
-
-[/var/log/ecs/ecs-init.log]
-file = /var/log/ecs/ecs-init.log
-log_group_name = /ec2/ecs-init
-log_stream_name = {instance_id}
-datetime_format = %Y-%m-%d %H:%M:%S
-
-[/var/log/ecs/ecs-agent.log]
-file = /var/log/ecs/ecs-agent.log
-log_group_name = /ec2/ecs-agent
-log_stream_name = {instance_id}
-datetime_format = %Y-%m-%d %H:%M:%S
-
-[/var/log/docker]
-file = /var/log/docker
-log_group_name = /ec2/docker
-log_stream_name = {instance_id}
-datetime_format = %Y-%m-%d %H:%M:%S
-EOT
-
-# Restart CloudWatch Logs agent
-systemctl restart awslogsd
 EOF
   )
 
@@ -274,7 +233,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   container_definitions = jsonencode([
     {
       name  = "app-container"
-      image = "${aws_ecr_repository.app.repository_url}"
+      image = "361769569102.dkr.ecr.us-west-2.amazonaws.com/app-bluewind-repository:3311f6e90241"
       memory = 1024
       cpu = 1024
       portMappings = [{
@@ -294,6 +253,63 @@ resource "aws_ecs_task_definition" "app_task_definition" {
         {
           name  = "ECS_ENABLE_CONTAINER_METADATA" 
           value = "true"
+        },
+        {
+          name  = "DEBUG"
+          value = "1"
+        },
+        {
+          name  = "SECRET_KEY"
+          value = "your_secret_key_here"
+        },
+        {
+          name  = "ALLOWED_HOSTS"
+          value = "localhost,127.0.0.1,*"
+        },
+        {
+          name  = "DATABASE_ENGINE"
+          value = "django.db.backends.postgresql"
+        },
+        {
+          name  = "DB_USERNAME"
+          value = "dbadmin"
+        },
+        {
+          name  = "DB_PASSWORD"
+          value = "changeme123"
+        },
+        {
+          name  = "DB_HOST"
+          value = "app-bluewind-db.c50acykqkhaw.us-west-2.rds.amazonaws.com"
+        },
+        {
+          name  = "DB_PORT"
+          value = "5432"
+        },
+        {
+          name  = "DB_NAME"
+          value = "postgres"
+        },
+        {
+          name  = "DJANGO_SUPERUSER_EMAIL"
+          value = "admin@example.com"
+        },
+        {
+          name  = "DJANGO_SUPERUSER_USERNAME"
+          value = "admin@example.com"
+        },
+        {
+          name  = "DJANGO_SUPERUSER_PASSWORD"
+          value = "admin123"
+        },
+        {
+          name  = "ENVIRONMENT"
+          value = "staging"
+        },
+        {
+          name  = "CSRF_TRUSTED_ORIGINS"
+          # value = "https://${var.domain_name},http://${aws_lb.app.dns_name},https://${aws_lb.app.dns_name},https://${aws_cloudfront_distribution.app_distribution.domain_name}"
+          value = "*"
         }
       ]
     }

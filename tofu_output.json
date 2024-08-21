@@ -17,6 +17,6 @@
   "task_definition_name_and_revision": {
     "sensitive": false,
     "type": "string",
-    "value": "app-task:app-task:13"
+    "value": "app-task:app-task:16"
   }
 }
