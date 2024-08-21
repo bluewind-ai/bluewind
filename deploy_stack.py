@@ -7,6 +7,7 @@ import boto3
 import click
 import json
 from datetime import datetime
+from botocore.exceptions import ClientError
 
 async def run_deploy():
     print("Starting deployment process")
@@ -94,9 +95,11 @@ async def run_deploy():
     
     print("Reading OpenTofu output")
     
-    
     cluster_arn = output_data['ecs_cluster_arn']['value']
     service_name = output_data['ecs_service_name']['value']
+    target_group_arn = output_data['alb_target_group_arn']['value']
+    ecs_task_execution_role_arn = output_data['ecs_task_execution_role_arn']['value']
+    cloudwatch_log_group_name = output_data['cloudwatch_log_group_name']['value']
 
     print(f"Cluster ARN: {cluster_arn}")
     print(f"Service Name: {service_name}")
@@ -114,6 +117,8 @@ async def run_deploy():
     
     task_definition_response = ecs_client.register_task_definition(
         family='app-task',
+        taskRoleArn=ecs_task_execution_role_arn,
+        executionRoleArn=ecs_task_execution_role_arn,
         networkMode='bridge',
         requiresCompatibilities=['EC2'],
         containerDefinitions=[{
@@ -121,14 +126,13 @@ async def run_deploy():
             'image': f"{output_data['ecr_repository_url']['value']}:{image_id}",
             'memory': 1024,
             'cpu': 1024,
-            'portMappings': [{'containerPort': 80, 'hostPort': 80}],
+            'portMappings': [{'containerPort': 80, 'hostPort': 0}],  # Use dynamic host port mapping
             'logConfiguration': {
                 'logDriver': 'awslogs',
                 'options': {
-                    'awslogs-group': '/ecs/app-bluewind',
+                    'awslogs-group': cloudwatch_log_group_name,
                     'awslogs-region': 'us-west-2',
-                    'awslogs-stream-prefix': 'ecs',
-                    'awslogs-create-group': 'true'
+                    'awslogs-stream-prefix': 'ecs'
                 }
             },
             'environment': [
@@ -146,7 +150,8 @@ async def run_deploy():
                 {'name': 'DJANGO_SUPERUSER_USERNAME', 'value': 'admin@example.com'},
                 {'name': 'DJANGO_SUPERUSER_PASSWORD', 'value': 'admin123'},
                 {'name': 'ENVIRONMENT', 'value': 'staging'},
-                {'name': 'CSRF_TRUSTED_ORIGINS', 'value': '*'}
+                {'name': 'CSRF_TRUSTED_ORIGINS', 'value': '*,'},
+                {'name': 'AWS_DEFAULT_REGION', 'value': 'us-west-2'}
             ]
         }]
     )
@@ -179,15 +184,26 @@ async def run_deploy():
         return
 
     print("Creating new task set")
-    response = ecs_client.create_task_set(
-        cluster=cluster_arn,
-        service=service_name,
-        taskDefinition=task_definition,
-        launchType='EC2',
-        scale={'value': 100, 'unit': 'PERCENT'}
-    )
-    new_task_set_id = response['taskSet']['id']
-    print(f"New task set created with ID: {new_task_set_id}")
+    try:
+        response = ecs_client.create_task_set(
+            cluster=cluster_arn,
+            service=service_name,
+            taskDefinition=task_definition,
+            launchType='EC2',
+            scale={'value': 100, 'unit': 'PERCENT'},
+            loadBalancers=[
+                {
+                    'targetGroupArn': target_group_arn,
+                    'containerName': 'app-container',
+                    'containerPort': 80
+                }
+            ]
+        )
+        new_task_set_id = response['taskSet']['id']
+        print(f"New task set created with ID: {new_task_set_id}")
+    except ClientError as e:
+        print(f"Error creating task set: {e}")
+        return False
 
     if len(active_task_sets) == 0:
         print("No task was running in this environment previously")
