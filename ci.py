@@ -18,25 +18,34 @@ async def run_command(command, log_file, env=None, background=False):
             return process.returncode == 0
         return process
 
-async def run_local_server(log_file):
-    click.echo("Starting local server...")
-    return await run_command(f"gunicorn --bind :8001 --workers 1 bluewind.wsgi", log_file, background=True)
+async def run_local_server_and_tests(log_dir):
+    server_log = f"{log_dir}/local_server.log"
+    tests_log = f"{log_dir}/local_tests.log"
 
-async def check_server_ready(url, timeout=30):
+    # Start local server
+    click.echo(f"Starting local server. Log: {server_log}")
+    server_process = await run_command(f"gunicorn --bind :8001 --workers 1 bluewind.wsgi", server_log, background=True)
+    
+    # Check if server is ready
     start_time = time.time()
+    server_ready = False
     async with aiohttp.ClientSession() as session:
-        while time.time() - start_time < timeout:
+        while time.time() - start_time < 30:
             try:
-                async with session.get(url) as response:
+                async with session.get("http://localhost:8001") as response:
                     if response.status == 200:
-                        return True
+                        server_ready = True
+                        break
             except aiohttp.ClientError:
                 pass
             await asyncio.sleep(1)
-    return False
 
-async def run_local_tests(log_file):
-    click.echo("Running tests locally...")
+    if not server_ready:
+        click.echo(click.style("Failed to start local server. Check the log for details.", fg='red'))
+        return False
+
+    # Run local tests
+    click.echo(f"Running local tests. Log: {tests_log}")
     env = os.environ.copy()
     env.update({
         "ENVIRONMENT": "test",
@@ -44,22 +53,8 @@ async def run_local_tests(log_file):
         "ALLOWED_HOSTS": "localhost,",
         "TEST_PORT": "8002"
     })
-    return await run_command("python3 manage.py test", log_file, env=env)
+    tests_success = await run_command("python3 manage.py test", tests_log, env=env)
 
-async def run_local_server_and_tests(log_dir):
-    server_log = f"{log_dir}/local_server.log"
-    tests_log = f"{log_dir}/local_tests.log"
-
-    click.echo(f"Starting local server. Log: {server_log}")
-    server_process = await run_local_server(server_log)
-    
-    server_ready = await check_server_ready("http://localhost:8001")
-    if not server_ready:
-        click.echo(click.style("Failed to start local server. Check the log for details.", fg='red'))
-        return False
-
-    click.echo(f"Running local tests. Log: {tests_log}")
-    tests_success = await run_local_tests(tests_log)
     if not tests_success:
         click.echo(click.style("Local tests failed. Check the log for details.", fg='red'))
     else:
@@ -72,8 +67,13 @@ async def run_local_server_and_tests(log_dir):
     return tests_success
 
 @click.command()
+@click.argument('command', default='local')
 @click.option('--log-dir', default=None, help='Log directory path')
-def cli(log_dir):
+def cli(command, log_dir):
+    if command != 'local':
+        click.echo(click.style(f"Unknown command: {command}. Only 'local' is supported.", fg='red'))
+        exit(1)
+
     if log_dir is None:
         readable_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         reverse_timestamp = str(9999999999 - int(time.time())).zfill(10)
