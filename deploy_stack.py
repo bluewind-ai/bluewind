@@ -63,7 +63,7 @@ async def run_deploy():
     )
 
     if task_set_a_scale == 100 and task_set_b_scale == 100:
-        return True
+        pass
     elif task_set_a_scale == 0 and task_set_b_scale == 0:
         old_task_set, new_task_set = task_set_b_id, task_set_a_id
     elif task_set_a_scale == 100:
@@ -74,18 +74,18 @@ async def run_deploy():
     ecs_client.update_task_set(
         cluster=cluster_arn,
         service=service_name,
-        taskSet=task_set_a_id,
-        taskDefinition=task_definition,
+        taskSet=new_task_set,
+        # taskDefinition=task_definition,
         scale={'value': 100, 'unit': 'PERCENT'}
     )
 
-    ecs_client.update_task_set(
-        cluster=cluster_arn,
-        service=service_name,
-        taskSet=task_set_b_id,
-        taskDefinition=task_definition,
-        scale={'value': 100, 'unit': 'PERCENT'}
-    )
+    # ecs_client.update_task_set(
+    #     cluster=cluster_arn,
+    #     service=service_name,
+    #     taskSet=task_set_b_id,
+    #     # taskDefinition=task_definition,
+    #     scale={'value': 100, 'unit': 'PERCENT'}
+    # )
 
     for _ in range(30):
         response = ecs_client.describe_services(cluster=cluster_arn, services=[service_name])

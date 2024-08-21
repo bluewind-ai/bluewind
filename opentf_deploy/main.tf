@@ -93,7 +93,8 @@ resource "aws_ecs_service" "my_service" {
 
   lifecycle {
     ignore_changes = [
-      capacity_provider_strategy, task_definition,
+      capacity_provider_strategy
+      , task_definition,
     ]
   }
 }
@@ -234,7 +235,7 @@ resource "aws_ecs_task_set" "task_set_a" {
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = [task_definition]
+    # ignore_changes        = [task_definition]
   }
 }
 
@@ -247,7 +248,7 @@ resource "aws_ecs_task_set" "task_set_b" {
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = [task_definition]
+    # ignore_changes        = [task_definition]
   }
 }
 
