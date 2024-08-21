@@ -13,3 +13,4 @@ logs/*
 .aws
 ci.py
 deploy_stack.py
+tofu_output.json
