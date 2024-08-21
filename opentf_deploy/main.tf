@@ -149,12 +149,19 @@ resource "aws_security_group" "ecs_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
 }
 resource "aws_autoscaling_group" "ecs_asg" {
   vpc_zone_identifier = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
-  desired_capacity    = 2
+  desired_capacity    = 3
   max_size            = 4
-  min_size            = 2
+  min_size            = 3
 
   launch_template {
     id      = aws_launch_template.ecs_lt.id
@@ -259,4 +266,121 @@ resource "aws_ecr_repository" "app" {
 output "ecr_repository_url" {
   value       = aws_ecr_repository.app.repository_url
   description = "The URL of the ECR repository"
+}
+
+# Create an Application Load Balancer
+resource "aws_lb" "main" {
+  name               = "${var.app_name}-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb_sg.id]
+  subnets            = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
+
+  enable_deletion_protection = false
+
+  tags = {
+    Name = "${var.app_name}-alb"
+  }
+}
+
+# Create a target group for the ALB
+resource "aws_lb_target_group" "main" {
+  name        = "${var.app_name}-tg"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "instance"
+
+  # health_check {
+  #   enabled             = true
+  #   interval            = 5    # Check every 5 seconds
+  #   path                = "/"  # Adjust this to a suitable health check endpoint
+  #   protocol            = "HTTP"
+  #   timeout             = 2    # Wait up to 2 seconds for a response
+  #   healthy_threshold   = 2    # Consider healthy after 2 successful checks
+  #   unhealthy_threshold = 2    # Consider unhealthy after 2 failed checks
+  #   matcher             = "200-299"  # HTTP status code ranges to consider healthy
+  # }
+
+  deregistration_delay = 10  
+}
+
+# Create a listener for the ALB
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main.arn
+  }
+}
+
+# Create a security group for the ALB
+resource "aws_security_group" "alb_sg" {
+  name        = "${var.app_name}-alb-sg"
+  description = "Security group for ALB"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+output "vpc_id" {
+  value = aws_vpc.main.id
+}
+
+output "subnet_ids" {
+  value = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
+}
+
+output "ecs_security_group_id" {
+  value = aws_security_group.ecs_sg.id
+}
+
+output "alb_target_group_arn" {
+  value = aws_lb_target_group.main.arn
+}
+
+output "ecs_task_execution_role_arn" {
+  value = aws_iam_role.ecs_task_execution_role.arn
+}
+
+output "cloudwatch_log_group_name" {
+  value = aws_cloudwatch_log_group.ecs_tasks.name
+}
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "${var.app_name}-ecs-task-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }

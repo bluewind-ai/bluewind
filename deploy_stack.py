@@ -152,7 +152,14 @@ async def run_deploy():
                 {'name': 'ENVIRONMENT', 'value': 'staging'},
                 {'name': 'CSRF_TRUSTED_ORIGINS', 'value': '*,'},
                 {'name': 'AWS_DEFAULT_REGION', 'value': 'us-west-2'}
-            ]
+            ],
+            "healthCheck": {
+                "command": ["CMD-SHELL", "curl -v -f http://localhost/ || exit 1"],
+                "interval": 5,
+                "timeout": 5,
+                "retries": 3,
+                "startPeriod": 10
+            }
         }]
     )
     task_definition = f"{task_definition_response['taskDefinition']['family']}:{task_definition_response['taskDefinition']['revision']}"
@@ -235,6 +242,7 @@ async def run_deploy():
         cluster=cluster_arn,
         service=service_name,
         taskSet=new_task_set_id,
+        force=True
     )
     print("Deployment failed: New task set did not reach steady state within the timeout period")
     return False
