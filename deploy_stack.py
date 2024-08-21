@@ -62,17 +62,14 @@ async def build_and_push_image(env):
 
 async def run_deploy():
     print("Starting deployment process")
-    env = os.environ.copy()
     
+    env = os.environ.copy()
     if os.path.exists('.aws'):
         with open('.aws', 'r') as f:
             for line in f:
                 if '=' in line:
                     key, value = line.strip().split('=', 1)
                     env[key] = value
-    if not await build_and_push_image(env):
-        print("Failed to build and push Docker image")
-        return
     env.update({
         "TF_VAR_aws_access_key_id": env.get("AWS_ACCESS_KEY_ID", ""),
         "TF_VAR_aws_secret_access_key": env.get("AWS_SECRET_ACCESS_KEY", ""),
@@ -115,6 +112,9 @@ async def run_deploy():
     print("OpenTofu commands completed successfully")
     
     print("Building and pushing Docker image")
+    if not await build_and_push_image(env):
+        print("Failed to build and push Docker image")
+        return
     
     print("Docker image built and pushed successfully")
     
