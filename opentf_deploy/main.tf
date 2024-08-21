@@ -224,34 +224,6 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   }
 }
 
-## BLUE GREEN DEPLOYMENT
-
-# resource "aws_ecs_task_set" "task_set_a" {
-#   service         = aws_ecs_service.my_service.id
-#   cluster         = aws_ecs_cluster.my_cluster.id
-#   task_definition = aws_ecs_task_definition.app_task_definition.arn
-  
-#   launch_type = "EC2"
-
-#   lifecycle {
-#     create_before_destroy = true
-#     # ignore_changes        = [task_definition]
-#   }
-# }
-
-# resource "aws_ecs_task_set" "task_set_b" {
-#   service         = aws_ecs_service.my_service.id
-#   cluster         = aws_ecs_cluster.my_cluster.id
-#   task_definition = aws_ecs_task_definition.app_task_definition.arn
-  
-#   launch_type = "EC2"
-
-#   lifecycle {
-#     create_before_destroy = true
-#     # ignore_changes        = [task_definition]
-#   }
-# }
-
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                   = "app-task"
   network_mode             = "bridge"
@@ -273,23 +245,6 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   ])
 }
 
-
-# variable "scale_value_task_set_a" {
-#   description = "The scale value for the task set a. Set to null to skip applying."
-#   type        = number
-#   default     = null
-# }
-
-
-# variable "scale_value_task_set_b" {
-#   description = "The scale value for the task set b. Set to null to skip applying."
-#   type        = number
-#   default     = null
-# }
-
-
-## output relevant info
-
 output "ecs_cluster_arn" {
   value = aws_ecs_cluster.my_cluster.arn
 }
@@ -297,24 +252,6 @@ output "ecs_cluster_arn" {
 output "ecs_service_name" {
   value = aws_ecs_service.my_service.name
 }
-
-# output "task_set_a_id" {
-#   value = aws_ecs_task_set.task_set_a.id
-# }
-
-# output "task_set_b_id" {
-#   value = aws_ecs_task_set.task_set_b.id
-# }
-
-# output "task_set_a_scale" {
-#   description = "The current scale of task set A"
-#   value       = aws_ecs_task_set.task_set_a.scale[0].value
-# }
-
-# output "task_set_b_scale" {
-#   description = "The current scale of task set B"
-#   value       = aws_ecs_task_set.task_set_b.scale[0].value
-# }
 
 output "task_definition_name_and_revision" {
   value = format("%s:%s",
