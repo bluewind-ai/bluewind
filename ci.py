@@ -48,7 +48,11 @@ async def run_docker_tests(log_file):
         "docker run -e ENVIRONMENT=test -e DEBUG=1 -e SECRET_KEY=your_secret_key_here "
         "-e ALLOWED_HOSTS=localhost,127.0.0.1 -e CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1 "
         "-e TEST_HOST=localhost -e TEST_PORT=8000 "
-        "my-django-app sh -c 'cd /code && python manage.py test'"
+        "my-django-app sh -c '"
+        "cd /code && "
+        "python manage.py runserver 0.0.0.0:8000 & "
+        "sleep 5 && "  # Give the server time to start
+        "python manage.py test'"
     ]
     command = " && ".join(commands)
     success = await run_command(command, log_file)
