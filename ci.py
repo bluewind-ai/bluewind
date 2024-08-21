@@ -198,6 +198,7 @@ async def run_deploy(log_dir, display_output=False):
         return False
 
     # Scale down the old task set
+    click.echo(f"Scaling down old task set {old_task_set} to 0%...")
     response = ecs_client.update_task_set(
         cluster=cluster_arn,
         service=service_name,
