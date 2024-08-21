@@ -8,58 +8,6 @@ import click
 import json
 from datetime import datetime
 
-async def build_and_push_image(env):
-    # Get the ECR repository URL and region
-    with open("tofu_output.json", 'r') as f:
-        output_data = json.load(f)
-    ecr_repo_url = output_data['ecr_repository_url']['value']
-    region = "us-west-2"
-
-    commands = [
-        f"echo 'Building Docker image...'",
-        f"docker build -t app-bluewind:latest .",
-        f"IMAGE_ID=$(docker images -q app-bluewind:latest)",
-        f"echo 'Image built with ID: '$IMAGE_ID",
-        f"echo 'Tagging image...'",
-        f"docker tag $IMAGE_ID {ecr_repo_url}:$IMAGE_ID",
-        f"echo 'Logging into ECR...'",
-        f"aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {ecr_repo_url}",
-        f"echo 'Pushing image to ECR...'",
-        f"docker push {ecr_repo_url}:$IMAGE_ID",
-        f"echo 'Image pushed successfully with tag: '$IMAGE_ID",
-        f"echo $IMAGE_ID > opentf_deploy/image_tag.txt"
-    ]
-
-    combined_command = " && ".join(commands)
-    
-    process = await asyncio.create_subprocess_shell(
-        combined_command,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-        env=env
-    )
-
-    async def stream_output(stream):
-        while True:
-            line = await stream.readline()
-            if not line:
-                break
-            print(line.decode().strip())
-
-    # Stream both stdout and stderr
-    await asyncio.gather(
-        stream_output(process.stdout),
-        stream_output(process.stderr)
-    )
-
-    await process.wait()
-
-    if process.returncode != 0:
-        print(f"Error: Docker command failed with exit code {process.returncode}")
-        return False
-
-    return True
-
 async def run_deploy():
     print("Starting deployment process")
     
@@ -110,27 +58,48 @@ async def run_deploy():
         return
 
     print("OpenTofu commands completed successfully")
-    
+    with open("tofu_output.json", 'r') as f:
+        output_data = json.load(f)
     print("Building and pushing Docker image")
-    if not await build_and_push_image(env):
+    build_commands = [
+        f"echo 'Building Docker image...'",
+        f"docker build -t app-bluewind:latest .",
+        f"IMAGE_ID=$(docker images -q app-bluewind:latest)",
+        f"echo 'Image built with ID: '$IMAGE_ID",
+        f"echo 'Tagging image...'",
+        f"docker tag $IMAGE_ID {output_data['ecr_repository_url']['value']}:$IMAGE_ID",
+        f"echo 'Logging into ECR...'",
+        f"aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin {output_data['ecr_repository_url']['value']}",
+        f"echo 'Pushing image to ECR...'",
+        f"docker push {output_data['ecr_repository_url']['value']}:$IMAGE_ID",
+        f"echo 'Image pushed successfully with tag: '$IMAGE_ID",
+        f"echo $IMAGE_ID > opentf_deploy/image_tag.txt"
+    ]
+    build_process = await asyncio.create_subprocess_shell(
+        " && ".join(build_commands),
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        env=env
+    )
+    await asyncio.gather(
+        read_stream(build_process.stdout),
+        read_stream(build_process.stderr)
+    )
+    await build_process.wait()
+    if build_process.returncode != 0:
         print("Failed to build and push Docker image")
         return
     
     print("Docker image built and pushed successfully")
     
     print("Reading OpenTofu output")
-    with open("tofu_output.json", 'r') as f:
-        output_data = json.load(f)
+    
     
     cluster_arn = output_data['ecs_cluster_arn']['value']
     service_name = output_data['ecs_service_name']['value']
-    task_definition_full = output_data['task_definition_name_and_revision']['value']
-    task_definition_parts = task_definition_full.split(':')
-    task_definition = f"{task_definition_parts[0]}:{task_definition_parts[-1]}"
 
     print(f"Cluster ARN: {cluster_arn}")
     print(f"Service Name: {service_name}")
-    print(f"Task Definition: {task_definition}")
 
     print("Initializing ECS client")
     ecs_client = boto3.client('ecs',
@@ -139,6 +108,51 @@ async def run_deploy():
         region_name='us-west-2'
     )
 
+    print("Creating new task definition")
+    with open("opentf_deploy/image_tag.txt", 'r') as f:
+        image_id = f.read().strip()
+    
+    task_definition_response = ecs_client.register_task_definition(
+        family='app-task',
+        networkMode='bridge',
+        requiresCompatibilities=['EC2'],
+        containerDefinitions=[{
+            'name': 'app-container',
+            'image': f"{output_data['ecr_repository_url']['value']}:{image_id}",
+            'memory': 1024,
+            'cpu': 1024,
+            'portMappings': [{'containerPort': 80, 'hostPort': 80}],
+            'logConfiguration': {
+                'logDriver': 'awslogs',
+                'options': {
+                    'awslogs-group': '/ecs/app-bluewind',
+                    'awslogs-region': 'us-west-2',
+                    'awslogs-stream-prefix': 'ecs',
+                    'awslogs-create-group': 'true'
+                }
+            },
+            'environment': [
+                {'name': 'ECS_ENABLE_CONTAINER_METADATA', 'value': 'true'},
+                {'name': 'DEBUG', 'value': '1'},
+                {'name': 'SECRET_KEY', 'value': 'your_secret_key_here'},
+                {'name': 'ALLOWED_HOSTS', 'value': 'localhost,127.0.0.1,*'},
+                {'name': 'DATABASE_ENGINE', 'value': 'django.db.backends.postgresql'},
+                {'name': 'DB_USERNAME', 'value': 'dbadmin'},
+                {'name': 'DB_PASSWORD', 'value': 'changeme123'},
+                {'name': 'DB_HOST', 'value': 'app-bluewind-db.c50acykqkhaw.us-west-2.rds.amazonaws.com'},
+                {'name': 'DB_PORT', 'value': '5432'},
+                {'name': 'DB_NAME', 'value': 'postgres'},
+                {'name': 'DJANGO_SUPERUSER_EMAIL', 'value': 'admin@example.com'},
+                {'name': 'DJANGO_SUPERUSER_USERNAME', 'value': 'admin@example.com'},
+                {'name': 'DJANGO_SUPERUSER_PASSWORD', 'value': 'admin123'},
+                {'name': 'ENVIRONMENT', 'value': 'staging'},
+                {'name': 'CSRF_TRUSTED_ORIGINS', 'value': '*'}
+            ]
+        }]
+    )
+    task_definition = f"{task_definition_response['taskDefinition']['family']}:{task_definition_response['taskDefinition']['revision']}"
+    print(f"New task definition created: {task_definition}")
+
     print("Describing ECS service")
     service_description = ecs_client.describe_services(
         cluster=cluster_arn,
@@ -146,7 +160,6 @@ async def run_deploy():
     )
 
     task_sets = service_description['services'][0].get('taskSets', [])
-    # iterate through task_sets and put in a list all the things not in DRAINING status
     active_task_sets = [task_set for task_set in task_sets if task_set['status'] != 'DRAINING']
 
     print(json.dumps(active_task_sets, indent=4, sort_keys=True, default=str))
@@ -180,7 +193,7 @@ async def run_deploy():
         print("No task was running in this environment previously")
         
     print("Waiting for new task set to reach steady state")
-    max_attempts = 30
+    max_attempts = 60
     delay = 1
 
     for attempt in range(1, max_attempts + 1):

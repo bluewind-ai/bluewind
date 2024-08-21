@@ -225,98 +225,6 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
 }
 
 
-resource "aws_ecs_task_definition" "app_task_definition" {
-  family                   = "app-task"
-  network_mode             = "bridge"
-  requires_compatibilities = ["EC2"]
-  
-  container_definitions = jsonencode([
-    {
-      name  = "app-container"
-      image = "361769569102.dkr.ecr.us-west-2.amazonaws.com/app-bluewind-repository:99da47f806c4"
-      memory = 1024
-      cpu = 1024
-      portMappings = [{
-          containerPort = 80
-          hostPort      = 0  # Dynamic port mapping
-      }]
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          "awslogs-group"         = "/ecs/app-bluewind"
-          "awslogs-region"        = "us-west-2"
-          "awslogs-stream-prefix" = "ecs"
-          "awslogs-create-group"  = "true"
-        }
-      }
-      environment = [
-        {
-          name  = "ECS_ENABLE_CONTAINER_METADATA" 
-          value = "true"
-        },
-        {
-          name  = "DEBUG"
-          value = "1"
-        },
-        {
-          name  = "SECRET_KEY"
-          value = "your_secret_key_here"
-        },
-        {
-          name  = "ALLOWED_HOSTS"
-          value = "localhost,127.0.0.1,*"
-        },
-        {
-          name  = "DATABASE_ENGINE"
-          value = "django.db.backends.postgresql"
-        },
-        {
-          name  = "DB_USERNAME"
-          value = "dbadmin"
-        },
-        {
-          name  = "DB_PASSWORD"
-          value = "changeme123"
-        },
-        {
-          name  = "DB_HOST"
-          value = "app-bluewind-db.c50acykqkhaw.us-west-2.rds.amazonaws.com"
-        },
-        {
-          name  = "DB_PORT"
-          value = "5432"
-        },
-        {
-          name  = "DB_NAME"
-          value = "postgres"
-        },
-        {
-          name  = "DJANGO_SUPERUSER_EMAIL"
-          value = "admin@example.com"
-        },
-        {
-          name  = "DJANGO_SUPERUSER_USERNAME"
-          value = "admin@example.com"
-        },
-        {
-          name  = "DJANGO_SUPERUSER_PASSWORD"
-          value = "admin123"
-        },
-        {
-          name  = "ENVIRONMENT"
-          value = "staging"
-        },
-        {
-          name  = "CSRF_TRUSTED_ORIGINS"
-          # value = "https://${var.domain_name},http://${aws_lb.app.dns_name},https://${aws_lb.app.dns_name},https://${aws_cloudfront_distribution.app_distribution.domain_name}"
-          value = "*"
-        }
-      ]
-    }
-  ])
-}
-
-
 resource "aws_cloudwatch_log_group" "ecs_tasks" {
   name              = "/ecs/app-bluewind"
   retention_in_days = 30  # Adjust this value as needed
@@ -334,12 +242,6 @@ output "ecs_service_name" {
   value = aws_ecs_service.my_service.name
 }
 
-output "task_definition_name_and_revision" {
-  value = format("%s:%s",
-    aws_ecs_task_definition.app_task_definition.family,
-    split("/", aws_ecs_task_definition.app_task_definition.arn)[1]
-  )
-}
 
 resource "aws_ecr_repository" "app" {
   name                 = "app-bluewind-repository"
