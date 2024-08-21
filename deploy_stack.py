@@ -180,7 +180,7 @@ async def run_deploy():
         print("No task was running in this environment previously")
         
     print("Waiting for new task set to reach steady state")
-    max_attempts = 20
+    max_attempts = 30
     delay = 1
 
     for attempt in range(1, max_attempts + 1):
