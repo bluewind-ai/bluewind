@@ -9,6 +9,8 @@ from botocore.exceptions import WaiterError, ClientError
 import boto3
 import botocore
 
+from deploy_stack import run_deploy
+
 def create_log_directory():
     readable_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     reverse_timestamp = str(9999999999 - int(time.time())).zfill(10)
@@ -74,174 +76,28 @@ async def run_docker_tests(log_dir):
     ]
     return await run_command(" && ".join(commands), f"{log_dir}/docker_tests.log")
 
-async def run_process(command, env, log_file, display_output=False):
-    process = await asyncio.create_subprocess_shell(
-        command,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.STDOUT,
-        env=env
-    )
-    
-    with open(log_file, 'w') as f:
-        async for line in process.stdout:
-            line = line.decode()
-            if display_output:
-                click.echo(line, nl=False)
-            f.write(line)
-    
-    await process.wait()
-    return process
+    # # Verify final task set percentages
+    # click.echo("Verifying final task set percentages...")
+    # response = ecs_client.describe_services(
+    #     cluster=cluster_arn,
+    #     services=[service_name]
+    # )
 
+    # task_sets = response['services'][0]['taskSets']
+    # task_set_a_percentage = next((ts['scale']['value'] for ts in task_sets if ts['id'] in task_set_a_id), None)
+    # task_set_b_percentage = next((ts['scale']['value'] for ts in task_sets if ts['id'] in task_set_b_id), None)
 
-async def check_service_stability(ecs_client, cluster_arn, service_name, max_attempts=40, delay=15):
-    for _ in range(max_attempts):
-        response = ecs_client.describe_services(cluster=cluster_arn, services=[service_name])
-        service = response['services'][0]
-        
-        if service['runningCount'] == service['desiredCount']:
-            # Check if all task sets are stable
-            all_task_sets_stable = all(
-                task_set['stabilityStatus'] == 'STEADY_STATE'
-                for task_set in service['taskSets']
-            )
-            if all_task_sets_stable:
-                return True
-        
-        await asyncio.sleep(delay)
-    
-    return False
+    # if task_set_a_percentage is None or task_set_b_percentage is None:
+    #     click.echo(click.style("Error: Unable to find task set percentages.", fg='red'))
+    #     return False
 
-async def describe_service_status(ecs_client, cluster_arn, service_name):
-    response = ecs_client.describe_services(
-        cluster=cluster_arn,
-        services=[service_name]
-    )
-
-    task_sets = response['services'][0]['taskSets']
-    for task_set in task_sets:
-        task_set_id = task_set['id']
-        task_set_percentage = task_set['scale']['value']
-        click.echo(f"Task set {task_set_id} percentage: {task_set_percentage}%")
-
-async def run_deploy(log_dir, display_output=False):
-    click.echo(f"Running OpenTofu commands...")
-    env = os.environ.copy()
-    if os.path.exists('.aws'):
-        with open('.aws', 'r') as f:
-            for line in f:
-                if '=' in line:
-                    key, value = line.strip().split('=', 1)
-                    env[key] = value
-    env.update({
-        "TF_VAR_aws_access_key_id": env.get("AWS_ACCESS_KEY_ID", ""),
-        "TF_VAR_aws_secret_access_key": env.get("AWS_SECRET_ACCESS_KEY", ""),
-        "TF_VAR_app_name": "bluewind-app"
-    })
-    
-    commands = [
-        "cd opentf_deploy",
-        "tofu init",
-        f"tofu apply -lock=false --auto-approve",
-        f"tofu output -json > ../{log_dir}/tofu_output.json"
-    ]
-    
-    command = " && ".join(commands)
-    process = await run_process(command, env, f"{log_dir}/tofu_full.log", display_output)
-    await process.wait()
-    with open(f"{log_dir}/tofu_output.json", 'r') as f:
-        output_data = json.load(f)
-    
-    cluster_arn = output_data['ecs_cluster_arn']['value']
-    service_name = output_data['ecs_service_name']['value']
-    task_set_a_id = output_data['task_set_a_id']['value']
-    task_set_b_id = output_data['task_set_b_id']['value']
-    task_set_a_scale = output_data['task_set_a_scale']['value']
-    task_set_b_scale = output_data['task_set_b_scale']['value']
-    
-    ecs_client = boto3.client('ecs',
-        aws_access_key_id=env['AWS_ACCESS_KEY_ID'],
-        aws_secret_access_key=env['AWS_SECRET_ACCESS_KEY'],
-        region_name='us-west-2'
-    )
-
-    # Determine which task set to update
-    if task_set_a_scale == 100:
-        old_task_set = task_set_a_id.split(',')[0]
-        new_task_set = task_set_b_id.split(',')[0]
-    elif task_set_b_scale == 100:
-        old_task_set = task_set_b_id.split(',')[0]
-        new_task_set = task_set_a_id.split(',')[0]
-    else:
-        click.echo("Error: No task set is at 100% scale")
-        return False
-
-    # Scale up the new task set
-    click.echo(f"Scaling up new task set {new_task_set} to 100%...")
-    response = ecs_client.update_task_set(
-        cluster=cluster_arn,
-        service=service_name,
-        taskSet=new_task_set,
-        scale={'value': 100, 'unit': 'PERCENT'}
-    )
-    click.echo(f"Update new task set response: {response}")
-
-    # Wait for service to stabilize
-    click.echo("Waiting for service to stabilize...")
-    try:
-        is_stable = await check_service_stability(ecs_client, cluster_arn, service_name)
-        if not is_stable:
-            click.echo("Service failed to stabilize within the expected time.")
-            return False
-        await describe_service_status(ecs_client, cluster_arn, service_name)
-    except Exception as e:
-        click.echo(f"Unexpected error during deployment: {str(e)}")
-        return False
-
-    # Scale down the old task set
-    click.echo(f"Scaling down old task set {old_task_set} to 0%...")
-    response = ecs_client.update_task_set(
-        cluster=cluster_arn,
-        service=service_name,
-        taskSet=old_task_set,
-        scale={'value': 0, 'unit': 'PERCENT'}
-    )
-    click.echo(f"Update old task set response: {response}")
-
-    # Wait for service to stabilize again
-    click.echo("Waiting for service to stabilize after scaling down old task set...")
-    try:
-        is_stable = await check_service_stability(ecs_client, cluster_arn, service_name)
-        if not is_stable:
-            click.echo("Service failed to stabilize after scaling down old task set.")
-            return False
-        await describe_service_status(ecs_client, cluster_arn, service_name)
-    except Exception as e:
-        click.echo(f"Unexpected error during deployment: {str(e)}")
-        return False
-
-    # Verify final task set percentages
-    click.echo("Checking final task set percentages...")
-    await describe_service_status(ecs_client, cluster_arn, service_name)
-
-    response = ecs_client.describe_services(
-        cluster=cluster_arn,
-        services=[service_name]
-    )
-
-    task_sets = response['services'][0]['taskSets']
-    for task_set in task_sets:
-        if task_set['id'] in task_set_a_id:
-            task_set_a_percentage = task_set['scale']['value']
-        elif task_set['id'] in task_set_b_id:
-            task_set_b_percentage = task_set['scale']['value']
-
-    if (task_set_a_percentage == 100 and task_set_b_percentage == 0) or \
-       (task_set_a_percentage == 0 and task_set_b_percentage == 100):
-        click.echo(click.style("Deployment verified successfully.", fg='green'))
-        return True
-    else:
-        click.echo(click.style(f"Warning: Unexpected task set percentages. A: {task_set_a_percentage}%, B: {task_set_b_percentage}%", fg='yellow'))
-        return False
+    # if (task_set_a_percentage == 100 and task_set_b_percentage == 0) or \
+    #    (task_set_a_percentage == 0 and task_set_b_percentage == 100):
+    #     click.echo(click.style("Deployment verified successfully.", fg='green'))
+    #     return True
+    # else:
+    #     click.echo(click.style(f"Warning: Unexpected task set percentages. A: {task_set_a_percentage}%, B: {task_set_b_percentage}%", fg='yellow'))
+    #     return False
 
 
 @click.group()

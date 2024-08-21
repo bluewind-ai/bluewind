@@ -289,8 +289,8 @@ resource "aws_ecs_task_definition" "task_definition_b" {
     {
       name  = "container-b"
       image = "nginx:latest"
-      memory = 256
-      cpu = 128
+      memory = 512
+      cpu = 512
       portMappings = [
         {
           containerPort = 80
