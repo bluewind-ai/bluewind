@@ -153,13 +153,13 @@ async def run_deploy():
                 {'name': 'CSRF_TRUSTED_ORIGINS', 'value': '*,'},
                 {'name': 'AWS_DEFAULT_REGION', 'value': 'us-west-2'}
             ],
-            "healthCheck": {
-                "command": ["CMD-SHELL", "curl -v -f http://localhost/ || exit 1"],
-                "interval": 5,
-                "timeout": 5,
-                "retries": 3,
-                "startPeriod": 10
-            }
+            # "healthCheck": {
+            #     "command": ["CMD-SHELL", "curl -v -f http://locdscalhost/ || exit 1"],
+            #     "interval": 5,
+            #     "timeout": 5,
+            #     "retries": 3,
+            #     "startPeriod": 10
+            # }
         }]
     )
     task_definition = f"{task_definition_response['taskDefinition']['family']}:{task_definition_response['taskDefinition']['revision']}"
