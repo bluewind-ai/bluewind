@@ -48,8 +48,24 @@ async def run_tests_against_staging(log_file):
         click.echo(click.style("Staging tests failed. Check the log for details.", fg='red'))
     return success
 
+async def run_docker_tests(log_file):
+    click.echo("Running Docker tests...")
+    commands = [
+        "docker build -t my-django-app .",
+        "docker run -e ENVIRONMENT=test -e DEBUG=1 -e SECRET_KEY=your_secret_key_here "
+        "-e ALLOWED_HOSTS=localhost,127.0.0.1 -e CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1 "
+        "my-django-app python3 manage.py test"
+    ]
+    command = " && ".join(commands)
+    success = await run_command(command, log_file)
+    if success:
+        click.echo(click.style("Docker tests completed successfully.", fg='green'))
+    else:
+        click.echo(click.style("Docker tests failed. Check the log for details.", fg='red'))
+    return success
+
 @click.command()
-@click.argument('command', type=click.Choice(['local', 'staging']))
+@click.argument('command', type=click.Choice(['local', 'staging', 'docker']))
 @click.option('--log-dir', default=None, help='Log directory path')
 def cli(command, log_dir):
     if log_dir is None:
@@ -66,6 +82,8 @@ def cli(command, log_dir):
         success = asyncio.run(run_local_tests(log_file))
     elif command == 'staging':
         success = asyncio.run(run_tests_against_staging(log_file))
+    elif command == 'docker':
+        success = asyncio.run(run_docker_tests(log_file))
 
     if success:
         click.echo(click.style("Command completed successfully.", fg='green'))
