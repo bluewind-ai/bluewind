@@ -132,18 +132,12 @@ async def run_deploy():
                 'options': {
                     'awslogs-group': cloudwatch_log_group_name,
                     'awslogs-region': 'us-west-2',
-                    'awslogs-stream-prefix': 'ecs',
-                    'awslogs-datetime-format': '%Y-%m-%d %H:%M:%S',
-                    'mode': 'non-blocking',
-                    'max-buffer-size': '5m'
+                    'awslogs-stream-prefix': 'ecs'
                 }
             },
             'environment': [
                 {'name': 'ECS_ENABLE_CONTAINER_METADATA', 'value': 'true'},
                 {'name': 'DEBUG', 'value': '1'},
-                {'name': 'LOG_LEVEL', 'value': 'DEBUG'},
-                {'name': 'DJANGO_LOG_LEVEL', 'value': 'DEBUG'},
-                {'name': 'PYTHONUNBUFFERED', 'value': '1'},
                 {'name': 'SECRET_KEY', 'value': 'your_secret_key_here'},
                 {'name': 'ALLOWED_HOSTS', 'value': 'localhost,127.0.0.1,*'},
                 {'name': 'DATABASE_ENGINE', 'value': 'django.db.backends.postgresql'},
