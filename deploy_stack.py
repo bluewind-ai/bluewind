@@ -1,12 +1,10 @@
-import json
 import logging
 import os
 import asyncio
 import boto3
 import click
-
-class TooManyTaskSetsError(Exception):
-    pass
+import json
+from datetime import datetime
 
 async def run_deploy():
     env = os.environ.copy()
@@ -81,47 +79,42 @@ async def run_deploy():
             )
         print(f"Error: Found {len(task_sets)} task sets after OpenTofu operations. Expected 1 or fewer.")
         return
-    ecs_client.create_task_set(
+    response = ecs_client.create_task_set(
         cluster=cluster_arn,
         service=service_name,
         taskDefinition=task_definition,
         launchType='EC2',
         scale={'value': 100, 'unit': 'PERCENT'}
     )
+    new_task_set_id = response['taskSet']['id']
+
     if len(task_sets) == 0:
         return 
-    
+        
     max_attempts = 60  # Adjust this value as needed
     delay = 1  # Delay in seconds between each check
 
-    for attempt in range(1, max_attempts + 1):
-        print(f"Attempt {attempt}/{max_attempts}")
-        response = ecs_client.describe_services(cluster=cluster_arn, services=[service_name])
-        print(response)
-        service = response['services'][0]
-        
-        print(f"Running count: {service['runningCount']}, Desired count: {service['desiredCount']}")
-        
-        if service['runningCount'] == service['desiredCount']:
-            # Check if all task sets are stable
-            all_task_sets_stable = all(
-                task_set['stabilityStatus'] == 'STEADY_STATE'
-                for task_set in service['taskSets']
+    for _ in range(1, max_attempts + 1):
+        response = ecs_client.describe_task_sets(
+            cluster=cluster_arn,
+            service=service_name,
+            taskSets=[
+                new_task_set_id
+            ],
+        )
+        class DateTimeEncoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, datetime):
+                    return obj.isoformat()
+                return super(DateTimeEncoder, self).default(obj)
+        print(json.dumps(response, cls=DateTimeEncoder))
+        if response['taskSets'][0]['stabilityStatus'] == "STEADY_STATE":
+            ecs_client.delete_task_set(
+                cluster=cluster_arn,
+                service=service_name,
+                taskSet=task_sets[0]["taskSetArn"]
             )
-            print(f"All task sets stable: {all_task_sets_stable}")
-            if all_task_sets_stable:
-                print("Deployment successful and stable")
-                if all_task_sets_stable:
-                    ecs_client.delete_task_set(
-                        cluster=cluster_arn,
-                        service=service_name,
-                        taskSet=task_sets[0]['taskSetArn']
-                    )
-                return True
-        else:
-            print("Running count does not match desired count. Waiting for stabilization.")
-        
-        print(f"Waiting {delay} seconds before next check")
+            return True
         await asyncio.sleep(delay)
 
     return False
