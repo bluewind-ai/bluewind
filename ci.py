@@ -27,10 +27,6 @@ async def run_local_tests(log_file):
         "TEST_PORT": "8002"
     })
     success = await run_command("python3 manage.py test", log_file, env=env)
-    if success:
-        click.echo(click.style("Local tests completed successfully.", fg='green'))
-    else:
-        click.echo(click.style("Local tests failed. Check the log for details.", fg='red'))
     return success
 
 async def run_tests_against_staging(log_file):
@@ -42,26 +38,20 @@ async def run_tests_against_staging(log_file):
         "ALLOWED_HOSTS": "app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com,"
     })
     success = await run_command("python3 manage.py test", log_file, env=env)
-    if success:
-        click.echo(click.style("Staging tests completed successfully.", fg='green'))
-    else:
-        click.echo(click.style("Staging tests failed. Check the log for details.", fg='red'))
     return success
 
 async def run_docker_tests(log_file):
     click.echo("Running Docker tests...")
     commands = [
         "docker build -t my-django-app .",
+        "docker run my-django-app sh -c 'ls -la /code'",
         "docker run -e ENVIRONMENT=test -e DEBUG=1 -e SECRET_KEY=your_secret_key_here "
         "-e ALLOWED_HOSTS=localhost,127.0.0.1 -e CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1 "
-        "my-django-app python3 manage.py test"
+        "-e TEST_HOST=localhost -e TEST_PORT=8000 "
+        "my-django-app sh -c 'cd /code && python manage.py test'"
     ]
     command = " && ".join(commands)
     success = await run_command(command, log_file)
-    if success:
-        click.echo(click.style("Docker tests completed successfully.", fg='green'))
-    else:
-        click.echo(click.style("Docker tests failed. Check the log for details.", fg='red'))
     return success
 
 @click.command()
@@ -77,6 +67,7 @@ def cli(command, log_dir):
     click.echo(f"Log directory: {log_dir}")
 
     log_file = os.path.join(log_dir, f"{command}_tests.log")
+    click.echo(f"Log file: {log_file}")
 
     if command == 'local':
         success = asyncio.run(run_local_tests(log_file))
@@ -86,11 +77,13 @@ def cli(command, log_dir):
         success = asyncio.run(run_docker_tests(log_file))
 
     if success:
-        click.echo(click.style("Command completed successfully.", fg='green'))
-        exit(0)
+        click.echo(click.style(f"{command.capitalize()} tests completed successfully.", fg='green'))
+        click.echo(click.style(f"Log file: {log_file}", fg='green'))
     else:
-        click.echo(click.style("Command failed. Check the logs for details.", fg='red'))
-        exit(1)
+        click.echo(click.style(f"{command.capitalize()} tests failed.", fg='red'))
+        click.echo(click.style(f"Check the log file for details: {log_file}", fg='yellow'))
+    
+    exit(0 if success else 1)
 
 if __name__ == "__main__":
     cli()

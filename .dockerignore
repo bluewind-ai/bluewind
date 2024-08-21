@@ -2,7 +2,7 @@
 !requirements.txt
 !pyproject.toml
 !poetry.lock
-!manage.pyproject
+!manage.py
 !gunicorn_config.py
 !workspaces
 !static

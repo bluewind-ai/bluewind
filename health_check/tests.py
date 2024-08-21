@@ -7,8 +7,8 @@ from django.urls import reverse
 class HealthCheckTestCase(TestCase):
     def setUp(self):
         self.url_path = reverse('health_check')
-        self.test_host = os.environ.get('TEST_HOST', 'app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com')
-        self.test_port = os.environ.get('TEST_PORT')  # New line
+        self.test_host = os.environ['TEST_HOST']
+        self.test_port = os.environ['TEST_PORT']
         self.full_url = urljoin(f"http://{self.test_host}:{self.test_port}", self.url_path)
 
     def test_health_check_with_requests(self):
