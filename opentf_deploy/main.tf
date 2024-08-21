@@ -80,7 +80,7 @@ resource "aws_ecs_cluster" "my_cluster" {
 resource "aws_ecs_service" "my_service" {
   name          = "my-service"
   cluster       = aws_ecs_cluster.my_cluster.id
-  desired_count = 1
+  desired_count = 2
 
   deployment_controller {
     type = "EXTERNAL"
@@ -93,7 +93,7 @@ resource "aws_ecs_service" "my_service" {
 
   lifecycle {
     ignore_changes = [
-      capacity_provider_strategy, desired_count, task_definition,
+      capacity_provider_strategy, task_definition,
     ]
   }
 }
@@ -105,7 +105,7 @@ data "aws_ssm_parameter" "ecs_optimized_ami" {
 resource "aws_launch_template" "ecs_lt" {
   name_prefix   = "ecs-launch-template"
   image_id      = data.aws_ssm_parameter.ecs_optimized_ami.value
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
 
   iam_instance_profile {
     name = aws_iam_instance_profile.ecs_instance_profile.name
@@ -151,9 +151,9 @@ resource "aws_security_group" "ecs_sg" {
 }
 resource "aws_autoscaling_group" "ecs_asg" {
   vpc_zone_identifier = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
-  desired_capacity    = 1
+  desired_capacity    = 2
   max_size            = 4
-  min_size            = 1
+  min_size            = 2
 
   launch_template {
     id      = aws_launch_template.ecs_lt.id
@@ -269,7 +269,7 @@ resource "aws_ecs_task_definition" "task_definition_a" {
       name  = "container-a"
       image = "nginx:latest"
       memory = 512
-      cpu = 128
+      cpu = 512
       portMappings = [
         {
           containerPort = 80
@@ -289,7 +289,7 @@ resource "aws_ecs_task_definition" "task_definition_b" {
     {
       name  = "container-b"
       image = "nginx:latest"
-      memory = 512
+      memory = 256
       cpu = 128
       portMappings = [
         {

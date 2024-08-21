@@ -111,6 +111,18 @@ async def check_service_stability(ecs_client, cluster_arn, service_name, max_att
     
     return False
 
+async def describe_service_status(ecs_client, cluster_arn, service_name):
+    response = ecs_client.describe_services(
+        cluster=cluster_arn,
+        services=[service_name]
+    )
+
+    task_sets = response['services'][0]['taskSets']
+    for task_set in task_sets:
+        task_set_id = task_set['id']
+        task_set_percentage = task_set['scale']['value']
+        click.echo(f"Task set {task_set_id} percentage: {task_set_percentage}%")
+
 async def run_deploy(log_dir, display_output=False):
     click.echo(f"Running OpenTofu commands...")
     env = os.environ.copy()
@@ -145,96 +157,90 @@ async def run_deploy(log_dir, display_output=False):
     task_set_b_id = output_data['task_set_b_id']['value']
     task_set_a_scale = output_data['task_set_a_scale']['value']
     task_set_b_scale = output_data['task_set_b_scale']['value']
-    assert task_set_a_scale == 0 or task_set_b_scale == 0, "Both versions are currently running at the same time, we can't deploy"
-    if task_set_a_scale == 0 and task_set_b_scale == 0:
-        a_is_old = True
-    else:
-        if task_set_a_scale:
-            assert task_set_a_scale == 100, "Task set A is the old version, but it's not scaled to 100%"
-            a_is_old = True
-        else:
-            assert task_set_b_scale == 100, "Task set B is the old version, but it's not scaled to 100%"
-            a_is_old = False
-    
-    task_set_to_update = task_set_a_id.split(',')[0] if a_is_old else task_set_b_id.split(',')[0]
-    click.echo(f"Updating task set {task_set_to_update} to 100% scale...")
     
     ecs_client = boto3.client('ecs',
         aws_access_key_id=env['AWS_ACCESS_KEY_ID'],
         aws_secret_access_key=env['AWS_SECRET_ACCESS_KEY'],
         region_name='us-west-2'
     )
+
+    # Determine which task set to update
+    if task_set_a_scale == 100:
+        old_task_set = task_set_a_id.split(',')[0]
+        new_task_set = task_set_b_id.split(',')[0]
+    elif task_set_b_scale == 100:
+        old_task_set = task_set_b_id.split(',')[0]
+        new_task_set = task_set_a_id.split(',')[0]
+    else:
+        click.echo("Error: No task set is at 100% scale")
+        return False
+
+    # Scale up the new task set
+    click.echo(f"Scaling up new task set {new_task_set} to 100%...")
     response = ecs_client.update_task_set(
         cluster=cluster_arn,
         service=service_name,
-        taskSet=task_set_to_update,
+        taskSet=new_task_set,
         scale={'value': 100, 'unit': 'PERCENT'}
     )
-    click.echo(f"Update task set response: {response}")
-    
+    click.echo(f"Update new task set response: {response}")
+
+    # Wait for service to stabilize
     click.echo("Waiting for service to stabilize...")
     try:
         is_stable = await check_service_stability(ecs_client, cluster_arn, service_name)
-        if is_stable:
-            click.echo("Service has stabilized.")
-            success = True
-        else:
+        if not is_stable:
             click.echo("Service failed to stabilize within the expected time.")
-            success = False
+            return False
+        await describe_service_status(ecs_client, cluster_arn, service_name)
     except Exception as e:
         click.echo(f"Unexpected error during deployment: {str(e)}")
-        success = False
-    
-    if success:
-        click.echo("Checking final task set percentages...")
-        
-        # Create ECS client
-        ecs_client = boto3.client('ecs',
-            aws_access_key_id=env['AWS_ACCESS_KEY_ID'],
-            aws_secret_access_key=env['AWS_SECRET_ACCESS_KEY'],
-            region_name='us-west-2'
-        )
-        
-                # After describing the service to get task set information
-        response = ecs_client.describe_services(
-            cluster=cluster_arn,
-            services=[service_name]
-        )
+        return False
 
-        # Extract task set information
-        task_sets = response['services'][0]['taskSets']
-        task_set_a_percentage = None
-        task_set_b_percentage = None
+    # Scale down the old task set
+    response = ecs_client.update_task_set(
+        cluster=cluster_arn,
+        service=service_name,
+        taskSet=old_task_set,
+        scale={'value': 0, 'unit': 'PERCENT'}
+    )
+    click.echo(f"Update old task set response: {response}")
 
-        for task_set in task_sets:
-            if task_set['id'] in task_set_a_id:
-                task_set_a_percentage = task_set['scale']['value']
-            elif task_set['id'] in task_set_b_id:
-                task_set_b_percentage = task_set['scale']['value']
+    # Wait for service to stabilize again
+    click.echo("Waiting for service to stabilize after scaling down old task set...")
+    try:
+        is_stable = await check_service_stability(ecs_client, cluster_arn, service_name)
+        if not is_stable:
+            click.echo("Service failed to stabilize after scaling down old task set.")
+            return False
+        await describe_service_status(ecs_client, cluster_arn, service_name)
+    except Exception as e:
+        click.echo(f"Unexpected error during deployment: {str(e)}")
+        return False
 
-        if task_set_a_percentage is not None:
-            click.echo(f"Task set A percentage: {task_set_a_percentage}")
-        else:
-            click.echo("Task set A not found in the response")
+    # Verify final task set percentages
+    click.echo("Checking final task set percentages...")
+    await describe_service_status(ecs_client, cluster_arn, service_name)
 
-        if task_set_b_percentage is not None:
-            click.echo(f"Task set B percentage: {task_set_b_percentage}")
-        else:
-            click.echo("Task set B not found in the response")
+    response = ecs_client.describe_services(
+        cluster=cluster_arn,
+        services=[service_name]
+    )
 
-        # Verify that one task set is at 100% and the other is at 0%
-        if task_set_a_percentage is not None and task_set_b_percentage is not None:
-            if (task_set_a_percentage == 100 and task_set_b_percentage == 0) or \
-            (task_set_a_percentage == 0 and task_set_b_percentage == 100):
-                click.echo(click.style("Deployment verified successfully.", fg='green'))
-            else:
-                click.echo(click.style(f"Warning: Unexpected task set percentages. A: {task_set_a_percentage}%, B: {task_set_b_percentage}%", fg='yellow'))
-        else:
-            click.echo(click.style("Warning: Could not verify deployment. One or both task sets not found.", fg='yellow'))
+    task_sets = response['services'][0]['taskSets']
+    for task_set in task_sets:
+        if task_set['id'] in task_set_a_id:
+            task_set_a_percentage = task_set['scale']['value']
+        elif task_set['id'] in task_set_b_id:
+            task_set_b_percentage = task_set['scale']['value']
+
+    if (task_set_a_percentage == 100 and task_set_b_percentage == 0) or \
+       (task_set_a_percentage == 0 and task_set_b_percentage == 100):
+        click.echo(click.style("Deployment verified successfully.", fg='green'))
         return True
-    click.echo("Deployment failed.")
-
-    return False
+    else:
+        click.echo(click.style(f"Warning: Unexpected task set percentages. A: {task_set_a_percentage}%, B: {task_set_b_percentage}%", fg='yellow'))
+        return False
 
 
 @click.group()
