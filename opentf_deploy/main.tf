@@ -120,6 +120,47 @@ resource "aws_launch_template" "ecs_lt" {
   user_data = base64encode(<<-EOF
 #!/bin/bash
 echo ECS_CLUSTER=${aws_ecs_cluster.my_cluster.name} >> /etc/ecs/ecs.config
+echo ECS_LOGLEVEL=debug >> /etc/ecs/ecs.config
+echo ECS_AVAILABLE_LOGGING_DRIVERS='["json-file","awslogs"]' >> /etc/ecs/ecs.config
+echo ECS_ENABLE_CONTAINER_METADATA=true >> /etc/ecs/ecs.config
+echo ECS_ENABLE_TASK_IAM_ROLE=true >> /etc/ecs/ecs.config
+echo ECS_ENABLE_TASK_IAM_ROLE_NETWORK_HOST=true >> /etc/ecs/ecs.config
+yum install -y awslogs
+systemctl enable awslogsd.service
+systemctl start awslogsd.service
+
+# Configure CloudWatch Logs
+cat <<'EOT' > /etc/awslogs/awslogs.conf
+[general]
+state_file = /var/lib/awslogs/agent-state
+
+[/var/log/messages]
+file = /var/log/messages
+log_group_name = /ec2/messages
+log_stream_name = {instance_id}
+datetime_format = %b %d %H:%M:%S
+
+[/var/log/ecs/ecs-init.log]
+file = /var/log/ecs/ecs-init.log
+log_group_name = /ec2/ecs-init
+log_stream_name = {instance_id}
+datetime_format = %Y-%m-%d %H:%M:%S
+
+[/var/log/ecs/ecs-agent.log]
+file = /var/log/ecs/ecs-agent.log
+log_group_name = /ec2/ecs-agent
+log_stream_name = {instance_id}
+datetime_format = %Y-%m-%d %H:%M:%S
+
+[/var/log/docker]
+file = /var/log/docker
+log_group_name = /ec2/docker
+log_stream_name = {instance_id}
+datetime_format = %Y-%m-%d %H:%M:%S
+EOT
+
+# Restart CloudWatch Logs agent
+systemctl restart awslogsd
 EOF
   )
 
@@ -225,7 +266,6 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
 }
 
 
-
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                   = "app-task"
   network_mode             = "bridge"
@@ -234,7 +274,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   container_definitions = jsonencode([
     {
       name  = "app-container"
-      image = "${aws_ecr_repository.app.repository_url}"
+      image = "nginx:latest"
       memory = 1024
       cpu = 1024
       portMappings = [{
@@ -247,11 +287,20 @@ resource "aws_ecs_task_definition" "app_task_definition" {
           "awslogs-group"         = "/ecs/app-bluewind"
           "awslogs-region"        = "us-west-2"
           "awslogs-stream-prefix" = "ecs"
+          "awslogs-create-group"  = "true"
         }
       }
+      environment = [
+        {
+          name  = "ECS_ENABLE_CONTAINER_METADATA" 
+          value = "true"
+        }
+      ]
     }
   ])
 }
+
+
 resource "aws_cloudwatch_log_group" "ecs_tasks" {
   name              = "/ecs/app-bluewind"
   retention_in_days = 30  # Adjust this value as needed

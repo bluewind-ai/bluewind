@@ -146,18 +146,23 @@ async def run_deploy():
     )
 
     task_sets = service_description['services'][0].get('taskSets', [])
-    print(f"Found {len(task_sets)} existing task sets")
+    # iterate through task_sets and put in a list all the things not in DRAINING status
+    active_task_sets = [task_set for task_set in task_sets if task_set['status'] != 'DRAINING']
 
-    if len(task_sets) > 1:
-        print(f"Found {len(task_sets)} task sets. Deleting excess task sets.")
-        for task_set in task_sets:
+    print(json.dumps(active_task_sets, indent=4, sort_keys=True, default=str))
+    print(f"Found {len(active_task_sets)} existing task sets")
+
+    if len(active_task_sets) > 1:
+        print(f"Found {len(active_task_sets)} task sets. Deleting excess task sets.")
+        for task_set in active_task_sets:
             task_set_arn = task_set['taskSetArn']
             ecs_client.delete_task_set(
                 cluster=cluster_arn,
                 service=service_name,
-                taskSet=task_set_arn
+                taskSet=task_set_arn,
+                force=True
             )
-        print(f"Error: Found {len(task_sets)} task sets after OpenTofu operations. Expected 1 or fewer.")
+        print(f"Error: Found {len(active_task_sets)} task sets after OpenTofu operations. Expected 1 or fewer.")
         return
 
     print("Creating new task set")
@@ -171,7 +176,7 @@ async def run_deploy():
     new_task_set_id = response['taskSet']['id']
     print(f"New task set created with ID: {new_task_set_id}")
 
-    if len(task_sets) == 0:
+    if len(active_task_sets) == 0:
         print("No existing task sets found. Deployment complete.")
         return 
         
@@ -192,7 +197,7 @@ async def run_deploy():
             ecs_client.delete_task_set(
                 cluster=cluster_arn,
                 service=service_name,
-                taskSet=task_sets[0]["taskSetArn"]
+                taskSet=active_task_sets[0]["taskSetArn"]
             )
             print("Deployment completed successfully")
             return True
