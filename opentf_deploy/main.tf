@@ -233,7 +233,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   container_definitions = jsonencode([
     {
       name  = "app-container"
-      image = "361769569102.dkr.ecr.us-west-2.amazonaws.com/app-bluewind-repository:3311f6e90241"
+      image = "361769569102.dkr.ecr.us-west-2.amazonaws.com/app-bluewind-repository:99da47f806c4"
       memory = 1024
       cpu = 1024
       portMappings = [{
