@@ -12,3 +12,4 @@ deploy.sh
 logs/*
 .aws
 ci.py
+deploy_stack.py

@@ -80,7 +80,7 @@ resource "aws_ecs_cluster" "my_cluster" {
 resource "aws_ecs_service" "my_service" {
   name          = "my-service"
   cluster       = aws_ecs_cluster.my_cluster.id
-  desired_count = 2
+  desired_count = 1
 
   deployment_controller {
     type = "EXTERNAL"
@@ -241,8 +241,24 @@ resource "aws_ecs_task_definition" "app_task_definition" {
           containerPort = 80
           hostPort      = 0  # Dynamic port mapping
       }]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/app-bluewind"
+          "awslogs-region"        = "us-west-2"
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
     }
   ])
+}
+resource "aws_cloudwatch_log_group" "ecs_tasks" {
+  name              = "/ecs/app-bluewind"
+  retention_in_days = 30  # Adjust this value as needed
+
+  tags = {
+    Name = "app-bluewind-logs"
+  }
 }
 
 output "ecs_cluster_arn" {
