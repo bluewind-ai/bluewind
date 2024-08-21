@@ -1,13 +1,17 @@
-# Build stage
-FROM --platform=linux/arm64 python:3.12-slim-bullseye AS builder
+ARG PYTHON_VERSION=3.12-slim-bullseye
+
+FROM --platform=linux/arm64 python:${PYTHON_VERSION}
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# install psycopg2 dependencies.
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
     && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /code
 
 WORKDIR /code
 
@@ -16,21 +20,6 @@ COPY pyproject.toml poetry.lock /code/
 RUN poetry config virtualenvs.create false
 COPY . /code
 RUN poetry install --only main --no-root --no-interaction
-
-# Final stage
-FROM --platform=linux/arm64 python:3.12-slim-bullseye
-
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /code
-
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /code /code
 
 EXPOSE 8000
 
