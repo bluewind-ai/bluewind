@@ -1,0 +1,37 @@
+{
+  "ecs_cluster_arn": {
+    "sensitive": false,
+    "type": "string",
+    "value": "arn:aws:ecs:us-west-2:361769569102:cluster/bluewind-app-my-cluster"
+  },
+  "ecs_service_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "my-service"
+  },
+  "task_definition_name_and_revision": {
+    "sensitive": false,
+    "type": "string",
+    "value": "app-task:app-task:7"
+  },
+  "task_set_a_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "ecs-svc/0436316760544370144,arn:aws:ecs:us-west-2:361769569102:service/bluewind-app-my-cluster/my-service,arn:aws:ecs:us-west-2:361769569102:cluster/bluewind-app-my-cluster"
+  },
+  "task_set_a_scale": {
+    "sensitive": false,
+    "type": "number",
+    "value": 100
+  },
+  "task_set_b_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "ecs-svc/3513161944859370945,arn:aws:ecs:us-west-2:361769569102:service/bluewind-app-my-cluster/my-service,arn:aws:ecs:us-west-2:361769569102:cluster/bluewind-app-my-cluster"
+  },
+  "task_set_b_scale": {
+    "sensitive": false,
+    "type": "number",
+    "value": 100
+  }
+}

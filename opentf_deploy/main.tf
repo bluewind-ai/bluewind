@@ -234,6 +234,7 @@ resource "aws_ecs_task_set" "task_set_a" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes        = [task_definition]
   }
 }
 
@@ -246,6 +247,7 @@ resource "aws_ecs_task_set" "task_set_b" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes        = [task_definition]
   }
 }
 
@@ -257,7 +259,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   container_definitions = jsonencode([
     {
       name  = "app-container"
-      image = "nginx:1.23.3"  # Replace with your application image
+      image = "nginx:latest"  # Replace with your application image
       memory = 512
       cpu = 512
       portMappings = [
@@ -311,4 +313,11 @@ output "task_set_a_scale" {
 output "task_set_b_scale" {
   description = "The current scale of task set B"
   value       = aws_ecs_task_set.task_set_b.scale[0].value
+}
+
+output "task_definition_name_and_revision" {
+  value = format("%s:%s",
+    aws_ecs_task_definition.app_task_definition.family,
+    split("/", aws_ecs_task_definition.app_task_definition.arn)[1]
+  )
 }

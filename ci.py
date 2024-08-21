@@ -110,7 +110,7 @@ def cli(command):
     log_dir = create_log_directory()
 
     if command == 'deploy':
-        asyncio.run(run_deploy(log_dir, display_output=True))
+        asyncio.run(run_deploy())
     elif command == 'full':
         asyncio.run(run_full(log_dir))
     else:
