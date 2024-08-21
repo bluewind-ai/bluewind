@@ -224,16 +224,6 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   }
 }
 
-variable "image_tag" {
-  description = "The tag of the Docker image to deploy"
-  type        = string
-  default     = null
-}
-
-locals {
-  default_image_tag = "latest"
-  image_tag         = var.image_tag != null ? var.image_tag : local.default_image_tag
-}
 
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                   = "app-task"
@@ -243,7 +233,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   container_definitions = jsonencode([
     {
       name  = "app-container"
-      image = "${aws_ecr_repository.app.repository_url}:${local.image_tag}"
+      image = "361769569102.dkr.ecr.us-west-2.amazonaws.com/app-bluewind-repository:99da47f806c4"
       memory = 1024
       cpu = 1024
       portMappings = [{
