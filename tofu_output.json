@@ -13,25 +13,5 @@
     "sensitive": false,
     "type": "string",
     "value": "app-task:app-task:9"
-  },
-  "task_set_a_id": {
-    "sensitive": false,
-    "type": "string",
-    "value": "ecs-svc/1407151885564066753,arn:aws:ecs:us-west-2:361769569102:service/bluewind-app-my-cluster/my-service,arn:aws:ecs:us-west-2:361769569102:cluster/bluewind-app-my-cluster"
-  },
-  "task_set_a_scale": {
-    "sensitive": false,
-    "type": "number",
-    "value": 0
-  },
-  "task_set_b_id": {
-    "sensitive": false,
-    "type": "string",
-    "value": "ecs-svc/0878558778278098621,arn:aws:ecs:us-west-2:361769569102:service/bluewind-app-my-cluster/my-service,arn:aws:ecs:us-west-2:361769569102:cluster/bluewind-app-my-cluster"
-  },
-  "task_set_b_scale": {
-    "sensitive": false,
-    "type": "number",
-    "value": 0
   }
 }
