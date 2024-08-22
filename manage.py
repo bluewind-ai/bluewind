@@ -3,11 +3,14 @@
 import os
 import sys
 
+def run_migrations():
+    """Run database migrations."""
+    from django.core.management import call_command
+    call_command('migrate')
 
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings')
-
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -16,14 +19,16 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    
     print(sys.argv)
 
-    # if 'runserver' in sys.argv:
-    #     from bluewind.pre_setup import pre_setup
-    #     pre_setup()
+    # Run migrations if in test environment and running the server
+    if os.environ.get('ENVIRONMENT') == 'test' and 'runserver' in sys.argv:
+        from django.core.wsgi import get_wsgi_application
+        application = get_wsgi_application()  # This ensures the app is fully loaded
+        run_migrations()
 
     execute_from_command_line(sys.argv)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
