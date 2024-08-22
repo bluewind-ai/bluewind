@@ -4,7 +4,15 @@ import boto3
 import json
 from botocore.exceptions import ClientError
 
-async def run_deploy(log_file, background=False):
+async def run_command(command, log_file, env=None, verbose=True):
+    process = await asyncio.create_subprocess_shell(
+        command,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
+        env=env
+    )
+    
+async def run_deploy(log_file, verbose=True):
     print('running logs in', log_file)
     print("Starting deployment process")
     
@@ -29,30 +37,7 @@ async def run_deploy(log_file, background=False):
         "tofu output -json > ../tofu_output.json"
     )
 
-    process = await asyncio.create_subprocess_shell(
-        combined_command,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-        env=env
-    )
-    
-    async def read_stream(stream):
-        while True:
-            line = await stream.readline()
-            if not line:
-                break
-            print(line.decode().strip())
-
-    await asyncio.gather(
-        read_stream(process.stdout),
-        read_stream(process.stderr)
-    )
-
-    await process.wait()
-    
-    if process.returncode != 0:
-        print(f"Error: Tofu command failed with exit code {process.returncode}")
-        return
+    run_command(combined_command, log_file, env=env, verbose=verbose)
 
     print("OpenTofu commands completed successfully")
     with open("tofu_output.json", 'r') as f:
@@ -72,20 +57,8 @@ async def run_deploy(log_file, background=False):
         f"echo 'Image pushed successfully with tag: '$IMAGE_ID",
         f"echo $IMAGE_ID > opentf_deploy/image_tag.txt"
     ]
-    build_process = await asyncio.create_subprocess_shell(
-        " && ".join(build_commands),
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-        env=env
-    )
-    await asyncio.gather(
-        read_stream(build_process.stdout),
-        read_stream(build_process.stderr)
-    )
-    await build_process.wait()
-    if build_process.returncode != 0:
-        print("Failed to build and push Docker image")
-        return
+
+    run_command(" && ".join(build_commands), log_file, env=env, verbose=verbose)
     
     print("Docker image built and pushed successfully")
     

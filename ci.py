@@ -7,7 +7,7 @@ import click
 
 from deploy_stack import run_deploy
 
-async def run_command(command, log_file, env=None, background=False):
+async def run_command(command, log_file, env=None, verbose=True):
     process = await asyncio.create_subprocess_shell(
         command,
         stdout=asyncio.subprocess.PIPE,
@@ -22,22 +22,21 @@ async def run_command(command, log_file, env=None, background=False):
                 if not line:
                     break
                 line = line.decode('utf-8').strip()
-                print(line)  # Print to stdout
+                if verbose:
+                    print(line)  # Print to stdout only if verbose
                 f.write(line + '\n')
                 f.flush()
     
-    if background:
-        asyncio.create_task(log_output())
-        return process
-    else:
-        await log_output()
-        await process.wait()
-        return process.returncode == 0
+    await log_output()
+    await process.wait()
+    return process.returncode == 0
 
-async def run_local_tests(log_file, background=True):
-    click.echo("Running tests locally...")
+async def run_local_tests(log_file, verbose=True):
+    if verbose:
+        click.echo("Running tests locally...")
     env = os.environ.copy()
     env.update({
+        "DJANGO_SETTINGS_MODULE": "bluewind.settings_test",
         "ENVIRONMENT": "test",
         "TEST_HOST": "localhost",
         "ALLOWED_HOSTS": "localhost,",
@@ -45,26 +44,30 @@ async def run_local_tests(log_file, background=True):
     })
     
     command = "python3 manage.py test"
-    return await run_command(command, log_file, env=env, background=background)
+    return await run_command(command, log_file, env=env, verbose=verbose)
 
-async def run_tests_against_staging(log_file, background=True):
-    click.echo("Running tests against staging...")
+async def run_tests_against_staging(log_file, verbose=True):
+    if verbose:
+        click.echo("Running tests against staging...")
     env = os.environ.copy()
     env.update({
         "ENVIRONMENT": "test",
+        "DJANGO_SETTINGS_MODULE": "bluewind.settings_test",
         "TEST_HOST": "bluewind-app-alb-1550506744.us-west-2.elb.amazonaws.com",
         "TEST_PORT": "80",
         "ALLOWED_HOSTS": "bluewind-app-alb-1550506744.us-west-2.elb.amazonaws.com,"
     })
     command = "python3 manage.py test"
-    return await run_command(command, log_file, env=env, background=background)
+    return await run_command(command, log_file, env=env, verbose=verbose)
 
-async def run_docker_tests(log_file, background=True):
-    click.echo("Running Docker tests...")
+async def run_docker_tests(log_file, verbose=True):
+    if verbose:
+        click.echo("Running Docker tests...")
     commands = [
         "docker build -t my-django-app .",
         "docker run my-django-app sh -c 'ls -la /code'",
         "docker run -e ENVIRONMENT=test -e DEBUG=1 -e SECRET_KEY=your_secret_key_here "
+        "-e DJANGO_SETTINGS_MODULE=bluewind.settings_test "
         "-e ALLOWED_HOSTS=localhost,127.0.0.1 -e CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1 "
         "-e TEST_HOST=localhost -e TEST_PORT=8000 "
         "my-django-app sh -c '"
@@ -74,26 +77,22 @@ async def run_docker_tests(log_file, background=True):
         "python manage.py test'"
     ]
     command = " && ".join(commands)
-    return await run_command(command, log_file, background=background)
+    return await run_command(command, log_file, verbose=verbose)
 
-async def run_all_commands(log_dir):
-    async def timed_run(name, coroutine, background=True):
+async def run_all_commands(log_dir, verbose=False):
+    async def timed_run(name, coroutine):
+        log_file = os.path.join(log_dir, f"{name}_tests.log")
         start_time = time.time()
-        result = await coroutine
-        if background:
-            await result.wait()  # Wait for the background process to complete
-            success = result.returncode == 0
-        else:
-            success = result
+        success = await coroutine(log_file, verbose)
         duration = time.time() - start_time
         return name, success, duration
 
     start_time = time.time()
     tasks = [
-        timed_run('local', run_local_tests(os.path.join(log_dir, "local_tests.log"))),
-        timed_run('staging', run_tests_against_staging(os.path.join(log_dir, "staging_tests.log"))),
-        timed_run('docker', run_docker_tests(os.path.join(log_dir, "docker_tests.log"))),
-        timed_run('deploy', run_deploy(os.path.join(log_dir, "deploy.log")), background=False)
+        timed_run('local', run_local_tests),
+        timed_run('staging', run_tests_against_staging),
+        timed_run('docker', run_docker_tests),
+        timed_run('deploy', run_deploy)
     ]
 
     results = await asyncio.gather(*tasks)
@@ -104,7 +103,11 @@ async def run_all_commands(log_dir):
 @click.command()
 @click.argument('command', type=click.Choice(['local', 'staging', 'docker', 'deploy', 'full']))
 @click.option('--log-dir', default=None, help='Log directory path')
-def cli(command, log_dir):
+@click.option('--verbose', is_flag=True, help='Enable verbose output')
+def cli(command, log_dir, verbose):
+    asyncio.run(async_cli(command, log_dir, verbose))
+
+async def async_cli(command, log_dir, verbose):
     if log_dir is None:
         reverse_timestamp = str(9999999999 - int(time.time())).zfill(10)
         log_dir = f"./logs/{reverse_timestamp}"
@@ -112,7 +115,8 @@ def cli(command, log_dir):
     os.makedirs(log_dir, exist_ok=True)
 
     if command == 'full':
-        results, total_duration = asyncio.run(run_all_commands(log_dir))
+        click.echo("Starting full test and deploy process...")
+        results, total_duration = await run_all_commands(log_dir, verbose)
         overall_success = all(result['success'] for result in results.values())
         status_text = "Success" if overall_success else "Failure"
         click.echo(f"Full run: {click.style(status_text, fg='green' if overall_success else 'red')}")
@@ -128,13 +132,13 @@ def cli(command, log_dir):
         success = False  # Initialize success to False
         try:
             if command == 'local':
-                success = asyncio.run(run_local_tests(log_file, background=False))
+                success = await run_local_tests(log_file, verbose=True)
             elif command == 'staging':
-                success = asyncio.run(run_tests_against_staging(log_file, background=False))
+                success = await run_tests_against_staging(log_file, verbose=True)
             elif command == 'docker':
-                success = asyncio.run(run_docker_tests(log_file, background=False))
+                success = await run_docker_tests(log_file, verbose=True)
             elif command == 'deploy':
-                success = asyncio.run(run_deploy(log_file))
+                success = await run_deploy(log_file, verbose=True)
             else:
                 click.echo(f"Unknown command: {command}")
         except Exception as e:
