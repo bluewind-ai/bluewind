@@ -122,7 +122,7 @@ async def run_deploy(log_file):
             'image': f"{output_data['ecr_repository_url']['value']}:{image_id}",
             'memory': 1024,
             'cpu': 1024,
-            'portMappings': [{'containerPort': 80, 'hostPort': 0}],  # Use dynamic host port mapping
+            'portMappings': [{'containerPort': 8000, 'hostPort': 0}],  # Use dynamic host port mapping
             'logConfiguration': {
                 'logDriver': 'awslogs',
                 'options': {
@@ -198,7 +198,7 @@ async def run_deploy(log_file):
                 {
                     'targetGroupArn': target_group_arn,
                     'containerName': 'app-container',
-                    'containerPort': 80
+                    'containerPort': 8000
                 }
             ]
         )
