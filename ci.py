@@ -60,8 +60,18 @@ async def run_docker_tests(log_file):
     success = await run_command(command, log_file)
     return success
 
+async def run_all_commands(log_dir):
+    tasks = [
+        run_local_tests(os.path.join(log_dir, "local_tests.log")),
+        run_tests_against_staging(os.path.join(log_dir, "staging_tests.log")),
+        run_docker_tests(os.path.join(log_dir, "docker_tests.log")),
+        run_deploy(os.path.join(log_dir, "deploy.log"))
+    ]
+    results = await asyncio.gather(*tasks)
+    return all(results)
+
 @click.command()
-@click.argument('command', type=click.Choice(['local', 'staging', 'docker', 'deploy']))
+@click.argument('command', type=click.Choice(['local', 'staging', 'docker', 'deploy', 'full']))
 @click.option('--log-dir', default=None, help='Log directory path')
 def cli(command, log_dir):
     if log_dir is None:
@@ -72,8 +82,12 @@ def cli(command, log_dir):
     os.makedirs(log_dir, exist_ok=True)
     click.echo(f"Log directory: {log_dir}")
 
-    log_file = os.path.join(log_dir, f"{command}_tests.log")
-    click.echo(f"Log file: {log_file}")
+    if command == 'full':
+        click.echo("Running all commands concurrently...")
+        success = asyncio.run(run_all_commands(log_dir))
+    else:
+        log_file = os.path.join(log_dir, f"{command}_tests.log")
+        click.echo(f"Log file: {log_file}")
 
     if command == 'local':
         success = asyncio.run(run_local_tests(log_file))
