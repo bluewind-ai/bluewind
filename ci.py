@@ -22,6 +22,7 @@ async def run_command(command, log_file, env=None, background=False):
                 if not line:
                     break
                 line = line.decode('utf-8').strip()
+                print(line)  # Print to stdout
                 f.write(line + '\n')
                 f.flush()
     
