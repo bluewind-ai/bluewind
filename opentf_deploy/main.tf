@@ -308,7 +308,7 @@ resource "aws_lb_target_group" "main" {
 # Create a listener for the ALB
 resource "aws_lb_listener" "front_end" {
   load_balancer_arn = aws_lb.main.arn
-  port              = "8000"
+  port              = "80"
   protocol          = "HTTP"
 
   default_action {
@@ -324,8 +324,8 @@ resource "aws_security_group" "alb_sg" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 8000
-    to_port     = 8000
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
