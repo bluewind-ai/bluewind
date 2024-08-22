@@ -1,4 +1,3 @@
-from asyncio import subprocess
 import os
 import asyncio
 from datetime import datetime
@@ -9,35 +8,32 @@ import click
 from deploy_stack import run_deploy
 
 async def run_command(command, log_file, env=None, background=False):
-    if background:
-        process = await asyncio.create_subprocess_shell(
-            command,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            env=env
-        )
-        return process
-    else:
-        process = await asyncio.create_subprocess_shell(
-            command,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.STDOUT,
-            env=env
-        )
-        
+    process = await asyncio.create_subprocess_shell(
+        command,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
+        env=env
+    )
+    
+    async def log_output():
         with open(log_file, 'w') as f:
             while True:
                 line = await process.stdout.readline()
                 if not line:
                     break
                 line = line.decode('utf-8').strip()
-                print(line)  # Print to stdout
-                f.write(line + '\n')  # Write to log file
-        
+                f.write(line + '\n')
+                f.flush()
+    
+    if background:
+        asyncio.create_task(log_output())
+        return process
+    else:
+        await log_output()
         await process.wait()
         return process.returncode == 0
 
-async def run_local_tests(log_file, background=False):
+async def run_local_tests(log_file, background=True):
     click.echo("Running tests locally...")
     env = os.environ.copy()
     env.update({
@@ -50,7 +46,7 @@ async def run_local_tests(log_file, background=False):
     command = "python3 manage.py test"
     return await run_command(command, log_file, env=env, background=background)
 
-async def run_tests_against_staging(log_file, background=False):
+async def run_tests_against_staging(log_file, background=True):
     click.echo("Running tests against staging...")
     env = os.environ.copy()
     env.update({
@@ -61,7 +57,7 @@ async def run_tests_against_staging(log_file, background=False):
     command = "python3 manage.py test"
     return await run_command(command, log_file, env=env, background=background)
 
-async def run_docker_tests(log_file, background=False):
+async def run_docker_tests(log_file, background=True):
     click.echo("Running Docker tests...")
     commands = [
         "docker build -t my-django-app .",
@@ -79,18 +75,23 @@ async def run_docker_tests(log_file, background=False):
     return await run_command(command, log_file, background=background)
 
 async def run_all_commands(log_dir):
-    async def timed_run(name, coroutine):
+    async def timed_run(name, coroutine, background=True):
         start_time = time.time()
         result = await coroutine
+        if background:
+            await result.wait()  # Wait for the background process to complete
+            success = result.returncode == 0
+        else:
+            success = result
         duration = time.time() - start_time
-        return name, result, duration
+        return name, success, duration
 
     start_time = time.time()
     tasks = [
-        timed_run('local', run_local_tests(os.path.join(log_dir, "local_tests.log"), background=True)),
-        timed_run('staging', run_tests_against_staging(os.path.join(log_dir, "staging_tests.log"), background=True)),
-        timed_run('docker', run_docker_tests(os.path.join(log_dir, "docker_tests.log"), background=True)),
-        timed_run('deploy', run_deploy(os.path.join(log_dir, "deploy.log")))
+        timed_run('local', run_local_tests(os.path.join(log_dir, "local_tests.log"))),
+        timed_run('staging', run_tests_against_staging(os.path.join(log_dir, "staging_tests.log"))),
+        timed_run('docker', run_docker_tests(os.path.join(log_dir, "docker_tests.log"))),
+        timed_run('deploy', run_deploy(os.path.join(log_dir, "deploy.log")), background=False)
     ]
 
     results = await asyncio.gather(*tasks)
@@ -120,13 +121,13 @@ def cli(command, log_dir):
         log_file = os.path.join(log_dir, f"{command}_tests.log")
         start_time = time.time()
         if command == 'local':
-            success = asyncio.run(run_local_tests(log_file, False))
+            success = asyncio.run(run_local_tests(log_file, background=False))
         elif command == 'staging':
-            success = asyncio.run(run_tests_against_staging(log_file, False))
+            success = asyncio.run(run_tests_against_staging(log_file, background=False))
         elif command == 'docker':
-            success = asyncio.run(run_docker_tests(log_file, False))
+            success = asyncio.run(run_docker_tests(log_file, background=False))
         elif command == 'deploy':
-            success = asyncio.run(run_deploy(log_file, False))
+            success = asyncio.run(run_deploy(log_file))
         else:
             click.echo(f"Unknown command: {command}")
             success = False
