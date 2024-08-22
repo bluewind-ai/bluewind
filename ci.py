@@ -79,14 +79,24 @@ async def run_docker_tests(log_file, background=False):
     return await run_command(command, log_file, background=background)
 
 async def run_all_commands(log_dir):
+    async def timed_run(name, coroutine):
+        start_time = time.time()
+        result = await coroutine
+        duration = time.time() - start_time
+        return name, result, duration
+
+    start_time = time.time()
     tasks = [
-        run_local_tests(os.path.join(log_dir, "local_tests.log"), background=True),
-        run_tests_against_staging(os.path.join(log_dir, "staging_tests.log"), background=True),
-        run_docker_tests(os.path.join(log_dir, "docker_tests.log"), background=True),
-        run_deploy(os.path.join(log_dir, "deploy.log"))
+        timed_run('local', run_local_tests(os.path.join(log_dir, "local_tests.log"), background=True)),
+        timed_run('staging', run_tests_against_staging(os.path.join(log_dir, "staging_tests.log"), background=True)),
+        timed_run('docker', run_docker_tests(os.path.join(log_dir, "docker_tests.log"), background=True)),
+        timed_run('deploy', run_deploy(os.path.join(log_dir, "deploy.log")))
     ]
+
     results = await asyncio.gather(*tasks)
-    return all(results)
+    total_duration = time.time() - start_time
+
+    return {name: {'success': success, 'duration': duration} for name, success, duration in results}, total_duration
 
 @click.command()
 @click.argument('command', type=click.Choice(['local', 'staging', 'docker', 'deploy', 'full']))
@@ -99,13 +109,16 @@ def cli(command, log_dir):
     os.makedirs(log_dir, exist_ok=True)
 
     if command == 'full':
-        success = asyncio.run(run_all_commands(log_dir))
-        status = "Success" if success else "Failure"
-        print(f"Full run: {status}")
-        for cmd in ['local', 'staging', 'docker', 'deploy']:
-            print(f"{cmd}: logs here -> {os.path.join(log_dir, f'{cmd}_tests.log')}")
+        results, total_duration = asyncio.run(run_all_commands(log_dir))
+        overall_success = all(result['success'] for result in results.values())
+        print(f"Full run: {'Success' if overall_success else 'Failure'}")
+        for cmd, data in results.items():
+            status = "Success" if data['success'] else "Failure"
+            print(f"{cmd}: {status} - logs here -> {os.path.join(log_dir, f'{cmd}_tests.log')} (Time: {data['duration']:.2f} seconds)")
+        print(f"\nTotal time: {total_duration:.2f} seconds")
     else:
         log_file = os.path.join(log_dir, f"{command}_tests.log")
+        start_time = time.time()
         if command == 'local':
             success = asyncio.run(run_local_tests(log_file, False))
         elif command == 'staging':
@@ -117,11 +130,12 @@ def cli(command, log_dir):
         else:
             click.echo(f"Unknown command: {command}")
             success = False
+        duration = time.time() - start_time
         
         status = "Success" if success else "Failure"
-        print(f"{command}: {status} logs here -> {log_file}")
+        print(f"{command}: {status} - logs here -> {log_file} (Time: {duration:.2f} seconds)")
     
-    exit(0 if success else 1)
+    exit(0 if (overall_success if command == 'full' else success) else 1)
 
 if __name__ == "__main__":
     cli()

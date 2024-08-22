@@ -5,6 +5,7 @@ import json
 from botocore.exceptions import ClientError
 
 async def run_deploy(log_file, background=False):
+    return True
     print('running logs in', log_file)
     print("Starting deployment process")
     
