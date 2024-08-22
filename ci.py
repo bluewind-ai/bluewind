@@ -1,23 +1,34 @@
+from asyncio import subprocess
 import os
 import asyncio
 from datetime import datetime
+import sys
 import time
 import click
 
 from deploy_stack import run_deploy
 
 async def run_command(command, log_file, env=None, background=False):
-    with open(log_file, 'w') as f:
+    if background:
         process = await asyncio.create_subprocess_shell(
             command,
-            stdout=f,
-            stderr=asyncio.subprocess.STDOUT,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
             env=env
         )
-        if not background:
-            await process.wait()
-            return process.returncode == 0
         return process
+    else:
+        with open(log_file, 'w') if isinstance(log_file, str) else log_file as f:
+            process = await asyncio.create_subprocess_shell(
+                command,
+                stdout=f,
+                stderr=subprocess.STDOUT,
+                env=env
+            )
+            
+            await process.communicate()
+        
+        return process.returncode == 0
 
 async def run_local_tests(log_file):
     click.echo("Running tests locally...")
@@ -28,8 +39,9 @@ async def run_local_tests(log_file):
         "ALLOWED_HOSTS": "localhost,",
         "TEST_PORT": "8002"
     })
-    success = await run_command("python3 manage.py test", log_file, env=env)
-    return success
+    
+    command = "python3 manage.py test"
+    return await run_command(command, log_file, env=env)
 
 async def run_tests_against_staging(log_file):
     click.echo("Running tests against staging...")
@@ -39,8 +51,8 @@ async def run_tests_against_staging(log_file):
         "TEST_HOST": "app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com",
         "ALLOWED_HOSTS": "app-bluewind-alb-1840324227.us-west-2.elb.amazonaws.com,"
     })
-    success = await run_command("python3 manage.py test", log_file, env=env)
-    return success
+    command = "python3 manage.py test"
+    return await run_command(command, log_file, env=env)
 
 async def run_docker_tests(log_file):
     click.echo("Running Docker tests...")
@@ -57,8 +69,7 @@ async def run_docker_tests(log_file):
         "python manage.py test'"
     ]
     command = " && ".join(commands)
-    success = await run_command(command, log_file)
-    return success
+    return await run_command(command, log_file)
 
 async def run_all_commands(log_dir):
     tasks = [
@@ -75,35 +86,39 @@ async def run_all_commands(log_dir):
 @click.option('--log-dir', default=None, help='Log directory path')
 def cli(command, log_dir):
     if log_dir is None:
-        readable_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         reverse_timestamp = str(9999999999 - int(time.time())).zfill(10)
-        log_dir = f"./logs/{reverse_timestamp}_{readable_timestamp}"
+        log_dir = f"./logs/{reverse_timestamp}"
     
     os.makedirs(log_dir, exist_ok=True)
-    click.echo(f"Log directory: {log_dir}")
+    # sys.stdout = open(os.path.join(log_dir, 'stdout.log'), 'w')
+    # sys.stderr = open(os.path.join(log_dir, 'stderr.log'), 'w')
 
     if command == 'full':
-        click.echo("Running all commands concurrently...")
         success = asyncio.run(run_all_commands(log_dir))
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        status = "Success" if success else "Failure"
+        print(f"Full run: {status}")
+        for cmd in ['local', 'staging', 'docker', 'deploy']:
+            print(f"{cmd}: logs here -> {os.path.join(log_dir, f'{cmd}_tests.log')}")
     else:
         log_file = os.path.join(log_dir, f"{command}_tests.log")
-        click.echo(f"Log file: {log_file}")
-
-    if command == 'local':
-        success = asyncio.run(run_local_tests(log_file))
-    elif command == 'staging':
-        success = asyncio.run(run_tests_against_staging(log_file))
-    elif command == 'docker':
-        success = asyncio.run(run_docker_tests(log_file))
-    elif command == 'deploy':
-        success = asyncio.run(run_deploy(log_file))
-
-    if success:
-        click.echo(click.style(f"{command.capitalize()} tests completed successfully.", fg='green'))
-        click.echo(click.style(f"Log file: {log_file}", fg='green'))
-    else:
-        click.echo(click.style(f"{command.capitalize()} tests failed.", fg='red'))
-        click.echo(click.style(f"Check the log file for details: {log_file}", fg='yellow'))
+        if command == 'local':
+            success = asyncio.run(run_local_tests(log_file))
+        elif command == 'staging':
+            success = asyncio.run(run_tests_against_staging(log_file))
+        elif command == 'docker':
+            success = asyncio.run(run_docker_tests(log_file))
+        elif command == 'deploy':
+            success = asyncio.run(run_deploy(log_file))
+        else:
+            click.echo(f"Unknown command: {command}")
+            success = False
+        
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        status = "Success" if success else "Failure"
+        print(f"{command}: {status} logs here -> {log_file}")
     
     exit(0 if success else 1)
 
