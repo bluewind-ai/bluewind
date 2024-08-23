@@ -7,6 +7,28 @@ import click
 
 from deploy_stack import run_deploy
 
+async def run_django_setup_and_selenium(log_file, verbose=True):
+    if verbose:
+        click.echo("Running Django setup and Selenium tests...")
+    commands = [
+        "python manage.py flush --noinput",
+        "python manage.py createsuperuser --noinput --username admin@example.com --email admin@example.com",
+        "python manage.py shell -c \"from django.contrib.auth.models import User; user = User.objects.get(username='admin@example.com'); user.set_password('admin123'); user.save()\"",
+        "python manage.py migrate",
+        "python manage.py runserver & ",
+        "sleep 2 && ",
+        "selenium-side-runner --config-file config.json selenium/tests.side"
+    ]
+    
+    env = os.environ.copy()
+    env.update({
+        "DJANGO_SETTINGS_MODULE": "bluewind.settings_test",
+    })
+    
+    command = "".join(commands)
+    return await run_command(command, log_file, env=env, verbose=verbose)
+
+
 async def run_command(command, log_file, env=None, verbose=True):
     process = await asyncio.create_subprocess_shell(
         command,
@@ -92,6 +114,7 @@ async def run_all_commands(log_dir, verbose=False):
         timed_run('local', run_local_tests),
         timed_run('staging', run_tests_against_staging),
         timed_run('docker', run_docker_tests),
+        timed_run('selenium', run_django_setup_and_selenium),
         timed_run('deploy', run_deploy, verbose=True)
     ]
 
@@ -101,7 +124,7 @@ async def run_all_commands(log_dir, verbose=False):
     return {name: {'success': success, 'duration': duration} for name, success, duration in results}, total_duration
 
 @click.command()
-@click.argument('command', type=click.Choice(['local', 'staging', 'docker', 'deploy', 'full']))
+@click.argument('command', type=click.Choice(['local', 'staging', 'docker', 'deploy', 'selenium', 'full']))
 @click.option('--log-dir', default=None, help='Log directory path')
 @click.option('--verbose', is_flag=True, help='Enable verbose output')
 def cli(command, log_dir, verbose):
@@ -137,6 +160,8 @@ async def async_cli(command, log_dir, verbose):
                 success = await run_tests_against_staging(log_file, verbose=True)
             elif command == 'docker':
                 success = await run_docker_tests(log_file, verbose=True)
+            elif command == 'selenium':
+                success = await run_django_setup_and_selenium(log_file, verbose=True)
             elif command == 'deploy':
                 success = await run_deploy(log_file, verbose=True)
             else:

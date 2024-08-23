@@ -4,26 +4,13 @@ import boto3
 import json
 from botocore.exceptions import ClientError
 import json
-import toml
-from packaging import version
-
 from ci_utils import run_command
-
-from packaging import version
 
 async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
     with open('last_deployment.json', 'r') as file:
         last_deployment = json.load(file)
     
-    current_version = last_deployment['current_version']
     previous_image_id = last_deployment['image_id']
-
-    pyproject_data = toml.load('pyproject.toml')
-    v = version.parse(current_version)
-    new_version = f"{v.major}.{v.minor}.{v.micro + 1}"
-    pyproject_data['tool']['poetry']['version'] = new_version
-    with open('pyproject.toml', 'w') as file:
-        toml.dump(pyproject_data, file)
 
     build_commands = [
         f"set -e",
@@ -48,18 +35,18 @@ async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
         ]
         for command in push_commands:
             await run_command(command, log_file, env=env, verbose=verbose)
-
+        
+        # keep this for later
         last_deployment = {
-            'current_version': new_version,
             'image_id': new_image_id
         }
 
         with open('last_deployment.json', 'w') as file:
             json.dump(last_deployment, file, indent=2)
 
-        return current_version, new_image_id
+        return new_image_id
     
-    return current_version, previous_image_id
+    return previous_image_id
 
     
 async def run_deploy(log_file, verbose=True):
