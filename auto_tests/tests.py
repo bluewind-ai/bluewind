@@ -16,19 +16,7 @@ class MyModelAdminTestCase(ModelAdminTestCase):
         self.client.login(username=unique_username, password='password')
         self.workspace = Workspace.objects.create(name="Test Workspace")
         self.admin_site = AdminSite()
-        session = self.client.session
-        session['workspaces']= [
-            {'workspace_id': self.admin_site.uuid_to_base10(self.workspace.id)}
-        ]
-        session.save()
         
-    def get_workspace_id(self):
-        return self.admin_site.uuid_to_base10(self.workspace.id)
-
-    def test_admin_view(self):
-        url = f'/admin/{self.get_workspace_id()}/workspaces/workspace/'
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         get_user_model().objects.all().delete()

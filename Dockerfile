@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION=3.12-slim-bullseye
 
-FROM --platform=linux/amd64 python:${PYTHON_VERSION}
+FROM --platform=linux/arm64 python:${PYTHON_VERSION}
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1

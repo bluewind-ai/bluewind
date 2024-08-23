@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.template.defaulttags import url
 from django.urls import path, include, re_path
-from .health_check import health_check  # Import the health_check view
 from django.views.generic.base import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
+
+from health_check.views import health_check
+
 
 favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 

@@ -1,0 +1,12 @@
+{
+  "task_set_a_scale": {
+    "sensitive": false,
+    "type": "number",
+    "value": 50
+  },
+  "task_set_b_scale": {
+    "sensitive": false,
+    "type": "number",
+    "value": 50
+  }
+}

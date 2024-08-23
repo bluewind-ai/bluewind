@@ -1,30 +1,20 @@
-import datetime
 import os
-import subprocess
 from aws_cdk import (
     Stack,
     aws_ecs as ecs,
     aws_ecs_patterns as ecs_patterns,
     aws_ec2 as ec2,
     aws_s3 as s3,
-    aws_s3_deployment as s3deploy,
     aws_rds as rds,
-    CfnOutput,
+    aws_cloudfront as cloudfront,
+    aws_cloudfront_origins as origins,
+    aws_secretsmanager as secretsmanager,
+    aws_certificatemanager as acm,
     RemovalPolicy,
     Duration,
 )
 from constructs import Construct
-from aws_cdk import aws_cloudfront as cloudfront
-from aws_cdk import aws_cloudfront_origins as origins
-from aws_cdk import aws_secretsmanager as secretsmanager
-from aws_cdk import Fn
-from aws_cdk import SecretValue
-import random
-import string
 import json
-from aws_cdk import aws_certificatemanager as acm
-
-
 
 class SimpleFargateCdkStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -59,7 +49,6 @@ class SimpleFargateCdkStack(Stack):
             },
         }
         env = os.environ.get('ENVIRONMENT')
-
         config = configs[env]
 
         certificate = acm.Certificate.from_certificate_arn(
@@ -67,13 +56,19 @@ class SimpleFargateCdkStack(Stack):
             certificate_arn=config["certificate_arn"]
         )
 
-        vpc = ec2.Vpc(self, "MyVPC", max_azs=config["max_azs"])
-
+        vpc = ec2.Vpc(self, "MyVPC",
+            max_azs=config["max_azs"],
+            nat_gateways=0,
+            subnet_configuration=[
+                ec2.SubnetConfiguration(
+                    name="Public",
+                    subnet_type=ec2.SubnetType.PUBLIC,
+                    cidr_mask=24
+                )
+            ]
+        )
         cluster = ecs.Cluster(self, "MyCluster", vpc=vpc)
         
-        build_args = {'TIMESTAMP': datetime.datetime.now().isoformat()}
-
-        # Create S3 bucket for static files
         static_bucket = s3.Bucket(
             self, "StaticBucket",
             removal_policy=RemovalPolicy.DESTROY,
@@ -83,18 +78,8 @@ class SimpleFargateCdkStack(Stack):
         )
 
         oai = cloudfront.OriginAccessIdentity(self, "MyOAI")
-
         static_bucket.grant_read(oai)
 
-        # pushing to S3 before even knowing that fargate deployment is successful is not a good idea
-
-        # s3deploy.BucketDeployment(
-        #     self, "DeployStaticFiles",
-        #     sources=[s3deploy.Source.asset("../staticfiles")],  # Adjust this path to your static files
-        #     destination_bucket=static_bucket,
-        # )
-
-        # Create RDS instance
         db_instance = rds.DatabaseInstance(
             self, "MyRDSInstance",
             engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_13),
@@ -110,7 +95,6 @@ class SimpleFargateCdkStack(Stack):
             publicly_accessible=True,
         )
 
-        # Allow incoming traffic on the database port from anywhere
         db_instance.connections.allow_from(ec2.Peer.any_ipv4(), ec2.Port.tcp(5432))
         
         rds_secret = db_instance.secret
@@ -151,11 +135,12 @@ class SimpleFargateCdkStack(Stack):
                 },
             ),
             public_load_balancer=True,
-            health_check_grace_period=Duration.seconds(60),  # This is now in the correct place
+            health_check_grace_period=Duration.seconds(60),
+            task_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),  # Use task_subnets instead of vpc_subnets
         )
 
         fargate_service.target_group.configure_health_check(
-            path="/health/",  # Adjust this to match your health check endpoint
+            path="/health/",
             healthy_http_codes="200",
             interval=Duration.seconds(30),
             timeout=Duration.seconds(15),
@@ -163,7 +148,11 @@ class SimpleFargateCdkStack(Stack):
             unhealthy_threshold_count=3,
         )
 
-        # Get the load balancer's DNS name
+        fargate_service.target_group.set_attribute(
+            key="deregistration_delay.timeout_seconds",
+            value="5"
+        )
+
         lb_dns_name = fargate_service.load_balancer.load_balancer_dns_name
         cloudfront_logs_bucket = s3.Bucket(
             self, "CloudFrontLogsBucket",
@@ -194,34 +183,21 @@ class SimpleFargateCdkStack(Stack):
             enable_logging=True,
             log_bucket=cloudfront_logs_bucket,
             log_file_prefix="cloudfront-logs/",
-            domain_names=[config["domain_name"]],  # Add this line
-            certificate=certificate,  # Add this line
+            # domain_names=[config["domain_name"]],
+            # certificate=certificate,
         )
 
-        # Update the container's environment variables
-
-        fargate_service.task_definition.default_container.add_environment(
-            "SECRET_KEY", "TO_BE_REPLACED"
-        )
-
-        fargate_service.task_definition.default_container.add_environment(
-            "DEBUG", "True"
-        )
-
-        fargate_service.task_definition.default_container.add_environment(
-            "ENVIRONMENT", "staging"
-        )
-
+        fargate_service.task_definition.default_container.add_environment("SECRET_KEY", "TO_BE_REPLACED")
+        fargate_service.task_definition.default_container.add_environment("DEBUG", "True")
+        fargate_service.task_definition.default_container.add_environment("ENVIRONMENT", "staging")
         fargate_service.task_definition.default_container.add_environment(
             "ALLOWED_HOSTS", f"{config['domain_name']},{lb_dns_name},localhost,127.0.0.1,localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,*"
         )
         fargate_service.task_definition.default_container.add_environment(
             "CSRF_TRUSTED_ORIGINS", f"https://{config['domain_name']},http://{lb_dns_name},https://{lb_dns_name},https://{distribution.distribution_domain_name}"
         )
-
         fargate_service.task_definition.default_container.add_environment(
             "STATIC_URL", f"https://{config['domain_name']}/staticfiles/,https://{distribution.distribution_domain_name}/staticfiles/"
         )
 
-        # Grant the Fargate task permission to access the RDS instance
         db_instance.connections.allow_default_port_from(fargate_service.service.connections)

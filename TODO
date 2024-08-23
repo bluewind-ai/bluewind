@@ -3,7 +3,7 @@ defensive programming on the filter by tenant: in the model manager and in every
 pgbadger
 pgstats
 get_absolute_url of resource
-requirements folder 
+requirements folder
 mozilla observatory
 checkout django webtest
 
@@ -32,3 +32,8 @@ URGENT: put project in root folder
 
 I need to do something like this: https://www.reddit.com/r/aws/comments/mrpexd/finding_resources_outside_of_cloudformation_stacks/
 Because I have dangling resources, things outside of my cloudformation stack
+
+Run tests on previous commits to see if they still work, to see if changes are backwards compatible.
+
+add vantage to AWS accounts
+add in the CI a step that checks if things work ok.

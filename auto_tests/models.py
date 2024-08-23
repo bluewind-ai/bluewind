@@ -39,10 +39,6 @@ class AdminTestMixIn(object):
         self.user = get_user_model().objects.create_superuser('admin', 'admin@test.com', 'password')
         self.client = Client()
         self.client.login(username='admin', password='password')
-        self.workspace = workspace_recipe.make()
-        session = self.client.session
-        session['workspace_id'] = str(self.workspace.id)  # Convert UUID to string
-        session.save()
 
 class ModelAdminTestMixIn(AdminTestMixIn):
     add_status_code = 200
@@ -59,32 +55,28 @@ class ModelAdminTestMixIn(AdminTestMixIn):
     def get_form_data_update(self):
         return dict(self.form_data_update)
 
-    def get_workspace_id(self):
-        return self.workspace.id
-
     def get_add_url(self):
-        return reverse('admin:{model._meta.app_label}_{model._meta.model_name}_add'.format(model=self.model), 
-                    kwargs={'workspace_id': self.get_workspace_id()})
+        return reverse('admin:{model._meta.app_label}_{model._meta.model_name}_add'.format(model=self.model))
     
     def get_changelist_url(self):
         return reverse('admin:{app}_{model}_changelist'.format(
             app=self.model._meta.app_label,
             model=self.model._meta.model_name
-        ), kwargs={'workspace_id': self.get_workspace_id()})
+        ))
 
     def get_change_url(self, instance=None):
         instance = instance or self.create()
         return reverse('admin:{app}_{model}_change'.format(
             app=self.model._meta.app_label,
             model=self.model._meta.model_name
-        ), kwargs={'workspace_id': self.get_workspace_id(), 'object_id': instance.pk})
+        ), args=[instance.pk])
 
     def get_delete_url(self, instance=None):
         instance = instance or self.create()
         return reverse('admin:{app}_{model}_delete'.format(
             app=self.model._meta.app_label,
             model=self.model._meta.model_name
-        ), kwargs={'workspace_id': self.get_workspace_id(), 'object_id': instance.pk})
+        ), args=[instance.pk])
 
     def create_instance_data(self):
         instance = self.create()

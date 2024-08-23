@@ -1,0 +1,33 @@
+---
+title: The CI-CD is the heartbeat
+---
+
+# The CI-CD is the heartbeat
+
+I am getting very obsessive about the CI/CD right now. I want it fast because it is the heartbeat of the project.
+Meaning it's the thing that defines the speed of iteration. I think the CI/CD is a very profound concept. I don't see it as just a way to manage the SDLC, I see it as the end all be all of software engineering. I see the CI/CD as the software more than the source code of my software itself.
+
+I strongly believe that if you lose your source code and you only have your CI/CD (which includes your tests), if they're good, you can rebuild your software very very quickly. The source code is an implementation details. But your CI/CD, and your tests in particular DEFINE your system.
+
+Let's talk about the technical choices. I think things like Cloudfront, ALB, S3, and RDS are pretty much a given for the project.
+
+Most of my thinking had to go into which container orchestrator (ECS vs EKS, vs bare bones), which compute offering (app runner, fargate, EC2, beanstalk, lambda), and which IAC (CDK, opentofu, pulumi. I am not even putting cloudformation in there haha) to pick.
+
+I initially started with ECS + fargate + CDK. And it was slow to deploy + I had no control over these abstractions.
+Fargate is an abstraction over ECS on EC2, The CDK is an abstraction over cloudformation and cloudformation is an abstraction over the AWS API.
+
+This is nice to kickstart a project fast, but it very quickly backfires, because Fargate doesn't allow me to deploy like I want, and cloudformation is horribly slow.
+
+I then went to opentofu + ECS on EC2 + deployment_controller = EC2. And it was faster, but I was lacking deployment control. It would do stuff I don't want.
+
+So I am now on opentofu + ECS + EC2 + deployment_controller = External, and I like it a lot. It's very fast and gives me a lot of control when deploying, but it also helps me not reinvent the wheel for everything.
+
+I wondered for a few hours if EKS would be relevant given how much control I want, and I don't think that's the case.
+
+I think ECS can be very bare bones, even more than kubernetes. Kubernetes comes with a huge baggage, which I don't want.
+
+I also contemplated having no ecs at all, but I actually like ECS. It gives me task management and the ECS UI on AWS gives me everything in one place: capacity provider, EC2 instances, tasks, deployments, logs, etc, etc...
+
+It's a strong foundation.
+
+I will update this post as I go along.

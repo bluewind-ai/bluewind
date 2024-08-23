@@ -55,7 +55,7 @@ const config: DocsThemeConfig = {
         <a
           className="p-1 hidden lg:inline-block hover:opacity-80"
           target="_blank"
-          href="https://discord.gg/BSxfM3Up"
+          href="https://discord.gg/DDMVTYrrKy"
           aria-label="Bluewind Discord"
           rel="nofollow noreferrer"
         >

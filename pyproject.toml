@@ -1,18 +1,29 @@
+[build-system]
+requires = [ "poetry-core",]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "Bluewind"
-version = "0.1.0"  # You might want to change this to match your Django version
+version = "0.0.1"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
-authors = ["Django Software Foundation <foundation@djangoproject.com>"]
+authors = [ "Django Software Foundation <foundation@djangoproject.com>",]
 license = "BSD-3-Clause"
 readme = "README.md"
 package-mode = true
 
+[tool.black]
+target-version = [ "py310",]
+force-exclude = "tests/test_runner_apps/tagged/tests_syntax_error.py"
+
+[tool.isort]
+profile = "black"
+default_section = "THIRDPARTY"
+known_first_party = "django"
+
 [tool.poetry.dependencies]
 python = "^3.10"
-django-user-sessions = {path = "django-user-sessions", develop = true}
 asgiref = "^3.8.1"
 sqlparse = "^0.3.1"
-tzdata = {version = "*", markers = "sys_platform == 'win32'"}
 python-dotenv = "^1.0.1"
 django-environ = "^0.11.2"
 behave-django = "^1.4.0"
@@ -34,29 +45,26 @@ google-auth-oauthlib = "^1.2.1"
 google-auth-httplib2 = "^0.2.0"
 google-api-python-client = "^2.140.0"
 django-unfold = "^0.35.0"
+botocore = "^1.35.2"
+boto3 = "^1.35.2"
+aiohttp = "^3.10.5"
+
+[tool.poetry.extras]
+argon2 = [ "argon2-cffi",]
+bcrypt = [ "bcrypt",]
+
+[tool.poetry.scripts]
+django-admin = "django.core.management:execute_from_command_line"
+
+[tool.poetry.dependencies.django-user-sessions]
+path = "django-user-sessions"
+develop = true
+
+[tool.poetry.dependencies.tzdata]
+version = "*"
+markers = "sys_platform == 'win32'"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
 isort = "*"
 pygraphviz = "^1.13"
-
-
-[tool.poetry.extras]
-argon2 = ["argon2-cffi"]
-bcrypt = ["bcrypt"]
-
-[tool.poetry.scripts]
-django-admin = "django.core.management:execute_from_command_line"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.black]
-target-version = ["py310"]
-force-exclude = "tests/test_runner_apps/tagged/tests_syntax_error.py"
-
-[tool.isort]
-profile = "black"
-default_section = "THIRDPARTY"
-known_first_party = "django"
