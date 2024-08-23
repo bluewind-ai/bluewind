@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "Bluewind"
-version = "0.0.1"
+version = "0.0.2"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 authors = [ "Django Software Foundation <foundation@djangoproject.com>",]
 license = "BSD-3-Clause"
