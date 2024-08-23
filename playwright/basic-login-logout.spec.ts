@@ -5,7 +5,6 @@ test("Admin login and logout", async ({ page }) => {
   dotenv.config();
   const baseUrl = process.env.BASE_URL;
   await page.goto(`${baseUrl}/admin/login/?next=/admin/login`);
-  await page.screenshot({ path: "screenshots/login-page.png" });
   await page.getByLabel("Username:").fill("admin@example.com");
   await page.getByLabel("Password:").fill("admin123");
   page.getByRole("button", { name: "Log in" }).click(),
