@@ -293,14 +293,14 @@ resource "aws_lb_target_group" "main" {
 
   health_check {
     enabled             = true
-    interval            = 5    # Check every 5 seconds
+    interval            = 5    # Check every 3 seconds
     path                = "/"  # Adjust this to a suitable health check endpoint
     protocol            = "HTTP"
-    timeout             = 2    # Wait up to 2 seconds for a response
-    healthy_threshold   = 2    # Consider healthy after 2 successful checks
-    unhealthy_threshold = 10    # Consider unhealthy after 2 failed checks
+    timeout             = 2    # Wait up to 1 second for a response
+    healthy_threshold   = 2   # Consider healthy after 1 successful check
+    unhealthy_threshold = 2    # Consider unhealthy after 1 failed check
     matcher             = "200-299"  # HTTP status code ranges to consider healthy
-  }
+}
 
   deregistration_delay = 10  
 }

@@ -3,14 +3,92 @@ import asyncio
 import boto3
 import json
 from botocore.exceptions import ClientError
+import json
+import toml
+from packaging import version
 
-async def run_command(command, log_file, env=None, verbose=True):
-    process = await asyncio.create_subprocess_shell(
-        command,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.STDOUT,
-        env=env
-    )
+from ci_utils import run_command
+
+from packaging import version
+
+async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
+    print("Starting build_and_push_docker_image function")
+    
+    with open('last_deployment.json', 'r') as file:
+        last_deployment = json.load(file)
+    
+    previous_version = last_deployment['previous_version']
+    current_version = last_deployment['current_version']
+    previous_image_id = last_deployment['image_id']
+    
+    print(f"Previous version: {previous_version}")
+    print(f"Current version: {current_version}")
+    print(f"Previous image ID: {previous_image_id}")
+
+    pyproject_path = 'pyproject.toml'
+    pyproject_data = toml.load(pyproject_path)
+    pyproject_data['tool']['poetry']['version'] = previous_version
+    
+    print(f"Updating pyproject.toml with version: {previous_version}")
+    with open(pyproject_path, 'w') as file:
+        toml.dump(pyproject_data, file)
+
+    build_commands = [
+        f"docker build -t app-bluewind:latest .",
+        f"IMAGE_ID=$(docker images -q app-bluewind:latest)",
+        f"docker tag $IMAGE_ID {output_data['ecr_repository_url']['value']}:$IMAGE_ID",
+        f"aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin {output_data['ecr_repository_url']['value']}",
+        f"docker push {output_data['ecr_repository_url']['value']}:$IMAGE_ID",
+        f"echo $IMAGE_ID > image_id.txt"
+    ]
+
+    print("Starting Docker build and push process")
+    await run_command(" && ".join(build_commands), log_file, env=env, verbose=verbose)
+    print("Docker build and push completed")
+
+    try:
+        with open('image_id.txt', 'r') as file:
+            new_image_id = file.read().strip()
+        os.remove('image_id.txt')
+    except FileNotFoundError:
+        print("Error: image_id.txt not found. Docker build or push may have failed.")
+        return None, None
+    except IOError:
+        print("Error: Unable to read image_id.txt")
+        return None, None
+
+    print(f"Raw new_image_id: {new_image_id}")
+
+    if not new_image_id:
+        print("Error: new_image_id is empty. Docker build or push may have failed.")
+        return None, None
+
+    print(f"Comparing image IDs: new {new_image_id} vs previous {previous_image_id}")
+    if new_image_id != previous_image_id:
+        # Increment the version
+        v = version.parse(current_version)
+        new_version = f"{v.major}.{v.minor}.{v.micro + 1}"
+        print(f"Image changed. Incrementing version from {current_version} to {new_version}")
+    else:
+        new_version = current_version
+        print(f"Image unchanged. Keeping version at {current_version}")
+
+    print(f"Updating pyproject.toml with new version: {new_version}")
+    pyproject_data['tool']['poetry']['version'] = new_version
+    with open(pyproject_path, 'w') as file:
+        toml.dump(pyproject_data, file)
+
+    last_deployment = {
+        'current_version': new_version,
+        'previous_version': current_version,
+        'image_id': new_image_id
+    }
+    print("Updating last_deployment.json with new information")
+    with open('last_deployment.json', 'w') as file:
+        json.dump(last_deployment, file, indent=2)
+
+    print("build_and_push_docker_image function completed")
+    return current_version, new_image_id
     
 async def run_deploy(log_file, verbose=True):
     print('running logs in', log_file)
@@ -37,30 +115,14 @@ async def run_deploy(log_file, verbose=True):
         "tofu output -json > ../tofu_output.json"
     )
 
-    run_command(combined_command, log_file, env=env, verbose=verbose)
+    await run_command(combined_command, log_file, env=env, verbose=verbose)
 
     print("OpenTofu commands completed successfully")
     with open("tofu_output.json", 'r') as f:
         output_data = json.load(f)
-    print("Building and pushing Docker image")
-    build_commands = [
-        f"echo 'Building Docker image...'",
-        f"docker build -t app-bluewind:latest .",
-        f"IMAGE_ID=$(docker images -q app-bluewind:latest)",
-        f"echo 'Image built with ID: '$IMAGE_ID",
-        f"echo 'Tagging image...'",
-        f"docker tag $IMAGE_ID {output_data['ecr_repository_url']['value']}:$IMAGE_ID",
-        f"echo 'Logging into ECR...'",
-        f"aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin {output_data['ecr_repository_url']['value']}",
-        f"echo 'Pushing image to ECR...'",
-        f"docker push {output_data['ecr_repository_url']['value']}:$IMAGE_ID",
-        f"echo 'Image pushed successfully with tag: '$IMAGE_ID",
-        f"echo $IMAGE_ID > opentf_deploy/image_tag.txt"
-    ]
-
-    run_command(" && ".join(build_commands), log_file, env=env, verbose=verbose)
     
-    print("Docker image built and pushed successfully")
+    await build_and_push_docker_image(output_data, log_file, env, verbose)
+
     
     print("Reading OpenTofu output")
     
