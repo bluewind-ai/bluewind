@@ -21,5 +21,7 @@ async def run_command(command, log_file, env=None, verbose=True):
                 f.flush()
     
     await log_output()
-    await process.wait()
-    return process.returncode == 0
+    return_code = await process.wait()
+    
+    if return_code != 0:
+        raise RuntimeError(f"Command '{command}' failed with return code {return_code}")
