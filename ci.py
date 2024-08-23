@@ -80,7 +80,7 @@ async def run_docker_tests(log_file, verbose=True):
     return await run_command(command, log_file, verbose=verbose)
 
 async def run_all_commands(log_dir, verbose=False):
-    async def timed_run(name, coroutine):
+    async def timed_run(name, coroutine, verbose=verbose):
         log_file = os.path.join(log_dir, f"{name}_tests.log")
         start_time = time.time()
         success = await coroutine(log_file, verbose)
@@ -92,7 +92,7 @@ async def run_all_commands(log_dir, verbose=False):
         timed_run('local', run_local_tests),
         timed_run('staging', run_tests_against_staging),
         timed_run('docker', run_docker_tests),
-        timed_run('deploy', run_deploy)
+        timed_run('deploy', run_deploy, verbose=True)
     ]
 
     results = await asyncio.gather(*tasks)

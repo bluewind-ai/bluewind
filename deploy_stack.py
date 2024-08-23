@@ -57,7 +57,7 @@ async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
         with open('last_deployment.json', 'w') as file:
             json.dump(last_deployment, file, indent=2)
 
-        return new_version, new_image_id
+        return current_version, new_image_id
     
     return current_version, previous_image_id
 
