@@ -1,7 +1,7 @@
 from local_secrets import load_secrets_to_env
 
 
-load_secrets_to_env("dev-env")
+load_secrets_to_env("prod-env")
 import os
 print(os.environ)
 

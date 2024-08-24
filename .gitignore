@@ -76,3 +76,4 @@ logs/*
 .aws
 tofu_output.json
 db.sqlite3
+local.json
