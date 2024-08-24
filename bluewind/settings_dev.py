@@ -147,3 +147,5 @@ MIDDLEWARE += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 # cdnsjkcdnsjkcndsk
+
+TEST_RUNNER = 'bluewind.test_runner.NoDbTestRunner'

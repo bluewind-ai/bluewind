@@ -15,7 +15,7 @@ import os
 async def run_e2e_local(log_file, verbose=True):
     env = os.environ.copy()
     env.update({
-        "DJANGO_SETTINGS_MODULE": "bluewind.settings_test",
+        "DJANGO_SETTINGS_MODULE": "bluewind.settings_dev",
         "BASE_URL": "http://localhost:8000",
         "DJANGO_SUPERUSER_EMAIL": "admin@example.com",
         "DJANGO_SUPERUSER_PASSWORD": "admin123"
@@ -70,7 +70,7 @@ async def run_e2e_local(log_file, verbose=True):
     
 #     env = os.environ.copy()
 #     env.update({
-#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_test",
+#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_dev",
 #     })
     
 #     command = "".join(commands)
@@ -81,7 +81,7 @@ async def run_e2e_local(log_file, verbose=True):
 #         click.echo("Running tests locally...")
 #     env = os.environ.copy()
 #     env.update({
-#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_test",
+#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_dev",
 #         "ENVIRONMENT": "test",
 #         "TEST_HOST": "localhost",
 #         "ALLOWED_HOSTS": "localhost,",
@@ -97,7 +97,7 @@ async def run_e2e_local(log_file, verbose=True):
 #     env = os.environ.copy()
 #     env.update({
 #         "ENVIRONMENT": "test",
-#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_test",
+#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_dev",
 #         "TEST_HOST": "bluewind-app-alb-1550506744.us-west-2.elb.amazonaws.com",
 #         "TEST_PORT": "80",
 #         "ALLOWED_HOSTS": "bluewind-app-alb-1550506744.us-west-2.elb.amazonaws.com,"
@@ -112,7 +112,7 @@ async def run_e2e_local(log_file, verbose=True):
 #         "docker build -t my-django-app .",
 #         "docker run my-django-app sh -c 'ls -la /code'",
 #         "docker run -e ENVIRONMENT=test -e DEBUG=1 -e SECRET_KEY=your_secret_key_here "
-#         "-e DJANGO_SETTINGS_MODULE=bluewind.settings_test "
+#         "-e DJANGO_SETTINGS_MODULE=bluewind.settings_dev "
 #         "-e ALLOWED_HOSTS=localhost,127.0.0.1 -e CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1 "
 #         "-e TEST_HOST=localhost -e TEST_PORT=8000 "
 #         "my-django-app sh -c '"
