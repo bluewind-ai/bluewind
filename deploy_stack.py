@@ -136,9 +136,6 @@ async def run_deploy(log_file, verbose=True):
                 {'name': 'DB_HOST', 'value': 'app-bluewind-db.c50acykqkhaw.us-west-2.rds.amazonaws.com'},
                 {'name': 'DB_PORT', 'value': '5432'},
                 {'name': 'DB_NAME', 'value': 'postgres'},
-                {'name': 'DJANGO_SUPERUSER_EMAIL', 'value': 'admin@example.com'},
-                {'name': 'DJANGO_SUPERUSER_USERNAME', 'value': 'admin@example.com'},
-                {'name': 'DJANGO_SUPERUSER_PASSWORD', 'value': 'admin123'},
                 {'name': 'ENVIRONMENT', 'value': 'staging'},
                 {'name': 'CSRF_TRUSTED_ORIGINS', 'value': '*,'},
                 {'name': 'AWS_DEFAULT_REGION', 'value': 'us-west-2'}

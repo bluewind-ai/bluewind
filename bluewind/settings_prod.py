@@ -241,7 +241,7 @@ DB_NAME = os.environ.get('DB_NAME', 'postgres')
 # DATABASE_URL = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/postgres"
 DB_INFO = {
     'ENGINE': 'django.db.backends.postgresql',
-    'NAME': 'postgres',
+    'NAME': DB_NAME,
     'USER': DB_USERNAME,
     'PASSWORD': DB_PASSWORD,
     'HOST': DB_HOST,
