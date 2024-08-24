@@ -384,3 +384,66 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
+
+# RDS
+
+# RDS Instance
+resource "aws_db_instance" "default" {
+  identifier           = "app-bluewind-db"
+  engine               = "postgres"
+  engine_version       = "16"
+  instance_class       = "db.t4g.micro"
+  allocated_storage    = 20
+  storage_type         = "gp2"
+  db_name              = "appbluewinddb"
+  username             = "dbadmin"
+  password             = "changeme123"  # Please change this password
+  parameter_group_name = "default.postgres16"
+  skip_final_snapshot  = true
+  publicly_accessible  = true
+
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.default.name
+}
+
+# DB Subnet Group
+resource "aws_db_subnet_group" "default" {
+  name       = "app-bluewind-db-subnet-group"
+  subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
+
+  tags = {
+    Name = "App BlueWind DB subnet group"
+  }
+}
+
+# Security Group for RDS
+resource "aws_security_group" "rds_sg" {
+  name        = "app-bluewind-rds-sg"
+  description = "Allow inbound traffic for RDS"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "app-bluewind-rds-sg"
+  }
+}
+
+# Output the RDS endpoint
+output "rds_endpoint" {
+  description = "The connection endpoint for the RDS instance"
+  value       = aws_db_instance.default.endpoint
+}

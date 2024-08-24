@@ -1,11 +1,11 @@
 import asyncio
-
 async def run_command(command, log_file, env=None, verbose=True):
     process = await asyncio.create_subprocess_shell(
         command,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
-        env=env
+        env=env,
+        start_new_session=True  # Add this line
     )
     
     async def log_output():

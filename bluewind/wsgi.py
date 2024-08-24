@@ -1,12 +1,3 @@
-"""
-WSGI config for bluewind project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.0/howto/deployment/wsgi/
-"""
-
 import os
 
 from django.core.wsgi import get_wsgi_application
@@ -19,7 +10,10 @@ if 'gunicorn' in os.environ.get('SERVER_SOFTWARE', ''):
     # this hack allows us to run migrations and build static files when the fargate worker starts
     # Why do this? Because it's incredibly simpler than doing it in github actions.
     # We have this if statement to avoid running this code when wsgi is just imported.
-    # from bluewind.pre_setup import pre_setup
-    # pre_setup()
+    from bluewind.management.commands.pre_setup import Command
+
+    # Create an instance of the Command class and call its handle method
+    pre_setup_command = Command()
+    pre_setup_command.handle()
 
 application = get_wsgi_application()

@@ -9,6 +9,13 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+from local_secrets import load_secrets_to_env
+
+
+load_secrets_to_env("dev-env")
+import os
+print(os.environ)
+
 from .settings_base import *
 
 from pathlib import Path
