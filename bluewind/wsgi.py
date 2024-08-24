@@ -2,7 +2,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_dev')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_prod')
 
 if 'gunicorn' in os.environ.get('SERVER_SOFTWARE', ''):
     from dotenv import load_dotenv

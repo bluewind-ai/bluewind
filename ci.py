@@ -15,7 +15,7 @@ import os
 async def run_e2e_local(log_file, verbose=True):
     env = os.environ.copy()
     env.update({
-        "DJANGO_SETTINGS_MODULE": "bluewind.settings_dev",
+        "DJANGO_SETTINGS_MODULE": "bluewind.settings_prod",
         "BASE_URL": "http://localhost:8000",
         "DJANGO_SUPERUSER_EMAIL": "admin@example.com",
         "DJANGO_SUPERUSER_PASSWORD": "admin123"
@@ -70,26 +70,26 @@ async def run_e2e_local(log_file, verbose=True):
     
 #     env = os.environ.copy()
 #     env.update({
-#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_dev",
+#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_prod",
 #     })
     
 #     command = "".join(commands)
 #     return await run_command(command, log_file, env=env, verbose=verbose)
 
-# async def run_local_tests(log_file, verbose=True):
-#     if verbose:
-#         click.echo("Running tests locally...")
-#     env = os.environ.copy()
-#     env.update({
-#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_dev",
-#         "ENVIRONMENT": "test",
-#         "TEST_HOST": "localhost",
-#         "ALLOWED_HOSTS": "localhost,",
-#         "TEST_PORT": "8002"
-#     })
+async def run_local_unit_tests(log_file, verbose=True):
+    if verbose:
+        click.echo("Running unit tests locally...")
+    # env = os.environ.copy()
+    # env.update({
+    #     "DJANGO_SETTINGS_MODULE": "bluewind.settings_prod",
+    #     "ENVIRONMENT": "test",
+    #     "TEST_HOST": "localhost",
+    #     "ALLOWED_HOSTS": "localhost,",
+    #     "TEST_PORT": "8002"
+    # })
     
-#     command = "python3 manage.py test"
-#     return await run_command(command, log_file, env=env, verbose=verbose)
+    command = "python3 manage.py test"
+    return await run_command(command, log_file, env=None, verbose=verbose)
 
 # async def run_tests_against_staging(log_file, verbose=True):
 #     if verbose:
@@ -97,7 +97,7 @@ async def run_e2e_local(log_file, verbose=True):
 #     env = os.environ.copy()
 #     env.update({
 #         "ENVIRONMENT": "test",
-#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_dev",
+#         "DJANGO_SETTINGS_MODULE": "bluewind.settings_prod",
 #         "TEST_HOST": "bluewind-app-alb-1550506744.us-west-2.elb.amazonaws.com",
 #         "TEST_PORT": "80",
 #         "ALLOWED_HOSTS": "bluewind-app-alb-1550506744.us-west-2.elb.amazonaws.com,"
@@ -112,7 +112,7 @@ async def run_e2e_local(log_file, verbose=True):
 #         "docker build -t my-django-app .",
 #         "docker run my-django-app sh -c 'ls -la /code'",
 #         "docker run -e ENVIRONMENT=test -e DEBUG=1 -e SECRET_KEY=your_secret_key_here "
-#         "-e DJANGO_SETTINGS_MODULE=bluewind.settings_dev "
+#         "-e DJANGO_SETTINGS_MODULE=bluewind.settings_prod "
 #         "-e ALLOWED_HOSTS=localhost,127.0.0.1 -e CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1 "
 #         "-e TEST_HOST=localhost -e TEST_PORT=8000 "
 #         "my-django-app sh -c '"
@@ -134,7 +134,7 @@ async def run_all_commands(log_dir, verbose=False):
 
     start_time = time.time()
     tasks = [
-        # timed_run('local', run_local_tests),
+        timed_run('local_unit_tests', run_local_unit_tests),
         # timed_run('staging', run_tests_against_staging),
         # timed_run('docker', run_docker_tests),
         timed_run('e2e_local', run_e2e_local),
@@ -148,7 +148,7 @@ async def run_all_commands(log_dir, verbose=False):
     return {name: {'success': success, 'duration': duration} for name, success, duration in results}, total_duration
 
 @click.command()
-@click.argument('command', type=click.Choice(['local', 'staging', 'docker', 'deploy', 'e2e_local', 'e2e_staging', 'full']))
+@click.argument('command', type=click.Choice(['local_unit_tests', 'staging', 'docker', 'deploy', 'e2e_local', 'e2e_staging', 'full']))
 @click.option('--log-dir', default=None, help='Log directory path')
 @click.option('--verbose', is_flag=True, help='Enable verbose output')
 def cli(command, log_dir, verbose):
@@ -178,8 +178,8 @@ async def async_cli(command, log_dir, verbose):
         start_time = time.time()
         success = False  # Initialize success to False
         try:
-            # if command == 'local':
-            #     success = await run_local_tests(log_file, verbose=True)
+            if command == 'local_unit_tests':
+                success = await run_local_unit_tests(log_file, verbose=True)
             # elif command == 'staging':
                 # success = await run_tests_against_staging(log_file, verbose=True)
             # elif command == 'docker':
