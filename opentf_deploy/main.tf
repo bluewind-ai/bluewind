@@ -159,9 +159,9 @@ resource "aws_security_group" "ecs_sg" {
 }
 resource "aws_autoscaling_group" "ecs_asg" {
   vpc_zone_identifier = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
-  desired_capacity    = 4
-  max_size            = 4
-  min_size            = 4
+  desired_capacity    = 2
+  max_size            = 2
+  min_size            = 2
 
   launch_template {
     id      = aws_launch_template.ecs_lt.id
