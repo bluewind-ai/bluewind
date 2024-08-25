@@ -1,5 +1,6 @@
 import os
 import asyncio
+import time
 import boto3
 import json
 from botocore.exceptions import ClientError
@@ -91,6 +92,12 @@ async def run_deploy(log_file, verbose=True):
     
     image_id = await build_and_push_docker_image(output_data, log_file, env, verbose)
 
+    elbv2_client = boto3.client('elbv2',
+        aws_access_key_id=env['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=env['AWS_SECRET_ACCESS_KEY'],
+        region_name='us-west-2'
+    )
+    service_name = output_data['ecs_service_name']['value']
     
     print("Reading OpenTofu output")
     
@@ -99,6 +106,16 @@ async def run_deploy(log_file, verbose=True):
     target_group_arn = output_data['alb_target_group_arn']['value']
     ecs_task_execution_role_arn = output_data['ecs_task_execution_role_arn']['value']
     cloudwatch_log_group_name = output_data['cloudwatch_log_group_name']['value']
+
+    new_target_group_response = elbv2_client.create_target_group(
+        Name=f'tg-{service_name}-{int(time.time())}',
+        Protocol='HTTP',
+        Port=8000,
+        VpcId=output_data['vpc_id']['value'],
+        HealthCheckPath='/',
+        TargetType='ip'
+    )
+    new_target_group_arn = new_target_group_response['TargetGroups'][0]['TargetGroupArn']
 
     print(f"Cluster ARN: {cluster_arn}")
     print(f"Service Name: {service_name}")
