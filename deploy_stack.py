@@ -111,8 +111,17 @@ async def run_deploy(log_file, verbose=True):
         Protocol='HTTP',
         Port=8000,
         VpcId=output_data['vpc_id']['value'],
+        TargetType='instance',
+        HealthCheckProtocol='HTTP',
         HealthCheckPath='/',
-        TargetType='instance'
+        HealthCheckEnabled=True,
+        HealthCheckIntervalSeconds=5,
+        HealthCheckTimeoutSeconds=2,
+        HealthyThresholdCount=2,
+        UnhealthyThresholdCount=2,
+        Matcher={
+            'HttpCode': '200-299'
+        }
     )
     
     new_target_group_arn = new_target_group_response['TargetGroups'][0]['TargetGroupArn']
