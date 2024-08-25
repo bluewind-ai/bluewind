@@ -6,17 +6,14 @@ from botocore.exceptions import ClientError
 import json
 from ci_utils import run_command
 
-def get_filtered_environment():
-    with open('env_list.json', 'r') as f:
-        allowed_vars = json.load(f)
-    
-    filtered_env = [
-        {'name': key, 'value': os.environ[key]}
-        for key in allowed_vars
-        if key in os.environ
-    ]
-    
-    return filtered_env
+def get_secret_keys_and_values():
+    session = boto3.session.Session()
+    client = session.client(service_name='secretsmanager', region_name='us-west-2')
+    get_secret_value_response = client.get_secret_value(
+        SecretId="arn:aws:secretsmanager:us-west-2:361769569102:secret:prod-env-NnKDbx"
+    )
+    secret = json.loads(get_secret_value_response['SecretString'])
+    return secret.items()
 
 async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
     with open('last_deployment.json', 'r') as file:
@@ -73,8 +70,8 @@ async def run_deploy(log_file, verbose=True):
                     key, value = line.strip().split('=', 1)
                     env[key] = value
     env.update({
-        "TF_VAR_aws_access_key_id": env.get("AWS_ACCESS_KEY_ID", ""),
-        "TF_VAR_aws_secret_access_key": env.get("AWS_SECRET_ACCESS_KEY", ""),
+        "TF_VAR_aws_access_key_id": env["AWS_ACCESS_KEY_ID"],
+        "TF_VAR_aws_secret_access_key": env["AWS_SECRET_ACCESS_KEY"],
         "TF_VAR_app_name": "bluewind-app"
     })
     
@@ -116,7 +113,24 @@ async def run_deploy(log_file, verbose=True):
     print("Creating new task definition")
     # with open("opentf_deploy/image_tag.txt", 'r') as f:
     #     image_id = f.read().strip()
+
+    client = boto3.client('secretsmanager',
+        aws_access_key_id=env["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key=env["AWS_SECRET_ACCESS_KEY"],
+        region_name="us-west-2"
+    )
     
+    get_secret_value_response = client.get_secret_value(
+        SecretId="arn:aws:secretsmanager:us-west-2:361769569102:secret:prod-env-NnKDbx"
+    )
+    secrets = json.loads(get_secret_value_response['SecretString'])
+    secrets = [
+        {
+            'name': key,
+            'valueFrom': f"arn:aws:secretsmanager:us-west-2:361769569102:secret:prod-env-NnKDbx:{key}::"
+        } for key, _ in secrets.items()
+    ]
+
     task_definition_response = ecs_client.register_task_definition(
         family='app-task',
         taskRoleArn=ecs_task_execution_role_arn,
@@ -137,7 +151,7 @@ async def run_deploy(log_file, verbose=True):
                     'awslogs-stream-prefix': 'ecs'
                 }
             },
-            'environment': get_filtered_environment(),
+            'secrets': secrets,
         }]
     )
     task_definition = f"{task_definition_response['taskDefinition']['family']}:{task_definition_response['taskDefinition']['revision']}"

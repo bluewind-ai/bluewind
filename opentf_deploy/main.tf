@@ -354,9 +354,6 @@ output "alb_target_group_arn" {
   value = aws_lb_target_group.main.arn
 }
 
-output "ecs_task_execution_role_arn" {
-  value = aws_iam_role.ecs_task_execution_role.arn
-}
 
 output "cloudwatch_log_group_name" {
   value = aws_cloudwatch_log_group.ecs_tasks.name
@@ -446,4 +443,40 @@ resource "aws_security_group" "rds_sg" {
 output "rds_endpoint" {
   description = "The connection endpoint for the RDS instance"
   value       = aws_db_instance.default.endpoint
+}
+
+# Create a custom policy for Secrets Manager access
+resource "aws_iam_policy" "secrets_manager_access" {
+  name        = "${var.app_name}-secrets-manager-access"
+  path        = "/"
+  description = "IAM policy for accessing Secrets Manager"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "kms:Decrypt"
+        ]
+        Resource = [
+          "arn:aws:secretsmanager:us-west-2:361769569102:secret:prod-env-NnKDbx",
+          "arn:aws:kms:us-west-2:361769569102:key/*"  # Adjust this if you're using a specific KMS key
+        ]
+      }
+    ]
+  })
+}
+
+# Attach the Secrets Manager access policy to the task execution role
+resource "aws_iam_role_policy_attachment" "secrets_manager_access" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.secrets_manager_access.arn
+}
+
+# Output the task execution role ARN
+output "ecs_task_execution_role_arn" {
+  value       = aws_iam_role.ecs_task_execution_role.arn
+  description = "The ARN of the ECS task execution role"
 }
