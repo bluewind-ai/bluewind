@@ -113,7 +113,7 @@ async def run_deploy(log_file, verbose=True):
         Port=8000,
         VpcId=output_data['vpc_id']['value'],
         HealthCheckPath='/',
-        TargetType='ip'
+        TargetType='instance'
     )
     new_target_group_arn = new_target_group_response['TargetGroups'][0]['TargetGroupArn']
 
@@ -209,7 +209,7 @@ async def run_deploy(log_file, verbose=True):
             scale={'value': 100, 'unit': 'PERCENT'},
             loadBalancers=[
                 {
-                    'targetGroupArn': target_group_arn,
+                    'targetGroupArn': new_target_group_arn,  # Use the new target group
                     'containerName': 'app-container',
                     'containerPort': 8000
                 }
@@ -239,6 +239,31 @@ async def run_deploy(log_file, verbose=True):
             print("New task set reached steady state")
             print("Deleting old task set")
             if len(active_task_sets) == 1:
+                response = elbv2_client.create_listener( 
+                    LoadBalancerArn=output_data['alb_arn']['value'],
+                    Protocol='HTTP',
+                    Port=8080,
+                    DefaultActions=[
+                        {
+                            'Type': 'forward',
+                            'TargetGroupArn': new_target_group_arn
+                        }
+                    ]
+                )
+                from ci import run_e2e_prod_green
+                await asyncio.sleep(10)
+                await run_e2e_prod_green('test.log', verbose=True, env_modifiers={"SITE_PORT": "8080"})
+
+                response = elbv2_client.modify_listener(
+                    ListenerArn=output_data['alb_listener_arn']['value'],
+                    DefaultActions=[
+                        {
+                            'Type': 'forward',
+                            'TargetGroupArn': new_target_group_arn
+                        }
+                    ]
+                )
+
                 ecs_client.delete_task_set(
                     cluster=cluster_arn,
                     service=service_name,

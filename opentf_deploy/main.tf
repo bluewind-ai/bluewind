@@ -329,6 +329,13 @@ resource "aws_security_group" "alb_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+ 
+  ingress {
+  from_port   = 8080
+  to_port     = 8080
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
 
   egress {
     from_port   = 0
@@ -479,4 +486,14 @@ resource "aws_iam_role_policy_attachment" "secrets_manager_access" {
 output "ecs_task_execution_role_arn" {
   value       = aws_iam_role.ecs_task_execution_role.arn
   description = "The ARN of the ECS task execution role"
+}
+
+output "alb_arn" {
+  value       = aws_lb.main.arn
+  description = "The ARN of the Application Load Balancer"
+}
+
+output "alb_listener_arn" {
+  value       = aws_lb_listener.front_end.arn
+  description = "The ARN of the ALB listener"
 }
