@@ -12,19 +12,41 @@ import os
 import asyncio
 import os
 
+async def run_e2e_prod(log_file, verbose=True):
+
+
+    server_process = None
+    try:
+        await run_command("npx playwright test --project=chromium --reporter=list", log_file, env=None, verbose=verbose)
+        
+        return True
+    except Exception:
+        return False
+    finally:
+        print("ocdscdsk")
+        if server_process:
+            print("cdscdsok")
+            try:
+                print("aacdssddsadscdsok")
+                return True
+                server_process.terminate()
+                server_process.kill()
+                await server_process.wait()
+            except asyncio.TimeoutError:
+                print("couldn't kill the server")
+
+
+
 async def run_e2e_local(log_file, verbose=True):
     env = os.environ.copy()
     env.update({
         "DJANGO_SETTINGS_MODULE": "bluewind.settings_prod",
-        "BASE_URL": "http://localhost:8000",
+        "SITE_URL": "http://localhost:8000",
         "DJANGO_SUPERUSER_EMAIL": "admin@example.com",
         "DJANGO_SUPERUSER_PASSWORD": "admin123"
     })
 
     setup_commands = [
-        "python manage.py flush --noinput",
-        "python manage.py createsuperuser --noinput --username admin@example.com --email admin@example.com",
-        "python manage.py shell -c \"from django.contrib.auth.models import User; user = User.objects.get(username='admin@example.com'); user.set_password('admin123'); user.save()\"",
         "python manage.py migrate"
     ]
 
@@ -65,7 +87,7 @@ async def run_e2e_local(log_file, verbose=True):
 #     if verbose:
 #         click.echo("Running e2e_staging tests...")
 #     commands = [
-#         "BASE_URL=http://bluewind-app-alb-1550506744.us-west-2.elb.amazonaws.com  DJANGO_SUPERUSER_EMAIL=admin@example.com DJANGO_SUPERUSER_PASSWORD=admin123 npx playwright test --project=chromium --reporter=list"
+#         "SITE_URL=http://bluewind-app-alb-1550506744.us-west-2.elb.amazonaws.com  DJANGO_SUPERUSER_EMAIL=admin@example.com DJANGO_SUPERUSER_PASSWORD=admin123 npx playwright test --project=chromium --reporter=list"
 #     ]
     
 #     env = os.environ.copy()
@@ -138,6 +160,7 @@ async def run_all_commands(log_dir, verbose=False):
         # timed_run('staging', run_tests_against_staging),
         # timed_run('docker', run_docker_tests),
         timed_run('e2e_local', run_e2e_local),
+        timed_run('e2e_prod', run_e2e_prod),
         # timed_run('e2e_staging', run_e2e_staging),
         timed_run('deploy', run_deploy, verbose=True)
     ]
@@ -148,7 +171,7 @@ async def run_all_commands(log_dir, verbose=False):
     return {name: {'success': success, 'duration': duration} for name, success, duration in results}, total_duration
 
 @click.command()
-@click.argument('command', type=click.Choice(['local_unit_tests', 'staging', 'docker', 'deploy', 'e2e_local', 'e2e_staging', 'full']))
+@click.argument('command', type=click.Choice(['local_unit_tests', 'staging', 'docker', 'deploy', 'e2e_local', 'e2e_prod', 'e2e_staging', 'full']))
 @click.option('--log-dir', default=None, help='Log directory path')
 @click.option('--verbose', is_flag=True, help='Enable verbose output')
 def cli(command, log_dir, verbose):
@@ -186,7 +209,8 @@ async def async_cli(command, log_dir, verbose):
             #     success = await run_docker_tests(log_file, verbose=True)
             if command == 'e2e_local':
                 success = await run_e2e_local(log_file, verbose=True)
-            # elif command == 'e2e_staging':
+            if command == 'e2e_prod':
+                success = await run_e2e_prod(log_file, verbose=True)            # elif command == 'e2e_staging':
             #     success = await run_e2e_staging(log_file, verbose=True)
             elif command == 'deploy':
                 success = await run_deploy(log_file, verbose=True)

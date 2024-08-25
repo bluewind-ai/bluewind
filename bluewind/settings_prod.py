@@ -1,23 +1,22 @@
-from local_secrets import load_secrets_to_env
+# from local_secrets import load_secrets_to_env
 
 
-load_secrets_to_env("prod-env")
+# load_secrets_to_env("prod-env")
 import os
-print(os.environ)
 
 
 import os
 from pathlib import Path
 import environ
 
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
+# env = environ.Env(
+#     # set casting, default value
+#     DEBUG=(bool, False)
+# )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 INSTALLED_APPS = [
@@ -94,12 +93,12 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = os.environ['DEBUG']
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS = environ.Env().list('ALLOWED_HOSTS')
 
 WSGI_APPLICATION = 'bluewind.wsgi.application'
 
@@ -182,12 +181,12 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
-    # 'loggers': {
-    #     'django.db.backends': {
-    #         'level': 'DEBUG',
-    #         'handlers': ['console'],
-    #     },
-    # },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
+    },
 }
 
 INTERNAL_IPS = [
@@ -200,12 +199,12 @@ USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Take environment variables from .env file
-if os.environ.get('ENVIRONMENT') != 'prod' and os.environ.get('ENVIRONMENT') != 'staging':
-    if os.environ.get('ENVIRONMENT') == 'test':
-        environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-        os.environ['ENVIRONMENT'] = 'test'
-    else:
-        environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# if os.environ['ENVIRONMENT') != 'prod' and os.environ['ENVIRONMENT') != 'staging']
+#     if os.environ['ENVIRONMENT') == 'test']
+#         environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+#         os.environ['ENVIRONMENT'] = 'test'
+#     else:
+#         environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 
@@ -232,11 +231,11 @@ import sys
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DB_USERNAME = os.environ.get('DB_USERNAME')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
-DB_HOST = os.environ.get('DB_HOST')
-DB_PORT = os.environ.get('DB_PORT')
-DB_NAME = os.environ.get('DB_NAME', 'postgres')
+DB_USERNAME = os.environ['DB_USERNAME']
+DB_PASSWORD = os.environ['DB_PASSWORD']
+DB_HOST = os.environ['DB_HOST']
+DB_PORT = os.environ['DB_PORT']
+DB_NAME = os.environ['DB_NAME']
 
 # DATABASE_URL = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/postgres"
 DB_INFO = {
@@ -254,12 +253,9 @@ DB_INFO = {
 DATABASES = {
     'default': DB_INFO
 }
-
-if os.environ.get('ENVIRONMENT') != 'prod':
-    print('DATABASES:', DATABASES, 'DB_INFO:', DB_INFO)
     
 
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+CSRF_TRUSTED_ORIGINS = os.environ['CSRF_TRUSTED_ORIGINS'].split(',')
 
 
 # if 'test' in sys.argv:

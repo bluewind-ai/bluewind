@@ -3,8 +3,9 @@ import dotenv from "dotenv";
 
 test("Admin login and logout", async ({ page }) => {
   dotenv.config();
-  const baseUrl = process.env.BASE_URL;
-  await page.goto(`${baseUrl}/admin/login/?next=/admin/login`);
+  await page.goto(
+    `${process.env.SITE_URL}:${process.env.SITE_PORT}/admin/login/?next=/admin/login`
+  );
   await page
     .getByLabel("Username:")
     .fill(`${process.env.DJANGO_SUPERUSER_EMAIL}`);

@@ -14,7 +14,3 @@ from django.core.asgi import get_asgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_prod')
 
 application = get_asgi_application()
-
-if __name__ == "__main__":
-    from bluewind.pre_setup import pre_setup
-    pre_setup()

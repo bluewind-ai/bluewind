@@ -6,6 +6,18 @@ from botocore.exceptions import ClientError
 import json
 from ci_utils import run_command
 
+def get_filtered_environment():
+    with open('env_list.json', 'r') as f:
+        allowed_vars = json.load(f)
+    
+    filtered_env = [
+        {'name': key, 'value': os.environ[key]}
+        for key in allowed_vars
+        if key in os.environ
+    ]
+    
+    return filtered_env
+
 async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
     with open('last_deployment.json', 'r') as file:
         last_deployment = json.load(file)
@@ -80,7 +92,7 @@ async def run_deploy(log_file, verbose=True):
     with open("tofu_output.json", 'r') as f:
         output_data = json.load(f)
     
-    await build_and_push_docker_image(output_data, log_file, env, verbose)
+    image_id = await build_and_push_docker_image(output_data, log_file, env, verbose)
 
     
     print("Reading OpenTofu output")
@@ -102,8 +114,8 @@ async def run_deploy(log_file, verbose=True):
     )
 
     print("Creating new task definition")
-    with open("opentf_deploy/image_tag.txt", 'r') as f:
-        image_id = f.read().strip()
+    # with open("opentf_deploy/image_tag.txt", 'r') as f:
+    #     image_id = f.read().strip()
     
     task_definition_response = ecs_client.register_task_definition(
         family='app-task',
@@ -125,28 +137,7 @@ async def run_deploy(log_file, verbose=True):
                     'awslogs-stream-prefix': 'ecs'
                 }
             },
-            'environment': [
-                {'name': 'ECS_ENABLE_CONTAINER_METADATA', 'value': 'true'},
-                {'name': 'DEBUG', 'value': '1'},
-                {'name': 'SECRET_KEY', 'value': 'your_secret_key_here'},
-                {'name': 'ALLOWED_HOSTS', 'value': 'localhost,127.0.0.1,*'},
-                {'name': 'DATABASE_ENGINE', 'value': 'django.db.backends.postgresql'},
-                {'name': 'DB_USERNAME', 'value': 'dbadmin'},
-                {'name': 'DB_PASSWORD', 'value': 'changeme123'},
-                {'name': 'DB_HOST', 'value': 'app-bluewind-db.c50acykqkhaw.us-west-2.rds.amazonaws.com'},
-                {'name': 'DB_PORT', 'value': '5432'},
-                {'name': 'DB_NAME', 'value': 'postgres'},
-                {'name': 'ENVIRONMENT', 'value': 'staging'},
-                {'name': 'CSRF_TRUSTED_ORIGINS', 'value': '*,'},
-                {'name': 'AWS_DEFAULT_REGION', 'value': 'us-west-2'}
-            ],
-            # "healthCheck": {
-            #     "command": ["CMD-SHELL", "curl -v -f http://locdscalhost/ || exit 1"],
-            #     "interval": 5,
-            #     "timeout": 5,
-            #     "retries": 3,
-            #     "startPeriod": 10
-            # }
+            'environment': get_filtered_environment(),
         }]
     )
     task_definition = f"{task_definition_response['taskDefinition']['family']}:{task_definition_response['taskDefinition']['revision']}"
