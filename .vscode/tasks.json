@@ -4,16 +4,7 @@
     {
       "label": "prod-blue-e2e",
       "type": "shell",
-      "command": "cd ../bluewind-blue && source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python ci.py e2e_prod || (echo \"e2e-prod-blue failed at $(date)\" >> e2e-prod-blue.log && terminal-notifier -message \"E2E test failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"E2E test failed\"); sleep 1; done",
-      "problemMatcher": [],
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
-    },
-    {
-      "label": "prod-green-e2e",
-      "type": "shell",
-      "command": "source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python ci.py e2e_prod_green || (echo \"e2e-prod-green failed at $(date)\" >> e2e-prod-green.log && terminal-notifier -message \"E2E test failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"E2E test failed\"); sleep 1; done",
+      "command": "cd ../bluewind-blue && source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python ci.py e2e_prod || (echo \"e2e-prod-blue failed at $(date)\" >> e2e-prod-blue.log && terminal-notifier -message \"Prod blue E2E test failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"E2E test failed\"); sleep 1; done",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"
@@ -23,6 +14,24 @@
       "label": "prod-blue-pull-main",
       "type": "shell",
       "command": "while true; do cd ../bluewind-blue && git pull origin main; sleep 10; done",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "prod-green-e2e",
+      "type": "shell",
+      "command": "source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python ci.py e2e_prod_green || (echo \"e2e-prod-green failed at $(date)\" >> e2e-prod-green.log && terminal-notifier -message \"E2E test failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"Prod Green E2E test failed\"); sleep 1; done",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "dev-green-server",
+      "type": "shell",
+      "command": "source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) gunicorn --bind :8000 --workers 1 bluewind.wsgi  || (echo \"dev-green-server failed at $(date)\" >> dev-green-server.log && terminal-notifier -message \"Dev Green Server failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"Dev Green Server test failed\"); sleep 1; done",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"
