@@ -17,7 +17,6 @@ async def run_e2e_prod_green(log_file, verbose=True, env_modifiers={}):
     env = os.environ.copy()
     # modify env
     env.update(env_modifiers)
-    print(env)
     server_process = None
     try:
         await run_command("SITE_PORT=8080 npx playwright test --project=chromium --reporter=list", log_file, env=env, verbose=verbose)
@@ -87,11 +86,8 @@ async def run_e2e_local(log_file, verbose=True):
     except Exception:
         return False
     finally:
-        print("ocdscdsk")
         if server_process:
-            print("cdscdsok")
             try:
-                print("aacdssddsadscdsok")
                 return True
                 server_process.terminate()
                 server_process.kill()

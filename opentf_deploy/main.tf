@@ -283,40 +283,6 @@ resource "aws_lb" "main" {
   }
 }
 
-# Create a target group for the ALB
-resource "aws_lb_target_group" "main" {
-  name        = "${var.app_name}-tg"
-  port        = 8000
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "instance"
-
-  health_check {
-    enabled             = true
-    interval            = 5    # Check every 3 seconds
-    path                = "/"  # Adjust this to a suitable health check endpoint
-    protocol            = "HTTP"
-    timeout             = 2    # Wait up to 1 second for a response
-    healthy_threshold   = 2   # Consider healthy after 1 successful check
-    unhealthy_threshold = 2    # Consider unhealthy after 1 failed check
-    matcher             = "200-299"  # HTTP status code ranges to consider healthy
-}
-
-  deregistration_delay = 10  
-}
-
-# Create a listener for the ALB
-resource "aws_lb_listener" "front_end" {
-  load_balancer_arn = aws_lb.main.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.main.arn
-  }
-}
-
 # Create a security group for the ALB
 resource "aws_security_group" "alb_sg" {
   name        = "${var.app_name}-alb-sg"
@@ -356,11 +322,6 @@ output "subnet_ids" {
 output "ecs_security_group_id" {
   value = aws_security_group.ecs_sg.id
 }
-
-output "alb_target_group_arn" {
-  value = aws_lb_target_group.main.arn
-}
-
 
 output "cloudwatch_log_group_name" {
   value = aws_cloudwatch_log_group.ecs_tasks.name
@@ -491,9 +452,4 @@ output "ecs_task_execution_role_arn" {
 output "alb_arn" {
   value       = aws_lb.main.arn
   description = "The ARN of the Application Load Balancer"
-}
-
-output "alb_listener_arn" {
-  value       = aws_lb_listener.front_end.arn
-  description = "The ARN of the ALB listener"
 }

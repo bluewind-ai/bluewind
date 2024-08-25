@@ -103,7 +103,6 @@ async def run_deploy(log_file, verbose=True):
     
     cluster_arn = output_data['ecs_cluster_arn']['value']
     service_name = output_data['ecs_service_name']['value']
-    target_group_arn = output_data['alb_target_group_arn']['value']
     ecs_task_execution_role_arn = output_data['ecs_task_execution_role_arn']['value']
     cloudwatch_log_group_name = output_data['cloudwatch_log_group_name']['value']
 
@@ -115,6 +114,7 @@ async def run_deploy(log_file, verbose=True):
         HealthCheckPath='/',
         TargetType='instance'
     )
+    
     new_target_group_arn = new_target_group_response['TargetGroups'][0]['TargetGroupArn']
 
     print(f"Cluster ARN: {cluster_arn}")
@@ -239,36 +239,63 @@ async def run_deploy(log_file, verbose=True):
             print("New task set reached steady state")
             print("Deleting old task set")
             if len(active_task_sets) == 1:
-                response = elbv2_client.create_listener( 
-                    LoadBalancerArn=output_data['alb_arn']['value'],
-                    Protocol='HTTP',
-                    Port=8080,
-                    DefaultActions=[
-                        {
-                            'Type': 'forward',
-                            'TargetGroupArn': new_target_group_arn
-                        }
-                    ]
-                )
-                from ci import run_e2e_prod_green
-                await asyncio.sleep(10)
-                await run_e2e_prod_green('test.log', verbose=True, env_modifiers={"SITE_PORT": "8080"})
-
-                response = elbv2_client.modify_listener(
-                    ListenerArn=output_data['alb_listener_arn']['value'],
-                    DefaultActions=[
-                        {
-                            'Type': 'forward',
-                            'TargetGroupArn': new_target_group_arn
-                        }
-                    ]
-                )
-
                 ecs_client.delete_task_set(
                     cluster=cluster_arn,
                     service=service_name,
                     taskSet=active_task_sets[0]["taskSetArn"]
                 )
+            
+            existing_listeners = elbv2_client.describe_listeners(
+                LoadBalancerArn=output_data['alb_arn']['value']
+            )
+
+            green_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 8080), None)
+            if green_listener:
+                green_listener_arn = green_listener['ListenerArn'] 
+            
+                response = elbv2_client.modify_listener( 
+                    ListenerArn=green_listener_arn,
+                    DefaultActions=[
+                        {
+                            'Type': 'forward',
+                            'TargetGroupArn': new_target_group_arn
+                        }
+                    ]
+                )
+            else:
+                elbv2_client.create_listener(
+                    LoadBalancerArn=output_data['alb_arn']['value'],
+                    Protocol='HTTP',
+                    Port=8080,
+                    DefaultActions=[{'Type': 'forward', 'TargetGroupArn': new_target_group_arn}]
+                )
+                
+            from ci import run_e2e_prod_green
+            await asyncio.sleep(10)
+            if not await run_e2e_prod_green('test.log', verbose=True, env_modifiers={"SITE_PORT": "8080"}):
+                raise("E2E prod green failed")
+
+            blue_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 80), None)
+            if blue_listener:
+                blue_listener_arn = blue_listener['ListenerArn'] 
+            
+                response = elbv2_client.modify_listener( 
+                    ListenerArn=blue_listener_arn,
+                    DefaultActions=[
+                        {
+                            'Type': 'forward',
+                            'TargetGroupArn': new_target_group_arn
+                        }
+                    ]
+                )
+            else:
+                elbv2_client.create_listener(
+                    LoadBalancerArn=output_data['alb_arn']['value'],
+                    Protocol='HTTP',
+                    Port=80,
+                    DefaultActions=[{'Type': 'forward', 'TargetGroupArn': new_target_group_arn}]
+                )
+
             print("Deployment completed successfully")
             return True
         await asyncio.sleep(delay)
