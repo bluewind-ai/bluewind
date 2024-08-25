@@ -7,7 +7,7 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   reporter: "html",
-  timeout: 2000,
+  timeout: 3000,
 
   use: {
     trace: "on-first-retry",

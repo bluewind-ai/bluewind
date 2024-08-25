@@ -1,0 +1,14 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "e2e-prod-blue",
+      "type": "shell",
+      "command": "source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python ci.py e2e_prod || (echo \"e2e-prod-blue failed at $(date)\" >> e2e-prod-blue.log && terminal-notifier -message \"E2E test failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"E2E test failed\"); sleep 1; done",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}
