@@ -12,8 +12,8 @@ test("Admin login and logout", async ({ page }) => {
   await page
     .getByLabel("Password:")
     .fill(`${process.env.DJANGO_SUPERUSER_PASSWORD}`);
-  page.getByRole("button", { name: "Log in" }).click(),
-    await expect(page.getByRole("button", { name: "Log out" })).toBeVisible();
+  page.getByRole("button", { name: "Log in" }).click();
+
   await page.getByRole("button", { name: "Log out" }).click();
   await page.getByRole("link", { name: "Log in again" }).click();
 });

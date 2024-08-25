@@ -80,7 +80,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # "allauth.account.middleware.AccountMiddleware",
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'bluewind.urls'
@@ -270,8 +270,9 @@ DEBUG_TOOLBAR_CONFIG = {
     # 'EXTRA_SIGNALS': True,
     'SHOW_TEMPLATE_CONTEXT': True,
     'ENABLE_STACKTRACES': True,
-    'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    # 'SHOW_TOOLBAR_CALLBACK': lambda request: True,
     'STACKTRACE_DEPTH': 10000,  # Increase this number as needed
+    'SHOW_TOOLBAR_CALLBACK': 'bluewind.toolbar.show_toolbar',
 }
 
 DEBUG_TOOLBAR_PANELS = [
