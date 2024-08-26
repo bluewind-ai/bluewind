@@ -1,9 +1,13 @@
 provider "aws" {
   region  = "us-west-2"  # or your preferred region
-  profile = "ci-cd-admin-2"
+  profile = "prod-admin"
 }
 
 variable "app_name" {}
+variable "secret_arn" {}
+variable "db_password" {}
+variable "db_username" {}
+variable "db_name" {}
 variable "aws_access_key_id" {}
 variable "aws_secret_access_key" {}
 
@@ -248,6 +252,7 @@ output "ecs_cluster_arn" {
 output "ecs_service_name" {
   value = aws_ecs_service.my_service.name
 }
+#
 
 
 resource "aws_ecr_repository" "app" {
@@ -361,9 +366,9 @@ resource "aws_db_instance" "default" {
   instance_class       = "db.t4g.micro"
   allocated_storage    = 20
   storage_type         = "gp2"
-  db_name              = "appbluewinddb"
-  username             = "dbadmin"
-  password             = "changeme123"  # Please change this password
+  db_name              = "${var.db_name}"
+  username             = "${var.db_username}"
+  password             = "${var.db_password}"
   parameter_group_name = "default.postgres16"
   skip_final_snapshot  = true
   publicly_accessible  = true
@@ -429,7 +434,7 @@ resource "aws_iam_policy" "secrets_manager_access" {
           "kms:Decrypt"
         ]
         Resource = [
-          "arn:aws:secretsmanager:us-west-2:361769569102:secret:prod-env-NnKDbx",
+          "${var.secret_arn}",
           "arn:aws:kms:us-west-2:361769569102:key/*"  # Adjust this if you're using a specific KMS key
         ]
       }

@@ -11,7 +11,7 @@ def get_secret_keys_and_values():
     session = boto3.session.Session()
     client = session.client(service_name='secretsmanager', region_name='us-west-2')
     get_secret_value_response = client.get_secret_value(
-        SecretId="arn:aws:secretsmanager:us-west-2:361769569102:secret:prod-env-NnKDbx"
+        SecretId=os.environ["SECRET_ARN"]
     )
     secret = json.loads(get_secret_value_response['SecretString'])
     return secret.items()
@@ -73,7 +73,11 @@ async def run_deploy(log_file, verbose=True):
     env.update({
         "TF_VAR_aws_access_key_id": env["AWS_ACCESS_KEY_ID"],
         "TF_VAR_aws_secret_access_key": env["AWS_SECRET_ACCESS_KEY"],
-        "TF_VAR_app_name": "bluewind-app"
+        "TF_VAR_app_name": "bluewind-app",
+        "TF_VAR_secret_arn": env["SECRET_ARN"],
+        "TF_VAR_db_password": env["DB_PASSWORD"],
+        "TF_VAR_db_username": env["DB_USERNAME"],
+        "TF_VAR_db_name": env["DB_NAME"]
     })
     
     print("Running OpenTofu commands")
@@ -112,19 +116,29 @@ async def run_deploy(log_file, verbose=True):
         Port=8000,
         VpcId=output_data['vpc_id']['value'],
         TargetType='instance',
-        HealthCheckProtocol='HTTP',
-        HealthCheckPath='/',
-        HealthCheckEnabled=True,
-        HealthCheckIntervalSeconds=5,
-        HealthCheckTimeoutSeconds=2,
-        HealthyThresholdCount=2,
-        UnhealthyThresholdCount=2,
-        Matcher={
-            'HttpCode': '200-299'
-        }
+        # HealthCheckProtocol='HTTP',
+        # HealthCheckPath='/',
+        # HealthCheckEnabled=True,
+        # HealthCheckIntervalSeconds=5,
+        # HealthCheckTimeoutSeconds=2,
+        # HealthyThresholdCount=2,
+        # UnhealthyThresholdCount=2,
+        # Matcher={
+        #     'HttpCode': '200-299'
+        # }
     )
     
     new_target_group_arn = new_target_group_response['TargetGroups'][0]['TargetGroupArn']
+
+    elbv2_client.modify_target_group_attributes(
+        TargetGroupArn=new_target_group_arn,
+        Attributes=[
+            {
+                'Key': 'deregistration_delay.timeout_seconds',
+                'Value': '10'
+            }
+        ]
+    )
 
     print(f"Cluster ARN: {cluster_arn}")
     print(f"Service Name: {service_name}")
@@ -147,13 +161,13 @@ async def run_deploy(log_file, verbose=True):
     )
     
     get_secret_value_response = client.get_secret_value(
-        SecretId="arn:aws:secretsmanager:us-west-2:361769569102:secret:prod-env-NnKDbx"
+        SecretId=os.environ["SECRET_ARN"]
     )
     secrets = json.loads(get_secret_value_response['SecretString'])
     secrets = [
         {
             'name': key,
-            'valueFrom': f"arn:aws:secretsmanager:us-west-2:361769569102:secret:prod-env-NnKDbx:{key}::"
+            'valueFrom': f"arn:aws:secretsmanager:us-west-2:484907521409:secret:prod-env-FVPApb:{key}::"
         } for key, _ in secrets.items()
     ]
 
@@ -218,7 +232,7 @@ async def run_deploy(log_file, verbose=True):
             scale={'value': 100, 'unit': 'PERCENT'},
             loadBalancers=[
                 {
-                    'targetGroupArn': new_target_group_arn,  # Use the new target group
+                    'targetGroupArn': new_target_group_arn,
                     'containerName': 'app-container',
                     'containerPort': 8000
                 }
@@ -234,9 +248,53 @@ async def run_deploy(log_file, verbose=True):
         print("No task was running in this environment previously")
         
     print("Waiting for new task set to reach steady state")
-    max_attempts = 120
+    max_attempts = 60
     delay = 1
+    existing_listeners = elbv2_client.describe_listeners(
+        LoadBalancerArn=output_data['alb_arn']['value']
+    )
 
+    green_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 8080), None)
+    if green_listener:
+        green_listener_arn = green_listener['ListenerArn'] 
+    
+        response = elbv2_client.modify_listener( 
+            ListenerArn=green_listener_arn,
+            DefaultActions=[
+                {
+                    'Type': 'forward',
+                    'TargetGroupArn': new_target_group_arn
+                }
+            ]
+        )
+    else:
+        elbv2_client.create_listener(
+            LoadBalancerArn=output_data['alb_arn']['value'],
+            Protocol='HTTP',
+            Port=8080,
+            DefaultActions=[{'Type': 'forward', 'TargetGroupArn': new_target_group_arn}]
+        )
+    
+    blue_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 80), None)
+    if blue_listener:
+        blue_listener_arn = blue_listener['ListenerArn'] 
+    
+        response = elbv2_client.modify_listener( 
+            ListenerArn=blue_listener_arn,
+            DefaultActions=[
+                {
+                    'Type': 'forward',
+                    'TargetGroupArn': new_target_group_arn
+                }
+            ]
+        )
+    else:
+        elbv2_client.create_listener(
+            LoadBalancerArn=output_data['alb_arn']['value'],
+            Protocol='HTTP',
+            Port=80,
+            DefaultActions=[{'Type': 'forward', 'TargetGroupArn': new_target_group_arn}]
+        )
     for attempt in range(1, max_attempts + 1):
         response = ecs_client.describe_task_sets(
             cluster=cluster_arn,

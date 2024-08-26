@@ -72,7 +72,7 @@ opentf_deploy/terraform.tfstate
 opentf_deploy/terraform.tfstate.backup
 opentf_deploy/.terraform/providers/registry.opentofu.org/hashicorp/local
 logs/*
-.aws
+.aws*
 tofu_output.json
 db.sqlite3
 local.json

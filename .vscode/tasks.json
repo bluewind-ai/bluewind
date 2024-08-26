@@ -36,6 +36,17 @@
       "runOptions": {
         "runOn": "folderOpen"
       }
+    },
+    {
+      "label": "run-all-tasks",
+      "dependsOn": [
+        "prod-blue-e2e",
+        "prod-blue-pull-main",
+        "prod-green-e2e",
+        "dev-green-server"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
     }
   ]
 }

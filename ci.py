@@ -32,21 +32,7 @@ async def run_e2e_prod_green(log_file, verbose=True):
 
 async def run_e2e_prod(log_file, verbose=True):
     server_process = None
-    try:
-        await run_command("npx playwright test --project=chromium --reporter=list", log_file, env=None, verbose=verbose)
-        
-        return True
-    except Exception:
-        return False
-    finally:
-        if server_process:
-            try:
-                return True
-                server_process.terminate()
-                server_process.kill()
-                await server_process.wait()
-            except asyncio.TimeoutError:
-                print("couldn't kill the server")
+    return await run_command("npx playwright test --project=chromium --reporter=list", log_file, env=None, verbose=verbose)
 
 
 async def run_e2e_local(log_file, verbose=True):
