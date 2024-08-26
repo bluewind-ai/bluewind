@@ -9,11 +9,12 @@ from health_check.views import health_check
 
 
 favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
+admin_redirect = RedirectView.as_view(url='/admin/', permanent=True)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('homepage.urls')),  # This line includes your new homepage app
+    path('', admin_redirect, name='root_redirect'),  # This line redirects root to admin
     path('__debug__/', include('debug_toolbar.urls')),
     path('', include('user_sessions.urls', 'user_sessions')),
     path('health/', health_check, name='health_check'),
