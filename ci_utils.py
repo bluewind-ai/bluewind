@@ -25,3 +25,4 @@ async def run_command(command, log_file, env=None, verbose=True):
     
     if return_code != 0:
         raise RuntimeError(f"Command '{command}' failed with return code {return_code}")
+    return True

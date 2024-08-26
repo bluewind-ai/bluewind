@@ -13,33 +13,22 @@ import asyncio
 import os
 
 async def run_e2e_dev_green(log_file, verbose=True, env_modifiers={}):
-    env_modifiers={"SITE_PORT": "8000", "SITE_URL": "localhost"}
+    env_modifiers = {
+        "SITE_PORT": "8000",
+        "SITE_URL": "localhost"
+    }
     env = os.environ.copy()
     # modify env
     env.update(env_modifiers)
+    
     await run_command("npx playwright test --project=chromium --reporter=list", log_file, env=env, verbose=verbose)
 
-async def run_e2e_prod_green(log_file, verbose=True, env_modifiers={}):
+async def run_e2e_prod_green(log_file, verbose=True):
     env_modifiers={"SITE_PORT": "8080"}
     env = os.environ.copy()
     # modify env
     env.update(env_modifiers)
-    server_process = None
-    try:
-        await run_command("SITE_PORT=8080 npx playwright test --project=chromium --reporter=list", log_file, env=env, verbose=verbose)
-        
-        return True
-    except Exception:
-        return False
-    finally:
-        if server_process:
-            try:
-                return True
-                server_process.terminate()
-                server_process.kill()
-                await server_process.wait()
-            except asyncio.TimeoutError:
-                print("couldn't kill the server")
+    return await run_command("SITE_PORT=8080 npx playwright test --project=chromium --reporter=list", log_file, env=env, verbose=verbose)
 
 async def run_e2e_prod(log_file, verbose=True):
     server_process = None
@@ -171,17 +160,17 @@ async def async_cli(command, log_dir, verbose):
             # elif command == 'docker':
             #     success = await run_docker_tests(log_file, verbose=True)
             elif command == 'e2e_local':
-                return run_e2e_local(log_file, verbose=True)
+                return await run_e2e_local(log_file, verbose=True)
             elif command == 'e2e_prod':
                 return await run_e2e_prod(log_file, verbose=True)
             elif command == 'e2e_prod_green':
-                return run_e2e_prod_green(log_file, verbose=True)
+                return await run_e2e_prod_green(log_file, verbose=True)
             elif command == 'e2e_dev_green':
                 return await run_e2e_dev_green(log_file, verbose=True)
             # elif command == 'e2e_staging':
             #     success = await run_e2e_staging(log_file, verbose=True)
             elif command == 'deploy':
-                return run_deploy(log_file, verbose=True)
+                return await run_deploy(log_file, verbose=True)
             else:
                 click.echo(f"Unknown command: {command}")
         except Exception as e:

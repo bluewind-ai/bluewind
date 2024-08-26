@@ -234,7 +234,7 @@ async def run_deploy(log_file, verbose=True):
         print("No task was running in this environment previously")
         
     print("Waiting for new task set to reach steady state")
-    max_attempts = 60
+    max_attempts = 120
     delay = 1
 
     for attempt in range(1, max_attempts + 1):
@@ -246,13 +246,6 @@ async def run_deploy(log_file, verbose=True):
         print(f"Attempt {attempt}: Task set status: {response['taskSets'][0]['stabilityStatus']}")
         if response['taskSets'][0]['stabilityStatus'] == "STEADY_STATE":
             print("New task set reached steady state")
-            print("Deleting old task set")
-            if len(active_task_sets) == 1:
-                ecs_client.delete_task_set(
-                    cluster=cluster_arn,
-                    service=service_name,
-                    taskSet=active_task_sets[0]["taskSetArn"]
-                )
             
             existing_listeners = elbv2_client.describe_listeners(
                 LoadBalancerArn=output_data['alb_arn']['value']
@@ -281,7 +274,7 @@ async def run_deploy(log_file, verbose=True):
                 
             from ci import run_e2e_prod_green
             await asyncio.sleep(10)
-            if not await run_e2e_prod_green('test.log', verbose=True, env_modifiers={"SITE_PORT": "8080"}):
+            if not await run_e2e_prod_green('logs/test.log', verbose=True):
                 raise("E2E prod green failed")
 
             blue_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 80), None)
@@ -304,7 +297,13 @@ async def run_deploy(log_file, verbose=True):
                     Port=80,
                     DefaultActions=[{'Type': 'forward', 'TargetGroupArn': new_target_group_arn}]
                 )
-
+            print("Deleting old task set")
+            if len(active_task_sets) == 1:
+                ecs_client.delete_task_set(
+                    cluster=cluster_arn,
+                    service=service_name,
+                    taskSet=active_task_sets[0]["taskSetArn"]
+                )
             print("Deployment completed successfully")
             return True
         await asyncio.sleep(delay)

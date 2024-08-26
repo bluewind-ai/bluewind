@@ -1,0 +1,7 @@
+
+Running 2 tests using 1 worker
+
+✓  1 [chromium] › health_check/health-check.spec.ts:3:5 › test (262ms)
+✓  2 [chromium] › playwright/basic-login-logout.spec.ts:4:5 › Admin login and logout (1.5s)
+
+2 passed (2.9s)
