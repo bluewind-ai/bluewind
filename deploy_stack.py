@@ -273,7 +273,7 @@ async def run_deploy(log_file, verbose=True):
                 )
                 
             from ci import run_e2e_prod_green
-            await asyncio.sleep(10)
+
             if not await run_e2e_prod_green('logs/test.log', verbose=True):
                 raise("E2E prod green failed")
 
