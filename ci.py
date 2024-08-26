@@ -32,7 +32,7 @@ async def run_e2e_prod_green(log_file, verbose=True):
 
 async def run_e2e_prod(log_file, verbose=True):
     server_process = None
-    return await run_command("npx playwright test --project=chromium --reporter=list", log_file, env=None, verbose=verbose)
+    return await run_command("SITE_PORT=443 SITE_URL=https://app.bluewind.ai npx playwright test --project=chromium --reporter=list", log_file, env=None, verbose=verbose)
 
 
 async def run_e2e_local(log_file, verbose=True):
