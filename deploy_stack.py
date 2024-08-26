@@ -256,74 +256,7 @@ async def run_deploy(log_file, verbose=True):
     existing_listeners = elbv2_client.describe_listeners(
         LoadBalancerArn=output_data['alb_arn']['value']
     )
-    
-
-    green_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 8080), None)
-    if green_listener:
-        green_listener_arn = green_listener['ListenerArn'] 
-    
-        response = elbv2_client.modify_listener( 
-            ListenerArn=green_listener_arn,
-            DefaultActions=[
-                {
-                    'Type': 'forward',
-                    'TargetGroupArn': new_target_group_arn
-                }
-            ]
-        )
-    else:
-        elbv2_client.create_listener(
-            LoadBalancerArn=output_data['alb_arn']['value'],
-            Protocol='HTTP',
-            Port=8080,
-            DefaultActions=[{'Type': 'forward', 'TargetGroupArn': new_target_group_arn}]
-        )
-    https_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 443), None)
-    if https_listener:
-        https_listener_arn = https_listener['ListenerArn']
-        elbv2_client.modify_listener(
-            ListenerArn=https_listener_arn,
-            Port=443,
-            Protocol='HTTPS',
-            SslPolicy='ELBSecurityPolicy-2016-08',
-            Certificates=[{'CertificateArn': certificate_arn}],
-            DefaultActions=[{
-                'Type': 'forward',
-                'TargetGroupArn': new_target_group_arn
-            }]
-        )
-    else:
-        elbv2_client.create_listener(
-            LoadBalancerArn=output_data['alb_arn']['value'],
-            Port=443,
-            Protocol='HTTPS',
-            SslPolicy='ELBSecurityPolicy-2016-08',
-            Certificates=[{'CertificateArn': certificate_arn}],
-            DefaultActions=[{
-                'Type': 'forward',
-                'TargetGroupArn': new_target_group_arn
-            }]
-        )
-    blue_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 443), None)
-    # if blue_listener:
-    #     blue_listener_arn = blue_listener['ListenerArn'] 
-    
-    #     response = elbv2_client.modify_listener( 
-    #         ListenerArn=blue_listener_arn,
-    #         DefaultActions=[
-    #             {
-    #                 'Type': 'forward',
-    #                 'TargetGroupArn': new_target_group_arn
-    #             }
-    #         ]
-    #     )
-    # else:
-    #     elbv2_client.create_listener(
-    #         LoadBalancerArn=output_data['alb_arn']['value'],
-    #         Protocol='HTTP',
-    #         Port=80,
-    #         DefaultActions=[{'Type': 'forward', 'TargetGroupArn': new_target_group_arn}]
-    #     )
+        
     for attempt in range(1, max_attempts + 1):
         response = ecs_client.describe_task_sets(
             cluster=cluster_arn,
@@ -364,25 +297,31 @@ async def run_deploy(log_file, verbose=True):
             if not await run_e2e_prod_green('logs/test.log', verbose=True):
                 raise("E2E prod green failed")
 
-            blue_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 80), None)
-            if blue_listener:
-                blue_listener_arn = blue_listener['ListenerArn'] 
-            
-                response = elbv2_client.modify_listener( 
-                    ListenerArn=blue_listener_arn,
-                    DefaultActions=[
-                        {
-                            'Type': 'forward',
-                            'TargetGroupArn': new_target_group_arn
-                        }
-                    ]
+            https_listener = next((listener for listener in existing_listeners['Listeners'] if listener['Port'] == 443), None)
+            if https_listener:
+                https_listener_arn = https_listener['ListenerArn']
+                elbv2_client.modify_listener(
+                    ListenerArn=https_listener_arn,
+                    Port=443,
+                    Protocol='HTTPS',
+                    SslPolicy='ELBSecurityPolicy-2016-08',
+                    Certificates=[{'CertificateArn': certificate_arn}],
+                    DefaultActions=[{
+                        'Type': 'forward',
+                        'TargetGroupArn': new_target_group_arn
+                    }]
                 )
             else:
                 elbv2_client.create_listener(
                     LoadBalancerArn=output_data['alb_arn']['value'],
-                    Protocol='HTTP',
-                    Port=80,
-                    DefaultActions=[{'Type': 'forward', 'TargetGroupArn': new_target_group_arn}]
+                    Port=443,
+                    Protocol='HTTPS',
+                    SslPolicy='ELBSecurityPolicy-2016-08',
+                    Certificates=[{'CertificateArn': certificate_arn}],
+                    DefaultActions=[{
+                        'Type': 'forward',
+                        'TargetGroupArn': new_target_group_arn
+                    }]
                 )
             print("Deleting old task set")
             if len(active_task_sets) == 1:
