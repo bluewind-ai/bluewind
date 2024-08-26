@@ -645,6 +645,21 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-admin-sso"
+version = "5.2.0"
+description = "Django SSO solution"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django-admin-sso-5.2.0.tar.gz", hash = "sha256:878f1776825c8454c440781153b9a7a755192f97f6a09d66961cd2d1066fd04c"},
+    {file = "django_admin_sso-5.2.0-py2.py3-none-any.whl", hash = "sha256:5cab4c9a3746a60c36f384ec7aa9cd4bc6eb73f44de6bcdba7293346d31fcfc8"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+oauth2client = ">=1.2"
+
+[[package]]
 name = "django-debug-toolbar"
 version = "4.4.6"
 description = "A configurable set of panels that display various debug information about the current request/response."
@@ -1131,6 +1146,24 @@ files = [
     {file = "mypy_extensions-1.0.0-py3-none-any.whl", hash = "sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d"},
     {file = "mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782"},
 ]
+
+[[package]]
+name = "oauth2client"
+version = "4.1.3"
+description = "OAuth 2.0 client library"
+optional = false
+python-versions = "*"
+files = [
+    {file = "oauth2client-4.1.3-py2.py3-none-any.whl", hash = "sha256:b8a81cc5d60e2d364f0b1b98f958dbd472887acaf1a5b05e21c28c31a2d6d3ac"},
+    {file = "oauth2client-4.1.3.tar.gz", hash = "sha256:d486741e451287f69568a4d26d70d9acd73a2bbfa275746c535b4209891cccc6"},
+]
+
+[package.dependencies]
+httplib2 = ">=0.9.1"
+pyasn1 = ">=0.1.7"
+pyasn1-modules = ">=0.0.5"
+rsa = ">=3.1.4"
+six = ">=1.6.1"
 
 [[package]]
 name = "oauthlib"
@@ -1719,4 +1752,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "b07ff826ace9d0563242822739c6daa98b01f22786bcb668c29736b2aa9b89fd"
+content-hash = "69ed2bc6eaf6dfd808344661e8d767b4d9c509210de965ea2818e59b5eca98cc"
