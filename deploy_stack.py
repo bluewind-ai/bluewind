@@ -75,6 +75,7 @@ async def run_deploy(log_file, verbose=True):
         "TF_VAR_aws_secret_access_key": env["AWS_SECRET_ACCESS_KEY"],
         "TF_VAR_app_name": "bluewind-app",
         "TF_VAR_secret_arn": env["SECRET_ARN"],
+        "TF_VAR_secret_db_arn": env["SECRET_DB_ARN"],
         "TF_VAR_db_password": env["DB_PASSWORD"],
         "TF_VAR_db_username": env["DB_USERNAME"],
         "TF_VAR_db_name": env["DB_NAME"]
@@ -159,17 +160,32 @@ async def run_deploy(log_file, verbose=True):
         aws_secret_access_key=env["AWS_SECRET_ACCESS_KEY"],
         region_name="us-west-2"
     )
-    
+
     get_secret_value_response = client.get_secret_value(
         SecretId=os.environ["SECRET_ARN"]
     )
+
     secrets = json.loads(get_secret_value_response['SecretString'])
+    del secrets['DB_HOST']
+    del secrets['DB_PASSWORD']
     secrets = [
         {
             'name': key,
-            'valueFrom': f"arn:aws:secretsmanager:us-west-2:484907521409:secret:prod-env-FVPApb:{key}::"
+            'valueFrom': f"{os.environ["SECRET_ARN"]}:{key}::"
         } for key, _ in secrets.items()
     ]
+    print(secrets)
+    secrets += [
+        {
+            'name': "DB_HOST",
+            'valueFrom': f"{os.environ["SECRET_DB_ARN"]}:DB_HOST::"
+        },
+        {
+            'name': "DB_PASSWORD",
+            'valueFrom': f"{os.environ["SECRET_DB_ARN"]}:DB_PASSWORD::"
+        }
+    ]
+    print(secrets)
 
     task_definition_response = ecs_client.register_task_definition(
         family='app-task',

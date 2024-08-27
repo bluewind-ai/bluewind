@@ -5,6 +5,7 @@ provider "aws" {
 
 variable "app_name" {}
 variable "secret_arn" {}
+variable "secret_db_arn" {}
 variable "db_password" {}
 variable "db_username" {}
 variable "db_name" {}
@@ -281,7 +282,7 @@ resource "aws_lb" "main" {
   security_groups    = [aws_security_group.alb_sg.id]
   subnets            = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
 
-  enable_deletion_protection = false
+  enable_deletion_protection = true
 
   tags = {
     Name = "${var.app_name}-alb"
@@ -379,9 +380,14 @@ resource "aws_db_instance" "default" {
   parameter_group_name = "default.postgres16"
   skip_final_snapshot  = true
   publicly_accessible  = true
+  backup_retention_period = 0
+  deletion_protection = true
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.default.name
+  lifecycle {
+    ignore_changes = [password]
+  }
 }
 
 # DB Subnet Group
@@ -442,12 +448,41 @@ resource "aws_iam_policy" "secrets_manager_access" {
         ]
         Resource = [
           "${var.secret_arn}",
-          "arn:aws:kms:us-west-2:361769569102:key/*"  # Adjust this if you're using a specific KMS key
+          "arn:aws:kms:us-west-2:361769569102:key/*"
         ]
       }
     ]
   })
 }
+
+resource "aws_iam_policy" "secrets_manager_access_db" {
+  name        = "${var.app_name}-secrets-manager-access-db"
+  path        = "/"
+  description = "IAM policy for accessing Secrets Manager"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "kms:Decrypt"
+        ]
+        Resource = [
+          "${var.secret_db_arn}",
+          "arn:aws:kms:us-west-2:361769569102:key/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "secrets_manager_access_db" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.secrets_manager_access_db.arn
+}
+
 
 # Attach the Secrets Manager access policy to the task execution role
 resource "aws_iam_role_policy_attachment" "secrets_manager_access" {
@@ -464,4 +499,34 @@ output "ecs_task_execution_role_arn" {
 output "alb_arn" {
   value       = aws_lb.main.arn
   description = "The ARN of the Application Load Balancer"
+}
+# resource "aws_db_instance" "replica" {
+#   identifier             = "app-bluewind-db-replica"
+#   instance_class         = "db.t4g.micro"
+#   replicate_source_db    = aws_db_instance.default.identifier
+#   publicly_accessible    = true
+#   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+#   backup_retention_period = 0
+# }
+
+resource "aws_db_instance" "second" {
+  identifier           = "app-bluewind-db-second"
+  engine               = "postgres"
+  engine_version       = "16"
+  instance_class       = "db.t4g.micro"
+  allocated_storage    = 20
+  storage_type         = "gp2"
+  db_name              = "${var.db_name}"
+  username             = "${var.db_username}"
+  password             = "${var.db_password}"
+  parameter_group_name = "default.postgres16"
+  skip_final_snapshot  = true
+  publicly_accessible  = true
+
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.default.name
+
+  lifecycle {
+    ignore_changes = [password]
+  }
 }
