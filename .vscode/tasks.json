@@ -13,7 +13,7 @@
     {
       "label": "prod-blue-pull-main",
       "type": "shell",
-      "command": "while true; do cd ../bluewind-blue && git pull origin main; sleep 10; done",
+      "command": "while true; do cd ../bluewind-blue && git stash && git pull origin main; sleep 10; done",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"
