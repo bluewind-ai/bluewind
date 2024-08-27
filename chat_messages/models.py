@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User
 
 from base_model.models import BaseModel
 from chat_messages.services import create_messages_from_gmail
+from workspace_filter.models import User
 
 class Message(BaseModel):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')

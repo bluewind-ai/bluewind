@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'db_graph',
 
     'homepage',
-    # 'core',
+    'workspace_filter'
 ]
 
 TEMPLATES = [
@@ -320,6 +320,7 @@ DEBUG_TOOLBAR_PANELS = [
 
 MIDDLEWARE += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'workspace_filter.middleware.WorkspaceFilterMiddleware',
 ]
 # cdnsjkcdnsjkcndsk
 
@@ -327,3 +328,5 @@ TEST_RUNNER = 'bluewind.test_runner.NoDbTestRunner'
 
 DJANGO_ADMIN_SSO_OAUTH_CLIENT_ID = os.environ['GOOGLE_OAUTH_CLIENT_ID']
 DJANGO_ADMIN_SSO_OAUTH_CLIENT_SECRET = os.environ['GOOGLE_OAUTH_CLIENT_SECRET']
+
+AUTH_USER_MODEL = 'workspace_filter.User'

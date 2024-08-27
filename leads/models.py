@@ -1,7 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
 
 from base_model.models import BaseModel
+from workspace_filter.models import User
 
 class Lead(BaseModel):
     name = models.CharField(max_length=100)

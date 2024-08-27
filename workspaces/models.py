@@ -1,14 +1,13 @@
 from django.utils import timezone  # Change this line
 import uuid
-from django.contrib.auth.models import User
 from django.db import models
 
 import uuid
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils import timezone
 
 from base_model.models import BaseModel
+from workspace_filter.models import User
 
 class Workspace(BaseModel):
     name = models.CharField(max_length=100)
