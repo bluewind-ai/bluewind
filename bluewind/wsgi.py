@@ -16,7 +16,7 @@ def workspace_wsgi_middleware(application):
             environ['PATH_INFO'] = '/' + '/'.join(parts[2:])
             
             # Add workspace_id to the environment
-            environ['WORKSPACE_ID'] = workspace_id
+            environ['WORKSPACE_PUBLIC_ID'] = workspace_id
 
         return application(environ, start_response)
     return wrapper

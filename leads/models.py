@@ -100,13 +100,13 @@ class LeadAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         # intentionally not using get.
-        workspace_id = request.environ['WORKSPACE_ID']
+        workspace_id = request.environ['WORKSPACE_PUBLIC_ID']
         return qs.filter(workspace_id=workspace_id)
 
     def save_model(self, request, obj, form, change):
         if not obj.workspace_id:
             # intentionally not using get.
-            obj.workspace_id = request.environ['WORKSPACE_ID']
+            obj.workspace_id = request.environ['WORKSPACE_PUBLIC_ID']
         super().save_model(request, obj, form, change)
     def enrich_emails(self, request, queryset):
         enriched_count = 0
