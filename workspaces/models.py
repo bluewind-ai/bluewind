@@ -49,11 +49,14 @@ class CustomAdminSite(AdminSite):
         if request.method == 'POST' and request.user.is_authenticated:
             workspace = Workspace.objects.first()
             
-            if workspace:
-                short_id = get_short_workspace_id(workspace.id)
-                return redirect(f'/wks_{short_id}/admin/')
-            else:
-                messages.error(request, "No workspace available.")
+            if not workspace:
+                # Create a new workspace if none exists
+                workspace = Workspace.objects.create(name="Default Workspace")
+                WorkspaceUser.objects.create(user=request.user, workspace=workspace, is_default=True)
+                messages.success(request, "A new workspace has been created.")
+            
+            short_id = get_short_workspace_id(workspace.id)
+            return redirect(f'/wks_{short_id}/admin/')
         
         return response
 
