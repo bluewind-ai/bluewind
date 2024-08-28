@@ -17,12 +17,13 @@ This also increases productivity for people working with ids to debug things.
 
 More info on ids here: https://adileo.github.io/awesome-identifiers/
 
----------
+---
+
 uuid v7 seems better simply because there is no need to have a machine and a shard id.
 And the RFC just came out: https://www.rfc-editor.org/rfc/rfc9562.html
 
 I will probably go for uuid v7 everywhere except the workspace, for the workspace I will pick uuid.
-Because for the workspace I don't want to have to deal with a public id, since I shard by workspace_id.
+Because for the workspace I don't want to have to deal with a public id, since I shard by workspace_public_id.
 
 workspace:
 private id: uuidv4
@@ -37,10 +38,12 @@ https://dev.to/stripe/designing-apis-for-humans-object-ids-3o5a/comments
 
 It's important to note that stripe obviously doesn't use their public ids as the primary key.
 
----------
+---
+
 notes:
+
 1. whatever id I pick, I need to bake in a system for easy redirects. This happened in my previous company and we wasted a lot of engineering time to build the proper solution.
-THis is also very important for CMS: you need to let users change the slug.
+   THis is also very important for CMS: you need to let users change the slug.
 
 2. Apparently Stripe uses the public key to find the right shard. Very interesting. I was wondering how I would do this with my workspaces.
 

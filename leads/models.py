@@ -17,7 +17,7 @@ class Lead(BaseModel):
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=20, blank=True)
     company_domain_name = models.CharField(max_length=100, blank=True)
-    workspace_id = models.CharField(max_length=50, blank=True)
+    workspace_public_id = models.CharField(max_length=50, blank=True)
     status = models.CharField(max_length=20, choices=[
         ('NEW', 'New'),
         ('CONTACTED', 'Contacted'),
@@ -100,13 +100,13 @@ class LeadAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         # intentionally not using get.
-        workspace_id = request.environ['WORKSPACE_PUBLIC_ID']
-        return qs.filter(workspace_id=workspace_id)
+        workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
+        return qs.filter(workspace_public_id=workspace_public_id)
 
     def save_model(self, request, obj, form, change):
-        if not obj.workspace_id:
+        if not obj.workspace_public_id:
             # intentionally not using get.
-            obj.workspace_id = request.environ['WORKSPACE_PUBLIC_ID']
+            obj.workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
         super().save_model(request, obj, form, change)
     def enrich_emails(self, request, queryset):
         enriched_count = 0
