@@ -7,6 +7,9 @@ from django.db import transaction
 from django.contrib import admin, messages
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.conf import settings
+from django.utils.html import format_html
+
 
 # Assuming these are defined elsewhere
 from base_model.models import BaseModel
@@ -22,6 +25,15 @@ class Workspace(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def get_admin_url(self):
+        short_id = get_short_workspace_id(self.id)
+        return f'/wks_{short_id}/admin/'
+
+    def admin_url_link(self):
+        url = self.get_admin_url()
+        return format_html('<a href="{}">{}</a>', url, url)
+    admin_url_link.short_description = "Admin URL"
 
 class WorkspaceUser(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -66,9 +78,18 @@ class WorkspaceUserAdmin(ModelAdmin):
     def get_list_display(self, request):
         return [field.name for field in self.model._meta.fields]
 
+class WorkspaceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'short_id', 'created_at', 'admin_url_link')
+    readonly_fields = ('admin_url_link',)
+
+    def short_id(self, obj):
+        return get_short_workspace_id(obj.id)
+    short_id.short_description = 'ID'
+
+
 # Register models with the custom admin site
 custom_admin_site.register(WorkspaceUser, WorkspaceUserAdmin)
-custom_admin_site.register(Workspace)
+custom_admin_site.register(Workspace, WorkspaceAdmin)
 
 # If you want to keep the default admin site as well, you can register models there too
 admin.site.register(WorkspaceUser, WorkspaceUserAdmin)
