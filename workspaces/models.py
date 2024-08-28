@@ -21,7 +21,7 @@ class Workspace(BaseModel):
     users = models.ManyToManyField(User, through='WorkspaceUser')
 
     def __str__(self):
-        return f"Workspace object ({self.id.int})"
+        return self.name
 
 class WorkspaceUser(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
