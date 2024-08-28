@@ -7,12 +7,12 @@ def workspace_wsgi_middleware(application):
     def wrapper(environ, start_response):
         path_info = environ.get('PATH_INFO', '')
         if path_info.startswith('/wks_'):
-            # Extract workspace_id
+            # Extract workspace_id including the 'wks_' prefix
             parts = path_info.split('/')
-            workspace_id = parts[1][4:]  # Remove 'wks_' prefix
+            workspace_id = parts[1]  # This will be 'wks_2121211'
             
             # Modify SCRIPT_NAME and PATH_INFO
-            environ['SCRIPT_NAME'] = environ.get('SCRIPT_NAME', '') + f'/wks_{workspace_id}'
+            environ['SCRIPT_NAME'] = environ.get('SCRIPT_NAME', '') + f'/{workspace_id}'
             environ['PATH_INFO'] = '/' + '/'.join(parts[2:])
             
             # Add workspace_id to the environment
