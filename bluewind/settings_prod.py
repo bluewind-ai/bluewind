@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'db_graph',
 
     'homepage',
+    'apollo_people_search',
 ]
 
 TEMPLATES = [
