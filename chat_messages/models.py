@@ -3,6 +3,7 @@ from django.db import models
 from django.shortcuts import redirect
 from django.urls import reverse
 from base_model.models import BaseModel
+from base_model_admin.models import BaseAdmin
 from people.models import Person
 from django.contrib import admin
 from django.shortcuts import redirect
@@ -35,7 +36,7 @@ class Message(BaseModel):
 from django.contrib import admin
 from workspaces.models import custom_admin_site
 
-class MessageAdmin(admin.ModelAdmin):
+class MessageAdmin(BaseAdmin):
     def add_view(self, request, form_url='', extra_context=None):
         if request.method == 'POST':
             try:

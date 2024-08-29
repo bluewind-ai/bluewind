@@ -3,11 +3,13 @@ import os
 from django.db import models
 import requests
 from django.contrib import messages
+from base_model.models import BaseModel
+from base_model_admin.models import BaseAdmin
 from people.models import Person
 from django.db import transaction
 
 
-class ApolloPeopleSearch(models.Model):
+class ApolloPeopleSearch(BaseModel):
 
     SENIORITY_CHOICES = [
         ('senior', 'Senior'),
@@ -50,7 +52,7 @@ class ApolloPeopleSearch(models.Model):
 from django.contrib import admin
 from workspaces.models import custom_admin_site
 
-class ApolloPeopleSearchAdmin(admin.ModelAdmin):
+class ApolloPeopleSearchAdmin(BaseAdmin):
     actions = ['perform_apollo_search']
 
     def perform_apollo_search(self, request, queryset):

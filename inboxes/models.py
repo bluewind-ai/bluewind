@@ -1,4 +1,6 @@
 import os
+
+from base_model_admin.models import BaseAdmin
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 from django.db import models
 from django.contrib import admin
@@ -91,7 +93,7 @@ def fetch_messages_from_gmail():
 
     return created_count
 
-class InboxAdmin(admin.ModelAdmin):
+class InboxAdmin(BaseAdmin):
     list_display = ('email', 'user')
     actions = ['fetch_messages_from_gmail']
 

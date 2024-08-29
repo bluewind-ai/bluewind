@@ -13,6 +13,7 @@ from django.utils.html import format_html
 
 # Assuming these are defined elsewhere
 from base_model.models import BaseModel
+from base_model_admin.models import BaseAdmin
 from workspace_filter.models import User
 
 def get_short_workspace_id(workspace_id):
@@ -78,7 +79,7 @@ class WorkspaceUserAdmin(ModelAdmin):
     def get_list_display(self, request):
         return [field.name for field in self.model._meta.fields]
 
-class WorkspaceAdmin(admin.ModelAdmin):
+class WorkspaceAdmin(BaseAdmin):
     list_display = ('name', 'short_id', 'created_at', 'admin_url_link')
     readonly_fields = ('admin_url_link',)
 
