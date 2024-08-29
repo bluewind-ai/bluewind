@@ -83,10 +83,10 @@ logger = logging.getLogger(__name__)
 
 import base64
 
-def fetch_messages_from_gmail(request):
+def fetch_messages_from_gmail(request, channel):
     from chat_messages.models import Message
     from people.models import Person  
-    logger.info("Starting to fetch messages from Gmail")
+    logger.info(f"Starting to fetch messages from Gmail for channel: {channel.email}")
     try:
         service = get_gmail_service()
         logger.info("Gmail service initialized")
@@ -100,10 +100,8 @@ def fetch_messages_from_gmail(request):
             logger.warning("No messages found")
             return 0
 
-        user, _ = User.objects.get_or_create(username='gmail_user')
-        channel, _ = Channel.objects.get_or_create(user=user, email=user.email)
         person, _ = Person.objects.get_or_create(
-            email=user.email,
+            email=channel.email,
             defaults={
                 'first_name': 'Gmail',
                 'last_name': 'User',
@@ -116,10 +114,10 @@ def fetch_messages_from_gmail(request):
         for message in messages:
             logger.debug(f"Processing message ID: {message['id']}")
             msg = service.users().messages().get(userId='me', id=message['id']).execute()
-            
+
             subject = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'Subject'), 'No Subject')
             sender = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'From'), 'Unknown')
-            
+
             body = ''
             if 'parts' in msg['payload']:
                 for part in msg['payload']['parts']:
@@ -145,11 +143,11 @@ def fetch_messages_from_gmail(request):
             except Exception as e:
                 logger.error(f"Failed to create message: {subject[:30]}... Error: {str(e)}")
 
-        logger.info(f"Successfully created {created_count} messages")
+        logger.info(f"Successfully created {created_count} messages for {channel.email}")
         return created_count
 
     except Exception as e:
-        logger.error(f"Error in fetch_messages_from_gmail: {str(e)}", exc_info=True)
+        logger.error(f"Error in fetch_messages_from_gmail for {channel.email}: {str(e)}", exc_info=True)
         raise
 
 import json
@@ -160,11 +158,19 @@ class ChannelAdmin(BaseAdmin):
     actions = ['fetch_messages_from_gmail']
 
     def fetch_messages_from_gmail(self, request, queryset):
-        try:
-            created_count = fetch_messages_from_gmail(request)
-            self.message_user(request, f"{created_count} messages have been created from Gmail successfully.", level=django_messages.SUCCESS)
-        except Exception as e:
-            self.message_user(request, f"An error occurred: {str(e)}", level=django_messages.ERROR)
+        total_created_count = 0
+        for channel in queryset:
+            try:
+                created_count = fetch_messages_from_gmail(request, channel)
+                total_created_count += created_count
+                self.message_user(request, f"Created {created_count} messages for {channel.email}", level=django_messages.SUCCESS)
+            except Exception as e:
+                self.message_user(request, f"Error fetching messages for {channel.email}: {str(e)}", level=django_messages.ERROR)
+        
+        self.message_user(request, f"Total messages created: {total_created_count}", level=django_messages.INFO)
+
+    fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
+
 
     fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
 
