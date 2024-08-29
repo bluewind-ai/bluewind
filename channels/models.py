@@ -80,52 +80,70 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# def modify_oauth_url(original_url):
-#     # Parse the URL
-#     parsed_url = urlparse(original_url)
-    
-#     # Get the query parameters
-#     params = parse_qs(parsed_url.query)
-    
-#     # Modify the redirect_uri
-#     if 'redirect_uri' in params:
-#         redirect_uri = params['redirect_uri'][0]
-#         modified_redirect_uri = redirect_uri.replace('/wks_50204447a6c5', '')
-#         params['redirect_uri'] = [modified_redirect_uri]
-    
-#     # Reconstruct the query string
-#     new_query = urlencode(params, doseq=True)
-    
-#     # Reconstruct the URL
-#     new_url = urlunparse(
-#         (parsed_url.scheme, parsed_url.netloc, parsed_url.path, 
-#          parsed_url.params, new_query, parsed_url.fragment)
-#     )
-    
-#     return new_url
 
-def fetch_messages_from_gmail():
+import base64
+
+def fetch_messages_from_gmail(request):
+    from chat_messages.models import Message
+    from people.models import Person  
     logger.info("Starting to fetch messages from Gmail")
     try:
         service = get_gmail_service()
         logger.info("Gmail service initialized")
-        
+
         results = service.users().messages().list(userId='me', maxResults=10).execute()
         logger.info(f"Retrieved {len(results.get('messages', []))} messages")
-        
+
         messages = results.get('messages', [])
 
         if not messages:
             logger.warning("No messages found")
             return 0
 
-        user, created = User.objects.get_or_create(username='gmail_user')
+        user, _ = User.objects.get_or_create(username='gmail_user')
+        channel, _ = Channel.objects.get_or_create(user=user, email=user.email)
+        person, _ = Person.objects.get_or_create(
+            email=user.email,
+            defaults={
+                'first_name': 'Gmail',
+                'last_name': 'User',
+                'status': 'NEW',
+                'source': 'Gmail Import'
+            }
+        )
         created_count = 0
 
         for message in messages:
             logger.debug(f"Processing message ID: {message['id']}")
             msg = service.users().messages().get(userId='me', id=message['id']).execute()
-            # ... (rest of the message processing code)
+            
+            subject = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'Subject'), 'No Subject')
+            sender = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'From'), 'Unknown')
+            
+            body = ''
+            if 'parts' in msg['payload']:
+                for part in msg['payload']['parts']:
+                    if part.get('body') and part['body'].get('data'):
+                        body += base64.urlsafe_b64decode(part['body']['data']).decode('utf-8')
+            elif msg['payload'].get('body') and msg['payload']['body'].get('data'):
+                body = base64.urlsafe_b64decode(msg['payload']['body']['data']).decode('utf-8')
+            else:
+                body = msg.get('snippet', 'No body')
+
+            try:
+                Message.objects.create(
+                    channel=channel,
+                    recipient=person,
+                    subject=subject[:255],
+                    content=body,
+                    timestamp=timezone.now(),
+                    is_read=False,
+                    workspace_public_id=request.environ.get('WORKSPACE_PUBLIC_ID')
+                )
+                created_count += 1
+                logger.info(f"Created message: {subject[:30]}...")
+            except Exception as e:
+                logger.error(f"Failed to create message: {subject[:30]}... Error: {str(e)}")
 
         logger.info(f"Successfully created {created_count} messages")
         return created_count
@@ -143,7 +161,7 @@ class ChannelAdmin(BaseAdmin):
 
     def fetch_messages_from_gmail(self, request, queryset):
         try:
-            created_count = fetch_messages_from_gmail()
+            created_count = fetch_messages_from_gmail(request)
             self.message_user(request, f"{created_count} messages have been created from Gmail successfully.", level=django_messages.SUCCESS)
         except Exception as e:
             self.message_user(request, f"An error occurred: {str(e)}", level=django_messages.ERROR)
