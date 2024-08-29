@@ -245,11 +245,6 @@ def oauth2callback(request):
         if 'code' not in request.GET:
             raise ValueError("No authorization code found in the request")
 
-        # Get the state parameter and extract the workspace_public_id
-        state = request.GET.get('state', '')
-        # workspace_public_id, _ = state.split(':', 1)
-        # print(f"workspace_public_id: {workspace_public_id}")
-
         # Exchange the authorization code for credentials
         flow.fetch_token(code=request.GET['code'])
 
@@ -266,8 +261,10 @@ def oauth2callback(request):
 
         logger.info(f"Successfully authenticated user: {email}")
 
+        # Use the current user
+        user = request.user
+
         # Create or update Channel
-        user, _ = User.objects.get_or_create(username=email)
         channel, created = Channel.objects.update_or_create(
             email=email,
             workspace_public_id=request.environ['WORKSPACE_PUBLIC_ID'],
