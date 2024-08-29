@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class Channel(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
 
     def __str__(self):
         return self.email
