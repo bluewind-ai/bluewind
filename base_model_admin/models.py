@@ -15,6 +15,13 @@ class BaseAdmin(admin.ModelAdmin):
         # return qs
         return qs.filter(workspace_public_id=workspace_public_id)
     
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "channel":  # Adjust field name as necessary
+            workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
+            kwargs["queryset"] = db_field.related_model.objects.filter(
+                workspace_public_id=workspace_public_id
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         if not obj.workspace_public_id:
