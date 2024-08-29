@@ -28,7 +28,8 @@ SCOPES = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
     'openid',
-    'https://www.googleapis.com/auth/gmail.readonly'
+    'https://www.googleapis.com/auth/gmail.readonly',
+    'https://www.googleapis.com/auth/gmail.send'  # Add this for sending emails
 ]
 
 def get_gmail_service():
@@ -111,7 +112,7 @@ class InboxAdmin(admin.ModelAdmin):
             client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
             flow = Flow.from_client_secrets_file(
                 client_secret_file,
-                scopes=['https://www.googleapis.com/auth/gmail.readonly'],
+                scopes=SCOPES,
                 redirect_uri='http://localhost:8000/oauth2callback'
             )
 
@@ -143,12 +144,7 @@ def oauth2callback(request):
 
     flow = Flow.from_client_secrets_file(
         'google_api_secrets.json',
-        scopes=[
-            'https://www.googleapis.com/auth/gmail.readonly',
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'openid'
-        ]
+        scopes=SCOPES
     )
     flow.redirect_uri = 'http://localhost:8000/oauth2callback'
 
