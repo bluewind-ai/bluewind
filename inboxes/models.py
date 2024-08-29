@@ -8,7 +8,6 @@ from django.urls import path, reverse
 from base_model.models import BaseModel
 from workspace_filter.models import User
 from workspaces.models import custom_admin_site
-from chat_messages.models import Message
 import base64
 import os
 import pickle
@@ -54,7 +53,7 @@ def get_gmail_service():
     service = build('gmail', 'v1', credentials=creds)
     return service
 
-def create_messages_from_gmail():
+def fetch_messages_from_gmail():
     service = get_gmail_service()
     results = service.users().messages().list(userId='me', maxResults=10).execute()
     messages = results.get('messages', [])
@@ -74,6 +73,7 @@ def create_messages_from_gmail():
             body = base64.urlsafe_b64decode(msg['payload']['parts'][0]['body']['data']).decode('utf-8')
         else:
             body = base64.urlsafe_b64decode(msg['payload']['body']['data']).decode('utf-8')
+        from chat_messages.models import Message
 
         # Check if the message already exists
         if not Message.objects.filter(gmail_message_id=message['id']).exists():
@@ -92,16 +92,16 @@ def create_messages_from_gmail():
 
 class InboxAdmin(admin.ModelAdmin):
     list_display = ('email', 'user')
-    actions = ['create_messages_from_gmail']
+    actions = ['fetch_messages_from_gmail']
 
-    def create_messages_from_gmail(self, request, queryset):
+    def fetch_messages_from_gmail(self, request, queryset):
         try:
-            created_count = create_messages_from_gmail()
+            created_count = fetch_messages_from_gmail()
             self.message_user(request, f"{created_count} messages have been created from Gmail successfully.", level=django_messages.SUCCESS)
         except Exception as e:
             self.message_user(request, f"An error occurred: {str(e)}", level=django_messages.ERROR)
 
-    create_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
+    fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
 
     def add_view(self, request, form_url='', extra_context=None):
         return self.connect_inbox(request)
