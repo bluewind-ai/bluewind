@@ -2,16 +2,15 @@ import json
 import os
 from django.db import models
 import requests
-
 from django.contrib import messages
-
 from leads.models import Lead
+from django.db import transaction
+
 
 class ApolloPeopleSearch(models.Model):
     SENIORITY_CHOICES = [
         ('senior', 'Senior'),
         ('manager', 'Manager'),
-        # Add other seniority levels as needed
     ]
 
     EMAIL_STATUS_CHOICES = [
@@ -83,25 +82,30 @@ class ApolloPeopleSearchAdmin(admin.ModelAdmin):
                     data=json.dumps(payload)
                 )
                 response.raise_for_status()
-                
+
                 # Process the response
                 data = response.json()
-                
-                if data['people'] and len(data['people']) > 0:
-                    person = data['people'][0]
-                    lead = Lead.objects.create(
-                        first_name=person['first_name'],
-                        last_name=person['last_name'],
-                        linkedin_url=person['linkedin_url'],
-                        workspace_public_id=request.environ['WORKSPACE_PUBLIC_ID'],
-                        company_domain_name=person['organization']['primary_domain'] if person['organization'] else '',
-                        company_linkedin_url=person['organization']['linkedin_url'] if person['organization'] else '',
 
-                    )
-                    self.message_user(request, f"Created new lead: {lead}", messages.SUCCESS)
+                if data['people'] and len(data['people']) > 0:
+                    leads_to_create = []
+                    for person in data['people']:
+                        leads_to_create.append(Lead(
+                            first_name=person['first_name'],
+                            last_name=person['last_name'],
+                            linkedin_url=person['linkedin_url'],
+                            workspace_public_id=request.environ['WORKSPACE_PUBLIC_ID'],
+                            company_domain_name=person['organization']['primary_domain'] if person['organization'] else '',
+                            company_linkedin_url=person['organization']['linkedin_url'] if person['organization'] else '',
+                        ))
+                    
+                    # Bulk create leads
+                    with transaction.atomic():
+                        Lead.objects.bulk_create(leads_to_create)
+                    
+                    self.message_user(request, f"Created {len(leads_to_create)} new leads", messages.SUCCESS)
                 else:
                     self.message_user(request, "No results found in Apollo search", messages.WARNING)
-            
+
             except requests.RequestException as e:
                 self.message_user(request, f"Error performing Apollo search for {search}: {str(e)}", messages.ERROR)
 

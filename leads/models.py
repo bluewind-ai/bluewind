@@ -15,10 +15,10 @@ class Lead(BaseModel):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(blank=True)
-    linkedin_url = models.URLField(blank=True)
+    linkedin_url = models.URLField(blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True)
     company_domain_name = models.CharField(max_length=100, blank=True)
-    company_linkedin_url = models.URLField(blank=True)
+    company_linkedin_url = models.URLField(blank=True, null=True)
     workspace_public_id = models.CharField(max_length=50, blank=True)
     status = models.CharField(max_length=20, choices=[
         ('NEW', 'New'),
