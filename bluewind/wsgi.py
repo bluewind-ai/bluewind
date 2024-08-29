@@ -7,7 +7,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_prod')
 def workspace_wsgi_middleware(application):
     def wrapper(environ, start_response):
         path_info = environ.get('PATH_INFO', '')
-        if path_info.startswith('/wks_'):
+        if path_info.startswith('/static'):
+            pass
+        elif path_info.startswith('/wks_'):
             # Extract workspace_public_id including the 'wks_' prefix
             parts = path_info.split('/')
             workspace_public_id = parts[1]  # This will be 'wks_2121211'
