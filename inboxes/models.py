@@ -117,7 +117,7 @@ class InboxAdmin(BaseAdmin):
                 scopes=SCOPES,
                 redirect_uri='http://localhost:8000/oauth2callback'
             )
-
+            print("Requesting scopes:", SCOPES)  # Add this line
             authorization_url, state = flow.authorization_url(
                 access_type='offline',
                 include_granted_scopes='true'
@@ -164,6 +164,7 @@ def oauth2callback(request):
     user, _ = User.objects.get_or_create(username=email)
     inbox, created = Inbox.objects.update_or_create(
         email=email,
+        workspace_public_id="wks_f019f0f2faba",
         defaults={'user': user}
     )
 
