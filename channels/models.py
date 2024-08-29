@@ -1,3 +1,4 @@
+import logging
 import os
 
 from base_model_admin.models import BaseAdmin
@@ -18,6 +19,9 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
 from django.contrib import messages as django_messages
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 
 class Channel(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -35,7 +39,6 @@ SCOPES = [
 ]
 
 def get_gmail_service():
-    load_dotenv()
     creds = None
     if os.path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
@@ -46,9 +49,18 @@ def get_gmail_service():
             creds.refresh(Request())
         else:
             client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
-            flow = InstalledAppFlow.from_client_secrets_file(
-                client_secret_file, SCOPES)
-            creds = flow.run_local_server(port=0)  # Use a random available port
+            flow = Flow.from_client_secrets_file(
+                client_secret_file, 
+                scopes=SCOPES,
+                redirect_uri='http://localhost:8000/oauth2callback'
+            )
+            auth_url, _ = flow.authorization_url(prompt='consent')
+            
+            logger.info(f"Please visit this URL to authorize the application: {auth_url}")
+            authorization_code = input("Enter the authorization code: ")
+            
+            flow.fetch_token(code=authorization_code)
+            creds = flow.credentials
 
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
@@ -115,24 +127,27 @@ class ChannelAdmin(BaseAdmin):
             flow = Flow.from_client_secrets_file(
                 client_secret_file,
                 scopes=SCOPES,
-                redirect_uri='http://localhost:8000/oauth2callback'
+                redirect_uri=request.build_absolute_uri(reverse('oauth2callback'))
             )
-            print("Requesting scopes:", SCOPES)  # Add this line
-            authorization_url, state = flow.authorization_url(
+            auth_url, state = flow.authorization_url(
                 access_type='offline',
-                include_granted_scopes='true'
+                include_granted_scopes='true',
+                prompt='consent'
             )
+            
+            logger.info(f"Authorization URL: {auth_url}")
+            
+            # Store necessary information in session
+            request.session['oauth_state'] = state
+            request.session['oauth_client_secret_file'] = client_secret_file
 
-            request.session['state'] = state
-            request.session['admin_redirect'] = reverse('admin:channels_channel_changelist')
-
-            return redirect(authorization_url)
+            # Redirect user to auth_url
+            return redirect(auth_url)
 
         except Exception as e:
-            self.message_user(request, f"An error occurred while connecting the channel: {str(e)}", level=messages.ERROR)
+            logger.error(f"Error in connect_channel: {str(e)}", exc_info=True)
+            self.message_user(request, f"An error occurred while connecting the channel: {str(e)}", level=django_messages.ERROR)
             return redirect(reverse('admin:channels_channel_changelist'))
-
-    connect_channel.short_description = "Connect the channel"
 
 custom_admin_site.register(Channel, ChannelAdmin)
 
@@ -141,40 +156,66 @@ from django.contrib import messages
 from django.urls import reverse
 
 def oauth2callback(request):
-    state = request.session['state']
-    admin_redirect = request.session.get('admin_redirect', reverse('admin:channels_channel_changelist'))
-
-    flow = Flow.from_client_secrets_file(
-        'google_api_secrets.json',
-        scopes=SCOPES
-    )
-    flow.redirect_uri = 'http://localhost:8000/oauth2callback'
-
-    authorization_response = request.build_absolute_uri()
-    flow.fetch_token(authorization_response=authorization_response)
-
-    credentials = flow.credentials
+    logger.debug(f"oauth2callback called with GET params: {request.GET}")
     
-    # Get user info
-    service = build('oauth2', 'v2', credentials=credentials)
-    user_info = service.userinfo().get().execute()
-    email = user_info['email']
+    try:
+        state = request.session.get('oauth_state')
+        client_secret_file = request.session.get('oauth_client_secret_file')
 
-    # Create or update Channel
-    user, _ = User.objects.get_or_create(username=email)
-    channel, created = Channel.objects.update_or_create(
-        email=email,
-        workspace_public_id="wks_94d425e52d18",
-        defaults={'user': user}
-    )
+        if not state or not client_secret_file:
+            raise ValueError("OAuth state or client secret file not found in session")
 
-    if created:
-        messages.success(request, f"Successfully connected channel for {email}!")
-    else:
-        messages.info(request, f"Updated existing channel connection for {email}.")
+        flow = Flow.from_client_secrets_file(
+            client_secret_file,
+            scopes=SCOPES,
+            state=state
+        )
+        flow.redirect_uri = request.build_absolute_uri(reverse('oauth2callback'))
 
-    # Clear session data
-    request.session.pop('state', None)
-    request.session.pop('admin_redirect', None)
+        # Check if there's an error in the request
+        if 'error' in request.GET:
+            raise ValueError(f"Error in OAuth flow: {request.GET['error']}")
 
-    return redirect(admin_redirect)
+        # Check if there's a code in the request
+        if 'code' not in request.GET:
+            raise ValueError("No authorization code found in the request")
+
+        # Exchange the authorization code for credentials
+        flow.fetch_token(code=request.GET['code'])
+        
+        credentials = flow.credentials
+
+        # Get user info
+        service = build('oauth2', 'v2', credentials=credentials)
+        user_info = service.userinfo().get().execute()
+        email = user_info['email']
+
+        logger.info(f"Successfully authenticated user: {email}")
+
+        # Create or update Channel
+        from workspace_filter.models import User
+        from channels.models import Channel
+        
+        user, _ = User.objects.get_or_create(username=email)
+        channel, created = Channel.objects.update_or_create(
+            email=email,
+            workspace_public_id="wks_94d425e52d18",
+            defaults={'user': user}
+        )
+
+        if created:
+            logger.info(f"Successfully connected channel for {email}")
+            messages.success(request, f"Successfully connected channel for {email}!")
+        else:
+            logger.info(f"Updated existing channel connection for {email}")
+            messages.info(request, f"Updated existing channel connection for {email}.")
+
+        # Clear session data
+        request.session.pop('oauth_state', None)
+        request.session.pop('oauth_client_secret_file', None)
+
+    except Exception as e:
+        logger.error(f"Error in oauth2callback: {str(e)}", exc_info=True)
+        messages.error(request, f"An error occurred during OAuth: {str(e)}")
+
+    return redirect(reverse('admin:channels_channel_changelist'))
