@@ -59,7 +59,7 @@ def get_gmail_service():
                 scopes=SCOPES,
                 redirect_uri='http://localhost:8000/wks_94d425e52d18/oauth2callback/'
             )
-            auth_url, _ = flow.authorization_url(prompt='consent')
+            auth_url, _ = flow.authorization_url(access_type='offline', include_granted_scopes='true')
             print(f"Please visit this URL to authorize the application: {auth_url}")
             code = input("Enter the authorization code: ")
             flow.fetch_token(code=code)
@@ -68,10 +68,6 @@ def get_gmail_service():
         logger.info("Saving new credentials to token.pickle")
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
-
-    logger.info("Building Gmail service")
-    service = build('gmail', 'v1', credentials=creds)
-    return service
 
     logger.info("Building Gmail service")
     service = build('gmail', 'v1', credentials=creds)
@@ -111,6 +107,9 @@ def fetch_messages_from_gmail():
         logger.error(f"Error in fetch_messages_from_gmail: {str(e)}", exc_info=True)
         raise
 
+import json
+from urllib.parse import quote_plus
+
 class ChannelAdmin(BaseAdmin):
     list_display = ('email', 'user')
     actions = ['fetch_messages_from_gmail']
@@ -126,7 +125,7 @@ class ChannelAdmin(BaseAdmin):
 
     def add_view(self, request, form_url='', extra_context=None):
         return self.connect_channel(request)
-    
+
     def connect_channel(self, request):
         try:
             client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
@@ -135,17 +134,19 @@ class ChannelAdmin(BaseAdmin):
                 scopes=SCOPES,
                 redirect_uri=request.build_absolute_uri(reverse('oauth2callback'))
             )
-            auth_url, state = flow.authorization_url(
+            auth_url, _ = flow.authorization_url(
                 access_type='offline',
                 include_granted_scopes='true',
                 prompt='consent'
             )
+
+            # Store the client configuration in the session
+            with open(client_secret_file, 'r') as f:
+                client_config = json.load(f)
             
-            logger.info(f"Authorization URL: {auth_url}")
-            
-            # Store necessary information in session
-            request.session['oauth_state'] = state
-            request.session['oauth_client_secret_file'] = client_secret_file
+            request.session['oauth_client_config'] = client_config
+            request.session['oauth_scopes'] = SCOPES
+            request.session['oauth_redirect_uri'] = request.build_absolute_uri(reverse('oauth2callback'))
 
             # Redirect user to auth_url
             return redirect(auth_url)
@@ -163,20 +164,21 @@ from django.urls import reverse
 
 def oauth2callback(request):
     logger.debug(f"oauth2callback called with GET params: {request.GET}")
-    
+
     try:
-        state = request.session.get('oauth_state')
-        client_secret_file = request.session.get('oauth_client_secret_file')
+        # Recreate the flow using the stored configuration
+        client_config = request.session.get('oauth_client_config')
+        scopes = request.session.get('oauth_scopes')
+        redirect_uri = request.session.get('oauth_redirect_uri')
 
-        if not state or not client_secret_file:
-            raise ValueError("OAuth state or client secret file not found in session")
+        if not all([client_config, scopes, redirect_uri]):
+            raise ValueError("Missing OAuth configuration in session")
 
-        flow = Flow.from_client_secrets_file(
-            client_secret_file,
-            scopes=SCOPES,
-            state=state
+        flow = Flow.from_client_config(
+            client_config,
+            scopes=scopes,
+            redirect_uri=redirect_uri
         )
-        flow.redirect_uri = request.build_absolute_uri(reverse('oauth2callback'))
 
         # Check if there's an error in the request
         if 'error' in request.GET:
@@ -188,8 +190,12 @@ def oauth2callback(request):
 
         # Exchange the authorization code for credentials
         flow.fetch_token(code=request.GET['code'])
-        
+
         credentials = flow.credentials
+
+        # Save the credentials
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(credentials, token)
 
         # Get user info
         service = build('oauth2', 'v2', credentials=credentials)
@@ -199,9 +205,6 @@ def oauth2callback(request):
         logger.info(f"Successfully authenticated user: {email}")
 
         # Create or update Channel
-        from workspace_filter.models import User
-        from channels.models import Channel
-        
         user, _ = User.objects.get_or_create(username=email)
         channel, created = Channel.objects.update_or_create(
             email=email,
@@ -217,8 +220,8 @@ def oauth2callback(request):
             messages.info(request, f"Updated existing channel connection for {email}.")
 
         # Clear session data
-        request.session.pop('oauth_state', None)
-        request.session.pop('oauth_client_secret_file', None)
+        for key in ['oauth_client_config', 'oauth_scopes', 'oauth_redirect_uri']:
+            request.session.pop(key, None)
 
     except Exception as e:
         logger.error(f"Error in oauth2callback: {str(e)}", exc_info=True)
