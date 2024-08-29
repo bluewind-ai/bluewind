@@ -3,7 +3,7 @@ from django.db import models
 from django.shortcuts import redirect
 from django.urls import reverse
 from base_model.models import BaseModel
-from leads.models import Lead
+from people.models import Person
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class Message(BaseModel):
     from inboxes.models import Inbox
     sender = models.ForeignKey(Inbox, on_delete=models.CASCADE, related_name='sent_messages')
-    recipient = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='received_messages')
+    recipient = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='received_messages')
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)

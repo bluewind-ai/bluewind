@@ -43,7 +43,7 @@ INSTALLED_APPS = [
 
     # LOCAL APPS'
     'chat_messages',
-    'leads',
+    'people',
 
     # tests
     'behave_django',

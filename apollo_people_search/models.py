@@ -3,7 +3,7 @@ import os
 from django.db import models
 import requests
 from django.contrib import messages
-from leads.models import Lead
+from people.models import Person
 from django.db import transaction
 
 
@@ -88,9 +88,9 @@ class ApolloPeopleSearchAdmin(admin.ModelAdmin):
                 data = response.json()
 
                 if data['people'] and len(data['people']) > 0:
-                    leads_to_create = []
+                    people_to_create = []
                     for person in data['people']:
-                        leads_to_create.append(Lead(
+                        people_to_create.append(Person(
                             first_name=person['first_name'],
                             last_name=person['last_name'],
                             linkedin_url=person['linkedin_url'],
@@ -99,11 +99,11 @@ class ApolloPeopleSearchAdmin(admin.ModelAdmin):
                             company_linkedin_url=person['organization']['linkedin_url'] if person['organization'] else '',
                         ))
                     
-                    # Bulk create leads
+                    # Bulk create people
                     with transaction.atomic():
-                        Lead.objects.bulk_create(leads_to_create)
+                        Person.objects.bulk_create(people_to_create)
                     
-                    self.message_user(request, f"Created {len(leads_to_create)} new leads", messages.SUCCESS)
+                    self.message_user(request, f"Created {len(people_to_create)} new people", messages.SUCCESS)
                 else:
                     self.message_user(request, "No results found in Apollo search", messages.WARNING)
 

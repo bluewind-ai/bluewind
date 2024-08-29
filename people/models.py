@@ -11,7 +11,7 @@ from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
-class Lead(BaseModel):
+class Person(BaseModel):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(blank=True)
@@ -28,7 +28,7 @@ class Lead(BaseModel):
         ('CONVERTED', 'Converted'),
     ], default='NEW')
     source = models.CharField(max_length=50, blank=True)
-    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_leads')
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_people')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -47,7 +47,7 @@ class Lead(BaseModel):
             print(f"Skipping email enrichment for {self}: missing required fields")
             return False
 
-        url = "https://api.leadmagic.io/email-finder"
+        url = "https://api.personmagic.io/email-finder"
         api_key = os.environ.get('LEADMAGIC_API_KEY')
         print(f"API Key: {api_key[:5]}...{api_key[-5:] if api_key else 'Not found'}")
 
@@ -67,14 +67,14 @@ class Lead(BaseModel):
         print(f"Request Payload: {payload}")
 
         try:
-            print(f"Sending request to LeadMagic API for {self}")
+            print(f"Sending request to PersonMagic API for {self}")
             response = requests.post(url, json=payload, headers=headers)
             print(f"Response Status Code: {response.status_code}")
             print(f"Response Headers: {response.headers}")
             print(f"Response Content: {response.text}")
             response.raise_for_status()
             data = response.json()
-            print(f"Received response from LeadMagic API for {self}: {data}")
+            print(f"Received response from PersonMagic API for {self}: {data}")
 
             if data.get('status') == 'valid':
                 self.email = data.get('email')
@@ -94,7 +94,7 @@ class Lead(BaseModel):
 
         return False
 
-class LeadAdmin(admin.ModelAdmin):
+class PersonAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email', 'company_domain_name', 'status')
     list_filter = ('status', 'source')
     search_fields = ('first_name', 'last_name', 'email', 'company_domain_name')
@@ -112,14 +112,14 @@ class LeadAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
     def enrich_emails(self, request, queryset):
         enriched_count = 0
-        for lead in queryset:
-            if lead.enrich_email():
+        for person in queryset:
+            if person.enrich_email():
                 enriched_count += 1
         if enriched_count:
-            self.message_user(request, f"{enriched_count} lead(s) enriched successfully.", messages.SUCCESS)
+            self.message_user(request, f"{enriched_count} person(s) enriched successfully.", messages.SUCCESS)
         else:
-            self.message_user(request, "No leads were enriched. Check the logs for details.", messages.WARNING)
+            self.message_user(request, "No people were enriched. Check the logs for details.", messages.WARNING)
 
-    enrich_emails.short_description = "Enrich emails using LeadMagic"
+    enrich_emails.short_description = "Enrich emails using PersonMagic"
 
-custom_admin_site.register(Lead, LeadAdmin)
+custom_admin_site.register(Person, PersonAdmin)
