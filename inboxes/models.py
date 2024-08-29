@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib import admin
 from django.shortcuts import redirect, render
 from django.utils import timezone
-from django.urls import path
+from django.urls import path, reverse
 from base_model.models import BaseModel
 from workspace_filter.models import User
 from workspaces.models import custom_admin_site
@@ -89,7 +89,7 @@ def create_messages_from_gmail():
 
 class InboxAdmin(admin.ModelAdmin):
     list_display = ('email', 'user')
-    actions = ['create_messages_from_gmail', 'connect_inbox']
+    actions = ['create_messages_from_gmail']
 
     def create_messages_from_gmail(self, request, queryset):
         try:
@@ -100,7 +100,10 @@ class InboxAdmin(admin.ModelAdmin):
 
     create_messages_from_gmail.short_description = "Create messages from Gmail"
 
-    def connect_inbox(self, request, queryset):
+    def add_view(self, request, form_url='', extra_context=None):
+        return self.connect_inbox(request)
+    
+    def connect_inbox(self, request):
         try:
             client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
             flow = Flow.from_client_secrets_file(
@@ -115,34 +118,61 @@ class InboxAdmin(admin.ModelAdmin):
             )
 
             request.session['state'] = state
+            request.session['admin_redirect'] = reverse('admin:inboxes_inbox_changelist')
 
             return redirect(authorization_url)
 
         except Exception as e:
-            self.message_user(request, f"An error occurred while connecting the inbox: {str(e)}", level=django_messages.ERROR)
+            self.message_user(request, f"An error occurred while connecting the inbox: {str(e)}", level=messages.ERROR)
+            return redirect(reverse('admin:inboxes_inbox_changelist'))
 
     connect_inbox.short_description = "Connect the inbox"
 
 custom_admin_site.register(Inbox, InboxAdmin)
 
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.urls import reverse
+
 def oauth2callback(request):
     state = request.session['state']
-    
+    admin_redirect = request.session.get('admin_redirect', reverse('admin:inboxes_inbox_changelist'))
+
     flow = Flow.from_client_secrets_file(
-    'google_api_secrets.json',
-    scopes=[
-        'https://www.googleapis.com/auth/gmail.readonly',
-        'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'openid'
-    ]
-)
+        'google_api_secrets.json',
+        scopes=[
+            'https://www.googleapis.com/auth/gmail.readonly',
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'openid'
+        ]
+    )
     flow.redirect_uri = 'http://localhost:8000/oauth2callback'
 
     authorization_response = request.build_absolute_uri()
     flow.fetch_token(authorization_response=authorization_response)
 
     credentials = flow.credentials
-    # Here, you would typically save these credentials associated with the user or inbox
+    
+    # Get user info
+    service = build('oauth2', 'v2', credentials=credentials)
+    user_info = service.userinfo().get().execute()
+    email = user_info['email']
 
-    return render(request, 'oauth2callback.html', {'message': 'Successfully connected inbox!'})
+    # Create or update Inbox
+    user, _ = User.objects.get_or_create(username=email)
+    inbox, created = Inbox.objects.update_or_create(
+        email=email,
+        defaults={'user': user}
+    )
+
+    if created:
+        messages.success(request, f"Successfully connected inbox for {email}!")
+    else:
+        messages.info(request, f"Updated existing inbox connection for {email}.")
+
+    # Clear session data
+    request.session.pop('state', None)
+    request.session.pop('admin_redirect', None)
+
+    return redirect(admin_redirect)
