@@ -8,6 +8,7 @@ from django.db import transaction
 
 
 class ApolloPeopleSearch(models.Model):
+
     SENIORITY_CHOICES = [
         ('senior', 'Senior'),
         ('manager', 'Manager'),
@@ -25,7 +26,7 @@ class ApolloPeopleSearch(models.Model):
         ('yes', 'Yes'),
         ('no', 'No'),
     ]
-
+    name = models.CharField(max_length=255)
     person_titles = models.JSONField(blank=True, null=True, help_text="Array of person's titles")
     q_keywords = models.CharField(max_length=255, blank=True, help_text="Keywords to filter results")
     prospected_by_current_team = models.JSONField(blank=True, null=True, help_text="Array of 'yes' or 'no' strings")
@@ -40,7 +41,7 @@ class ApolloPeopleSearch(models.Model):
     per_page = models.PositiveIntegerField(default=10, help_text="Number of results per page (1-100)")
 
     def __str__(self):
-        return f"Apollo People Search {self.id}"
+        return self.name
 
     class Meta:
         verbose_name = "Apollo People Search"
