@@ -12,7 +12,7 @@ class BaseAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         # intentionally not using get.
         workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
-        return qs
+        # return qs
         return qs.filter(workspace_public_id=workspace_public_id)
     
 

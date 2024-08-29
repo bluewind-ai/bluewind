@@ -29,6 +29,9 @@ class Channel(BaseModel):
 
     def __str__(self):
         return self.email
+    
+    class Meta:
+        unique_together = ['workspace_public_id', 'email']
 
 SCOPES = [
     'https://www.googleapis.com/auth/userinfo.email',
@@ -57,7 +60,7 @@ def get_gmail_service():
             flow = Flow.from_client_secrets_file(
                 client_secret_file, 
                 scopes=SCOPES,
-                redirect_uri='http://localhost:8000/wks_94d425e52d18/oauth2callback/'
+                redirect_uri='http://localhost:8000/oauth2callback/'
             )
             auth_url, _ = flow.authorization_url(access_type='offline', include_granted_scopes='true')
             print(f"Please visit this URL to authorize the application: {auth_url}")
@@ -76,6 +79,30 @@ def get_gmail_service():
 import logging
 
 logger = logging.getLogger(__name__)
+
+# def modify_oauth_url(original_url):
+#     # Parse the URL
+#     parsed_url = urlparse(original_url)
+    
+#     # Get the query parameters
+#     params = parse_qs(parsed_url.query)
+    
+#     # Modify the redirect_uri
+#     if 'redirect_uri' in params:
+#         redirect_uri = params['redirect_uri'][0]
+#         modified_redirect_uri = redirect_uri.replace('/wks_50204447a6c5', '')
+#         params['redirect_uri'] = [modified_redirect_uri]
+    
+#     # Reconstruct the query string
+#     new_query = urlencode(params, doseq=True)
+    
+#     # Reconstruct the URL
+#     new_url = urlunparse(
+#         (parsed_url.scheme, parsed_url.netloc, parsed_url.path, 
+#          parsed_url.params, new_query, parsed_url.fragment)
+#     )
+    
+#     return new_url
 
 def fetch_messages_from_gmail():
     logger.info("Starting to fetch messages from Gmail")
@@ -108,7 +135,7 @@ def fetch_messages_from_gmail():
         raise
 
 import json
-from urllib.parse import quote_plus
+from urllib.parse import parse_qs, quote_plus, urlencode, urlparse, urlunparse
 
 class ChannelAdmin(BaseAdmin):
     list_display = ('email', 'user')
@@ -129,26 +156,38 @@ class ChannelAdmin(BaseAdmin):
     def connect_channel(self, request):
         try:
             client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
+            
+            # Get the workspace_public_id from the request
+            workspace_public_id = request.environ["WORKSPACE_PUBLIC_ID"]
+            
+            # Create a redirect URI without the workspace_public_id
+            redirect_uri = request.build_absolute_uri(reverse('oauth2callback')).replace(f'/{workspace_public_id}', '')
+            print(f"redirect_uri: {redirect_uri}")
             flow = Flow.from_client_secrets_file(
                 client_secret_file,
                 scopes=SCOPES,
-                redirect_uri=request.build_absolute_uri(reverse('oauth2callback'))
+                redirect_uri=redirect_uri
             )
+            
+            # Create a state parameter with the workspace_public_id
+            state = f"{workspace_public_id}:{os.urandom(16).hex()}"
+            
             auth_url, _ = flow.authorization_url(
                 access_type='offline',
                 include_granted_scopes='true',
-                prompt='consent'
+                prompt='consent',
+                state=state
             )
 
             # Store the client configuration in the session
             with open(client_secret_file, 'r') as f:
                 client_config = json.load(f)
-            
+
             request.session['oauth_client_config'] = client_config
             request.session['oauth_scopes'] = SCOPES
-            request.session['oauth_redirect_uri'] = request.build_absolute_uri(reverse('oauth2callback'))
+            request.session['oauth_redirect_uri'] = redirect_uri
 
-            # Redirect user to auth_url
+            print(f"Please visit this URL to authorize the application: {auth_url}")
             return redirect(auth_url)
 
         except Exception as e:
@@ -188,6 +227,11 @@ def oauth2callback(request):
         if 'code' not in request.GET:
             raise ValueError("No authorization code found in the request")
 
+        # Get the state parameter and extract the workspace_public_id
+        state = request.GET.get('state', '')
+        workspace_public_id, _ = state.split(':', 1)
+        print(f"workspace_public_id: {workspace_public_id}")
+
         # Exchange the authorization code for credentials
         flow.fetch_token(code=request.GET['code'])
 
@@ -208,7 +252,7 @@ def oauth2callback(request):
         user, _ = User.objects.get_or_create(username=email)
         channel, created = Channel.objects.update_or_create(
             email=email,
-            workspace_public_id="wks_94d425e52d18",
+            workspace_public_id=workspace_public_id,
             defaults={'user': user}
         )
 
