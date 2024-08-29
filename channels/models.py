@@ -136,7 +136,8 @@ def fetch_messages_from_gmail(request, channel):
                     content=body,
                     timestamp=timezone.now(),
                     is_read=False,
-                    workspace_public_id=request.environ.get('WORKSPACE_PUBLIC_ID')
+                    workspace_public_id=request.environ.get('WORKSPACE_PUBLIC_ID'),
+                    gmail_message_id=message['id']  # Use the actual Gmail message ID
                 )
                 created_count += 1
                 logger.info(f"Created message: {subject[:30]}...")

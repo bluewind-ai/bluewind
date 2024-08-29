@@ -26,7 +26,10 @@ class Message(BaseModel):
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     subject = models.CharField(max_length=255, blank=True, null=True)
-    gmail_message_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    gmail_message_id = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        unique_together = ['workspace_public_id', 'gmail_message_id']
 
     def __str__(self):
         return f"From {self.channel.email} to {self.recipient}: {self.content[:50]}"
