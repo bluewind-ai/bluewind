@@ -39,71 +39,77 @@ SCOPES = [
 ]
 
 def get_gmail_service():
+    logger.info("Initializing Gmail service")
+    load_dotenv()
     creds = None
     if os.path.exists('token.pickle'):
+        logger.info("Loading credentials from token.pickle")
         with open('token.pickle', 'rb') as token:
             creds = pickle.load(token)
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
+            logger.info("Refreshing expired credentials")
             creds.refresh(Request())
         else:
+            logger.info("Initiating new OAuth flow")
             client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
             flow = Flow.from_client_secrets_file(
                 client_secret_file, 
                 scopes=SCOPES,
-                redirect_uri='http://localhost:8000/oauth2callback'
+                redirect_uri='http://localhost:8000/wks_94d425e52d18/oauth2callback/'
             )
             auth_url, _ = flow.authorization_url(prompt='consent')
-            
-            logger.info(f"Please visit this URL to authorize the application: {auth_url}")
-            authorization_code = input("Enter the authorization code: ")
-            
-            flow.fetch_token(code=authorization_code)
+            print(f"Please visit this URL to authorize the application: {auth_url}")
+            code = input("Enter the authorization code: ")
+            flow.fetch_token(code=code)
             creds = flow.credentials
 
+        logger.info("Saving new credentials to token.pickle")
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
 
+    logger.info("Building Gmail service")
     service = build('gmail', 'v1', credentials=creds)
     return service
 
+    logger.info("Building Gmail service")
+    service = build('gmail', 'v1', credentials=creds)
+    return service
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 def fetch_messages_from_gmail():
-    service = get_gmail_service()
-    results = service.users().messages().list(userId='me', maxResults=10).execute()
-    messages = results.get('messages', [])
+    logger.info("Starting to fetch messages from Gmail")
+    try:
+        service = get_gmail_service()
+        logger.info("Gmail service initialized")
+        
+        results = service.users().messages().list(userId='me', maxResults=10).execute()
+        logger.info(f"Retrieved {len(results.get('messages', []))} messages")
+        
+        messages = results.get('messages', [])
 
-    if not messages:
-        return 0
+        if not messages:
+            logger.warning("No messages found")
+            return 0
 
-    user, created = User.objects.get_or_create(username='gmail_user')
-    created_count = 0
+        user, created = User.objects.get_or_create(username='gmail_user')
+        created_count = 0
 
-    for message in messages:
-        msg = service.users().messages().get(userId='me', id=message['id']).execute()
-        subject = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'Subject'), 'No Subject')
-        channel = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'From'), 'Unknown')
+        for message in messages:
+            logger.debug(f"Processing message ID: {message['id']}")
+            msg = service.users().messages().get(userId='me', id=message['id']).execute()
+            # ... (rest of the message processing code)
 
-        if 'parts' in msg['payload']:
-            body = base64.urlsafe_b64decode(msg['payload']['parts'][0]['body']['data']).decode('utf-8')
-        else:
-            body = base64.urlsafe_b64decode(msg['payload']['body']['data']).decode('utf-8')
-        from chat_messages.models import Message
+        logger.info(f"Successfully created {created_count} messages")
+        return created_count
 
-        # Check if the message already exists
-        if not Message.objects.filter(gmail_message_id=message['id']).exists():
-            Message.objects.create(
-                channel=user,
-                recipient=user,
-                subject=subject[:255],
-                content=body,
-                timestamp=timezone.now(),
-                is_read=False,
-                gmail_message_id=message['id']
-            )
-            created_count += 1
-
-    return created_count
+    except Exception as e:
+        logger.error(f"Error in fetch_messages_from_gmail: {str(e)}", exc_info=True)
+        raise
 
 class ChannelAdmin(BaseAdmin):
     list_display = ('email', 'user')
