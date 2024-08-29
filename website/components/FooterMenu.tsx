@@ -8,7 +8,7 @@ const menuItems: {
     heading: "Products",
     items: [
       {
-        name: "Shared Inbox (Front)",
+        name: "Shared Channel (Front)",
         href: "",
       },
       {

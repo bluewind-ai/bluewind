@@ -6,12 +6,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from health_check.views import health_check
-import inboxes
+import channels
 from workspaces.models import custom_admin_site  # Import your custom admin site
 
 favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 admin_redirect = RedirectView.as_view(url='/admin/', permanent=True)
-from inboxes.models import oauth2callback
+from channels.models import oauth2callback
 urlpatterns = [
     path('admin/', custom_admin_site.urls),  # Use custom_admin_site instead of admin.site
     path('', admin_redirect, name='root_redirect'),  # This line redirects root to admin

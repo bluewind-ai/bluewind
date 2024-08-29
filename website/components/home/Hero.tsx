@@ -41,7 +41,7 @@ export function Hero() {
             customer support
           </Link>{" "}
           to debug and improve your LLM application.
-          <Link href="/docs/shared-inbox" className="underline">
+          <Link href="/docs/shared-channel" className="underline">
             metrics
           </Link>{" "} */}
         </span>

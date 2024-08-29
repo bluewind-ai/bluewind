@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.db import transaction
 from workspaces.models import custom_admin_site
-from inboxes.models import get_gmail_service
+from channels.models import get_gmail_service
 import base64
 import logging
 
@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class Message(BaseModel):
-    from inboxes.models import Inbox
-    sender = models.ForeignKey(Inbox, on_delete=models.CASCADE, related_name='sent_messages')
+    from channels.models import Channel
+    sender = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='sent_messages')
     recipient = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='received_messages')
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)

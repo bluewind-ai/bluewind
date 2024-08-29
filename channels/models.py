@@ -19,7 +19,7 @@ from googleapiclient.discovery import build
 from dotenv import load_dotenv
 from django.contrib import messages as django_messages
 
-class Inbox(BaseModel):
+class Channel(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     email = models.EmailField(unique=True)
 
@@ -93,7 +93,7 @@ def fetch_messages_from_gmail():
 
     return created_count
 
-class InboxAdmin(BaseAdmin):
+class ChannelAdmin(BaseAdmin):
     list_display = ('email', 'user')
     actions = ['fetch_messages_from_gmail']
 
@@ -107,9 +107,9 @@ class InboxAdmin(BaseAdmin):
     fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
 
     def add_view(self, request, form_url='', extra_context=None):
-        return self.connect_inbox(request)
+        return self.connect_channel(request)
     
-    def connect_inbox(self, request):
+    def connect_channel(self, request):
         try:
             client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
             flow = Flow.from_client_secrets_file(
@@ -124,17 +124,17 @@ class InboxAdmin(BaseAdmin):
             )
 
             request.session['state'] = state
-            request.session['admin_redirect'] = reverse('admin:inboxes_inbox_changelist')
+            request.session['admin_redirect'] = reverse('admin:channels_channel_changelist')
 
             return redirect(authorization_url)
 
         except Exception as e:
-            self.message_user(request, f"An error occurred while connecting the inbox: {str(e)}", level=messages.ERROR)
-            return redirect(reverse('admin:inboxes_inbox_changelist'))
+            self.message_user(request, f"An error occurred while connecting the channel: {str(e)}", level=messages.ERROR)
+            return redirect(reverse('admin:channels_channel_changelist'))
 
-    connect_inbox.short_description = "Connect the inbox"
+    connect_channel.short_description = "Connect the channel"
 
-custom_admin_site.register(Inbox, InboxAdmin)
+custom_admin_site.register(Channel, ChannelAdmin)
 
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -142,7 +142,7 @@ from django.urls import reverse
 
 def oauth2callback(request):
     state = request.session['state']
-    admin_redirect = request.session.get('admin_redirect', reverse('admin:inboxes_inbox_changelist'))
+    admin_redirect = request.session.get('admin_redirect', reverse('admin:channels_channel_changelist'))
 
     flow = Flow.from_client_secrets_file(
         'google_api_secrets.json',
@@ -160,18 +160,18 @@ def oauth2callback(request):
     user_info = service.userinfo().get().execute()
     email = user_info['email']
 
-    # Create or update Inbox
+    # Create or update Channel
     user, _ = User.objects.get_or_create(username=email)
-    inbox, created = Inbox.objects.update_or_create(
+    channel, created = Channel.objects.update_or_create(
         email=email,
-        workspace_public_id="wks_f019f0f2faba",
+        workspace_public_id="wks_94d425e52d18",
         defaults={'user': user}
     )
 
     if created:
-        messages.success(request, f"Successfully connected inbox for {email}!")
+        messages.success(request, f"Successfully connected channel for {email}!")
     else:
-        messages.info(request, f"Updated existing inbox connection for {email}.")
+        messages.info(request, f"Updated existing channel connection for {email}.")
 
     # Clear session data
     request.session.pop('state', None)
