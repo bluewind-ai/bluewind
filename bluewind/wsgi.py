@@ -1,5 +1,6 @@
 import os
 from django.core.wsgi import get_wsgi_application
+from urllib.parse import parse_qs
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_prod')
 
@@ -21,14 +22,30 @@ def workspace_wsgi_middleware(application):
         else:
             WHITELIST = ['/health/', '/favicon.ico']
             if path_info not in WHITELIST:
-                if path_info != '/oauth2callback/':
+                if path_info == '/oauth2callback/':
+                    print('cdsmcjdsjkcndsjkcndsks')
+                    print(environ)
                     
-                    raise ValueError("Invalid path")
-                print('cdsmcjdsjkcndsjkcndsks')
-                print(environ)
-                # the environ["QUERY_STING"] has something like this
-                'QUERY_STRING': 'state=wks_50204447a6c5:e30e9772c472e800e401642331b2fa71&code=4/0AQlEd8wXKBwcgkziLoek3uH92DiOgY4a6MUwd5mLC6vJ7nLO_En-rb-LBKzygMFUZzTERg&scope=email%20profile%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile%20openid%20https://www.googleapis.com/auth/gmail.readonly%20https://www.googleapis.com/auth/gmail.send&authuser=2&hd=bluewind.ai&prompt=consent'
-                # I need to get the state and put it in the environ
+                    # Parse the query string
+                    query_string = environ.get('QUERY_STRING', '')
+                    parsed_qs = parse_qs(query_string)
+                    
+                    # Extract the state from the query string
+                    state = parsed_qs.get('state', [''])[0]
+                    if state.startswith('wks_'):
+                        # Extract the workspace_public_id from the state
+                        workspace_public_id, _ = state.split(':', 1)
+                        
+                        # Add workspace_public_id to the environment
+                        environ['SCRIPT_NAME'] = environ.get('SCRIPT_NAME', '') + f'/{workspace_public_id}'
+                        # environ['PATH_INFO'] = '/' + '/'.join(parts[2:])
+                        
+                        # Add workspace_public_id to the environment
+                        environ['WORKSPACE_PUBLIC_ID'] = workspace_public_id
+                    else:
+                        raise ValueError("Invalid state in OAuth2 callback")
+                else:
+                    raise ValueError("Invalid path", path_info)
         return application(environ, start_response)
     return wrapper
 
