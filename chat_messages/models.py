@@ -14,3 +14,10 @@ class Message(BaseModel):
 
     def __str__(self):
         return f"From {self.sender} to {self.recipient}: {self.content[:50]}"
+from django.contrib import admin
+
+class MessageAdmin(admin.ModelAdmin):
+    pass
+
+from workspaces.models import custom_admin_site
+custom_admin_site.register(Message, MessageAdmin)

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
     'homepage',
     'apollo_people_search',
+    'inboxes',
 ]
 
 TEMPLATES = [
