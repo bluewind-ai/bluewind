@@ -11,6 +11,8 @@ class Message(BaseModel):
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     subject = models.CharField(max_length=255, blank=True, null=True)  # Make subject optional
+    gmail_message_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+
 
     def __str__(self):
         return f"From {self.sender} to {self.recipient}: {self.content[:50]}"

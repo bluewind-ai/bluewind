@@ -75,15 +75,18 @@ def create_messages_from_gmail():
         else:
             body = base64.urlsafe_b64decode(msg['payload']['body']['data']).decode('utf-8')
 
-        Message.objects.create(
-            sender=user,
-            recipient=user,
-            subject=subject[:255],
-            content=body,
-            timestamp=timezone.now(),
-            is_read=False
-        )
-        created_count += 1
+        # Check if the message already exists
+        if not Message.objects.filter(gmail_message_id=message['id']).exists():
+            Message.objects.create(
+                sender=user,
+                recipient=user,
+                subject=subject[:255],
+                content=body,
+                timestamp=timezone.now(),
+                is_read=False,
+                gmail_message_id=message['id']
+            )
+            created_count += 1
 
     return created_count
 
@@ -98,7 +101,7 @@ class InboxAdmin(admin.ModelAdmin):
         except Exception as e:
             self.message_user(request, f"An error occurred: {str(e)}", level=django_messages.ERROR)
 
-    create_messages_from_gmail.short_description = "Create messages from Gmail"
+    create_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
 
     def add_view(self, request, form_url='', extra_context=None):
         return self.connect_inbox(request)
