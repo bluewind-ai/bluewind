@@ -50,9 +50,9 @@ class MessageAdmin(admin.ModelAdmin):
                         sender_id=sender_id,
                         recipient_id=recipient_id,
                         subject=subject,
-                        content=content
+                        content=content,
+                        workspace_public_id=request.environ.get('WORKSPACE_PUBLIC_ID')
                     )
-                    message.save()
                     logger.info(f"Message created: {message}")
 
                     # Send email using Gmail API

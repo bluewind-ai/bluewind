@@ -4,6 +4,7 @@ import requests
 from django.db import models
 from django.conf import settings
 from base_model.models import BaseModel
+from base_model_admin.models import BaseAdmin
 from workspace_filter.models import User
 from workspaces.models import custom_admin_site 
 from django.contrib import admin
@@ -19,7 +20,6 @@ class Person(BaseModel):
     phone = models.CharField(max_length=20, blank=True)
     company_domain_name = models.CharField(max_length=100, blank=True)
     company_linkedin_url = models.URLField(blank=True, null=True)
-    workspace_public_id = models.CharField(max_length=50, blank=True)
     status = models.CharField(max_length=20, choices=[
         ('NEW', 'New'),
         ('CONTACTED', 'Contacted'),
@@ -94,22 +94,12 @@ class Person(BaseModel):
 
         return False
 
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(BaseAdmin):
     list_display = ('first_name', 'last_name', 'email', 'company_domain_name', 'status')
     list_filter = ('status', 'source')
     search_fields = ('first_name', 'last_name', 'email', 'company_domain_name')
     actions = ['enrich_emails']
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        # intentionally not using get.
-        workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
-        return qs.filter(workspace_public_id=workspace_public_id)
 
-    def save_model(self, request, obj, form, change):
-        if not obj.workspace_public_id:
-            # intentionally not using get.
-            obj.workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
-        super().save_model(request, obj, form, change)
     def enrich_emails(self, request, queryset):
         enriched_count = 0
         for person in queryset:
