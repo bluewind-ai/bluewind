@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class Message(BaseModel):
     from channels.models import Channel
-    sender = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='sent_messages')
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='sent_messages')
     recipient = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='received_messages')
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -29,7 +29,7 @@ class Message(BaseModel):
     gmail_message_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
 
     def __str__(self):
-        return f"From {self.sender.email} to {self.recipient}: {self.content[:50]}"
+        return f"From {self.channel.email} to {self.recipient}: {self.content[:50]}"
 
 
 # Admin registration remains the same
@@ -42,13 +42,13 @@ class MessageAdmin(BaseAdmin):
             try:
                 with transaction.atomic():
                     # Create and save the message
-                    sender_id = request.POST.get('sender')
+                    channel_id = request.POST.get('channel')
                     recipient_id = request.POST.get('recipient')
                     subject = request.POST.get('subject')
                     content = request.POST.get('content')
 
                     message = Message(
-                        sender_id=sender_id,
+                        channel_id=channel_id,
                         recipient_id=recipient_id,
                         subject=subject,
                         content=content,

@@ -109,8 +109,8 @@ def get_last_10_emails():
                 # Get email subject
                 subject = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'Subject'), 'No Subject')
                 
-                # Get sender
-                sender = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'From'), 'Unknown')
+                # Get channel
+                channel = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'From'), 'Unknown')
                 
                 # Get email body
                 if 'parts' in msg['payload']:
@@ -120,7 +120,7 @@ def get_last_10_emails():
                 
                 # Create Message object
                 Message.objects.create(
-                    sender=user,
+                    channel=user,
                     recipient=user,
                     subject=subject[:255],  # Limit subject to 255 characters
                     content=body,

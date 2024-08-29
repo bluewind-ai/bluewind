@@ -70,7 +70,7 @@ def fetch_messages_from_gmail():
     for message in messages:
         msg = service.users().messages().get(userId='me', id=message['id']).execute()
         subject = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'Subject'), 'No Subject')
-        sender = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'From'), 'Unknown')
+        channel = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'From'), 'Unknown')
 
         if 'parts' in msg['payload']:
             body = base64.urlsafe_b64decode(msg['payload']['parts'][0]['body']['data']).decode('utf-8')
@@ -81,7 +81,7 @@ def fetch_messages_from_gmail():
         # Check if the message already exists
         if not Message.objects.filter(gmail_message_id=message['id']).exists():
             Message.objects.create(
-                sender=user,
+                channel=user,
                 recipient=user,
                 subject=subject[:255],
                 content=body,
