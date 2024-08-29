@@ -6,7 +6,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_prod')
 
 def workspace_wsgi_middleware(application):
     def wrapper(environ, start_response):
-        print('go there:cdnsjcdsjk')
         path_info = environ.get('PATH_INFO', '')
         if path_info.startswith('/wks_'):
             # Extract workspace_public_id including the 'wks_' prefix
@@ -20,7 +19,7 @@ def workspace_wsgi_middleware(application):
             # Add workspace_public_id to the environment
             environ['WORKSPACE_PUBLIC_ID'] = workspace_public_id
         else:
-            WHITELIST = ['/health/', '/favicon.ico']
+            WHITELIST = ['/health/', '/favicon.ico', '/', '/admin/login/', '/admin/', '/admin/logout/']
             if path_info not in WHITELIST:
                 if path_info == '/oauth2callback/':
                     print('cdsmcjdsjkcndsjkcndsks')
