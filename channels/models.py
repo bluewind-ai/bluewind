@@ -1,13 +1,15 @@
 import logging
 import os
 
+from django.http import HttpResponse
+
 from base_model_admin.models import BaseAdmin
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 from django.db import models
 from django.contrib import admin
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.urls import path, reverse
+from django.urls import path, re_path, reverse
 from base_model.models import BaseModel
 from workspace_filter.models import User
 from workspaces.models import custom_admin_site
@@ -26,6 +28,10 @@ logger = logging.getLogger(__name__)
 class Channel(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     email = models.EmailField()
+    gmail_history_id = models.CharField(max_length=20, blank=True, null=True)
+    gmail_expiration = models.CharField(max_length=20, blank=True, null=True)
+    last_synced = models.DateTimeField(null=True, blank=True)
+
 
     def __str__(self):
         return self.email
@@ -38,7 +44,8 @@ SCOPES = [
     'https://www.googleapis.com/auth/userinfo.profile',
     'openid',
     'https://www.googleapis.com/auth/gmail.readonly',
-    'https://www.googleapis.com/auth/gmail.send'  # Add this for sending emails
+    'https://www.googleapis.com/auth/gmail.send'
+    'https://www.googleapis.com/auth/gmail.modify'
 ]
 
 def get_gmail_service():
@@ -153,10 +160,64 @@ def fetch_messages_from_gmail(request, channel):
 
 import json
 from urllib.parse import parse_qs, quote_plus, urlencode, urlparse, urlunparse
+from google.api_core.exceptions import GoogleAPIError
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 class ChannelAdmin(BaseAdmin):
     list_display = ('email', 'user')
-    actions = ['fetch_messages_from_gmail']
+    actions = ['fetch_messages_from_gmail', 'setup_gmail_push_notifications']
+    readonly_fields = ('gmail_history_id', 'gmail_expiration', 'last_synced')
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            re_path(r'^gmail-webhook/(?P<channel_id>[\w-]+)/$',
+                self.admin_site.admin_view(self.gmail_webhook),
+                name='channel_gmail_webhook'),
+        ]
+        return custom_urls + urls
+
+    @csrf_exempt
+    @require_POST
+    def gmail_webhook(self, request, channel_id):
+        channel = get_object_or_404(Channel, id=channel_id)
+        # Process the notification
+        # Update channel.last_synced or other relevant fields
+        channel.save()
+        return HttpResponse("Webhook received", status=200)
+    
+    def setup_gmail_push_notifications(self, request, queryset):
+        for channel in queryset:
+            try:
+                service = get_gmail_service()
+                
+                # Set up push notifications
+                request_body = {
+                    'labelIds': ['INBOX'],
+                    'topicName': f"projects/{os.environ['GOOGLE_CLOUD_PROJECT_ID']}/topics/gmail-notifications",
+                    'labelFilterAction': 'include'
+                }
+                watch_response = service.users().watch(userId='me', body=request_body).execute()
+                
+                # Save the historyId and expiration to the channel model
+                channel.gmail_history_id = watch_response['historyId']
+                channel.gmail_expiration = watch_response['expiration']
+                channel.save()
+                
+                self.message_user(
+                    request, 
+                    f"Successfully set up push notifications for {channel.email}",
+                    level=django_messages.SUCCESS
+                )
+            except GoogleAPIError as e:
+                self.message_user(
+                    request, 
+                    f"Error setting up push notifications for {channel.email}: {str(e)}",
+                    level=django_messages.ERROR
+                )
+
+    setup_gmail_push_notifications.short_description = "Set up Gmail push notifications"
 
     def fetch_messages_from_gmail(self, request, queryset):
         total_created_count = 0
