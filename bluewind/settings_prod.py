@@ -21,6 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 INSTALLED_APPS = [
     # 'django_extensions',
+    'model_clone',
     'workspace_filter',
 
     'django.contrib.admin',
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     'homepage',
     'apollo_people_search',
     'channels',
+    'gmail_subscriptions',
 ]
 
 TEMPLATES = [

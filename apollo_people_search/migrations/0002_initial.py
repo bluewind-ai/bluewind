@@ -9,18 +9,16 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("chat_messages", "0001_initial"),
-        ("people", "0001_initial"),
+        ("apollo_people_search", "0001_initial"),
+        ("workspaces", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="message",
-            name="recipient",
+            model_name="apollopeoplesearch",
+            name="workspace",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="received_messages",
-                to="people.person",
+                on_delete=django.db.models.deletion.CASCADE, to="workspaces.workspace"
             ),
         ),
     ]

@@ -1,11 +1,20 @@
-from django.db import models
+# from django.db import models
 
-from base_model.models import BaseModel
+# from base_model.models import BaseModel
+# from base_model_admin.models import BaseAdmin
 
-class DBGraph(BaseModel):
-    class Meta:
-        verbose_name_plural = "Database Graph"
-        managed = False  # This model won't be managed by Django
+# class DBGraph(BaseModel):
+#     name = models.CharField(max_length=100)
+#     class Meta:
+#         verbose_name_plural = "Database Graph"
 
-    def __str__(self):
-        return "Database Graph"
+#     def __str__(self):
+#         return "Database Graph"
+    
+# class DBGraphAdmin(BaseAdmin):
+#     pass
+
+
+# from workspace_filter.admin import custom_admin_site
+
+# custom_admin_site.register(DBGraph, DBGraphAdmin)

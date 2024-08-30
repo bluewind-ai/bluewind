@@ -9,18 +9,20 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("chat_messages", "0001_initial"),
-        ("people", "0001_initial"),
+        ("chat_messages", "0002_initial"),
+        ("workspaces", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
             model_name="message",
-            name="recipient",
+            name="workspace",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="received_messages",
-                to="people.person",
+                on_delete=django.db.models.deletion.CASCADE, to="workspaces.workspace"
             ),
+        ),
+        migrations.AlterUniqueTogether(
+            name="message",
+            unique_together={("workspace", "gmail_message_id")},
         ),
     ]

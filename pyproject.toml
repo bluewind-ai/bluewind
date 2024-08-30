@@ -49,6 +49,8 @@ botocore = "^1.35.2"
 boto3 = "^1.35.2"
 aiohttp = "^3.10.5"
 django-admin-sso = "^5.2.0"
+google-cloud-pubsub = "^2.23.0"
+django-clone = "^5.3.3"
 
 [tool.poetry.extras]
 argon2 = [ "argon2-cffi",]

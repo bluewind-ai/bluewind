@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Channel",
+            name="GmailSubscription",
             fields=[
                 (
                     "id",
@@ -24,17 +24,21 @@ class Migration(migrations.Migration):
                         serialize=False,
                     ),
                 ),
-                ("email", models.EmailField(max_length=254)),
+                ("project_id", models.CharField(max_length=100)),
+                ("topic_id", models.CharField(max_length=100)),
+                ("push_endpoint", models.URLField()),
+                ("label_ids", models.JSONField(default=list)),
                 (
-                    "gmail_history_id",
-                    models.CharField(blank=True, max_length=20, null=True),
+                    "label_filter_action",
+                    models.CharField(default="include", max_length=20),
                 ),
-                (
-                    "gmail_expiration",
-                    models.CharField(blank=True, max_length=20, null=True),
-                ),
-                ("last_synced", models.DateTimeField(blank=True, null=True)),
+                ("client_secret_file", models.CharField(max_length=255)),
+                ("oauth_scopes", models.JSONField(default=list)),
+                ("redirect_uri", models.URLField()),
             ],
+            options={
+                "abstract": False,
+            },
             bases=(model_clone.mixin.CloneMixin, models.Model),
         ),
     ]

@@ -12,4 +12,6 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('workspace_public_id',)}),
     )
 
-admin.site.register(User, CustomUserAdmin)
+from workspaces.models import custom_admin_site
+
+custom_admin_site.register(User, CustomUserAdmin)

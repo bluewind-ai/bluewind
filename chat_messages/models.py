@@ -29,7 +29,7 @@ class Message(BaseModel):
     gmail_message_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
-        unique_together = ['workspace_public_id', 'gmail_message_id']
+        unique_together = ['workspace', 'gmail_message_id']
 
     def __str__(self):
         return f"From {self.channel.email} to {self.recipient}: {self.content[:50]}"

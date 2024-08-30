@@ -21,7 +21,22 @@ def workspace_wsgi_middleware(application):
             # Add workspace_public_id to the environment
             environ['WORKSPACE_PUBLIC_ID'] = workspace_public_id
         else:
-            WHITELIST = ['/health/', '/favicon.ico', '/', '/admin/login/', '/admin/', '/admin/logout/']
+            WHITELIST = [
+                '/health/',
+                '/health',
+                '/favicon.ico',
+                '/favicon.ico/',
+                '/',
+                '/admin/login/',
+                '/admin/login',
+                '/admin/',
+                '/admin',
+                '/admin/logout/',
+                '/admin/logout',
+                '/oauth2callback/',
+                '/oauth2callback',
+            ]
+            
             if path_info not in WHITELIST:
                 if path_info == '/oauth2callback/':
                     print('cdsmcjdsjkcndsjkcndsks')

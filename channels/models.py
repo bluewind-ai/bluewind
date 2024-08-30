@@ -1,29 +1,42 @@
 import logging
 import os
-
+import base64
+import pickle
+import json
 from django.http import HttpResponse
-
-from base_model_admin.models import BaseAdmin
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 from django.db import models
 from django.contrib import admin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.urls import path, re_path, reverse
+from django.contrib import messages as django_messages
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+from google.oauth2 import service_account
+from google.auth.transport.requests import Request
+from google.auth.transport.urllib3 import AuthorizedHttp
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow, Flow
+from google.cloud import pubsub_v1
+
+from base_model_admin.models import BaseAdmin
 from base_model.models import BaseModel
 from workspace_filter.models import User
 from workspaces.models import custom_admin_site
-import base64
-import os
-import pickle
-from google_auth_oauthlib.flow import InstalledAppFlow, Flow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
-from dotenv import load_dotenv
-from django.contrib import messages as django_messages
+from people.models import Person
+
+from django.contrib import messages
+
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+def get_pubsub_credentials():
+    return service_account.Credentials.from_service_account_file(
+        'google_backend_service_account.json',
+        scopes=['https://www.googleapis.com/auth/pubsub']
+    )
 
 class Channel(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -32,25 +45,44 @@ class Channel(BaseModel):
     gmail_expiration = models.CharField(max_length=20, blank=True, null=True)
     last_synced = models.DateTimeField(null=True, blank=True)
 
-
     def __str__(self):
         return self.email
-    
+
     class Meta:
-        unique_together = ['workspace_public_id', 'email']
+        unique_together = ['workspace', 'email']
 
 SCOPES = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
     'openid',
     'https://www.googleapis.com/auth/gmail.readonly',
-    'https://www.googleapis.com/auth/gmail.send'
-    'https://www.googleapis.com/auth/gmail.modify'
+    'https://www.googleapis.com/auth/gmail.send',
+    'https://www.googleapis.com/auth/gmail.modify',
+    'https://www.googleapis.com/auth/gmail.settings.basic',
+    'https://www.googleapis.com/auth/pubsub',  # Add this line
 ]
+
+from google.api_core import exceptions as google_exceptions
+
+def setup_pubsub_topic():
+    project_id = os.environ.get('GOOGLE_CLOUD_PROJECT_ID')
+    topic_id = 'gmail-notifications'
+    
+    credentials = get_pubsub_credentials()
+    publisher = pubsub_v1.PublisherClient(credentials=credentials)
+    topic_path = publisher.topic_path(project_id, topic_id)
+    
+    try:
+        topic = publisher.create_topic(request={"name": topic_path})
+        logger.info(f"Created PubSub topic: {topic.name}")
+    except google_exceptions.AlreadyExists:
+        logger.info(f"PubSub topic already exists: {topic_path}")
+    except Exception as e:
+        logger.error(f"Error creating PubSub topic: {str(e)}")
+        raise
 
 def get_gmail_service():
     logger.info("Initializing Gmail service")
-    load_dotenv()
     creds = None
     if os.path.exists('token.pickle'):
         logger.info("Loading credentials from token.pickle")
@@ -80,19 +112,16 @@ def get_gmail_service():
             pickle.dump(creds, token)
 
     logger.info("Building Gmail service")
+    if creds:
+        logger.info(f"Gmail credentials type: {type(creds)}")
+        logger.info(f"Gmail credentials scopes: {creds.scopes}")
+
     service = build('gmail', 'v1', credentials=creds)
     return service
 
-import logging
-
-logger = logging.getLogger(__name__)
-
-
-import base64
-
 def fetch_messages_from_gmail(request, channel):
     from chat_messages.models import Message
-    from people.models import Person  
+
     logger.info(f"Starting to fetch messages from Gmail for channel: {channel.email}")
     try:
         service = get_gmail_service()
@@ -144,7 +173,7 @@ def fetch_messages_from_gmail(request, channel):
                     timestamp=timezone.now(),
                     is_read=False,
                     workspace_public_id=request.environ.get('WORKSPACE_PUBLIC_ID'),
-                    gmail_message_id=message['id']  # Use the actual Gmail message ID
+                    gmail_message_id=message['id']
                 )
                 created_count += 1
                 logger.info(f"Created message: {subject[:30]}...")
@@ -157,12 +186,6 @@ def fetch_messages_from_gmail(request, channel):
     except Exception as e:
         logger.error(f"Error in fetch_messages_from_gmail for {channel.email}: {str(e)}", exc_info=True)
         raise
-
-import json
-from urllib.parse import parse_qs, quote_plus, urlencode, urlparse, urlunparse
-from google.api_core.exceptions import GoogleAPIError
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
 
 class ChannelAdmin(BaseAdmin):
     list_display = ('email', 'user')
@@ -186,36 +209,35 @@ class ChannelAdmin(BaseAdmin):
         # Update channel.last_synced or other relevant fields
         channel.save()
         return HttpResponse("Webhook received", status=200)
-    
+
     def setup_gmail_push_notifications(self, request, queryset):
+        # Ensure PubSub topic is set up first
+        try:
+            setup_pubsub_topic()
+        except Exception as e:
+            self.message_user(request, f"Error setting up PubSub topic: {str(e)}", level=django_messages.ERROR)
+            return
+
         for channel in queryset:
             try:
-                service = get_gmail_service()
+                gmail_service = get_gmail_service()
                 
-                # Set up push notifications
                 request_body = {
                     'labelIds': ['INBOX'],
                     'topicName': f"projects/{os.environ['GOOGLE_CLOUD_PROJECT_ID']}/topics/gmail-notifications",
                     'labelFilterAction': 'include'
                 }
-                watch_response = service.users().watch(userId='me', body=request_body).execute()
                 
-                # Save the historyId and expiration to the channel model
+                watch_response = gmail_service.users().watch(userId='me', body=request_body).execute()
+
                 channel.gmail_history_id = watch_response['historyId']
                 channel.gmail_expiration = watch_response['expiration']
                 channel.save()
-                
-                self.message_user(
-                    request, 
-                    f"Successfully set up push notifications for {channel.email}",
-                    level=django_messages.SUCCESS
-                )
-            except GoogleAPIError as e:
-                self.message_user(
-                    request, 
-                    f"Error setting up push notifications for {channel.email}: {str(e)}",
-                    level=django_messages.ERROR
-                )
+
+                self.message_user(request, f"Successfully set up push notifications for {channel.email}", level=django_messages.SUCCESS)
+            except Exception as e:
+                logger.error(f"Detailed error for {channel.email}: {str(e)}", exc_info=True)
+                self.message_user(request, f"Error setting up push notifications for {channel.email}: {str(e)}", level=django_messages.ERROR)
 
     setup_gmail_push_notifications.short_description = "Set up Gmail push notifications"
 
@@ -228,11 +250,8 @@ class ChannelAdmin(BaseAdmin):
                 self.message_user(request, f"Created {created_count} messages for {channel.email}", level=django_messages.SUCCESS)
             except Exception as e:
                 self.message_user(request, f"Error fetching messages for {channel.email}: {str(e)}", level=django_messages.ERROR)
-        
+
         self.message_user(request, f"Total messages created: {total_created_count}", level=django_messages.INFO)
-
-    fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
-
 
     fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
 
@@ -242,11 +261,9 @@ class ChannelAdmin(BaseAdmin):
     def connect_channel(self, request):
         try:
             client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
-            
-            # Get the workspace_public_id from the request
+
             workspace_public_id = request.environ["WORKSPACE_PUBLIC_ID"]
-            
-            # Create a redirect URI without the workspace_public_id
+
             redirect_uri = request.build_absolute_uri(reverse('oauth2callback')).replace(f'/{workspace_public_id}', '')
             print(f"redirect_uri: {redirect_uri}")
             flow = Flow.from_client_secrets_file(
@@ -254,10 +271,9 @@ class ChannelAdmin(BaseAdmin):
                 scopes=SCOPES,
                 redirect_uri=redirect_uri
             )
-            
-            # Create a state parameter with the workspace_public_id
+
             state = f"{workspace_public_id}:{os.urandom(16).hex()}"
-            
+
             auth_url, _ = flow.authorization_url(
                 access_type='offline',
                 include_granted_scopes='true',
@@ -265,7 +281,6 @@ class ChannelAdmin(BaseAdmin):
                 state=state
             )
 
-            # Store the client configuration in the session
             with open(client_secret_file, 'r') as f:
                 client_config = json.load(f)
 
@@ -283,15 +298,10 @@ class ChannelAdmin(BaseAdmin):
 
 custom_admin_site.register(Channel, ChannelAdmin)
 
-from django.shortcuts import redirect
-from django.contrib import messages
-from django.urls import reverse
-
 def oauth2callback(request):
     logger.debug(f"oauth2callback called with GET params: {request.GET}")
 
     try:
-        # Recreate the flow using the stored configuration
         client_config = request.session.get('oauth_client_config')
         scopes = request.session.get('oauth_scopes')
         redirect_uri = request.session.get('oauth_redirect_uri')
@@ -305,34 +315,27 @@ def oauth2callback(request):
             redirect_uri=redirect_uri
         )
 
-        # Check if there's an error in the request
         if 'error' in request.GET:
             raise ValueError(f"Error in OAuth flow: {request.GET['error']}")
 
-        # Check if there's a code in the request
         if 'code' not in request.GET:
             raise ValueError("No authorization code found in the request")
 
-        # Exchange the authorization code for credentials
         flow.fetch_token(code=request.GET['code'])
 
         credentials = flow.credentials
 
-        # Save the credentials
         with open('token.pickle', 'wb') as token:
             pickle.dump(credentials, token)
 
-        # Get user info
         service = build('oauth2', 'v2', credentials=credentials)
         user_info = service.userinfo().get().execute()
         email = user_info['email']
 
         logger.info(f"Successfully authenticated user: {email}")
 
-        # Use the current user
         user = request.user
 
-        # Create or update Channel
         channel, created = Channel.objects.update_or_create(
             email=email,
             workspace_public_id=request.environ['WORKSPACE_PUBLIC_ID'],
@@ -346,7 +349,25 @@ def oauth2callback(request):
             logger.info(f"Updated existing channel connection for {email}")
             messages.info(request, f"Updated existing channel connection for {email}.")
 
-        # Clear session data
+        try:
+            gmail_service = build('gmail', 'v1', credentials=credentials)
+            request_body = {
+                'labelIds': ['INBOX'],
+                'topicName': f"projects/{os.environ['GOOGLE_CLOUD_PROJECT_ID']}/topics/gmail-notifications",
+                'labelFilterAction': 'include'
+            }
+            watch_response = gmail_service.users().watch(userId='me', body=request_body).execute()
+            
+            channel.gmail_history_id = watch_response['historyId']
+            channel.gmail_expiration = watch_response['expiration']
+            channel.save()
+            
+            logger.info(f"Successfully set up push notifications for {email}")
+            messages.success(request, f"Successfully set up push notifications for {email}!")
+        except Exception as e:
+            logger.error(f"Error setting up push notifications for {email}: {str(e)}", exc_info=True)
+            messages.warning(request, f"Channel connected, but failed to set up push notifications: {str(e)}")
+
         for key in ['oauth_client_config', 'oauth_scopes', 'oauth_redirect_uri']:
             request.session.pop(key, None)
 

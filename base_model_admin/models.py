@@ -12,7 +12,9 @@ class BaseAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         # intentionally not using get.
         workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
-        # return qs
+        # if the object queried is Workspace return qs, else filter by workspace_public_id
+        if self.model.__name__ == "Workspace":
+            return qs
         return qs.filter(workspace_public_id=workspace_public_id)
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -24,7 +26,7 @@ class BaseAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
-        if not obj.workspace_public_id:
-            # intentionally not using get.
-            obj.workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
+        # if not obj.workspace_public_id:
+        #     # intentionally not using get.
+        # obj.workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
         super().save_model(request, obj, form, change)
