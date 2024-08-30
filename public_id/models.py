@@ -8,7 +8,8 @@ PREFIX_MAPPINGS = {
 }
 
 def public_id(model_name, id):
-    assert model_name in PREFIX_MAPPINGS
+    if model_name not in PREFIX_MAPPINGS:
+        raise ValidationError(f"Invalid model name: {model_name}")
     
     prefix = PREFIX_MAPPINGS[model_name]
 

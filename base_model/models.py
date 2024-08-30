@@ -2,38 +2,37 @@
 from django.db import models
 from bluewind.utils import uuid7
 from model_clone import CloneMixin
-
 from public_id.models import public_id
-
 
 class BaseModel(CloneMixin, models.Model):
     from workspaces.models import Workspace
 
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
-    # workspace_public_id = models.CharField(max_length=50)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
+    public_id = models.CharField(max_length=100, unique=True, editable=False)
 
-
-    @property
-    def public_id(self):
-        public_id(self.__class__.__name__, self.id)
-    
     class Meta:
         abstract = True
 
-    _clone_excluded_fields = ['id']  # Exclude id from cloning as it's the primary key
+    _clone_excluded_fields = ['id', 'public_id']  # Exclude id and public_id from cloning
+
+    def save(self, *args, **kwargs):
+        if not self.public_id:
+            self.public_id = public_id(self.__class__.__name__, self.id)
+        super().save(*args, **kwargs)
 
     def make_clone(self, attrs=None, **kwargs):
         defaults = {'id': uuid7()}  # Generate a new id for the clone
-        if 'new_workspace_public_id' in kwargs:
-            defaults['workspace_public_id'] = kwargs.pop('new_workspace_public_id')
+        if 'new_workspace' in kwargs:
+            defaults['workspace'] = kwargs.pop('new_workspace')
         defaults.update(attrs or {})
-        return super().make_clone(attrs=defaults, **kwargs)
+        clone = super().make_clone(attrs=defaults, **kwargs)
+        clone.public_id = public_id(clone.__class__.__name__, clone.id)
+        clone.save()
+        return clone
 
     @classmethod
-    def clone_workspace_related(cls, old_workspace_public_id, new_workspace_public_id):
-        objects = cls.objects.filter(workspace_public_id=old_workspace_public_id)
+    def clone_workspace_related(cls, old_workspace, new_workspace):
+        objects = cls.objects.filter(workspace=old_workspace)
         for obj in objects:
-            # if name of model is DBGraph, ignore
-            print("cndsjkcndsjkncjkdsnjkcds", obj.__class__.__name__)
-            obj.make_clone(new_workspace_public_id=new_workspace_public_id)
+            obj.make_clone(new_workspace=new_workspace)

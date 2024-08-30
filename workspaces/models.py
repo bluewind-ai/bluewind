@@ -24,10 +24,18 @@ class Workspace(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     users = models.ManyToManyField(User, through='WorkspaceUser')
+    public_id = models.CharField(max_length=100, unique=True, editable=False)
 
-    @property
-    def public_id(self):
-        return public_id(self.__class__.__name__, self.id)
+    def save(self, *args, **kwargs):
+        if self.id is None:
+            # This is a new object, so save it first to get an ID
+            super().save(*args, **kwargs)
+            # Now that we have an ID, generate the public_id
+            self.public_id = public_id(self.__class__.__name__, self.id)
+            # Save again to store the public_id
+            super().save(update_fields=['public_id'])
+        else:
+            super().save(*args, **kwargs)
         
     def __str__(self):
         return self.name
