@@ -1,6 +1,12 @@
 from django.contrib import admin
 
+from workspaces.models import Workspace
+
+
+
 class BaseAdmin(admin.ModelAdmin):
+    from workspaces.models import Workspace
+
     
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -10,12 +16,14 @@ class BaseAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        # intentionally not using get.
         workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
-        # if the object queried is Workspace return qs, else filter by workspace_public_id
-        if self.model.__name__ == "Workspace":
-            return qs
-        return qs.filter(workspace_public_id=workspace_public_id)
+        
+        # If the model being queried is Workspace, filter by public_id
+        if self.model == Workspace:
+            return qs.filter(public_id=workspace_public_id)
+        
+        # For all other models, filter by the workspace relationship
+        return qs.filter(workspace__id=Workspace.objects.get(public_id=workspace_public_id).id)
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "channel":  # Adjust field name as necessary

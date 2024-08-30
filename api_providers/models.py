@@ -1,6 +1,6 @@
 from django.db import models
 from base_model.models import BaseModel
-from bluewind.utils import uuid7
+
 
 class ApiProvider(BaseModel):
     name = models.CharField(max_length=255, unique=True)

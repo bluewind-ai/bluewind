@@ -11,6 +11,5 @@ def public_id(model_name, id):
     assert model_name in PREFIX_MAPPINGS
     
     prefix = PREFIX_MAPPINGS[model_name]
-    # print (f"{prefix}_{str(id).replace('-', '')[-12:]}")
-    # assert 1 ==0, f"{prefix}_{str(id).replace('-', '')[-12:]}"
+
     return f"{prefix}_{str(id).replace('-', '')[-12:]}"

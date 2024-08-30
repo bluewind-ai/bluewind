@@ -14,11 +14,9 @@ from django.utils.html import format_html
 
 # Assuming these are defined elsewhere
 
-from base_model_admin.models import BaseAdmin
 from bluewind.utils import uuid7
 from public_id.models import public_id
 from workspace_filter.models import User
-# from base_model.models import BaseModel
 
 class Workspace(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
@@ -82,25 +80,33 @@ from django.apps import apps
 
 def clone_workspace(workspace, request):
     with transaction.atomic():
+        # Create a new workspace
+        new_workspace = Workspace.objects.create(name=f"Clone of {workspace.name}")
 
-        new_workspace = workspace.make_clone(
-            attrs={'name': f"Clone of {workspace.name}"},
-            # new_workspace_public_id=workspace.public_id
-        )
+        # Get all models in the project
+        all_models = apps.get_models()
 
+        # Iterate through all models and clone related objects
+        for model in all_models:
+            # Check if the model has a relationship with Workspace
+            if any(field.related_model == Workspace for field in model._meta.fields):
+                # Get all objects related to the original workspace
+                related_objects = model.objects.filter(workspace=workspace)
+                
+                # Clone each related object
+                for obj in related_objects:
+                    # Create a copy of the object, but don't save it yet
+                    new_obj = model.objects.get(pk=obj.pk)
+                    new_obj.pk = None  # This will create a new object when saved
+                    new_obj.workspace = new_workspace  # Set the new workspace
+                    new_obj.save()
 
-
-        # Clone related objects
-        for model in apps.get_models():
-            if issubclass(model, BaseModel) and not model._meta.abstract:
-                model.clone_workspace_related(workspace.public_id, new_workspace.public_id)
-
-        return new_workspace  # Ensure only one workspace is returned
+        return new_workspace
 
 
 # Create an instance of the custom admin site
 custom_admin_site = CustomAdminSite(name='customadmin')
-class WorkspaceUserAdmin(ModelAdmin):
+class WorkspaceUserAdmin(admin.ModelAdmin):
     @property
     def public_id(self):
         public_id(self.__class__.__name__, self.id)
@@ -111,7 +117,7 @@ class WorkspaceUserAdmin(ModelAdmin):
 
 from django.urls import reverse
 
-class WorkspaceAdmin(BaseAdmin):
+class WorkspaceAdmin(admin.ModelAdmin):
     list_display = ('name', 'id', 'created_at')
     actions = ['clone_workspace_action']
     readonly_fields = ('admin_url_link',)
