@@ -14,7 +14,7 @@ import os
 
 async def run_e2e_dev_green(log_file, verbose=True, env_modifiers={}):
     env_modifiers = {
-        "SITE_PORT": "8000",
+        "SITE_PORT": "8001",
         "SITE_URL": "localhost"
     }
     env = os.environ.copy()

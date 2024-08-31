@@ -2,6 +2,15 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "DEV",
+      "type": "shell",
+      "command": "(ps aux | grep gunicorn | grep -v grep | awk '{print $2}' | xargs kill -9 )&& source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python manage.py runserver || (echo \"DEV failed at $(date)\" >> DEV.log && terminal-notifier -message \"DEV failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"DEV failed\"); sleep 1; done",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
       "label": "prod-blue-e2e",
       "type": "shell",
       "command": "cd ../bluewind-blue && source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python ci.py e2e_prod || (echo \"e2e-prod-blue failed at $(date)\" >> e2e-prod-blue.log && terminal-notifier -message \"Prod blue E2E test failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"E2E test failed\"); sleep 1; done",
@@ -31,7 +40,7 @@
     {
       "label": "dev-green-server",
       "type": "shell",
-      "command": "(ps aux | grep gunicorn | grep -v grep | awk '{print $2}' | xargs kill -9 )&& source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python manage.py runserver  || (echo \"dev-green-server failed at $(date)\" >> dev-green-server.log && terminal-notifier -message \"Dev Green Server failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"Dev Green Server test failed\"); sleep 1; done",
+      "command": "(ps aux | grep gunicorn | grep -v grep | awk '{print $2}' | xargs kill -9 )&& source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python manage.py runserver localhost:8001 || (echo \"dev-green-server failed at $(date)\" >> dev-green-server.log && terminal-notifier -message \"Dev Green Server failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"Dev Green Server test failed\"); sleep 1; done",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"
@@ -52,7 +61,9 @@
         "prod-blue-e2e",
         "prod-blue-pull-main",
         "prod-green-e2e",
-        "dev-green-server"
+        "dev-green-server",
+        "e2e-dev-green",
+        "DEV"
       ],
       "dependsOrder": "parallel",
       "problemMatcher": []
