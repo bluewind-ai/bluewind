@@ -50,7 +50,7 @@ class ApolloPeopleSearch(BaseModel):
         verbose_name_plural = "Apollo People Searches"
 
 from django.contrib import admin
-from workspaces.models import custom_admin_site
+from workspaces.models import Workspace, custom_admin_site
 
 class ApolloPeopleSearchAdmin(BaseAdmin):
     actions = ['perform_apollo_search']
@@ -96,7 +96,7 @@ class ApolloPeopleSearchAdmin(BaseAdmin):
                             first_name=person['first_name'],
                             last_name=person['last_name'],
                             linkedin_url=person['linkedin_url'],
-                            workspace_public_id=request.environ['WORKSPACE_PUBLIC_ID'],
+                            workspace=Workspace.objects.get(public_id=request.environ['WORKSPACE_PUBLIC_ID']),
                             company_domain_name=person['organization']['primary_domain'] if person['organization'] else '',
                             company_linkedin_url=person['organization']['linkedin_url'] if person['organization'] else '',
                         ))

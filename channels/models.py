@@ -23,7 +23,7 @@ from google.cloud import pubsub_v1
 from base_model_admin.models import BaseAdmin
 from base_model.models import BaseModel
 from workspace_filter.models import User
-from workspaces.models import custom_admin_site
+from workspaces.models import Workspace, custom_admin_site
 from people.models import Person
 
 from django.contrib import messages
@@ -56,10 +56,6 @@ SCOPES = [
     'https://www.googleapis.com/auth/userinfo.profile',
     'openid',
     'https://www.googleapis.com/auth/gmail.readonly',
-    'https://www.googleapis.com/auth/gmail.send',
-    'https://www.googleapis.com/auth/gmail.modify',
-    'https://www.googleapis.com/auth/gmail.settings.basic',
-    'https://www.googleapis.com/auth/pubsub',  # Add this line
 ]
 
 from google.api_core import exceptions as google_exceptions
@@ -136,15 +132,23 @@ def fetch_messages_from_gmail(request, channel):
             logger.warning("No messages found")
             return 0
 
-        person, _ = Person.objects.get_or_create(
+        # Use get_or_create with both email and workspace
+        person, created = Person.objects.get_or_create(
             email=channel.email,
+            workspace=channel.workspace,
             defaults={
                 'first_name': 'Gmail',
                 'last_name': 'User',
                 'status': 'NEW',
-                'source': 'Gmail Import'
+                'source': 'Gmail Import',
             }
         )
+
+        if created:
+            logger.info(f"Created new Person for email: {channel.email}")
+        else:
+            logger.info(f"Found existing Person for email: {channel.email}")
+
         created_count = 0
 
         for message in messages:
@@ -172,7 +176,7 @@ def fetch_messages_from_gmail(request, channel):
                     content=body,
                     timestamp=timezone.now(),
                     is_read=False,
-                    workspace_public_id=request.environ.get('WORKSPACE_PUBLIC_ID'),
+                    workspace=Workspace.objects.get(public_id=request.environ['WORKSPACE_PUBLIC_ID']),
                     gmail_message_id=message['id']
                 )
                 created_count += 1
@@ -338,7 +342,7 @@ def oauth2callback(request):
 
         channel, created = Channel.objects.update_or_create(
             email=email,
-            workspace_public_id=request.environ['WORKSPACE_PUBLIC_ID'],
+            workspace=Workspace.objects.get(public_id=request.environ['WORKSPACE_PUBLIC_ID']),
             defaults={'user': user}
         )
 

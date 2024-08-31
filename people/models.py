@@ -32,6 +32,9 @@ class Person(BaseModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ['email', 'workspace']
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 

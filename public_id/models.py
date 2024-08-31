@@ -4,8 +4,21 @@ from django.core.exceptions import ValidationError
 
 PREFIX_MAPPINGS = {
     "Workspace": "wks",
-    "Person": "person"
-    # Add other model names and their corresponding prefixes here
+    "Person": "person",
+    "Channel": "channel",
+    "User": "user",
+    "LogEntry": "logentry",
+    "Permission": "perm",
+    "Group": "group",
+    "ContentType": "ctype",
+    "Session": "session",
+    "ApiProvider": "apiprov",
+    "ApiKey": "apikey",
+    "WorkspaceUser" : "wksuser",
+    "Message": "msg",
+    "ApolloPeopleSearch": "apsearch",
+    "GmailSubscription": "gmailsub",
+    "Assignment": "assignment",
 }
 
 def public_id(model_name, id):

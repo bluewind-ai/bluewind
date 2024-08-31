@@ -10,7 +10,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
 from django.db import transaction
-from workspaces.models import custom_admin_site
+from workspaces.models import Workspace, custom_admin_site
 from channels.models import get_gmail_service
 import base64
 import logging
@@ -55,7 +55,7 @@ class MessageAdmin(BaseAdmin):
                         recipient_id=recipient_id,
                         subject=subject,
                         content=content,
-                        workspace_public_id=request.environ.get('WORKSPACE_PUBLIC_ID')
+                        workspace=Workspace.objects.get(public_id=request.environ['WORKSPACE_PUBLIC_ID']),
                     )
                     logger.info(f"Message created: {message}")
 

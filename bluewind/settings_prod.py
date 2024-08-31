@@ -55,7 +55,9 @@ INSTALLED_APPS = [
     'apollo_people_search',
     'channels',
     'gmail_subscriptions',
-    'django_object_actions'
+    'django_object_actions',
+    'base_model.apps.BaseModelConfig',
+
 ]
 
 TEMPLATES = [

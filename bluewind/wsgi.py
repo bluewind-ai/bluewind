@@ -33,15 +33,10 @@ def workspace_wsgi_middleware(application):
                 '/admin',
                 '/admin/logout/',
                 '/admin/logout',
-                '/oauth2callback/',
-                '/oauth2callback',
             ]
             
             if path_info not in WHITELIST:
-                if path_info == '/oauth2callback/':
-                    print('cdsmcjdsjkcndsjkcndsks')
-                    print(environ)
-                    
+                if path_info == '/oauth2callback/':                    
                     # Parse the query string
                     query_string = environ.get('QUERY_STRING', '')
                     parsed_qs = parse_qs(query_string)

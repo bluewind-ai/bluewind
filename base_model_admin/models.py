@@ -41,7 +41,7 @@ class BaseAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         workspace_public_id = request.environ['WORKSPACE_PUBLIC_ID']
-        
+        # return qs
         if self.model == Workspace:
             return qs.filter(public_id=workspace_public_id)
         

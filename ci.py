@@ -12,16 +12,18 @@ import os
 import asyncio
 import os
 
-async def run_e2e_dev_green(log_file, verbose=True, env_modifiers={}):
+async def run_e2e_dev_green(log_file, verbose=True, env_modifiers={}, additional_args=None):
     env_modifiers = {
         "SITE_PORT": "8001",
         "SITE_URL": "localhost"
     }
     env = os.environ.copy()
-    # modify env
     env.update(env_modifiers)
     
-    await run_command("npx playwright test --project=chromium --reporter=list", log_file, env=env, verbose=verbose)
+    base_command = "npx playwright test --project=chromium --reporter=list"
+    full_command = f"{base_command} {additional_args}" if additional_args else base_command
+    
+    return await run_command(full_command, log_file, env=env, verbose=verbose)
 
 async def run_e2e_prod_green(log_file, verbose=True):
     env_modifiers={"SITE_PORT": "8080"}
@@ -112,10 +114,11 @@ async def run_all_commands(log_dir, verbose=False):
 @click.argument('command', type=click.Choice(['local_unit_tests', 'staging', 'docker', 'deploy', 'e2e_local', 'e2e_prod', 'e2e_prod_green', 'e2e_staging', 'full', 'e2e_dev_green']))
 @click.option('--log-dir', default=None, help='Log directory path')
 @click.option('--verbose', is_flag=True, help='Enable verbose output')
-def cli(command, log_dir, verbose):
-    asyncio.run(async_cli(command, log_dir, verbose))
+@click.argument('additional_args', required=False)
+def cli(command, log_dir, verbose, additional_args):
+    asyncio.run(async_cli(command, log_dir, verbose, additional_args))
 
-async def async_cli(command, log_dir, verbose):
+async def async_cli(command, log_dir, verbose, additional_args):
     if log_dir is None:
         reverse_timestamp = str(9999999999 - int(time.time())).zfill(10)
         log_dir = f"./logs/{reverse_timestamp}"
@@ -152,7 +155,7 @@ async def async_cli(command, log_dir, verbose):
             elif command == 'e2e_prod_green':
                 return await run_e2e_prod_green(log_file, verbose=True)
             elif command == 'e2e_dev_green':
-                return await run_e2e_dev_green(log_file, verbose=True)
+                return await run_e2e_dev_green(log_file, verbose=True, additional_args=additional_args)
             # elif command == 'e2e_staging':
             #     success = await run_e2e_staging(log_file, verbose=True)
             elif command == 'deploy':
