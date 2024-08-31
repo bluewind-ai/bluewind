@@ -38,6 +38,15 @@
       }
     },
     {
+      "label": "e2e-dev-green",
+      "type": "shell",
+      "command": "(ps aux | grep gunicorn | grep -v grep | awk '{print $2}' | xargs kill -9 )&& source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python ci.py e2e_dev_green  || (echo \"e2e-dev-green failed at $(date)\" >> e2e-dev-green-server.log && terminal-notifier -message \"E2E Dev Green failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"e2e Dev Green test failed\"); sleep 1; done",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
       "label": "run-all-tasks",
       "dependsOn": [
         "prod-blue-e2e",

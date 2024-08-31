@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.utils.html import format_html
 from model_clone import CloneMixin
+from django_object_actions import DjangoObjectActions, action
 
 
 # Assuming these are defined elsewhere
@@ -122,11 +123,31 @@ class WorkspaceUserAdmin(admin.ModelAdmin):
 
 from django.urls import reverse
 
-class WorkspaceAdmin(admin.ModelAdmin):
+class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ('name', 'id', 'created_at')
     actions = ['clone_workspace_action']
     readonly_fields = ('admin_url_link',)
+    changelist_actions = ('delete_current_workspace',)
+    
 
+    @action(
+        label="Delete Current Workspace", 
+        description="Permanently delete the current workspace",
+        attrs={"style": "color: red;"}
+    )
+    def delete_current_workspace(self, request, queryset):
+        current_workspace_public_id = request.environ.get("WORKSPACE_PUBLIC_ID")
+        if current_workspace_public_id:
+            try:
+                workspace = Workspace.objects.get(public_id=current_workspace_public_id)
+                url = reverse('admin:workspaces_workspace_delete', args=[workspace.id])
+                return HttpResponseRedirect(url)
+            except Workspace.DoesNotExist:
+                self.message_user(request, "Current workspace not found.", level=messages.ERROR)
+        else:
+            self.message_user(request, "No current workspace identified.", level=messages.ERROR)
+        
+        return HttpResponseRedirect(request.get_full_path())
 
     def clone_workspace_action(self, request, queryset):
         if queryset.count() != 1:

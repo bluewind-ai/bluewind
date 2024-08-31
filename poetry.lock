@@ -745,6 +745,17 @@ docs = ["furo (>=2021.8.17b43,<2021.9.dev0)", "sphinx (>=3.5.0)", "sphinx-notfou
 testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
 
 [[package]]
+name = "django-object-actions"
+version = "4.2.0"
+description = "A Django app for adding object tools for models in the admin"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "django_object_actions-4.2.0-py3-none-any.whl", hash = "sha256:ae0df9984c68a4f42f219a391b71fa0630fe44a2983b39b8064378ebddcff30c"},
+    {file = "django_object_actions-4.2.0.tar.gz", hash = "sha256:e24befedf01b6fcdccbb03c33c0e2c855fd1a88f352a66dc7e2170ba31e80128"},
+]
+
+[[package]]
 name = "django-unfold"
 version = "0.35.0"
 description = "Modern Django admin theme for seamless interface development"
@@ -1998,4 +2009,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d7ba1a2e368325152f3c55e06637a1a52166664d4acb5ef6d2596a695dd00494"
+content-hash = "d2c7396f03d3963c415834ede62be7baf597fb78fbbfd36796fefa79799bdee6"
