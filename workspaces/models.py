@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.conf import settings
 from django.utils.html import format_html
+from model_clone import CloneMixin
 
 
 # Assuming these are defined elsewhere
@@ -27,15 +28,9 @@ class Workspace(models.Model):
     public_id = models.CharField(max_length=100, unique=True, editable=False)
 
     def save(self, *args, **kwargs):
-        if self.id is None:
-            # This is a new object, so save it first to get an ID
-            super().save(*args, **kwargs)
-            # Now that we have an ID, generate the public_id
-            self.public_id = public_id(self.__class__.__name__, self.id)
-            # Save again to store the public_id
-            super().save(update_fields=['public_id'])
-        else:
-            super().save(*args, **kwargs)
+        if not self.public_id:
+            self.public_id = public_id(self.__class__.__name__, self.id or uuid7())
+        super().save(*args, **kwargs)
         
     def __str__(self):
         return self.name
@@ -96,18 +91,20 @@ def clone_workspace(workspace, request):
 
         # Iterate through all models and clone related objects
         for model in all_models:
-            # Check if the model has a relationship with Workspace
-            if any(field.related_model == Workspace for field in model._meta.fields):
+            # Check if the model has a relationship with Workspace and inherits from CloneMixin
+            if any(field.related_model == Workspace for field in model._meta.fields) and issubclass(model, CloneMixin):
                 # Get all objects related to the original workspace
                 related_objects = model.objects.filter(workspace=workspace)
                 
                 # Clone each related object
                 for obj in related_objects:
-                    # Create a copy of the object, but don't save it yet
-                    new_obj = model.objects.get(pk=obj.pk)
-                    new_obj.pk = None  # This will create a new object when saved
-                    new_obj.workspace = new_workspace  # Set the new workspace
-                    new_obj.save()
+                    # Use make_clone method
+                    new_obj = obj.make_clone(attrs={'workspace': new_workspace})
+                    
+                    # If public_id is not excluded from cloning, generate a new one
+                    if hasattr(new_obj, 'public_id') and 'public_id' not in getattr(new_obj, '_clone_excluded_fields', []):
+                        new_obj.public_id = public_id(new_obj.__class__.__name__, uuid7())
+                        new_obj.save(update_fields=['public_id'])
 
         return new_workspace
 

@@ -179,18 +179,27 @@ SITE_ID = 1
 
 
 
+from rich.logging import RichHandler
+
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': False,  # Change this to False
     'handlers': {
         'console': {
-            'class': 'logging.StreamHandler',
+            'class': 'rich.logging.RichHandler',
+            'rich_tracebacks': True,
+            'tracebacks_show_locals': True,
         },
     },
     'loggers': {
+        '': {  # Root logger
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
         'django.db.backends': {
             'level': 'DEBUG',
             'handlers': ['console'],
+            'propagate': False,  # Add this line
         },
     },
 }

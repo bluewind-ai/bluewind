@@ -51,6 +51,8 @@ aiohttp = "^3.10.5"
 django-admin-sso = "^5.2.0"
 google-cloud-pubsub = "^2.23.0"
 django-clone = "^5.3.3"
+colorlog = "^6.8.2"
+rich = "^13.8.0"
 
 [tool.poetry.extras]
 argon2 = [ "argon2-cffi",]
