@@ -1,6 +1,5 @@
 # modify_admin/middleware.py
 
-from django.db.models import Q
 
 class WorkspaceFilterMiddleware:
     def __init__(self, get_response):

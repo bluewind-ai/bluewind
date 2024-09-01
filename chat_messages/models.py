@@ -5,7 +5,6 @@ from django.urls import reverse
 from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
 from people.models import Person
-from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
@@ -36,7 +35,6 @@ class Message(BaseModel):
 
 
 # Admin registration remains the same
-from django.contrib import admin
 from workspaces.models import custom_admin_site
 
 class MessageAdmin(BaseAdmin):

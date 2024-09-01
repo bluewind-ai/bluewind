@@ -308,7 +308,6 @@ async def run_deploy(log_file, verbose=True):
                     DefaultActions=[{'Type': 'forward', 'TargetGroupArn': new_target_group_arn}]
                 )
                 
-            from ci import run_e2e_prod_green
 
             # if not await run_e2e_prod_green('logs/test.log', verbose=True):
             #     raise("E2E prod green failed")

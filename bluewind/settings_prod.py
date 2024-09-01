@@ -210,7 +210,6 @@ else:
     SITE_URL = "https://green.bluewind.ai"
 
 
-from rich.logging import RichHandler
 
 LOGGING = {
     'version': 1,
@@ -272,7 +271,6 @@ INSTALLED_APPS += [
 
 WSGI_APPLICATION = 'bluewind.wsgi.application'
 
-import sys
 
 
 # Database

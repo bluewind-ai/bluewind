@@ -1,5 +1,3 @@
-from django.contrib import admin
-from django.template.defaulttags import url
 from django.urls import path, include, re_path
 from django.views.generic.base import RedirectView
 from django.conf import settings
@@ -7,9 +5,7 @@ from django.conf.urls.static import static
 from django.shortcuts import redirect
 
 from health_check.views import health_check
-import channels
 from workspaces.models import custom_admin_site  # Import your custom admin site
-import admin_autoregister
 
 favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 admin_redirect = RedirectView.as_view(url='/admin/', permanent=True)

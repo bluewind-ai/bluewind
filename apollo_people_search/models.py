@@ -49,7 +49,6 @@ class ApolloPeopleSearch(BaseModel):
         verbose_name = "Apollo People Search"
         verbose_name_plural = "Apollo People Searches"
 
-from django.contrib import admin
 from workspaces.models import Workspace, custom_admin_site
 
 class ApolloPeopleSearchAdmin(BaseAdmin):

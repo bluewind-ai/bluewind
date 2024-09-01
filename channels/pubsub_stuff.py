@@ -5,19 +5,17 @@ import pickle
 import json
 from django.http import HttpResponse
 from django.db import models
-from django.contrib import admin
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
-from django.urls import path, re_path, reverse
+from django.urls import re_path, reverse
 from django.contrib import messages as django_messages
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from google.oauth2 import service_account
 from google.auth.transport.requests import Request
-from google.auth.transport.urllib3 import AuthorizedHttp
 from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow, Flow
+from google_auth_oauthlib.flow import Flow
 from google.cloud import pubsub_v1
 
 from base_model_admin.models import BaseAdmin

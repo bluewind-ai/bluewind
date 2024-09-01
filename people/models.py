@@ -2,12 +2,10 @@ import os
 import logging
 import requests
 from django.db import models
-from django.conf import settings
 from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
 from workspace_filter.models import User
 from workspaces.models import custom_admin_site 
-from django.contrib import admin
 from django.contrib import messages
 
 logger = logging.getLogger(__name__)

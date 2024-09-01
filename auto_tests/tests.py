@@ -1,5 +1,5 @@
 import uuid
-from django.test import TestCase, Client
+from django.test import Client
 from django.contrib.auth import get_user_model
 from auto_tests.models import ModelAdminTestCase
 from workspaces.models import Workspace

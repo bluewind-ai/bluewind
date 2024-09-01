@@ -1,4 +1,4 @@
-from django.apps import AppConfig, apps
+from django.apps import AppConfig
 
 from public_id.models import PREFIX_MAPPINGS
 

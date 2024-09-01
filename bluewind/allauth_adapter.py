@@ -1,5 +1,4 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from django.urls import reverse
 from workspaces.models import Workspace, WorkspaceUser
 
 class CustomAccountAdapter(DefaultAccountAdapter):

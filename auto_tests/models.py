@@ -1,6 +1,4 @@
-import json
 from unittest import SkipTest
-from uuid import UUID
 import uuid
 import factory
 from django.contrib.auth import get_user_model

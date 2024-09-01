@@ -1,14 +1,11 @@
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-import uuid
 from django.db import models
-from django.contrib.admin import AdminSite, ModelAdmin
-from django.contrib.auth import login as auth_login
+from django.contrib.admin import AdminSite
 from django.db import transaction
 from django.contrib import admin, messages
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.conf import settings
 from django.utils.html import format_html
 from model_clone import CloneMixin
 from django_object_actions import DjangoObjectActions, action
