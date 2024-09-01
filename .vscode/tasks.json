@@ -56,6 +56,15 @@
       }
     },
     {
+      "label": "tunnel",
+      "type": "shell",
+      "command": "cloudflared tunnel run my-app-tunne",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
       "label": "run-all-tasks",
       "dependsOn": [
         "prod-blue-e2e",
@@ -63,7 +72,8 @@
         "prod-green-e2e",
         "dev-green-server",
         "e2e-dev-green",
-        "DEV"
+        "DEV",
+        "tunnel"
       ],
       "dependsOrder": "parallel",
       "problemMatcher": []
