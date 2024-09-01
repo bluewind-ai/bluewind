@@ -21,6 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 INSTALLED_APPS = [
     # 'django_extensions',
+
+    "allauth_ui",
     'model_clone',
     'workspace_filter',
 
@@ -63,7 +65,14 @@ INSTALLED_APPS = [
     'django_object_actions',
     'base_model.apps.BaseModelConfig',
 
+    'allauth.socialaccount.providers.google',
+    "widget_tweaks",
+    "slippers",
+
 ]
+
+ALLAUTH_UI_THEME = "light"
+
 
 TEMPLATES = [
     {
@@ -359,15 +368,3 @@ DJANGO_ADMIN_SSO_OAUTH_CLIENT_ID = os.environ['GOOGLE_OAUTH_CLIENT_ID']
 DJANGO_ADMIN_SSO_OAUTH_CLIENT_SECRET = os.environ['GOOGLE_OAUTH_CLIENT_SECRET']
 
 AUTH_USER_MODEL = 'workspace_filter.User'
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
-}
