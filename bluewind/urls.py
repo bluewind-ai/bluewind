@@ -22,6 +22,7 @@ urlpatterns = [
     path('health/', health_check, name='health_check'),
     re_path(r'^favicon\.ico$', favicon_view),
     path('oauth2callback/', oauth2callback, name='oauth2callback'),
+    path('accounts/', include('allauth.urls')),
 ]
 
 if settings.DEBUG:

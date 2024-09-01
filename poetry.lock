@@ -693,6 +693,26 @@ Django = ">=3.2"
 oauth2client = ">=1.2"
 
 [[package]]
+name = "django-allauth"
+version = "64.2.0"
+description = "Integrated set of Django applications addressing authentication, registration, account management as well as 3rd party (social) account authentication."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django_allauth-64.2.0.tar.gz", hash = "sha256:71b404b3a7631502005e549800411e77939754e6864f2d24c17741a42e8e50e5"},
+]
+
+[package.dependencies]
+Django = ">=4.2"
+
+[package.extras]
+mfa = ["fido2 (>=1.1.2)", "qrcode (>=7.0.0)"]
+openid = ["python3-openid (>=3.0.8)"]
+saml = ["python3-saml (>=1.15.0,<2.0.0)"]
+socialaccount = ["pyjwt[crypto] (>=1.7)", "requests (>=2.0.0)", "requests-oauthlib (>=0.3.0)"]
+steam = ["python3-openid (>=3.0.8)"]
+
+[[package]]
 name = "django-clone"
 version = "5.3.3"
 description = "Create a clone of a django model instance."
@@ -2009,4 +2029,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d2c7396f03d3963c415834ede62be7baf597fb78fbbfd36796fefa79799bdee6"
+content-hash = "450158f32e2ec2103adaae99edf6130284391fa3701a9ea23f474c002346861a"

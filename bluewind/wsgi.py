@@ -33,6 +33,9 @@ def workspace_wsgi_middleware(application):
                 '/admin',
                 '/admin/logout/',
                 '/admin/logout',
+                "/accounts",
+                "/accounts/login",
+                "/accounts/login/"
             ]
             
             if path_info not in WHITELIST:
@@ -56,7 +59,8 @@ def workspace_wsgi_middleware(application):
                     else:
                         raise ValueError("Invalid state in OAuth2 callback")
                 else:
-                    raise ValueError("Invalid path", path_info)
+                    pass
+                    # raise ValueError("Invalid path", path_info)
         return application(environ, start_response)
     return wrapper
 

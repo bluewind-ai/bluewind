@@ -19,6 +19,13 @@ PREFIX_MAPPINGS = {
     "ApolloPeopleSearch": "apsearch",
     "GmailSubscription": "gmailsub",
     "Assignment": "assignment",
+    "EmailAddress": "email",
+    "EmailConfirmation": "emailconf",
+    "SocialApp": "socapp",
+    "SocialAccount": "socacc",
+    "SocialToken": "soctok",
+    "Site": "site",
+
 }
 
 def public_id(model_name, id):

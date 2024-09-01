@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'auto_tests',
 
     # debugging
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
     # LOCAL APPS'
     'chat_messages',
@@ -48,6 +52,7 @@ INSTALLED_APPS = [
 
     # tests
     'behave_django',
+
     # AUTH PROVIDERS
     'db_graph',
 
@@ -88,6 +93,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'allauth.account.middleware.AccountMiddleware',
+
 ]
 
 ROOT_URLCONF = 'bluewind.urls'
@@ -157,10 +164,11 @@ AUTHENTICATION_BACKENDS = [
     'admin_sso.auth.DjangoSSOAuthBackend',
 
     'django.contrib.auth.backends.ModelBackend',
-
+    'allauth.account.auth_backends.AuthenticationBackend',
     # `allauth` specific authentication methods, such as login by email
     # 'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -168,16 +176,20 @@ SOCIALACCOUNT_PROVIDERS = {
         # (``socialaccount`` app) containing the required client
         # credentials, or list them here:
         'APP': {
-            'client_id': None,
-            'secret': None,
-            'key': ''
+            'client_id': os.environ['GOOGLE_OAUTH_CLIENT_ID'],
+            'secret': os.environ['GOOGLE_OAUTH_CLIENT_SECRET'],
+            # 'key': ''
         }
     }
 }
 
-LOGIN_URL='/'
+
+LOGIN_URL='/accounts/login/'
 ACCOUNT_EMAIL_REQUIRED = True  # if you want to require email
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional'
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD   = 'email'
+LOGIN_REDIRECT_URL = '/admin'
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional'
 SITE_ID = 1
 
 
@@ -347,3 +359,15 @@ DJANGO_ADMIN_SSO_OAUTH_CLIENT_ID = os.environ['GOOGLE_OAUTH_CLIENT_ID']
 DJANGO_ADMIN_SSO_OAUTH_CLIENT_SECRET = os.environ['GOOGLE_OAUTH_CLIENT_SECRET']
 
 AUTH_USER_MODEL = 'workspace_filter.User'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}

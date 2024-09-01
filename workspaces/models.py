@@ -66,6 +66,8 @@ class CustomAdminSite(AdminSite):
         return context
 
     def login(self, request, extra_context=None):
+        if not request.user.is_authenticated:
+            return redirect(reverse('account_login'))
         response = super().login(request, extra_context)
         
         if request.method == 'POST' and request.user.is_authenticated:
