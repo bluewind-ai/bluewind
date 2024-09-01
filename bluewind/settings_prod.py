@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     "widget_tweaks",
     "slippers",
+    
 
 ]
 
@@ -103,6 +104,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'allauth.account.middleware.AccountMiddleware',
+    'bluewind.allauth_redirect.WksRedirectMiddleware',
+
 
 ]
 
@@ -201,6 +204,10 @@ LOGIN_REDIRECT_URL = '/admin'
 # ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional'
 SITE_ID = 1
 
+if os.environ['ENVIRONMENT'] == 'prod':
+    SITE_URL = os.environ['SITE_URL']
+else:
+    SITE_URL = "https://green.bluewind.ai"
 
 
 from rich.logging import RichHandler

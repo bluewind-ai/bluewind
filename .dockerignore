@@ -27,6 +27,5 @@
 !modify_admin
 !workspace_filter
 !apollo_people_search
-!google_api_secrets.json
 !google_backend_service_account.json
 !gmail_subscriptions
