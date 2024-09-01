@@ -791,6 +791,27 @@ files = [
 ]
 
 [[package]]
+name = "django-ses"
+version = "4.1.1"
+description = "A Django email backend for Amazon's Simple Email Service (SES)"
+optional = false
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "django_ses-4.1.1-py3-none-any.whl", hash = "sha256:83bb09d2b149dbc1a67a89f66a6681a99e32b8253f47ff4b7fae241d05344cc8"},
+    {file = "django_ses-4.1.1.tar.gz", hash = "sha256:28f9931df1251660eaf976b7413a42e7b0d25a18043316b96c721d8add7bf7b8"},
+]
+
+[package.dependencies]
+boto3 = ">=1.0.0"
+cryptography = {version = ">=36.0.2", optional = true, markers = "extra == \"bounce\" or extra == \"events\""}
+django = ">=3.2"
+requests = {version = ">=2.32.1", optional = true, markers = "extra == \"bounce\" or extra == \"events\""}
+
+[package.extras]
+bounce = ["cryptography (>=36.0.2)", "requests (>=2.32.1)"]
+events = ["cryptography (>=36.0.2)", "requests (>=2.32.1)"]
+
+[[package]]
 name = "django-unfold"
 version = "0.35.0"
 description = "Modern Django admin theme for seamless interface development"
@@ -2149,4 +2170,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ff4bd42a79dd465fadc31021153c0d21d04305ff5a2a38a480ff5fc946526da0"
+content-hash = "9236bd8dfef3ea0bc6b57aa6d32fd0b160fa822dbdbe7e3708f393793798c807"

@@ -201,7 +201,7 @@ ACCOUNT_EMAIL_REQUIRED = True  # if you want to require email
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD   = 'email'
 LOGIN_REDIRECT_URL = '/admin'
-# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional'
 SITE_ID = 1
 
 if os.environ['ENVIRONMENT'] == 'prod':
@@ -377,3 +377,20 @@ DJANGO_ADMIN_SSO_OAUTH_CLIENT_SECRET = os.environ['GOOGLE_OAUTH_CLIENT_SECRET']
 AUTH_USER_MODEL = 'workspace_filter.User'
 
 ACCOUNT_ADAPTER = 'bluewind.allauth_adapter.CustomAccountAdapter'
+
+EMAIL_BACKEND = 'django_ses.SESBackend'
+
+# These are optional if you are using AWS IAM Roles https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+# https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html
+# AWS_SESSION_PROFILE = 'YOUR-PROFILE-NAME'
+# Additionally, if you are not using the default AWS region of us-east-1,
+# you need to specify a region, like so:
+AWS_SES_REGION_NAME = 'us-west-2'
+AWS_SES_REGION_ENDPOINT = 'email.us-west-2.amazonaws.com'
+
+# If you want to use the SESv2 client
+USE_SES_V2 = True
+
+DEFAULT_FROM_EMAIL="wayne@bluewind.ai"

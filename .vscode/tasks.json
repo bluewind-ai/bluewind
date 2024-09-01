@@ -4,7 +4,7 @@
     {
       "label": "DEV",
       "type": "shell",
-      "command": "(ps aux | grep gunicorn | grep -v grep | awk '{print $2}' | xargs kill -9 )&& source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python manage.py runserver || (terminal-notifier -message \"DEV failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"DEV failed\"); sleep 1; done",
+      "command": "(ps aux | grep gunicorn | grep -v grep | awk '{print $2}' | xargs kill -9 )&& source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) ENVIRONMENT=local python manage.py runserver || (terminal-notifier -message \"DEV failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"DEV failed\"); sleep 1; done",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"
@@ -40,7 +40,7 @@
     {
       "label": "dev-green-server",
       "type": "shell",
-      "command": "(ps aux | grep gunicorn | grep -v grep | awk '{print $2}' | xargs kill -9 )&& source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) python manage.py runserver localhost:8001 || (terminal-notifier -message \"Dev Green Server failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"Dev Green Server test failed\"); sleep 1; done",
+      "command": "(ps aux | grep gunicorn | grep -v grep | awk '{print $2}' | xargs kill -9 )&& source /Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/bin/activate && while true; do python local_secrets.py && source .env && env $(cat .env | xargs) ENVIRONMENT=local python manage.py runserver localhost:8001 || (terminal-notifier -message \"Dev Green Server failed\" -title \"CI Alert\" || notify-send \"CI Alert\" \"Dev Green Server test failed\"); sleep 1; done",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"
