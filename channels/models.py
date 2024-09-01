@@ -1,14 +1,15 @@
 import os
 import base64
-import pickle
 import json
 from django.db import models
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib import messages
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 
 from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow
 
@@ -23,6 +24,11 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 class Channel(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     email = models.EmailField()
+    access_token = models.TextField(null=True, blank=True)
+    refresh_token = models.TextField(null=True, blank=True)
+    token_expiry = models.DateTimeField(null=True, blank=True)
+    client_id = models.TextField(null=True, blank=True)
+    client_secret = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.email
@@ -38,18 +44,29 @@ SCOPES = [
     'https://www.googleapis.com/auth/gmail.send',
     'https://www.googleapis.com/auth/gmail.modify',
     'https://www.googleapis.com/auth/gmail.settings.basic',
-    'https://www.googleapis.com/auth/pubsub',  # Added this line back
+    'https://www.googleapis.com/auth/pubsub',
 ]
 
-def get_gmail_service():
+def get_gmail_service(channel):
     creds = None
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
-            creds = pickle.load(token)
+    if channel.access_token and channel.refresh_token:
+        creds = Credentials.from_authorized_user_info(
+            {
+                'access_token': channel.access_token,
+                'refresh_token': channel.refresh_token,
+                'token_expiry': channel.token_expiry.isoformat() if channel.token_expiry else None,
+                'scopes': SCOPES,
+                'client_id': channel.client_id,
+                'client_secret': channel.client_secret,
+            }
+        )
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
+            channel.access_token = creds.token
+            channel.token_expiry = creds.expiry
+            channel.save()
         else:
             client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
             flow = Flow.from_client_secrets_file(
@@ -62,15 +79,19 @@ def get_gmail_service():
             flow.fetch_token(code=code)
             creds = flow.credentials
 
-        with open('token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
+            channel.access_token = creds.token
+            channel.refresh_token = creds.refresh_token
+            channel.token_expiry = creds.expiry
+            channel.client_id = creds.client_id
+            channel.client_secret = creds.client_secret
+            channel.save()
 
     return build('gmail', 'v1', credentials=creds)
 
 def fetch_messages_from_gmail(request, channel):
     from chat_messages.models import Message
 
-    service = get_gmail_service()
+    service = get_gmail_service(channel)
     results = service.users().messages().list(userId='me', maxResults=10).execute()
     messages = results.get('messages', [])
 
@@ -166,39 +187,66 @@ class ChannelAdmin(BaseAdmin):
 
 custom_admin_site.register(Channel, ChannelAdmin)
 
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.urls import reverse
+from django.contrib import messages
+
 def oauth2callback(request):
-    client_config = request.session.get('oauth_client_config')
-    scopes = request.session.get('oauth_scopes')
-    redirect_uri = request.session.get('oauth_redirect_uri')
+    try:
+        client_config = request.session.get('oauth_client_config')
+        scopes = request.session.get('oauth_scopes')
+        redirect_uri = request.session.get('oauth_redirect_uri')
 
-    flow = Flow.from_client_config(
-        client_config,
-        scopes=scopes,
-        redirect_uri=redirect_uri
-    )
+        if not all([client_config, scopes, redirect_uri]):
+            return HttpResponseBadRequest("Missing OAuth configuration in session")
 
-    flow.fetch_token(code=request.GET['code'])
-    credentials = flow.credentials
+        flow = Flow.from_client_config(
+            client_config,
+            scopes=scopes,
+            redirect_uri=redirect_uri
+        )
 
-    with open('token.pickle', 'wb') as token:
-        pickle.dump(credentials, token)
+        # Fetch the authorization code from the request
+        authorization_response = request.build_absolute_uri()
+        flow.fetch_token(authorization_response=authorization_response)
+        credentials = flow.credentials
 
-    service = build('oauth2', 'v2', credentials=credentials)
-    user_info = service.userinfo().get().execute()
-    email = user_info['email']
+        service = build('oauth2', 'v2', credentials=credentials)
+        user_info = service.userinfo().get().execute()
+        email = user_info['email']
 
-    channel, created = Channel.objects.update_or_create(
-        email=email,
-        workspace=Workspace.objects.get(public_id=request.environ['WORKSPACE_PUBLIC_ID']),
-        defaults={'user': request.user}
-    )
+        workspace_public_id = request.environ.get('WORKSPACE_PUBLIC_ID')
+        if not workspace_public_id:
+            return HttpResponseBadRequest("Missing workspace public ID")
 
-    if created:
-        messages.success(request, f"Successfully connected channel for {email}!")
-    else:
-        messages.info(request, f"Updated existing channel connection for {email}.")
+        workspace = Workspace.objects.get(public_id=workspace_public_id)
 
-    for key in ['oauth_client_config', 'oauth_scopes', 'oauth_redirect_uri']:
-        request.session.pop(key, None)
+        channel, created = Channel.objects.update_or_create(
+            email=email,
+            workspace=workspace,
+            defaults={
+                'user': request.user,
+                'access_token': credentials.token,
+                'refresh_token': credentials.refresh_token,
+                'token_expiry': credentials.expiry,
+                'client_id': credentials.client_id,
+                'client_secret': credentials.client_secret,
+            }
+        )
 
-    return redirect(reverse('admin:channels_channel_changelist'))
+        if created:
+            messages.success(request, f"Successfully connected channel for {email}!")
+        else:
+            messages.info(request, f"Updated existing channel connection for {email}.")
+
+        for key in ['oauth_client_config', 'oauth_scopes', 'oauth_redirect_uri']:
+            request.session.pop(key, None)
+
+        return HttpResponseRedirect(reverse('admin:channels_channel_changelist'))
+
+    except Exception as e:
+        # Log the exception for debugging
+        import logging
+        logging.exception("Error in oauth2callback")
+        messages.error(request, f"An error occurred: {str(e)}")
+        return HttpResponseRedirect(reverse('admin:channels_channel_changelist'))
