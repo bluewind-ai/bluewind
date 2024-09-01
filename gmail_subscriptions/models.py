@@ -8,7 +8,6 @@ from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
 from django.contrib import messages as django_messages
 from django.db import models
-from workspaces.models import custom_admin_site
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +89,3 @@ class GmailSubscriptionAdmin(BaseAdmin):
             "Successfully set up Gmail push notifications",
             level=django_messages.SUCCESS,
         )
-
-
-custom_admin_site.register(GmailSubscription, GmailSubscriptionAdmin)

@@ -1,5 +1,4 @@
 from django.contrib.auth.admin import UserAdmin
-from workspaces.models import custom_admin_site
 
 from .models import User
 
@@ -11,6 +10,3 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = UserAdmin.add_fieldsets + (
         (None, {"fields": ("workspace_public_id",)}),
     )
-
-
-custom_admin_site.register(User, CustomUserAdmin)

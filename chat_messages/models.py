@@ -9,7 +9,7 @@ from django.db import models, transaction
 from django.shortcuts import redirect
 from django.urls import reverse
 from people.models import Person
-from workspaces.models import Workspace, custom_admin_site
+from workspaces.models import Workspace
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +100,3 @@ class MessageAdmin(BaseAdmin):
             return redirect(reverse("admin:chat_messages_message_changelist"))
 
         return super().add_view(request, form_url, extra_context)
-
-
-custom_admin_site.register(Message, MessageAdmin)

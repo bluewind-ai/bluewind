@@ -4,15 +4,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "Bluewind"
-version = "0.0.4"
-description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
-authors = [ "Django Software Foundation <foundation@djangoproject.com>",]
-license = "BSD-3-Clause"
+version = "0.0.1"
+description = "Bluewind"
+authors = [ "Merwane Hamadi",]
+license = "MIT License"
 readme = "README.md"
-package-mode = true
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12"
 asgiref = "^3.8.1"
 sqlparse = "^0.3.1"
 python-dotenv = "^1.0.1"

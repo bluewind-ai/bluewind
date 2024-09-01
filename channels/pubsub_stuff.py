@@ -24,7 +24,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from people.models import Person
 from workspace_filter.models import User
-from workspaces.models import Workspace, custom_admin_site
+from workspaces.models import Workspace
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 logging.basicConfig(level=logging.DEBUG)
@@ -369,9 +369,6 @@ class ChannelAdmin(BaseAdmin):
                 level=django_messages.ERROR,
             )
             return redirect(reverse("admin:channels_channel_changelist"))
-
-
-custom_admin_site.register(Channel, ChannelAdmin)
 
 
 def oauth2callback(request):

@@ -8,7 +8,7 @@ from base_model_admin.models import BaseAdmin
 from django.contrib import messages
 from django.db import models, transaction
 from people.models import Person
-from workspaces.models import Workspace, custom_admin_site
+from workspaces.models import Workspace
 
 
 class ApolloPeopleSearch(BaseModel):
@@ -160,6 +160,3 @@ class ApolloPeopleSearchAdmin(BaseAdmin):
     perform_apollo_search.short_description = (
         "Perform Apollo search for selected searches"
     )
-
-
-custom_admin_site.register(ApolloPeopleSearch, ApolloPeopleSearchAdmin)

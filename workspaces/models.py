@@ -5,10 +5,8 @@ from model_clone import CloneMixin
 from bluewind.utils import uuid7
 from django.apps import apps
 from django.contrib import admin, messages
-from django.contrib.admin import AdminSite
 from django.db import models, transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
@@ -52,37 +50,6 @@ class WorkspaceUser(models.Model):
         unique_together = ("user", "workspace")
 
 
-class CustomAdminSite(AdminSite):
-    def each_context(self, request):
-        context = super().each_context(request)
-        script_name = request.META.get("SCRIPT_NAME", "")
-        if script_name.startswith("/wks_"):
-            context["workspace_id"] = script_name.split("/")[1][
-                4:
-            ]  # Remove 'wks_' prefix
-        return context
-
-    def login(self, request, extra_context=None):
-        if not request.user.is_authenticated:
-            return redirect(reverse("account_login"))
-        response = super().login(request, extra_context)
-
-        if request.method == "POST" and request.user.is_authenticated:
-            workspace = Workspace.objects.first()
-
-            if not workspace:
-                # Create a new workspace if none exists
-                workspace = Workspace.objects.create(name="Default Workspace")
-                WorkspaceUser.objects.create(
-                    user=request.user, workspace=workspace, is_default=True
-                )
-                messages.success(request, "A new workspace has been created.")
-
-            return redirect(f"/{workspace.public_id}/admin/")
-
-        return response
-
-
 def clone_workspace(workspace, request):
     with transaction.atomic():
         # Create a new workspace
@@ -118,7 +85,6 @@ def clone_workspace(workspace, request):
 
 
 # Create an instance of the custom admin site
-custom_admin_site = CustomAdminSite(name="customadmin")
 
 
 class WorkspaceUserAdmin(admin.ModelAdmin):
@@ -183,12 +149,3 @@ class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
         )
 
     clone_workspace_action.short_description = "Clone selected workspace"
-
-
-# Register models with the custom admin site
-custom_admin_site.register(WorkspaceUser, WorkspaceUserAdmin)
-custom_admin_site.register(Workspace, WorkspaceAdmin)
-
-# If you want to keep the default admin site as well, you can register models there too
-admin.site.register(WorkspaceUser, WorkspaceUserAdmin)
-admin.site.register(Workspace)

@@ -8,7 +8,6 @@ from base_model_admin.models import BaseAdmin
 from django.contrib import messages
 from django.db import models
 from workspace_filter.models import User
-from workspaces.models import custom_admin_site
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +132,3 @@ class PersonAdmin(BaseAdmin):
             )
 
     enrich_emails.short_description = "Enrich emails using PersonMagic"
-
-
-custom_admin_site.register(Person, PersonAdmin)

@@ -58,7 +58,7 @@
     {
       "label": "tunnel",
       "type": "shell",
-      "command": "cloudflared tunnel run my-app-tunne",
+      "command": "cloudflared tunnel run my-app-tunnel",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"

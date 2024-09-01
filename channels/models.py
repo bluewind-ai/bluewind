@@ -17,7 +17,7 @@ from django.urls import reverse
 from django.utils import timezone
 from people.models import Person
 from workspace_filter.models import User
-from workspaces.models import Workspace, custom_admin_site
+from workspaces.models import Workspace
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
@@ -218,10 +218,6 @@ class ChannelAdmin(BaseAdmin):
         request.session["oauth_redirect_uri"] = redirect_uri
 
         return redirect(auth_url)
-
-
-custom_admin_site.register(Channel, ChannelAdmin)
-
 
 
 def oauth2callback(request):

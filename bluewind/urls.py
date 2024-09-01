@@ -1,3 +1,7 @@
+# import admin_autoregister
+
+# test = admin_autoregister
+from bluewind.custom_admin_site import custom_admin_site
 from channels.models import oauth2callback
 from django.conf import settings
 from django.conf.urls.static import static
@@ -5,7 +9,6 @@ from django.shortcuts import redirect
 from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView
 from health_check.views import health_check
-from workspaces.models import custom_admin_site  # Import your custom admin site
 
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 admin_redirect = RedirectView.as_view(url="/admin/", permanent=True)
