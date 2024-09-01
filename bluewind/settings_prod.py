@@ -201,7 +201,7 @@ ACCOUNT_EMAIL_REQUIRED = True  # if you want to require email
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD   = 'email'
 LOGIN_REDIRECT_URL = '/admin'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional'
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional'
 SITE_ID = 1
 
 if os.environ['ENVIRONMENT'] == 'prod':
@@ -378,7 +378,7 @@ AUTH_USER_MODEL = 'workspace_filter.User'
 
 ACCOUNT_ADAPTER = 'bluewind.allauth_adapter.CustomAccountAdapter'
 
-EMAIL_BACKEND = 'django_ses.SESBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # These are optional if you are using AWS IAM Roles https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']

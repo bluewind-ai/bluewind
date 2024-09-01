@@ -59,6 +59,7 @@ django-allauth-ui = "^1.4.1"
 django-widget-tweaks = "^1.5.0"
 slippers = "^0.6.2"
 django-ses = {extras = ["events"], version = "^4.1.1"}
+autoflake = "^2.3.1"
 
 [tool.poetry.extras]
 argon2 = [ "argon2-cffi",]
