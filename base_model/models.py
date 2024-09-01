@@ -1,10 +1,12 @@
 # models.py
 import logging
-from django.db import models
-from bluewind.utils import uuid7
-from model_clone import CloneMixin
-from public_id.models import public_id
 import uuid
+
+from model_clone import CloneMixin
+
+from bluewind.utils import uuid7
+from django.db import models
+from public_id.models import public_id
 
 logger = logging.getLogger(__name__)
 

@@ -1,20 +1,36 @@
+import json
 import os
+
 from aws_cdk import (
-    Stack,
-    aws_ecs as ecs,
-    aws_ecs_patterns as ecs_patterns,
-    aws_ec2 as ec2,
-    aws_s3 as s3,
-    aws_rds as rds,
-    aws_cloudfront as cloudfront,
-    aws_cloudfront_origins as origins,
-    aws_secretsmanager as secretsmanager,
-    aws_certificatemanager as acm,
-    RemovalPolicy,
     Duration,
+    RemovalPolicy,
+    Stack,
+)
+from aws_cdk import (
+    aws_cloudfront as cloudfront,
+)
+from aws_cdk import (
+    aws_cloudfront_origins as origins,
+)
+from aws_cdk import (
+    aws_ec2 as ec2,
+)
+from aws_cdk import (
+    aws_ecs as ecs,
+)
+from aws_cdk import (
+    aws_ecs_patterns as ecs_patterns,
+)
+from aws_cdk import (
+    aws_rds as rds,
+)
+from aws_cdk import (
+    aws_s3 as s3,
+)
+from aws_cdk import (
+    aws_secretsmanager as secretsmanager,
 )
 from constructs import Construct
-import json
 
 
 class SimpleFargateCdkStack(Stack):
@@ -55,10 +71,6 @@ class SimpleFargateCdkStack(Stack):
         }
         env = os.environ.get("ENVIRONMENT")
         config = configs[env]
-
-        certificate = acm.Certificate.from_certificate_arn(
-            self, "Certificate", certificate_arn=config["certificate_arn"]
-        )
 
         vpc = ec2.Vpc(
             self,

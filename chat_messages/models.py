@@ -1,18 +1,15 @@
 import base64
-from django.db import models
-from django.shortcuts import redirect
-from django.urls import reverse
+import logging
+
 from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
-from people.models import Person
+from channels.models import get_gmail_service
+from django.contrib import messages
+from django.db import models, transaction
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.contrib import messages
-from django.db import transaction
+from people.models import Person
 from workspaces.models import Workspace, custom_admin_site
-from channels.models import get_gmail_service
-import base64
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +37,6 @@ class Message(BaseModel):
 
 
 # Admin registration remains the same
-from workspaces.models import custom_admin_site
 
 
 class MessageAdmin(BaseAdmin):

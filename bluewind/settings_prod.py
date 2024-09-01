@@ -3,10 +3,8 @@
 
 # load_secrets_to_env("prod-env")
 import os
-
-
-import os
 from pathlib import Path
+
 import environ
 
 # env = environ.Env(

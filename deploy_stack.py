@@ -1,10 +1,11 @@
-import os
 import asyncio
+import json
+import os
 import time
+
 import boto3
-import json
 from botocore.exceptions import ClientError
-import json
+
 from ci_utils import run_command
 
 
@@ -25,10 +26,10 @@ async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
     previous_image_id = last_deployment["image_id"]
 
     build_commands = [
-        f"set -e",
-        f"docker build -t app-bluewind:latest .",
-        f"IMAGE_ID=$(docker images -q app-bluewind:latest)",
-        f"echo $IMAGE_ID > image_id.txt",
+        "set -e",
+        "docker build -t app-bluewind:latest .",
+        "IMAGE_ID=$(docker images -q app-bluewind:latest)",
+        "echo $IMAGE_ID > image_id.txt",
     ]
 
     await run_command(" && ".join(build_commands), log_file, env=env, verbose=verbose)
@@ -40,7 +41,7 @@ async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
 
     if new_image_id != previous_image_id:
         push_commands = [
-            f"set -e",
+            "set -e",
             f"docker tag {new_image_id} {output_data['ecr_repository_url']['value']}:{new_image_id}",
             f"aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin {output_data['ecr_repository_url']['value']}",
             f"docker push {output_data['ecr_repository_url']['value']}:{new_image_id}",

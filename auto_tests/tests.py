@@ -1,9 +1,10 @@
 import uuid
-from django.test import Client
-from django.contrib.auth import get_user_model
+
 from auto_tests.models import ModelAdminTestCase
-from workspaces.models import Workspace
 from django.contrib.admin.sites import AdminSite
+from django.contrib.auth import get_user_model
+from django.test import Client
+from workspaces.models import Workspace
 
 
 class MyModelAdminTestCase(ModelAdminTestCase):

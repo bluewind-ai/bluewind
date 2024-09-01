@@ -1,19 +1,17 @@
-from django.http import HttpResponseRedirect
-from django.utils import timezone
-from django.db import models
-from django.contrib.admin import AdminSite
-from django.db import transaction
-from django.contrib import admin, messages
-from django.shortcuts import redirect
-from django.urls import reverse
-from django.utils.html import format_html
-from model_clone import CloneMixin
 from django_object_actions import DjangoObjectActions, action
-
+from model_clone import CloneMixin
 
 # Assuming these are defined elsewhere
-
 from bluewind.utils import uuid7
+from django.apps import apps
+from django.contrib import admin, messages
+from django.contrib.admin import AdminSite
+from django.db import models, transaction
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.html import format_html
 from public_id.models import public_id
 from workspace_filter.models import User
 
@@ -54,11 +52,6 @@ class WorkspaceUser(models.Model):
         unique_together = ("user", "workspace")
 
 
-from django.shortcuts import redirect
-from django.urls import reverse
-from django.contrib.admin import AdminSite
-
-
 class CustomAdminSite(AdminSite):
     def each_context(self, request):
         context = super().each_context(request)
@@ -88,9 +81,6 @@ class CustomAdminSite(AdminSite):
             return redirect(f"/{workspace.public_id}/admin/")
 
         return response
-
-
-from django.apps import apps
 
 
 def clone_workspace(workspace, request):
@@ -138,9 +128,6 @@ class WorkspaceUserAdmin(admin.ModelAdmin):
 
     def get_list_display(self, request):
         return [field.name for field in self.model._meta.fields]
-
-
-from django.urls import reverse
 
 
 class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):

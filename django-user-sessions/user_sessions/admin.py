@@ -1,11 +1,11 @@
 import json
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.html import format_html
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from django.utils.html import format_html
-
 from user_sessions.templatetags.user_sessions import device, location
 
 from .models import Session

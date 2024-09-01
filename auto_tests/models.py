@@ -1,15 +1,16 @@
-from unittest import SkipTest
 import uuid
-import factory
-from django.contrib.auth import get_user_model
-from model_mommy import mommy
-from django.urls import reverse
-from django.forms import CharField, model_to_dict
-from django.test import TestCase, Client
-from django.db.models import FileField
+from unittest import SkipTest
 
-from workspaces.models import Workspace
+import factory
+from model_mommy import mommy
 from model_mommy.recipe import Recipe
+
+from django.contrib.auth import get_user_model
+from django.db.models import FileField
+from django.forms import CharField, model_to_dict
+from django.test import Client, TestCase
+from django.urls import reverse
+from workspaces.models import Workspace
 
 workspace_recipe = Recipe(Workspace, name=factory.Sequence(lambda n: f"Workspace {n}"))
 

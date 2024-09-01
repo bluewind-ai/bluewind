@@ -1,11 +1,13 @@
 import base64
-from datetime import timezone
 import os
 import pickle
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
+from datetime import timezone
+
 from dotenv import load_dotenv
+from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+
 from django.contrib.auth.models import User
 
 # Load environment variables
@@ -92,16 +94,6 @@ def create_messages_from_gmail():
                 "No Subject",
             )
 
-            # Get channel
-            channel = next(
-                (
-                    header["value"]
-                    for header in msg["payload"]["headers"]
-                    if header["name"] == "From"
-                ),
-                "Unknown",
-            )
-
             # Get email body
             if "parts" in msg["payload"]:
                 body = base64.urlsafe_b64decode(
@@ -126,7 +118,3 @@ def create_messages_from_gmail():
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
-
-if __name__ == "__main__":
-    get_last_10_emails()

@@ -1,12 +1,14 @@
 import json
 import os
-from django.db import models
+
 import requests
-from django.contrib import messages
+
 from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
+from django.contrib import messages
+from django.db import models, transaction
 from people.models import Person
-from django.db import transaction
+from workspaces.models import Workspace, custom_admin_site
 
 
 class ApolloPeopleSearch(BaseModel):
@@ -71,9 +73,6 @@ class ApolloPeopleSearch(BaseModel):
     class Meta:
         verbose_name = "Apollo People Search"
         verbose_name_plural = "Apollo People Searches"
-
-
-from workspaces.models import Workspace, custom_admin_site
 
 
 class ApolloPeopleSearchAdmin(BaseAdmin):

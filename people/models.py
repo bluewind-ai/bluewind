@@ -1,12 +1,14 @@
-import os
 import logging
+import os
+
 import requests
-from django.db import models
+
 from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
+from django.contrib import messages
+from django.db import models
 from workspace_filter.models import User
 from workspaces.models import custom_admin_site
-from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +96,7 @@ class Person(BaseModel):
                 return True
             else:
                 print(f"Failed to enrich email for {self}: {data.get('message')}")
-        except RequestException as e:
+        except requests.RequestException as e:
             print(f"Error enriching email for {self}: {str(e)}")
             if hasattr(e, "response"):
                 print(f"Error Response Status Code: {e.response.status_code}")

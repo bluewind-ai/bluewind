@@ -1,10 +1,10 @@
 from urllib.parse import urlencode
 
+from user_sessions.backends.db import SessionStore
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-
-from user_sessions.backends.db import SessionStore
 
 from .utils import Client
 

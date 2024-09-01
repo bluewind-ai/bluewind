@@ -1,5 +1,4 @@
 from django.apps import AppConfig
-
 from public_id.models import PREFIX_MAPPINGS
 
 

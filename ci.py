@@ -1,15 +1,11 @@
-import os
 import asyncio
+import os
 import time
+
 import click
 
 from ci_utils import run_command
 from deploy_stack import run_deploy
-
-import asyncio
-import os
-import asyncio
-import os
 
 
 async def run_e2e_dev_green(
@@ -41,7 +37,6 @@ async def run_e2e_prod_green(log_file, verbose=True):
 
 
 async def run_e2e_prod(log_file, verbose=True):
-    server_process = None
     return await run_command(
         "SITE_PORT=443 SITE_URL=https://app.bluewind.ai npx playwright test --project=chromium --reporter=list",
         log_file,

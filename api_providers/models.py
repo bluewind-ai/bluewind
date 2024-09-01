@@ -1,5 +1,5 @@
-from django.db import models
 from base_model.models import BaseModel
+from django.db import models
 
 
 class ApiProvider(BaseModel):

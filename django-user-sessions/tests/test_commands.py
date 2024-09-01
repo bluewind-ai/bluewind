@@ -1,12 +1,12 @@
 from datetime import timedelta
 
+from user_sessions.models import Session
+
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase, TransactionTestCase
 from django.test.utils import modify_settings
 from django.utils.timezone import now
-
-from user_sessions.models import Session
 
 
 class ClearsessionsCommandTest(TestCase):

@@ -1,9 +1,9 @@
+from user_sessions.backends.db import SessionStore
+
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.http import HttpRequest
 from django.test import Client as BaseClient
-
-from user_sessions.backends.db import SessionStore
 
 
 class Client(BaseClient):

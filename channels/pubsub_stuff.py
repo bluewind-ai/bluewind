@@ -1,30 +1,30 @@
+import base64
+import json
 import logging
 import os
-import base64
 import pickle
-import json
-from django.http import HttpResponse
-from django.db import models
-from django.shortcuts import get_object_or_404, redirect
-from django.utils import timezone
-from django.urls import re_path, reverse
+
+from google.api_core import exceptions as google_exceptions
+from google.auth.transport.requests import Request
+from google.cloud import pubsub_v1
+from google.oauth2 import service_account
+from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
+
+from base_model.models import BaseModel
+from base_model_admin.models import BaseAdmin
+from django.contrib import messages
 from django.contrib import messages as django_messages
+from django.db import models
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import re_path, reverse
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
-from google.oauth2 import service_account
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import Flow
-from google.cloud import pubsub_v1
-
-from base_model_admin.models import BaseAdmin
-from base_model.models import BaseModel
+from people.models import Person
 from workspace_filter.models import User
 from workspaces.models import Workspace, custom_admin_site
-from people.models import Person
-
-from django.contrib import messages
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 logging.basicConfig(level=logging.DEBUG)
@@ -62,9 +62,6 @@ SCOPES = [
     "https://www.googleapis.com/auth/gmail.settings.basic",
     "https://www.googleapis.com/auth/pubsub",  # Add this line
 ]
-
-
-from google.api_core import exceptions as google_exceptions
 
 
 def setup_pubsub_topic():
@@ -177,14 +174,6 @@ def fetch_messages_from_gmail(request, channel):
                     if header["name"] == "Subject"
                 ),
                 "No Subject",
-            )
-            sender = next(
-                (
-                    header["value"]
-                    for header in msg["payload"]["headers"]
-                    if header["name"] == "From"
-                ),
-                "Unknown",
             )
 
             body = ""

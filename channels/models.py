@@ -1,23 +1,23 @@
-import os
 import base64
 import json
-from django.db import models
-from django.shortcuts import redirect
-from django.utils import timezone
-from django.urls import reverse
-from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+import os
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
 
-from base_model_admin.models import BaseAdmin
 from base_model.models import BaseModel
+from base_model_admin.models import BaseAdmin
+from django.contrib import messages
+from django.db import models
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils import timezone
+from people.models import Person
 from workspace_filter.models import User
 from workspaces.models import Workspace, custom_admin_site
-from people.models import Person
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
@@ -222,9 +222,6 @@ class ChannelAdmin(BaseAdmin):
 
 custom_admin_site.register(Channel, ChannelAdmin)
 
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
-from django.urls import reverse
-from django.contrib import messages
 
 
 def oauth2callback(request):

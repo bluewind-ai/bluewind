@@ -1,6 +1,6 @@
 import json
-import shutil
 import os
+import shutil
 
 # Load the JSON from the file
 with open("./cookbook/_routes.json", "r") as file:

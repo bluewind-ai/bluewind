@@ -1,4 +1,5 @@
 from allauth.account.adapter import DefaultAccountAdapter
+
 from workspaces.models import Workspace, WorkspaceUser
 
 

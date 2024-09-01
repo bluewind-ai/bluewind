@@ -1,10 +1,15 @@
 import base64
 import os
 import pickle
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
+from datetime import timezone
+
 from dotenv import load_dotenv
+from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+
+from chat_messages.models import Message
+from workspace_filter.models import User
 
 # Load environment variables
 
@@ -136,16 +141,6 @@ def get_last_10_emails():
                         if header["name"] == "Subject"
                     ),
                     "No Subject",
-                )
-
-                # Get channel
-                channel = next(
-                    (
-                        header["value"]
-                        for header in msg["payload"]["headers"]
-                        if header["name"] == "From"
-                    ),
-                    "Unknown",
                 )
 
                 # Get email body

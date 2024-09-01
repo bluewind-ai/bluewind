@@ -1,13 +1,13 @@
 from datetime import timedelta
 
+from user_sessions.backends.db import SessionStore
+from user_sessions.models import Session
+
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.sessions.backends.base import CreateError
 from django.test import TestCase
 from django.utils.timezone import now
-
-from user_sessions.backends.db import SessionStore
-from user_sessions.models import Session
 
 
 class SessionStoreTest(TestCase):

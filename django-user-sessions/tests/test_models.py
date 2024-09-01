@@ -1,9 +1,9 @@
+from user_sessions.backends.db import SessionStore
+from user_sessions.models import Session
+
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.test import TestCase
-
-from user_sessions.backends.db import SessionStore
-from user_sessions.models import Session
 
 
 class ModelTest(TestCase):

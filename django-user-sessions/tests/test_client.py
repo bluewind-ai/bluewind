@@ -1,11 +1,11 @@
 from unittest.mock import patch
 
-from django.contrib.auth.models import User
+from user_sessions.backends.db import SessionStore
+
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.utils import override_settings
-
-from user_sessions.backends.db import SessionStore
 
 from .utils import Client
 
