@@ -368,3 +368,5 @@ DJANGO_ADMIN_SSO_OAUTH_CLIENT_ID = os.environ['GOOGLE_OAUTH_CLIENT_ID']
 DJANGO_ADMIN_SSO_OAUTH_CLIENT_SECRET = os.environ['GOOGLE_OAUTH_CLIENT_SECRET']
 
 AUTH_USER_MODEL = 'workspace_filter.User'
+
+ACCOUNT_ADAPTER = 'bluewind.allauth_adapter.CustomAccountAdapter'
