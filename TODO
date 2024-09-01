@@ -37,3 +37,6 @@ Run tests on previous commits to see if they still work, to see if changes are b
 
 add vantage to AWS accounts
 add in the CI a step that checks if things work ok.
+
+Campaign Goal: build much needed django improvements.
+Opportunities for challengers: get visibility from Django community
