@@ -7,19 +7,20 @@ admin.autodiscover()
 
 urlpatterns = [
     re_path(
-        '^$',
+        "^$",
         RedirectView.as_view(
-            url=reverse_lazy('user_sessions:session_list'),
+            url=reverse_lazy("user_sessions:session_list"),
             permanent=True,
         ),
-        name='home',
+        name="home",
     ),
-    re_path(r'', include('user_sessions.urls', namespace='user_sessions')),
-    re_path(r'^admin/', admin.site.urls),
+    re_path(r"", include("user_sessions.urls", namespace="user_sessions")),
+    re_path(r"^admin/", admin.site.urls),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns = [
-        re_path(r'^__debug__/', include(debug_toolbar.urls)),
+        re_path(r"^__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns

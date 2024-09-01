@@ -12,7 +12,7 @@ PREFIX_MAPPINGS = {
     "Session": "session",
     "ApiProvider": "apiprov",
     "ApiKey": "apikey",
-    "WorkspaceUser" : "wksuser",
+    "WorkspaceUser": "wksuser",
     "Message": "msg",
     "ApolloPeopleSearch": "apsearch",
     "GmailSubscription": "gmailsub",
@@ -23,13 +23,13 @@ PREFIX_MAPPINGS = {
     "SocialAccount": "socacc",
     "SocialToken": "soctok",
     "Site": "site",
-
 }
+
 
 def public_id(model_name, id):
     if model_name not in PREFIX_MAPPINGS:
         raise ValidationError(f"You didn't give a prefix for the model: {model_name}")
-    
+
     prefix = PREFIX_MAPPINGS[model_name]
 
     return f"{prefix}_{str(id).replace('-', '')[-12:]}"

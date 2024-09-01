@@ -8,9 +8,12 @@ class ApiProvider(BaseModel):
     def __str__(self):
         return self.name
 
+
 class ApiKey(BaseModel):
     content = models.TextField()
-    provider = models.ForeignKey(ApiProvider, on_delete=models.CASCADE, related_name='api_keys')
+    provider = models.ForeignKey(
+        ApiProvider, on_delete=models.CASCADE, related_name="api_keys"
+    )
 
     def __str__(self):
         return f"API Key for {self.provider.name}"

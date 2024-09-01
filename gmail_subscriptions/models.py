@@ -10,13 +10,14 @@ from google.api_core import exceptions as google_exceptions
 
 logger = logging.getLogger(__name__)
 
-class GmailSubscription(BaseModel):    
+
+class GmailSubscription(BaseModel):
     project_id = models.CharField(max_length=100)
     topic_id = models.CharField(max_length=100)
     push_endpoint = models.URLField()
 
     label_ids = models.JSONField(default=list)
-    label_filter_action = models.CharField(max_length=20, default='include')
+    label_filter_action = models.CharField(max_length=20, default="include")
 
     client_secret_file = models.CharField(max_length=255)
     oauth_scopes = models.JSONField(default=list)
@@ -26,11 +27,13 @@ class GmailSubscription(BaseModel):
     def full_topic_name(self):
         return f"projects/{self.project_id}/topics/{self.topic_id}"
 
+
 def get_pubsub_credentials():
     return service_account.Credentials.from_service_account_file(
-        'google_backend_service_account.json',
-        scopes=['https://www.googleapis.com/auth/pubsub']
+        "google_backend_service_account.json",
+        scopes=["https://www.googleapis.com/auth/pubsub"],
     )
+
 
 def setup_pubsub_topic(project_id, topic_id):
     credentials = get_pubsub_credentials()
@@ -46,14 +49,13 @@ def setup_pubsub_topic(project_id, topic_id):
         logger.error(f"Error creating PubSub topic: {str(e)}")
         raise
 
+
 def create_push_subscription(project_id, topic_id, subscription_id, endpoint):
     subscriber = pubsub_v1.SubscriberClient(credentials=get_pubsub_credentials())
     topic_path = subscriber.topic_path(project_id, topic_id)
     subscription_path = subscriber.subscription_path(project_id, subscription_id)
 
-    push_config = pubsub_v1.types.PushConfig(
-        push_endpoint=endpoint
-    )
+    push_config = pubsub_v1.types.PushConfig(push_endpoint=endpoint)
 
     try:
         subscription = subscriber.create_subscription(
@@ -70,16 +72,22 @@ def create_push_subscription(project_id, topic_id, subscription_id, endpoint):
         logger.error(f"Error creating push subscription: {str(e)}")
         raise
 
+
 class GmailSubscriptionAdmin(BaseAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         setup_pubsub_topic(obj.project_id, obj.topic_id)
         create_push_subscription(
-            obj.project_id, 
-            obj.topic_id, 
+            obj.project_id,
+            obj.topic_id,
             f"{obj.topic_id}-sub",  # Creating a default subscription ID
-            obj.push_endpoint
+            obj.push_endpoint,
         )
-        self.message_user(request, "Successfully set up Gmail push notifications", level=django_messages.SUCCESS)
+        self.message_user(
+            request,
+            "Successfully set up Gmail push notifications",
+            level=django_messages.SUCCESS,
+        )
+
 
 custom_admin_site.register(GmailSubscription, GmailSubscriptionAdmin)

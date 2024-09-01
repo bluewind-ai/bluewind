@@ -1,5 +1,6 @@
 from django.test.runner import DiscoverRunner
 
+
 class NoDbTestRunner(DiscoverRunner):
     def setup_databases(self, **kwargs):
         pass

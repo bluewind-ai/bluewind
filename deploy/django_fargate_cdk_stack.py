@@ -16,14 +16,17 @@ from aws_cdk import (
 from constructs import Construct
 import json
 
+
 class SimpleFargateCdkStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        
+
         configs = {
             "staging": {
                 "debug": "True",
-                "instance_type": ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
+                "instance_type": ec2.InstanceType.of(
+                    ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO
+                ),
                 "cpu": 256,
                 "memory_limit_mib": 1024,
                 "desired_count": 1,
@@ -32,11 +35,13 @@ class SimpleFargateCdkStack(Stack):
                 "removal_policy": RemovalPolicy.DESTROY,
                 "max_azs": 2,
                 "domain_name": "staging.bluewind.ai",
-                "certificate_arn": "arn:aws:acm:us-east-1:361769569102:certificate/e12139f7-7309-49b7-bf0d-01ba2a3b7a20"
+                "certificate_arn": "arn:aws:acm:us-east-1:361769569102:certificate/e12139f7-7309-49b7-bf0d-01ba2a3b7a20",
             },
             "prod": {
                 "debug": "False",
-                "instance_type": ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.SMALL),
+                "instance_type": ec2.InstanceType.of(
+                    ec2.InstanceClass.T4G, ec2.InstanceSize.SMALL
+                ),
                 "cpu": 256,
                 "memory_limit_mib": 1024,
                 "desired_count": 1,
@@ -45,32 +50,32 @@ class SimpleFargateCdkStack(Stack):
                 "removal_policy": RemovalPolicy.RETAIN,
                 "max_azs": 2,
                 "domain_name": "app.bluewind.ai",
-                "certificate_arn": "arn:aws:acm:us-east-1:484907521409:certificate/c8fcaf6d-0f2f-482c-850f-c0494e32464c"
+                "certificate_arn": "arn:aws:acm:us-east-1:484907521409:certificate/c8fcaf6d-0f2f-482c-850f-c0494e32464c",
             },
         }
-        env = os.environ.get('ENVIRONMENT')
+        env = os.environ.get("ENVIRONMENT")
         config = configs[env]
 
         certificate = acm.Certificate.from_certificate_arn(
-            self, "Certificate",
-            certificate_arn=config["certificate_arn"]
+            self, "Certificate", certificate_arn=config["certificate_arn"]
         )
 
-        vpc = ec2.Vpc(self, "MyVPC",
+        vpc = ec2.Vpc(
+            self,
+            "MyVPC",
             max_azs=config["max_azs"],
             nat_gateways=0,
             subnet_configuration=[
                 ec2.SubnetConfiguration(
-                    name="Public",
-                    subnet_type=ec2.SubnetType.PUBLIC,
-                    cidr_mask=24
+                    name="Public", subnet_type=ec2.SubnetType.PUBLIC, cidr_mask=24
                 )
-            ]
+            ],
         )
         cluster = ecs.Cluster(self, "MyCluster", vpc=vpc)
-        
+
         static_bucket = s3.Bucket(
-            self, "StaticBucket",
+            self,
+            "StaticBucket",
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
             encryption=s3.BucketEncryption.S3_MANAGED,
@@ -81,8 +86,11 @@ class SimpleFargateCdkStack(Stack):
         static_bucket.grant_read(oai)
 
         db_instance = rds.DatabaseInstance(
-            self, "MyRDSInstance",
-            engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_13),
+            self,
+            "MyRDSInstance",
+            engine=rds.DatabaseInstanceEngine.postgres(
+                version=rds.PostgresEngineVersion.VER_13
+            ),
             instance_type=config["instance_type"],
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
@@ -96,27 +104,31 @@ class SimpleFargateCdkStack(Stack):
         )
 
         db_instance.connections.allow_from(ec2.Peer.any_ipv4(), ec2.Port.tcp(5432))
-        
+
         rds_secret = db_instance.secret
         secret_name = f"{self.stack_name}-{env}-django-admin-credentials"
         email = f"{env}-admin@bluewind.ai"
-        
+
         django_superuser_secret = secretsmanager.Secret(
-            self, "DjangoAdminSecretCreation",
+            self,
+            "DjangoAdminSecretCreation",
             secret_name=secret_name,
             generate_secret_string=secretsmanager.SecretStringGenerator(
-                secret_string_template=json.dumps({
-                    "DJANGO_SUPERUSER_EMAIL": email,
-                    "DJANGO_SUPERUSER_USERNAME": email,
-                }),
+                secret_string_template=json.dumps(
+                    {
+                        "DJANGO_SUPERUSER_EMAIL": email,
+                        "DJANGO_SUPERUSER_USERNAME": email,
+                    }
+                ),
                 generate_string_key="DJANGO_SUPERUSER_PASSWORD",
                 exclude_punctuation=True,
-                password_length=32
-            )
+                password_length=32,
+            ),
         )
 
         fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
-            self, "MyFargateService",
+            self,
+            "MyFargateService",
             cluster=cluster,
             cpu=config["cpu"],
             memory_limit_mib=config["memory_limit_mib"],
@@ -125,18 +137,34 @@ class SimpleFargateCdkStack(Stack):
                 image=ecs.ContainerImage.from_asset("../"),
                 container_port=8000,
                 secrets={
-                    "DB_USERNAME": ecs.Secret.from_secrets_manager(rds_secret, field="username"),
-                    "DB_PASSWORD": ecs.Secret.from_secrets_manager(rds_secret, field="password"),
-                    "DB_HOST": ecs.Secret.from_secrets_manager(rds_secret, field="host"),
-                    "DB_PORT": ecs.Secret.from_secrets_manager(rds_secret, field="port"),
-                    "DJANGO_SUPERUSER_EMAIL": ecs.Secret.from_secrets_manager(django_superuser_secret, field="DJANGO_SUPERUSER_EMAIL"),
-                    "DJANGO_SUPERUSER_USERNAME": ecs.Secret.from_secrets_manager(django_superuser_secret, field="DJANGO_SUPERUSER_USERNAME"),
-                    "DJANGO_SUPERUSER_PASSWORD": ecs.Secret.from_secrets_manager(django_superuser_secret, field="DJANGO_SUPERUSER_PASSWORD"),
+                    "DB_USERNAME": ecs.Secret.from_secrets_manager(
+                        rds_secret, field="username"
+                    ),
+                    "DB_PASSWORD": ecs.Secret.from_secrets_manager(
+                        rds_secret, field="password"
+                    ),
+                    "DB_HOST": ecs.Secret.from_secrets_manager(
+                        rds_secret, field="host"
+                    ),
+                    "DB_PORT": ecs.Secret.from_secrets_manager(
+                        rds_secret, field="port"
+                    ),
+                    "DJANGO_SUPERUSER_EMAIL": ecs.Secret.from_secrets_manager(
+                        django_superuser_secret, field="DJANGO_SUPERUSER_EMAIL"
+                    ),
+                    "DJANGO_SUPERUSER_USERNAME": ecs.Secret.from_secrets_manager(
+                        django_superuser_secret, field="DJANGO_SUPERUSER_USERNAME"
+                    ),
+                    "DJANGO_SUPERUSER_PASSWORD": ecs.Secret.from_secrets_manager(
+                        django_superuser_secret, field="DJANGO_SUPERUSER_PASSWORD"
+                    ),
                 },
             ),
             public_load_balancer=True,
             health_check_grace_period=Duration.seconds(60),
-            task_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),  # Use task_subnets instead of vpc_subnets
+            task_subnets=ec2.SubnetSelection(
+                subnet_type=ec2.SubnetType.PUBLIC
+            ),  # Use task_subnets instead of vpc_subnets
         )
 
         fargate_service.target_group.configure_health_check(
@@ -149,20 +177,21 @@ class SimpleFargateCdkStack(Stack):
         )
 
         fargate_service.target_group.set_attribute(
-            key="deregistration_delay.timeout_seconds",
-            value="5"
+            key="deregistration_delay.timeout_seconds", value="5"
         )
 
         lb_dns_name = fargate_service.load_balancer.load_balancer_dns_name
         cloudfront_logs_bucket = s3.Bucket(
-            self, "CloudFrontLogsBucket",
+            self,
+            "CloudFrontLogsBucket",
             removal_policy=RemovalPolicy.RETAIN,
             encryption=s3.BucketEncryption.S3_MANAGED,
             object_ownership=s3.ObjectOwnership.OBJECT_WRITER,
         )
 
         distribution = cloudfront.Distribution(
-            self, "MyDistribution",
+            self,
+            "MyDistribution",
             default_behavior=cloudfront.BehaviorOptions(
                 origin=origins.LoadBalancerV2Origin(
                     fargate_service.load_balancer,
@@ -187,17 +216,28 @@ class SimpleFargateCdkStack(Stack):
             # certificate=certificate,
         )
 
-        fargate_service.task_definition.default_container.add_environment("SECRET_KEY", "TO_BE_REPLACED")
-        fargate_service.task_definition.default_container.add_environment("DEBUG", "True")
-        fargate_service.task_definition.default_container.add_environment("ENVIRONMENT", "staging")
         fargate_service.task_definition.default_container.add_environment(
-            "ALLOWED_HOSTS", f"{config['domain_name']},{lb_dns_name},localhost,127.0.0.1,localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,*"
+            "SECRET_KEY", "TO_BE_REPLACED"
         )
         fargate_service.task_definition.default_container.add_environment(
-            "CSRF_TRUSTED_ORIGINS", f"https://{config['domain_name']},http://{lb_dns_name},https://{lb_dns_name},https://{distribution.distribution_domain_name}"
+            "DEBUG", "True"
         )
         fargate_service.task_definition.default_container.add_environment(
-            "STATIC_URL", f"https://{config['domain_name']}/staticfiles/,https://{distribution.distribution_domain_name}/staticfiles/"
+            "ENVIRONMENT", "staging"
+        )
+        fargate_service.task_definition.default_container.add_environment(
+            "ALLOWED_HOSTS",
+            f"{config['domain_name']},{lb_dns_name},localhost,127.0.0.1,localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,*",
+        )
+        fargate_service.task_definition.default_container.add_environment(
+            "CSRF_TRUSTED_ORIGINS",
+            f"https://{config['domain_name']},http://{lb_dns_name},https://{lb_dns_name},https://{distribution.distribution_domain_name}",
+        )
+        fargate_service.task_definition.default_container.add_environment(
+            "STATIC_URL",
+            f"https://{config['domain_name']}/staticfiles/,https://{distribution.distribution_domain_name}/staticfiles/",
         )
 
-        db_instance.connections.allow_default_port_from(fargate_service.service.connections)
+        db_instance.connections.allow_default_port_from(
+            fargate_service.service.connections
+        )

@@ -11,18 +11,18 @@ class UUID(uuid.UUID):
     ) -> None:
         if int is not None:
             if not 0 <= int < 1 << 128:
-                raise ValueError('int is out of range (need a 128-bit value)')
+                raise ValueError("int is out of range (need a 128-bit value)")
         if version is not None:
             if not 1 <= version <= 7:
-                raise ValueError('illegal version number')
+                raise ValueError("illegal version number")
             # Set the variant to RFC 4122.
             int &= ~(0xC000 << 48)  # type: ignore
             int |= 0x8000 << 48  # type: ignore
             # Set the version number.
             int &= ~(0xF000 << 64)  # type: ignore
             int |= version << 76  # type: ignore
-        object.__setattr__(self, 'int', int)
-        object.__setattr__(self, 'is_safe', is_safe)
+        object.__setattr__(self, "int", int)
+        object.__setattr__(self, "is_safe", is_safe)
 
 
 _last_v7_timestamp = None

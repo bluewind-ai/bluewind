@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.sessions.base_session import (
-    AbstractBaseSession, BaseSessionManager,
+    AbstractBaseSession,
+    BaseSessionManager,
 )
 from django.db import models
 
@@ -25,11 +26,15 @@ class Session(AbstractBaseSession):
     Additionally this session object providers the following properties:
     ``user``, ``user_agent`` and ``ip``.
     """
-    user = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
-                             null=True, on_delete=models.CASCADE)
+
+    user = models.ForeignKey(
+        getattr(settings, "AUTH_USER_MODEL", "auth.User"),
+        null=True,
+        on_delete=models.CASCADE,
+    )
     user_agent = models.CharField(null=True, blank=True, max_length=200)
     last_activity = models.DateTimeField(auto_now=True)
-    ip = models.GenericIPAddressField(null=True, blank=True, verbose_name='IP')
+    ip = models.GenericIPAddressField(null=True, blank=True, verbose_name="IP")
 
     objects = SessionManager()
 

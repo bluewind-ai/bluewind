@@ -11,80 +11,95 @@ from dotenv import load_dotenv
 
 # Print current working directory and client secret file path for debugging
 print("Current working directory:", os.getcwd())
-print("GMAIL_CLIENT_SECRET_FILE:", os.getenv('GMAIL_CLIENT_SECRET_FILE'))
+print("GMAIL_CLIENT_SECRET_FILE:", os.getenv("GMAIL_CLIENT_SECRET_FILE"))
 
 # If modifying these scopes, delete the file token.pickle.
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+
 
 def get_gmail_service():
     load_dotenv()
     creds = None
     # The file token.pickle stores the user's access and refresh tokens
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
+    if os.path.exists("token.pickle"):
+        with open("token.pickle", "rb") as token:
             creds = pickle.load(token)
-    
+
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            client_secret_file = os.path.expanduser(os.getenv('GMAIL_CLIENT_SECRET_FILE'))
-            flow = InstalledAppFlow.from_client_secrets_file(
-                client_secret_file, SCOPES)
+            client_secret_file = os.path.expanduser(
+                os.getenv("GMAIL_CLIENT_SECRET_FILE")
+            )
+            flow = InstalledAppFlow.from_client_secrets_file(client_secret_file, SCOPES)
             creds = flow.run_local_server(port=8080)  # Use a fixed port
-        
+
         # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
+        with open("token.pickle", "wb") as token:
             pickle.dump(creds, token)
 
-    service = build('gmail', 'v1', credentials=creds)
+    service = build("gmail", "v1", credentials=creds)
     return service
+
 
 def list_labels():
     service = get_gmail_service()
     try:
-        results = service.users().labels().list(userId='me').execute()
-        labels = results.get('labels', [])
+        results = service.users().labels().list(userId="me").execute()
+        labels = results.get("labels", [])
 
         if not labels:
-            print('No labels found.')
+            print("No labels found.")
         else:
-            print('Labels:')
+            print("Labels:")
             for label in labels:
-                print(label['name'])
+                print(label["name"])
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 def get_last_10_emails():
     service = get_gmail_service()
     try:
-        results = service.users().messages().list(userId='me', maxResults=10).execute()
-        messages = results.get('messages', [])
+        results = service.users().messages().list(userId="me", maxResults=10).execute()
+        messages = results.get("messages", [])
 
         if not messages:
-            print('No messages found.')
+            print("No messages found.")
         else:
-            print('Last 10 emails:')
+            print("Last 10 emails:")
             for message in messages:
-                msg = service.users().messages().get(userId='me', id=message['id']).execute()
-                
+                msg = (
+                    service.users()
+                    .messages()
+                    .get(userId="me", id=message["id"])
+                    .execute()
+                )
+
                 # Get email subject
-                subject = ''
-                for header in msg['payload']['headers']:
-                    if header['name'] == 'Subject':
-                        subject = header['value']
+                subject = ""
+                for header in msg["payload"]["headers"]:
+                    if header["name"] == "Subject":
+                        subject = header["value"]
                         break
-                
+
                 # Get email body
-                if 'parts' in msg['payload']:
-                    body = base64.urlsafe_b64decode(msg['payload']['parts'][0]['body']['data']).decode('utf-8')
+                if "parts" in msg["payload"]:
+                    body = base64.urlsafe_b64decode(
+                        msg["payload"]["parts"][0]["body"]["data"]
+                    ).decode("utf-8")
                 else:
-                    body = base64.urlsafe_b64decode(msg['payload']['body']['data']).decode('utf-8')
-                
+                    body = base64.urlsafe_b64decode(
+                        msg["payload"]["body"]["data"]
+                    ).decode("utf-8")
+
                 print(f"\nSubject: {subject}")
                 print(f"Snippet: {msg['snippet']}")
-                print(f"Body: {body[:100]}...") # Print first 100 characters of the body
+                print(
+                    f"Body: {body[:100]}..."
+                )  # Print first 100 characters of the body
                 print("-" * 50)
 
     except Exception as e:
@@ -93,31 +108,56 @@ def get_last_10_emails():
     def create_messages_from_gmail():
         service = get_gmail_service()
         try:
-            results = service.users().messages().list(userId='me', maxResults=10).execute()
-            messages = results.get('messages', [])
+            results = (
+                service.users().messages().list(userId="me", maxResults=10).execute()
+            )
+            messages = results.get("messages", [])
 
             if not messages:
-                print('No messages found.')
+                print("No messages found.")
                 return
 
             # Ensure we have at least one user
-            user, created = User.objects.get_or_create(username='gmail_user')
+            user, created = User.objects.get_or_create(username="gmail_user")
 
             for message in messages:
-                msg = service.users().messages().get(userId='me', id=message['id']).execute()
-                
+                msg = (
+                    service.users()
+                    .messages()
+                    .get(userId="me", id=message["id"])
+                    .execute()
+                )
+
                 # Get email subject
-                subject = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'Subject'), 'No Subject')
-                
+                subject = next(
+                    (
+                        header["value"]
+                        for header in msg["payload"]["headers"]
+                        if header["name"] == "Subject"
+                    ),
+                    "No Subject",
+                )
+
                 # Get channel
-                channel = next((header['value'] for header in msg['payload']['headers'] if header['name'] == 'From'), 'Unknown')
-                
+                channel = next(
+                    (
+                        header["value"]
+                        for header in msg["payload"]["headers"]
+                        if header["name"] == "From"
+                    ),
+                    "Unknown",
+                )
+
                 # Get email body
-                if 'parts' in msg['payload']:
-                    body = base64.urlsafe_b64decode(msg['payload']['parts'][0]['body']['data']).decode('utf-8')
+                if "parts" in msg["payload"]:
+                    body = base64.urlsafe_b64decode(
+                        msg["payload"]["parts"][0]["body"]["data"]
+                    ).decode("utf-8")
                 else:
-                    body = base64.urlsafe_b64decode(msg['payload']['body']['data']).decode('utf-8')
-                
+                    body = base64.urlsafe_b64decode(
+                        msg["payload"]["body"]["data"]
+                    ).decode("utf-8")
+
                 # Create Message object
                 Message.objects.create(
                     channel=user,
@@ -125,7 +165,7 @@ def get_last_10_emails():
                     subject=subject[:255],  # Limit subject to 255 characters
                     content=body,
                     timestamp=timezone.now(),
-                    is_read=False
+                    is_read=False,
                 )
 
             print("10 messages created successfully from Gmail!")
@@ -133,5 +173,6 @@ def get_last_10_emails():
         except Exception as e:
             print(f"An error occurred: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     get_last_10_emails()

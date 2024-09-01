@@ -2,71 +2,78 @@ import os
 from django.core.wsgi import get_wsgi_application
 from urllib.parse import parse_qs
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bluewind.settings_prod')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
+
 
 def workspace_wsgi_middleware(application):
     def wrapper(environ, start_response):
-        path_info = environ.get('PATH_INFO', '')
-        parts = path_info.split('/')
+        path_info = environ.get("PATH_INFO", "")
+        parts = path_info.split("/")
         # if parts[2].startswith('accounts'):
         #         pass
-        if path_info.startswith('/static'):
+        if path_info.startswith("/static"):
             pass
-        elif path_info.startswith('/wks_'):
+        elif path_info.startswith("/wks_"):
             # Extract workspace_public_id including the 'wks_' prefix
-            parts = path_info.split('/')
-            
+            parts = path_info.split("/")
+
             workspace_public_id = parts[1]  # This will be 'wks_2121211'
-            assert workspace_public_id.startswith('wks_')
+            assert workspace_public_id.startswith("wks_")
             # Modify SCRIPT_NAME and PATH_INFO
-            environ['SCRIPT_NAME'] = environ.get('SCRIPT_NAME', '') + f'/{workspace_public_id}'
-            environ['PATH_INFO'] = '/' + '/'.join(parts[2:])
-            
+            environ["SCRIPT_NAME"] = (
+                environ.get("SCRIPT_NAME", "") + f"/{workspace_public_id}"
+            )
+            environ["PATH_INFO"] = "/" + "/".join(parts[2:])
+
             # Add workspace_public_id to the environment
-            environ['WORKSPACE_PUBLIC_ID'] = workspace_public_id
+            environ["WORKSPACE_PUBLIC_ID"] = workspace_public_id
         else:
             WHITELIST = [
-                '/health/',
-                '/health',
-                '/favicon.ico',
-                '/favicon.ico/',
-                '/',
-                '/admin/login/',
-                '/admin/login',
-                '/admin/',
-                '/admin',
-                '/admin/logout/',
-                '/admin/logout',
+                "/health/",
+                "/health",
+                "/favicon.ico",
+                "/favicon.ico/",
+                "/",
+                "/admin/login/",
+                "/admin/login",
+                "/admin/",
+                "/admin",
+                "/admin/logout/",
+                "/admin/logout",
                 "/accounts",
                 "/accounts/login",
-                "/accounts/login/"
+                "/accounts/login/",
             ]
-            
+
             if path_info not in WHITELIST:
-                if path_info == '/oauth2callback/':                    
+                if path_info == "/oauth2callback/":
                     # Parse the query string
-                    query_string = environ.get('QUERY_STRING', '')
+                    query_string = environ.get("QUERY_STRING", "")
                     parsed_qs = parse_qs(query_string)
-                    
+
                     # Extract the state from the query string
-                    state = parsed_qs.get('state', [''])[0]
-                    if state.startswith('wks_'):
+                    state = parsed_qs.get("state", [""])[0]
+                    if state.startswith("wks_"):
                         # Extract the workspace_public_id from the state
-                        workspace_public_id, _ = state.split(':', 1)
-                        
+                        workspace_public_id, _ = state.split(":", 1)
+
                         # Add workspace_public_id to the environment
-                        environ['SCRIPT_NAME'] = environ.get('SCRIPT_NAME', '') + f'/{workspace_public_id}'
+                        environ["SCRIPT_NAME"] = (
+                            environ.get("SCRIPT_NAME", "") + f"/{workspace_public_id}"
+                        )
                         # environ['PATH_INFO'] = '/' + '/'.join(parts[2:])
-                        
+
                         # Add workspace_public_id to the environment
-                        environ['WORKSPACE_PUBLIC_ID'] = workspace_public_id
+                        environ["WORKSPACE_PUBLIC_ID"] = workspace_public_id
                     else:
                         raise ValueError("Invalid state in OAuth2 callback")
                 else:
                     pass
                     # raise ValueError("Invalid path", path_info)
         return application(environ, start_response)
+
     return wrapper
+
 
 # Get the default Django WSGI application
 django_application = get_wsgi_application()

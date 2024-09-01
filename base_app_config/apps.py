@@ -10,10 +10,10 @@
 #     def ready(self):
 #         # This code runs when Django starts
 #         from base_model_admin.admin import BaseAdminModel  # Import here to avoid circular imports
-        
+
 #         # Get all models from your app
 #         app_models = self.get_models()
-        
+
 #         # Register each model with BaseAdminModel
 #         for model in app_models:
 #             if not admin.site.is_registered(model):

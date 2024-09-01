@@ -10,7 +10,7 @@
 
 #     def __str__(self):
 #         return "Database Graph"
-    
+
 # class DBGraphAdmin(BaseAdmin):
 #     pass
 

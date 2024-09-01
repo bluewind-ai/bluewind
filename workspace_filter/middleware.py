@@ -6,10 +6,11 @@ class WorkspaceFilterMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        workspace_id = request.environ.get('WORKSPACE_ID')
+        workspace_id = request.environ.get("WORKSPACE_ID")
         if workspace_id:
             # Apply the filter to all querysets
             from django.db.models.query import QuerySet
+
             original_filter = QuerySet.filter
 
             def custom_filter(self, *args, **kwargs):

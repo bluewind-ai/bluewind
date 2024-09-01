@@ -1,11 +1,12 @@
 import os
 from django.apps import apps
 
+
 class AppDiscoverer:
     def __init__(self, root_dir):
         self.root_dir = root_dir
         self.discovered_apps = []
-        self.excluded_dirs = {'django', 'auth', '__pycache__', 'migrations'}
+        self.excluded_dirs = {"django", "auth", "__pycache__", "migrations"}
 
     def discover(self):
         print(f"Starting app discovery in: {self.root_dir}")
@@ -18,13 +19,16 @@ class AppDiscoverer:
         return self.discovered_apps
 
     def _should_inspect(self, item):
-        return (os.path.isdir(os.path.join(self.root_dir, item)) and 
-                not item.startswith('.') and 
-                item not in self.excluded_dirs)
+        return (
+            os.path.isdir(os.path.join(self.root_dir, item))
+            and not item.startswith(".")
+            and item not in self.excluded_dirs
+        )
 
     def _is_django_app(self, path):
-        return os.path.exists(os.path.join(path, 'apps.py')) or \
-               os.path.exists(os.path.join(path, 'models.py'))
+        return os.path.exists(os.path.join(path, "apps.py")) or os.path.exists(
+            os.path.join(path, "models.py")
+        )
 
     def get_safe_apps(self):
         safe_apps = []

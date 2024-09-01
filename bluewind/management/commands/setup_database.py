@@ -3,33 +3,44 @@ from django.core.management.base import BaseCommand
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
+
 class Command(BaseCommand):
-    help = 'Sets up the PostgreSQL database for the project'
+    help = "Sets up the PostgreSQL database for the project"
 
     def add_arguments(self, parser):
-        parser.add_argument('--password', type=str, help='Password for the new database user')
+        parser.add_argument(
+            "--password", type=str, help="Password for the new database user"
+        )
 
     def handle(self, *args, **options):
-        db_name = 'bluewind'
-        db_user = 'bluewind_user'
-        db_password = options['password']
+        db_name = "bluewind"
+        db_user = "bluewind_user"
+        db_password = options["password"]
 
         # Connect to PostgreSQL
-        conn = psycopg2.connect(dbname='postgres', user='postgres', host='localhost', password='postgres')
+        conn = psycopg2.connect(
+            dbname="postgres", user="postgres", host="localhost", password="postgres"
+        )
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cur = conn.cursor()
 
         # Create database
         try:
             cur.execute(f"CREATE DATABASE {db_name}")
-            self.stdout.write(self.style.SUCCESS(f"Database '{db_name}' created successfully"))
+            self.stdout.write(
+                self.style.SUCCESS(f"Database '{db_name}' created successfully")
+            )
         except psycopg2.errors.DuplicateDatabase:
-            self.stdout.write(self.style.WARNING(f"Database '{db_name}' already exists"))
+            self.stdout.write(
+                self.style.WARNING(f"Database '{db_name}' already exists")
+            )
 
         # Create user
         try:
             cur.execute(f"CREATE USER {db_user} WITH PASSWORD '{db_password}'")
-            self.stdout.write(self.style.SUCCESS(f"User '{db_user}' created successfully"))
+            self.stdout.write(
+                self.style.SUCCESS(f"User '{db_user}' created successfully")
+            )
         except psycopg2.errors.DuplicateObject:
             self.stdout.write(self.style.WARNING(f"User '{db_user}' already exists"))
 
@@ -43,8 +54,10 @@ class Command(BaseCommand):
         conn.close()
 
         # Update .env file
-        with open('.env', 'w') as f:
-            f.write(f"DATABASE_URL=postgresql://{db_user}:{db_password}@localhost:5432/{db_name}")
+        with open(".env", "w") as f:
+            f.write(
+                f"DATABASE_URL=postgresql://{db_user}:{db_password}@localhost:5432/{db_name}"
+            )
         self.stdout.write(self.style.SUCCESS(".env file updated successfully"))
 
         # Run migrations

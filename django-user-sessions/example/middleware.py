@@ -14,13 +14,14 @@ class SetRemoteAddrFromForwardedFor(MiddlewareMixin):
     anybody can "fake" their IP address. Only use this when you can absolutely
     trust the value of HTTP_X_FORWARDED_FOR.
     """
+
     def process_request(self, request):
         try:
-            real_ip = request.META['HTTP_X_REAL_IP']
+            real_ip = request.META["HTTP_X_REAL_IP"]
         except KeyError:
             return None
         else:
             # HTTP_X_FORWARDED_FOR can be a comma-separated list of IPs. The
             # client's IP will be the first one.
             real_ip = real_ip.split(",")[0].strip()
-            request.META['REMOTE_ADDR'] = real_ip
+            request.META["REMOTE_ADDR"] = real_ip

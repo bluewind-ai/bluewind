@@ -6,17 +6,17 @@ admin.autodiscover()
 
 
 def empty(request):
-    return HttpResponse('')
+    return HttpResponse("")
 
 
 def modify_session(request):
-    request.session['FOO'] = 'BAR'
-    return HttpResponse('')
+    request.session["FOO"] = "BAR"
+    return HttpResponse("")
 
 
 urlpatterns = [
-    path('', empty),
-    path('modify_session/', modify_session),
-    path('admin/', admin.site.urls),
-    path('', include('user_sessions.urls', namespace='user_sessions')),
+    path("", empty),
+    path("modify_session/", modify_session),
+    path("admin/", admin.site.urls),
+    path("", include("user_sessions.urls", namespace="user_sessions")),
 ]

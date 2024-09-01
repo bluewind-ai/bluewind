@@ -11,15 +11,6 @@ license = "BSD-3-Clause"
 readme = "README.md"
 package-mode = true
 
-[tool.black]
-target-version = [ "py310",]
-force-exclude = "tests/test_runner_apps/tagged/tests_syntax_error.py"
-
-[tool.isort]
-profile = "black"
-default_section = "THIRDPARTY"
-known_first_party = "django"
-
 [tool.poetry.dependencies]
 python = "^3.10"
 asgiref = "^3.8.1"
@@ -60,6 +51,7 @@ django-widget-tweaks = "^1.5.0"
 slippers = "^0.6.2"
 django-ses = {extras = ["events"], version = "^4.1.1"}
 autoflake = "^2.3.1"
+ruff = "^0.6.3"
 
 [tool.poetry.extras]
 argon2 = [ "argon2-cffi",]
@@ -77,6 +69,20 @@ version = "*"
 markers = "sys_platform == 'win32'"
 
 [tool.poetry.group.dev.dependencies]
-black = "*"
-isort = "*"
 pygraphviz = "^1.13"
+
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["django"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
