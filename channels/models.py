@@ -56,7 +56,12 @@ SCOPES = [
     'https://www.googleapis.com/auth/userinfo.profile',
     'openid',
     'https://www.googleapis.com/auth/gmail.readonly',
+    'https://www.googleapis.com/auth/gmail.send',
+    'https://www.googleapis.com/auth/gmail.modify',
+    'https://www.googleapis.com/auth/gmail.settings.basic',
+    'https://www.googleapis.com/auth/pubsub',  # Add this line
 ]
+
 
 from google.api_core import exceptions as google_exceptions
 
@@ -95,7 +100,7 @@ def get_gmail_service():
             flow = Flow.from_client_secrets_file(
                 client_secret_file, 
                 scopes=SCOPES,
-                redirect_uri='http://localhost:8000/oauth2callback/'
+                redirect_uri='https://green.bluewind.ai/oauth2callback/'
             )
             auth_url, _ = flow.authorization_url(access_type='offline', include_granted_scopes='true')
             print(f"Please visit this URL to authorize the application: {auth_url}")

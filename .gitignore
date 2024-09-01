@@ -77,3 +77,5 @@ tofu_output.json
 db.sqlite3
 local.json
 google_backend_service_account.json
+
+config.yml
