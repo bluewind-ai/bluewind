@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from nanoid import generate
 
 PREFIX_MAPPINGS = {
     "Workspace": "wks",
@@ -26,10 +26,6 @@ PREFIX_MAPPINGS = {
 }
 
 
-def public_id(model_name, id):
-    if model_name not in PREFIX_MAPPINGS:
-        raise ValidationError(f"You didn't give a prefix for the model: {model_name}")
-
-    prefix = PREFIX_MAPPINGS[model_name]
-
-    return f"{prefix}_{str(id).replace('-', '')[-12:]}"
+def public_id():
+    alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ"
+    return f"wks_{generate(alphabet, 5)}"

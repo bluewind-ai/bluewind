@@ -5,7 +5,7 @@ from django_object_actions import DjangoObjectActions, action
 # Assuming these are defined elsewhere
 from base_model.models import BaseModel
 from django.contrib import admin, messages
-from django.db import models
+from django.db import IntegrityError, models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
@@ -22,8 +22,17 @@ class Workspace(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.public_id:
-            self.public_id = public_id(self.__class__.__name__, self.id)
-        super().save(*args, **kwargs)
+            max_attempts = 3
+            for attempt in range(max_attempts):
+                try:
+                    self.public_id = public_id()
+                    super().save(*args, **kwargs)
+                    return
+                except IntegrityError:
+                    if attempt == max_attempts - 1:
+                        raise
+        else:
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -48,10 +57,6 @@ class WorkspaceUser(models.Model):
 
 
 class WorkspaceUserAdmin(admin.ModelAdmin):
-    @property
-    def public_id(self):
-        public_id(self.__class__.__name__, self.id)
-
     def get_list_display(self, request):
         return [field.name for field in self.model._meta.fields]
 
