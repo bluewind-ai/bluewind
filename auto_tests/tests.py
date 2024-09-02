@@ -12,7 +12,7 @@ class MyModelAdminTestCase(ModelAdminTestCase):
 
     def setUp(self):
         super().setUp()
-        unique_username = f"admin_{uuid.uuid4().hex[:8]}"
+        unique_username = f"admin_{uuid.uuid().hex[:8]}"
         self.user = get_user_model().objects.create_superuser(
             unique_username, f"{unique_username}@test.com", "password"
         )

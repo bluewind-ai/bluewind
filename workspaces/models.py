@@ -158,8 +158,6 @@ logger = logging.getLogger(__name__)
 
 
 class WorkspaceRelated(BaseModel):
-    from workspaces.models import Workspace
-
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
 
     class Meta:
@@ -174,7 +172,7 @@ class WorkspaceRelated(BaseModel):
             logger.info(f"New workspace for clone: {defaults['workspace']}")
         defaults.update(attrs or {})
 
-        new_public_id = f"{self.__class__.__name__.lower()}_{uuid.uuid4().hex[:12]}"
+        new_public_id = f"{self.__class__.__name__.lower()}_{uuid7().hex[:12]}"
         defaults["public_id"] = new_public_id
         logger.info(f"New public_id for clone: {new_public_id}")
 
