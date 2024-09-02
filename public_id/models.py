@@ -27,5 +27,5 @@ PREFIX_MAPPINGS = {
 
 
 def public_id():
-    alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ"
     return f"wks_{generate(alphabet, 5)}"
