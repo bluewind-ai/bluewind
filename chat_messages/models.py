@@ -62,7 +62,7 @@ class MessageAdmin(InWorkspace):
 
                     # Send email using Gmail API
                     try:
-                        service = get_gmail_service()
+                        service = service = get_gmail_service(channel=message.channel)
                         logger.info("Gmail service obtained")
                         message_body = {
                             "raw": base64.urlsafe_b64encode(
