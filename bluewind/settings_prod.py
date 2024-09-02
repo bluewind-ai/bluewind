@@ -19,10 +19,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 INSTALLED_APPS = [
     # 'django_extensions',
+    "custom_user",
     "allauth_ui",
     "model_clone",
-    "workspace_filter",
-    "custom_user",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
