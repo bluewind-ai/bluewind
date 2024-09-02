@@ -5,9 +5,9 @@ import requests
 
 from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
+from custom_user.models import User
 from django.contrib import messages
 from django.db import models
-from workspace_filter.models import User
 
 logger = logging.getLogger(__name__)
 

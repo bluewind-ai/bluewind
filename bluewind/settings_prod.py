@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "allauth_ui",
     "model_clone",
     "workspace_filter",
+    "custom_user",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -344,7 +345,7 @@ TEST_RUNNER = "bluewind.test_runner.NoDbTestRunner"
 DJANGO_ADMIN_SSO_OAUTH_CLIENT_ID = os.environ["GOOGLE_OAUTH_CLIENT_ID"]
 DJANGO_ADMIN_SSO_OAUTH_CLIENT_SECRET = os.environ["GOOGLE_OAUTH_CLIENT_SECRET"]
 
-AUTH_USER_MODEL = "workspace_filter.User"
+AUTH_USER_MODEL = "custom_user.User"
 
 ACCOUNT_ADAPTER = "bluewind.allauth_adapter.CustomAccountAdapter"
 

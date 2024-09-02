@@ -1,4 +1,4 @@
-from bluewind.custom_admin_site import custom_admin_site
+from bluewind.admin_site import custom_admin_site
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered

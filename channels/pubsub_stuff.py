@@ -13,6 +13,7 @@ from googleapiclient.discovery import build
 
 from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
+from custom_user.models import User
 from django.contrib import messages
 from django.contrib import messages as django_messages
 from django.db import models
@@ -23,7 +24,6 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from people.models import Person
-from workspace_filter.models import User
 from workspaces.models import Workspace
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
