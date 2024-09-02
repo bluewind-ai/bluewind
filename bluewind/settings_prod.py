@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "slippers",
     "django_extensions",
+    "gmail_events",
+    "webhook_tester",
 ]
 
 ALLAUTH_UI_THEME = "light"

@@ -5,8 +5,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import redirect
 from django.urls import include, path, re_path
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import RedirectView
 from health_check.views import health_check
+from webhook_tester.models import (
+    dummy_webhook,  # Replace 'your_app' with the actual app name
+)
 
 test = admin_autoregister
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
@@ -30,6 +34,11 @@ urlpatterns = [
     re_path(r"^favicon\.ico$", favicon_view),
     path("oauth2callback/", oauth2callback, name="oauth2callback"),
     path("accounts/", include("allauth.urls")),
+    path(
+        "admin/webhook_tester/webhooktest/dummy-webhook/",
+        csrf_exempt(dummy_webhook),
+        name="dummy_webhook",
+    ),
 ]
 
 if settings.DEBUG:
