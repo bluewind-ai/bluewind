@@ -3,7 +3,7 @@ import os
 
 import requests
 
-from base_model_admin.models import BaseAdmin
+from base_model_admin.InWorkspace import InWorkspace
 from django.contrib import messages
 from django.db import models
 from users.models import User
@@ -107,7 +107,7 @@ class Person(WorkspaceRelated):
         return False
 
 
-class PersonAdmin(BaseAdmin):
+class PersonAdmin(InWorkspace):
     list_display = ("first_name", "last_name", "email", "company_domain_name", "status")
     list_filter = ("status", "source")
     search_fields = ("first_name", "last_name", "email", "company_domain_name")

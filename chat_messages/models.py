@@ -1,7 +1,7 @@
 import base64
 import logging
 
-from base_model_admin.models import BaseAdmin
+from base_model_admin.InWorkspace import InWorkspace
 from channels.models import get_gmail_service
 from django.contrib import messages
 from django.db import models, transaction
@@ -38,7 +38,7 @@ class Message(WorkspaceRelated):
 # Admin registration remains the same
 
 
-class MessageAdmin(BaseAdmin):
+class MessageAdmin(InWorkspace):
     def add_view(self, request, form_url="", extra_context=None):
         if request.method == "POST":
             try:

@@ -3,7 +3,7 @@ import os
 
 import requests
 
-from base_model_admin.models import BaseAdmin
+from base_model_admin.InWorkspace import InWorkspace
 from django.contrib import messages
 from django.db import models, transaction
 from people.models import Person
@@ -74,7 +74,7 @@ class ApolloPeopleSearch(WorkspaceRelated):
         verbose_name_plural = "Apollo People Searches"
 
 
-class ApolloPeopleSearchAdmin(BaseAdmin):
+class ApolloPeopleSearchAdmin(InWorkspace):
     actions = ["perform_apollo_search"]
 
     def perform_apollo_search(self, request, queryset):

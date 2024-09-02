@@ -4,7 +4,7 @@ from google.api_core import exceptions as google_exceptions
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 
-from base_model_admin.models import BaseAdmin
+from base_model_admin.InWorkspace import InWorkspace
 from django.contrib import messages as django_messages
 from django.db import models
 from workspaces.models import WorkspaceRelated
@@ -74,7 +74,7 @@ def create_push_subscription(project_id, topic_id, subscription_id, endpoint):
         raise
 
 
-class GmailSubscriptionAdmin(BaseAdmin):
+class GmailSubscriptionAdmin(InWorkspace):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         setup_pubsub_topic(obj.project_id, obj.topic_id)
