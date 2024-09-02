@@ -617,21 +617,6 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-admin-sso"
-version = "5.2.0"
-description = "Django SSO solution"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "django-admin-sso-5.2.0.tar.gz", hash = "sha256:878f1776825c8454c440781153b9a7a755192f97f6a09d66961cd2d1066fd04c"},
-    {file = "django_admin_sso-5.2.0-py2.py3-none-any.whl", hash = "sha256:5cab4c9a3746a60c36f384ec7aa9cd4bc6eb73f44de6bcdba7293346d31fcfc8"},
-]
-
-[package.dependencies]
-Django = ">=3.2"
-oauth2client = ">=1.2"
-
-[[package]]
 name = "django-allauth"
 version = "64.2.0"
 description = "Integrated set of Django applications addressing authentication, registration, account management as well as 3rd party (social) account authentication."
@@ -1343,24 +1328,6 @@ files = [
     {file = "multidict-6.0.5-py3-none-any.whl", hash = "sha256:0d63c74e3d7ab26de115c49bffc92cc77ed23395303d496eae515d4204a625e7"},
     {file = "multidict-6.0.5.tar.gz", hash = "sha256:f7e301075edaf50500f0b341543c41194d8df3ae5caf4702f2095f3ca73dd8da"},
 ]
-
-[[package]]
-name = "oauth2client"
-version = "4.1.3"
-description = "OAuth 2.0 client library"
-optional = false
-python-versions = "*"
-files = [
-    {file = "oauth2client-4.1.3-py2.py3-none-any.whl", hash = "sha256:b8a81cc5d60e2d364f0b1b98f958dbd472887acaf1a5b05e21c28c31a2d6d3ac"},
-    {file = "oauth2client-4.1.3.tar.gz", hash = "sha256:d486741e451287f69568a4d26d70d9acd73a2bbfa275746c535b4209891cccc6"},
-]
-
-[package.dependencies]
-httplib2 = ">=0.9.1"
-pyasn1 = ">=0.1.7"
-pyasn1-modules = ">=0.0.5"
-rsa = ">=3.1.4"
-six = ">=1.6.1"
 
 [[package]]
 name = "oauthlib"
@@ -2077,4 +2044,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "731c20a2561ad9596d918deef8d929c763db943d2ad2ce8ce79a1c385214cac4"
+content-hash = "f168039fb367f42dddffd0f09b4aa5380bcbef83bc3b125dbe0a1084257c1706"

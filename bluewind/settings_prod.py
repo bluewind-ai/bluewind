@@ -155,7 +155,6 @@ GRAPH_MODELS = {
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
-    "admin_sso.auth.DjangoSSOAuthBackend",
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
     # `allauth` specific authentication methods, such as login by email
@@ -242,7 +241,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Application definition
 
-INSTALLED_APPS += ["debug_toolbar", "admin_sso"]
+INSTALLED_APPS += ["debug_toolbar"]
 
 WSGI_APPLICATION = "bluewind.wsgi.application"
 
@@ -341,8 +340,6 @@ MIDDLEWARE += [
 
 TEST_RUNNER = "bluewind.test_runner.NoDbTestRunner"
 
-DJANGO_ADMIN_SSO_OAUTH_CLIENT_ID = os.environ["GOOGLE_OAUTH_CLIENT_ID"]
-DJANGO_ADMIN_SSO_OAUTH_CLIENT_SECRET = os.environ["GOOGLE_OAUTH_CLIENT_SECRET"]
 
 AUTH_USER_MODEL = "custom_user.User"
 
