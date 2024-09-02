@@ -4,9 +4,9 @@ import os
 import requests
 
 from base_model_admin.models import BaseAdmin
-from custom_user.models import User
 from django.contrib import messages
 from django.db import models
+from users.models import User
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)

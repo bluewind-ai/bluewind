@@ -9,7 +9,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 from chat_messages.models import Message
-from custom_user.models import User
+from users.models import User
 
 # Load environment variables
 

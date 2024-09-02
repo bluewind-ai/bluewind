@@ -19,7 +19,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 INSTALLED_APPS = [
     # 'django_extensions',
-    "custom_user",
+    "django.db.migrations",
+    "users",
     "allauth_ui",
     "model_clone",
     "django.contrib.admin",
@@ -56,6 +57,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "widget_tweaks",
     "slippers",
+    "django_extensions",
 ]
 
 ALLAUTH_UI_THEME = "light"
@@ -341,7 +343,7 @@ MIDDLEWARE += [
 TEST_RUNNER = "bluewind.test_runner.NoDbTestRunner"
 
 
-AUTH_USER_MODEL = "custom_user.User"
+AUTH_USER_MODEL = "users.User"
 
 ACCOUNT_ADAPTER = "bluewind.allauth_adapter.CustomAccountAdapter"
 

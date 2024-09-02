@@ -6,7 +6,6 @@ from model_clone import CloneMixin
 # Assuming these are defined elsewhere
 from base_model.models import BaseModel
 from bluewind.utils import uuid7
-from custom_user.models import User
 from django.apps import apps
 from django.contrib import admin, messages
 from django.db import models, transaction
@@ -15,6 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
 from public_id.models import public_id
+from users.models import User
 
 
 class Workspace(models.Model):
