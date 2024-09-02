@@ -62,9 +62,8 @@ class WorkspaceUserAdmin(admin.ModelAdmin):
 
 
 class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ("name", "id", "created_at")
     actions = ["clone_workspace_action"]
-    readonly_fields = ("admin_url_link",)
+    readonly_fields = ("admin_url_link", "public_id")
     changelist_actions = ("delete_current_workspace",)
 
     @action(
