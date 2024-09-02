@@ -1,14 +1,11 @@
 import logging
 
 from django_object_actions import DjangoObjectActions, action
-from model_clone import CloneMixin
 
 # Assuming these are defined elsewhere
 from base_model.models import BaseModel
-from bluewind.utils import uuid7
-from django.apps import apps
 from django.contrib import admin, messages
-from django.db import models, transaction
+from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
@@ -18,8 +15,6 @@ from users.models import User
 
 
 class Workspace(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
-
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     users = models.ManyToManyField(User, through="WorkspaceUser")
@@ -27,7 +22,7 @@ class Workspace(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.public_id:
-            self.public_id = public_id(self.__class__.__name__, self.id or uuid7())
+            self.public_id = public_id(self.__class__.__name__, self.id)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -44,50 +39,12 @@ class Workspace(models.Model):
 
 
 class WorkspaceUser(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     is_default = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ("user", "workspace")
-
-
-def clone_workspace(workspace, request):
-    with transaction.atomic():
-        # Create a new workspace
-        new_workspace = Workspace.objects.create(name=f"Clone of {workspace.name}")
-
-        # Get all models in the project
-        all_models = apps.get_models()
-
-        # Iterate through all models and clone related objects
-        for model in all_models:
-            # Check if the model has a relationship with Workspace and inherits from CloneMixin
-            if any(
-                field.related_model == Workspace for field in model._meta.fields
-            ) and issubclass(model, CloneMixin):
-                # Get all objects related to the original workspace
-                related_objects = model.objects.filter(workspace=workspace)
-
-                # Clone each related object
-                for obj in related_objects:
-                    # Use make_clone method
-                    new_obj = obj.make_clone(attrs={"workspace": new_workspace})
-
-                    # If public_id is not excluded from cloning, generate a new one
-                    if hasattr(new_obj, "public_id") and "public_id" not in getattr(
-                        new_obj, "_clone_excluded_fields", []
-                    ):
-                        new_obj.public_id = public_id(
-                            new_obj.__class__.__name__, uuid7()
-                        )
-                        new_obj.save(update_fields=["public_id"])
-
-        return new_workspace
-
-
-# Create an instance of the custom admin site
 
 
 class WorkspaceUserAdmin(admin.ModelAdmin):
@@ -162,40 +119,3 @@ class WorkspaceRelated(BaseModel):
 
     class Meta:
         abstract = True
-
-    def make_clone(self, attrs=None, **kwargs):
-        logger.info(f"Starting clone of {self.__class__.__name__} with id {self.id}")
-        defaults = {"id": uuid7()}
-        logger.info(f"New id for clone: {defaults['id']}")
-        if "new_workspace" in kwargs:
-            defaults["workspace"] = kwargs.pop("new_workspace")
-            logger.info(f"New workspace for clone: {defaults['workspace']}")
-        defaults.update(attrs or {})
-
-        new_public_id = f"{self.__class__.__name__.lower()}_{uuid7().hex[:12]}"
-        defaults["public_id"] = new_public_id
-        logger.info(f"New public_id for clone: {new_public_id}")
-
-        logger.info(f"Cloning with defaults: {defaults}")
-        clone = super().make_clone(attrs=defaults, **kwargs)
-        logger.info(f"Clone created with id: {clone.id}, public_id: {clone.public_id}")
-        return clone
-
-    @classmethod
-    def clone_workspace_related(cls, old_workspace, new_workspace):
-        logger.info(
-            f"Starting to clone {cls.__name__} objects from workspace {old_workspace} to {new_workspace}"
-        )
-        objects = cls.objects.filter(workspace=old_workspace)
-        logger.info(f"Found {objects.count()} {cls.__name__} objects to clone")
-        for obj in objects:
-            logger.info(
-                f"Cloning {cls.__name__} object with id: {obj.id}, public_id: {obj.public_id}"
-            )
-            cloned_obj = obj.make_clone(new_workspace=new_workspace)
-            logger.info(
-                f"Cloned {cls.__name__} object. Original id: {obj.id}, Clone id: {cloned_obj.id}"
-            )
-        logger.info(
-            f"Finished cloning {cls.__name__} objects for workspace {old_workspace}"
-        )
