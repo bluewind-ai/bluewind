@@ -2,7 +2,6 @@ import base64
 import logging
 
 from base_model_admin.InWorkspace import InWorkspace
-from channels.models import get_gmail_service
 from django.contrib import messages
 from django.db import models, transaction
 from django.shortcuts import redirect
@@ -62,6 +61,8 @@ class MessageAdmin(InWorkspace):
 
                     # Send email using Gmail API
                     try:
+                        from channels.models import get_gmail_service
+
                         service = service = get_gmail_service(channel=message.channel)
                         logger.info("Gmail service obtained")
                         message_body = {

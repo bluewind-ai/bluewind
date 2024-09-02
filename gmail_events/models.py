@@ -1,7 +1,10 @@
+import base64
+import json
 import logging
 
 from base_model.models import BaseModel
 from bluewind.admin_site import custom_admin_site
+from channels.models import Channel, fetch_messages_from_gmail
 from django.contrib import admin
 from django.db import models
 from django.http import HttpResponse
@@ -15,8 +18,19 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 @log_incoming_webhook
 def gmail_webhook(request):
-    print(request)
-    return HttpResponse("OK")
+    payload = json.loads(request.body)
+    message_data = payload["message"]
+    encoded_data = message_data["data"]
+
+    decoded_data = base64.b64decode(encoded_data).decode("utf-8")
+    data = json.loads(decoded_data)
+
+    email_address = data["emailAddress"]
+    history_id = data["historyId"]
+
+    channel = Channel.objects.get(email=email_address)
+    created_count = fetch_messages_from_gmail(channel, history_id=history_id)
+    return HttpResponse(f"Processed {created_count} messages")
 
 
 class GmailEvent(BaseModel):

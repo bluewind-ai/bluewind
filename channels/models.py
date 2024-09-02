@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 import os
 
 from google.auth.transport.requests import Request
@@ -17,6 +18,8 @@ from django.utils import timezone
 from people.models import Person
 from users.models import User
 from workspaces.models import Workspace, WorkspaceRelated
+
+logger = logging.getLogger(__name__)
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
@@ -97,15 +100,29 @@ def get_gmail_service(channel):
     return build("gmail", "v1", credentials=creds)
 
 
-def fetch_messages_from_gmail(request, channel):
+def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
     from chat_messages.models import Message
 
     service = get_gmail_service(channel)
-    results = service.users().messages().list(userId="me", maxResults=10).execute()
-    messages = results.get("messages", [])
 
-    if not messages:
-        return 0
+    if history_id:
+        results = (
+            service.users()
+            .history()
+            .list(userId="me", startHistoryId=history_id)
+            .execute()
+        )
+        messages = []
+        for history in results["history"]:
+            messages.extend(history["messages"])
+    else:
+        results = (
+            service.users()
+            .messages()
+            .list(userId="me", maxResults=max_results)
+            .execute()
+        )
+        messages = results["messages"]
 
     person, _ = Person.objects.get_or_create(
         email=channel.email,
@@ -135,16 +152,16 @@ def fetch_messages_from_gmail(request, channel):
         body = ""
         if "parts" in msg["payload"]:
             for part in msg["payload"]["parts"]:
-                if part.get("body") and part["body"].get("data"):
+                if part["body"].get("data"):
                     body += base64.urlsafe_b64decode(part["body"]["data"]).decode(
                         "utf-8"
                     )
-        elif msg["payload"].get("body") and msg["payload"]["body"].get("data"):
+        elif msg["payload"]["body"].get("data"):
             body = base64.urlsafe_b64decode(msg["payload"]["body"]["data"]).decode(
                 "utf-8"
             )
         else:
-            body = msg.get("snippet", "No body")
+            body = msg["snippet"]
 
         Message.objects.create(
             channel=channel,
@@ -153,14 +170,32 @@ def fetch_messages_from_gmail(request, channel):
             content=body,
             timestamp=timezone.now(),
             is_read=False,
-            workspace=Workspace.objects.get(
-                public_id=request.environ["WORKSPACE_PUBLIC_ID"]
-            ),
+            workspace=channel.workspace,
             gmail_message_id=message["id"],
         )
         created_count += 1
 
     return created_count
+
+
+def handle_gmail_webhook(payload):
+    message_data = payload.get("message", {})
+    message_id = message_data.get("messageId")
+
+    # if not message_id:
+    #     return 0
+
+    # # Decode the data field
+    # data = json.loads(base64.b64decode(message_data.get("data", "")).decode("utf-8"))
+    # email_address = data.get("emailAddress")
+
+    # try:
+    #     channel = Channel.objects.get(email=email_address)
+    # except Channel.DoesNotExist:
+    #     logger.error(f"Channel not found for email: {email_address}")
+    #     return 0
+
+    return fetch_messages_from_gmail(channel=None, message_id=message_id)
 
 
 class ChannelAdmin(InWorkspace):
@@ -172,7 +207,7 @@ class ChannelAdmin(InWorkspace):
     def fetch_messages_from_gmail(self, request, queryset):
         total_created_count = 0
         for channel in queryset:
-            created_count = fetch_messages_from_gmail(request, channel)
+            created_count = fetch_messages_from_gmail(channel)
             total_created_count += created_count
             self.message_user(
                 request,
@@ -272,8 +307,6 @@ def oauth2callback(request):
 
     except Exception as e:
         # Log the exception for debugging
-        import logging
-
         logging.exception("Error in oauth2callback")
         messages.error(request, f"An error occurred: {str(e)}")
         return HttpResponseRedirect(reverse("admin:channels_channel_changelist"))
