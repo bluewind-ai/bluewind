@@ -11,7 +11,6 @@ from google.oauth2 import service_account
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
-from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
 from custom_user.models import User
 from django.contrib import messages
@@ -38,7 +37,7 @@ def get_pubsub_credentials():
     )
 
 
-class Channel(BaseModel):
+class Channel(WorkspaceRelated):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     email = models.EmailField()
     gmail_history_id = models.CharField(max_length=20, blank=True, null=True)

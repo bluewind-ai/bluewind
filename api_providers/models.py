@@ -1,15 +1,15 @@
-from base_model.models import BaseModel
 from django.db import models
+from workspaces.models import WorkspaceRelated
 
 
-class ApiProvider(BaseModel):
+class ApiProvider(WorkspaceRelated):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
 
 
-class ApiKey(BaseModel):
+class ApiKey(WorkspaceRelated):
     content = models.TextField()
     provider = models.ForeignKey(
         ApiProvider, on_delete=models.CASCADE, related_name="api_keys"

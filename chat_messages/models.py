@@ -1,7 +1,6 @@
 import base64
 import logging
 
-from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
 from channels.models import get_gmail_service
 from django.contrib import messages
@@ -9,12 +8,12 @@ from django.db import models, transaction
 from django.shortcuts import redirect
 from django.urls import reverse
 from people.models import Person
-from workspaces.models import Workspace
+from workspaces.models import Workspace, WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
 
-class Message(BaseModel):
+class Message(WorkspaceRelated):
     from channels.models import Channel
 
     channel = models.ForeignKey(

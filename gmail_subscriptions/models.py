@@ -4,15 +4,15 @@ from google.api_core import exceptions as google_exceptions
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 
-from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
 from django.contrib import messages as django_messages
 from django.db import models
+from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
 
-class GmailSubscription(BaseModel):
+class GmailSubscription(WorkspaceRelated):
     project_id = models.CharField(max_length=100)
     topic_id = models.CharField(max_length=100)
     push_endpoint = models.URLField()

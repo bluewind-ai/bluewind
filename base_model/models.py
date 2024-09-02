@@ -12,10 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseModel(CloneMixin, models.Model):
-    from workspaces.models import Workspace
-
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     public_id = models.CharField(max_length=100, unique=True, editable=False)
 
     class Meta:

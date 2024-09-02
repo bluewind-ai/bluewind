@@ -7,7 +7,6 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
-from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
 from custom_user.models import User
 from django.contrib import messages
@@ -17,12 +16,12 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 from people.models import Person
-from workspaces.models import Workspace
+from workspaces.models import Workspace, WorkspaceRelated
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 
-class Channel(BaseModel):
+class Channel(WorkspaceRelated):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     email = models.EmailField()
     access_token = models.TextField(null=True, blank=True)

@@ -3,15 +3,14 @@ import os
 
 import requests
 
-from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
 from django.contrib import messages
 from django.db import models, transaction
 from people.models import Person
-from workspaces.models import Workspace
+from workspaces.models import Workspace, WorkspaceRelated
 
 
-class ApolloPeopleSearch(BaseModel):
+class ApolloPeopleSearch(WorkspaceRelated):
     SENIORITY_CHOICES = [
         ("senior", "Senior"),
         ("manager", "Manager"),

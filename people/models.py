@@ -3,16 +3,16 @@ import os
 
 import requests
 
-from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
 from custom_user.models import User
 from django.contrib import messages
 from django.db import models
+from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
 
-class Person(BaseModel):
+class Person(WorkspaceRelated):
     first_name = models.CharField(max_length=10, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     email = models.EmailField(blank=True)

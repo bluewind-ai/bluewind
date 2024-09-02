@@ -3,7 +3,7 @@
 # from base_model.models import BaseModel
 # from base_model_admin.models import BaseAdmin
 
-# class DBGraph(BaseModel):
+# class DBGraph(WorkspaceRelated):
 #     name = models.CharField(max_length=100)
 #     class Meta:
 #         verbose_name_plural = "Database Graph"
