@@ -1,4 +1,3 @@
-import json
 import logging
 
 from base_model.models import BaseModel
@@ -7,13 +6,19 @@ from django.contrib import admin
 from django.db import models
 from django.http import HttpResponse
 from django.urls import path
-from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from webhook_tester.models import log_incoming_webhook
 
 logger = logging.getLogger(__name__)
 
 
-# Model definition
+@csrf_exempt
+@log_incoming_webhook
+def gmail_webhook(request):
+    print(request)
+    return HttpResponse("OK")
+
+
 class GmailEvent(BaseModel):
     timestamp = models.DateTimeField(auto_now_add=True)
     event_data = models.JSONField()
@@ -25,7 +30,6 @@ class GmailEvent(BaseModel):
         app_label = "gmail_events"
 
 
-# Admin and webhook definition
 class GmailEventAdmin(admin.ModelAdmin):
     list_display = ("timestamp",)
 
@@ -34,31 +38,11 @@ class GmailEventAdmin(admin.ModelAdmin):
         custom_urls = [
             path(
                 "gmail-webhook/",
-                self.admin_site.admin_view(self.gmail_webhook),
+                csrf_exempt(gmail_webhook),
                 name="gmail_webhook",
             ),
         ]
         return custom_urls + urls
-
-    @method_decorator(csrf_exempt)
-    def gmail_webhook(self, request):
-        if request.method == "POST":
-            try:
-                event_data = json.loads(request.body)
-                logger.info(f"Received Gmail event: {event_data}")
-                print(
-                    f"Received Gmail event: {event_data}"
-                )  # This will print to console/logs
-
-                # Optionally, save the event to the database
-                GmailEvent.objects.create(event_data=event_data)
-
-                return HttpResponse("Event received", status=200)
-            except json.JSONDecodeError:
-                logger.error("Invalid JSON received in Gmail webhook")
-                return HttpResponse("Invalid JSON", status=400)
-        else:
-            return HttpResponse("Method not allowed", status=405)
 
 
 custom_admin_site.register(GmailEvent, GmailEventAdmin)

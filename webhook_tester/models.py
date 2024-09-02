@@ -1,5 +1,6 @@
 import json
 import logging
+from functools import wraps
 
 import requests
 
@@ -12,10 +13,23 @@ from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import path
-from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
+
+
+def log_incoming_webhook(func):
+    @wraps(func)
+    def wrapper(request, *args, **kwargs):
+        IncomingWebhook.objects.create(
+            headers=dict(request.headers),
+            payload=json.loads(request.body) if request.body else {},
+            method=request.method,
+            ip_address=request.META.get("REMOTE_ADDR"),
+        )
+        return func(request, *args, **kwargs)
+
+    return wrapper
 
 
 # Model definitions
@@ -68,6 +82,11 @@ class WebhookTestAdmin(BaseAdmin):
                 "webhook-results/",
                 self.admin_site.admin_view(self.webhook_results_view),
                 name="webhook_results",
+            ),
+            path(
+                "dummy-webhook/",
+                csrf_exempt(dummy_webhook),
+                name="dummy_webhook",
             ),
         ]
         return custom_urls + urls
@@ -149,7 +168,8 @@ custom_admin_site.register(WebhookTest, WebhookTestAdmin)
 custom_admin_site.register(IncomingWebhook, IncomingWebhookAdmin)
 
 
-@method_decorator(csrf_exempt, name="dispatch")
+@csrf_exempt
+@log_incoming_webhook
 def dummy_webhook(request):
     logger.info(f"Received {request.method} request to dummy webhook")
     if request.method in ["POST", "GET", "PUT", "DELETE"]:
