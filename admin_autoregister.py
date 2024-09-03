@@ -1,3 +1,4 @@
+import os
 import sys
 
 from base_model_admin.admin import InWorkspace
@@ -7,6 +8,39 @@ from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 from django.db.migrations.recorder import MigrationRecorder
 from workspaces.models import WorkspaceRelated  # Adjust this import as needed
+
+
+def append_to_dockerignore(app_configs):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    dockerignore_path = os.path.join(base_dir, ".dockerignore")
+
+    with open(dockerignore_path, "a") as f:
+        for app_config in app_configs:
+            f.write(f"!{app_config.label}\n")
+
+
+def clean_dockerignore():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    dockerignore_path = os.path.join(base_dir, ".dockerignore")
+
+    with open(dockerignore_path, "r") as f:
+        lines = f.readlines()
+
+    # Keep the first line (assumed to be the wildcard *)
+    first_line = lines[0] if lines else ""
+
+    # Remove duplicates and sort the rest of the lines
+    unique_sorted_lines = sorted(set(lines[1:]))
+
+    # Write back to the file
+    with open(dockerignore_path, "w") as f:
+        f.write(first_line)  # Write the first line (wildcard) unchanged
+        f.writelines(unique_sorted_lines)  # Write the rest of the sorted, unique lines
+
+    print(
+        "Dockerignore file has been cleaned and sorted (keeping the first line intact)."
+    )
+    # remove the last
 
 
 def get_workspace_models():
@@ -20,8 +54,10 @@ def get_workspace_models():
 
 def autoregister():
     workspace_models = get_workspace_models()
+    app_configs = []
 
     for app_config in apps.get_app_configs():
+        app_configs.append(app_config)
         app_label = app_config.label
         for model in app_config.get_models():
             admin_class = None
@@ -74,11 +110,13 @@ def autoregister():
             custom_admin_site.register(model)
         except AlreadyRegistered:
             pass
-
         try:
             admin.site.register(model)
         except AlreadyRegistered:
             pass
+
+    append_to_dockerignore(app_configs)
+    clean_dockerignore()
 
 
 # Run the autoregister function
