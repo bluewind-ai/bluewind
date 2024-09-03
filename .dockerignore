@@ -40,6 +40,7 @@
 !poetry.lock
 !pyproject.toml
 !requirements.txt
+!sessions
 !sites
 !slippers
 !socialaccount

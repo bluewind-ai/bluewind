@@ -9,9 +9,10 @@ from django.contrib.admin.sites import AlreadyRegistered
 from django.db.migrations.recorder import MigrationRecorder
 from workspaces.models import WorkspaceRelated  # Adjust this import as needed
 
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 def append_to_dockerignore(app_configs):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
     dockerignore_path = os.path.join(base_dir, ".dockerignore")
 
     with open(dockerignore_path, "a") as f:
@@ -20,7 +21,6 @@ def append_to_dockerignore(app_configs):
 
 
 def clean_dockerignore():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
     dockerignore_path = os.path.join(base_dir, ".dockerignore")
 
     with open(dockerignore_path, "r") as f:
