@@ -18,18 +18,22 @@ logger = logging.getLogger(__name__)
 @log_incoming_webhook
 def gmail_webhook(request):
     payload = json.loads(request.body)
-    message_data = payload["message"]
-    encoded_data = message_data["data"]
+    message_data = payload.get("message", {})
+    data = json.loads(base64.b64decode(message_data.get("data", "")).decode("utf-8"))
+    email_address = data.get("emailAddress")
 
-    decoded_data = base64.b64decode(encoded_data).decode("utf-8")
-    data = json.loads(decoded_data)
+    try:
+        channel = Channel.objects.get(email=email_address)
+    except Channel.DoesNotExist:
+        logger.warning(f"Received webhook for non-existent channel: {email_address}")
+        return HttpResponse(
+            "Channel not found", status=200
+        )  # Return 200 to acknowledge receipt
 
-    email_address = data["emailAddress"]
-    history_id = data["historyId"]
-
-    channel = Channel.objects.get(email=email_address)
-    created_count = fetch_messages_from_gmail(channel, history_id=history_id)
-    return HttpResponse(f"Processed {created_count} messages")
+    # Proceed with existing logic for valid channels
+    history_id = data.get("historyId")
+    created_count = fetch_messages_from_gmail(channel, history_id)
+    return HttpResponse(f"Processed {created_count} messages", status=200)
 
 
 class GmailEvent(BaseModel):

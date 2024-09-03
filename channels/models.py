@@ -7,8 +7,10 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 from base_model_admin.admin import InWorkspace
+from bluewind import logger
 from django.contrib import messages
 from django.db import models
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
@@ -18,8 +20,6 @@ from django.utils import timezone
 from people.models import Person
 from users.models import User
 from workspaces.models import Workspace, WorkspaceRelated
-
-logger = logging.getLogger(__name__)
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
@@ -32,6 +32,8 @@ class Channel(WorkspaceRelated):
     token_expiry = models.DateTimeField(null=True, blank=True)
     client_id = models.TextField(null=True, blank=True)
     client_secret = models.TextField(null=True, blank=True)
+    last_history_id = models.TextField(null=True, blank=True)
+    watch_expiration = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.email
@@ -100,29 +102,105 @@ def get_gmail_service(channel):
     return build("gmail", "v1", credentials=creds)
 
 
+def setup_gmail_watch(channel):
+    service = get_gmail_service(channel)
+
+    try:
+        # Get the PubSubTopic associated with the channel's workspace
+        from channels.models import PubSubTopic
+
+        pubsub_topic = PubSubTopic.objects.get(workspace=channel.workspace)
+        topic_name = (
+            f"projects/{pubsub_topic.project_id}/topics/{pubsub_topic.topic_id}"
+        )
+
+        result = (
+            service.users()
+            .watch(
+                userId="me",
+                body={
+                    "topicName": topic_name,
+                    "labelIds": ["INBOX"],
+                },
+            )
+            .execute()
+        )
+
+        # Store the historyId and expiration
+        channel.last_history_id = result["historyId"]
+        channel.watch_expiration = timezone.now() + timezone.timedelta(days=7)
+        channel.save()
+
+        logger.info(
+            f"Watch set up for {channel.email} with historyId: {result['historyId']}"
+        )
+        return True
+    except PubSubTopic.DoesNotExist:
+        logger.error(f"No PubSubTopic found for workspace: {channel.workspace}")
+        return False
+    except HttpError as error:
+        logger.error(f"An error occurred: {error}")
+        return False
+
+
+def renew_gmail_watch(channel):
+    if (
+        channel.watch_expiration
+        and channel.watch_expiration - timezone.now() < timezone.timedelta(days=1)
+    ):
+        return setup_gmail_watch(channel)
+    return True
+
+
 def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
     from chat_messages.models import Message
 
     service = get_gmail_service(channel)
 
+    renew_gmail_watch(channel)
+
+    messages = []
+
     if history_id:
-        results = (
-            service.users()
-            .history()
-            .list(userId="me", startHistoryId=history_id)
-            .execute()
-        )
-        messages = []
-        for history in results["history"]:
-            messages.extend(history["messages"])
-    else:
-        results = (
-            service.users()
-            .messages()
-            .list(userId="me", maxResults=max_results)
-            .execute()
-        )
-        messages = results["messages"]
+        try:
+            results = (
+                service.users()
+                .history()
+                .list(userId="me", startHistoryId=history_id)
+                .execute()
+            )
+
+            if "history" not in results:
+                logger.info(
+                    f"No new changes since history ID {history_id} for {channel.email}"
+                )
+                return 0  # No new messages to process
+
+            for history in results["history"]:
+                if "messages" in history:
+                    messages.extend(history["messages"])
+        except HttpError as error:
+            logger.error(f"An error occurred for {channel.email}: {error}")
+            if error.resp.status == 404:
+                logger.warning(
+                    f"History ID {history_id} not found for {channel.email}. Fetching latest messages instead."
+                )
+                history_id = None  # Reset history_id to fetch latest messages
+            else:
+                raise  # Re-raise the exception for other types of errors
+
+    if not history_id:
+        try:
+            results = (
+                service.users()
+                .messages()
+                .list(userId="me", maxResults=max_results)
+                .execute()
+            )
+            messages = results.get("messages", [])
+        except HttpError as error:
+            logger.error(f"Error fetching messages for {channel.email}: {error}")
+            return 0
 
     person, _ = Person.objects.get_or_create(
         email=channel.email,
@@ -138,43 +216,51 @@ def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
     created_count = 0
 
     for message in messages:
-        msg = service.users().messages().get(userId="me", id=message["id"]).execute()
-
-        subject = next(
-            (
-                header["value"]
-                for header in msg["payload"]["headers"]
-                if header["name"] == "Subject"
-            ),
-            "No Subject",
-        )
-
-        body = ""
-        if "parts" in msg["payload"]:
-            for part in msg["payload"]["parts"]:
-                if part["body"].get("data"):
-                    body += base64.urlsafe_b64decode(part["body"]["data"]).decode(
-                        "utf-8"
-                    )
-        elif msg["payload"]["body"].get("data"):
-            body = base64.urlsafe_b64decode(msg["payload"]["body"]["data"]).decode(
-                "utf-8"
+        try:
+            msg = (
+                service.users().messages().get(userId="me", id=message["id"]).execute()
             )
-        else:
-            body = msg["snippet"]
 
-        Message.objects.create(
-            channel=channel,
-            recipient=person,
-            subject=subject[:255],
-            content=body,
-            timestamp=timezone.now(),
-            is_read=False,
-            workspace=channel.workspace,
-            gmail_message_id=message["id"],
-        )
-        created_count += 1
+            subject = next(
+                (
+                    header["value"]
+                    for header in msg["payload"]["headers"]
+                    if header["name"] == "Subject"
+                ),
+                "No Subject",
+            )
 
+            body = ""
+            if "parts" in msg["payload"]:
+                for part in msg["payload"]["parts"]:
+                    if part["body"].get("data"):
+                        body += base64.urlsafe_b64decode(part["body"]["data"]).decode(
+                            "utf-8"
+                        )
+            elif msg["payload"]["body"].get("data"):
+                body = base64.urlsafe_b64decode(msg["payload"]["body"]["data"]).decode(
+                    "utf-8"
+                )
+            else:
+                body = msg["snippet"]
+
+            Message.objects.create(
+                channel=channel,
+                recipient=person,
+                subject=subject[:255],
+                content=body,
+                timestamp=timezone.now(),
+                is_read=False,
+                workspace=channel.workspace,
+                gmail_message_id=message["id"],
+            )
+            created_count += 1
+        except Exception as e:
+            logger.error(
+                f"Error processing message {message['id']} for {channel.email}: {str(e)}"
+            )
+
+    logger.info(f"Processed {created_count} messages for {channel.email}")
     return created_count
 
 
@@ -252,6 +338,23 @@ class ChannelAdmin(InWorkspace):
         request.session["oauth_redirect_uri"] = redirect_uri
 
         return redirect(auth_url)
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+        success = setup_gmail_watch(obj)
+        if success:
+            self.message_user(
+                request,
+                f"Successfully set up Gmail watch for {obj.email}",
+                level=messages.SUCCESS,
+            )
+        else:
+            self.message_user(
+                request,
+                f"Failed to set up Gmail watch for {obj.email}",
+                level=messages.ERROR,
+            )
 
 
 def oauth2callback(request):

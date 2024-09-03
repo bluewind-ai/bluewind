@@ -162,11 +162,6 @@ class IncomingWebhookAdmin(BaseAdmin):
         return False
 
 
-# Register with custom admin site
-# custom_admin_site.register(WebhookTest, WebhookTestAdmin)
-# custom_admin_site.register(IncomingWebhook, IncomingWebhookAdmin)
-
-
 @csrf_exempt
 @log_incoming_webhook
 def dummy_webhook(request):
@@ -193,19 +188,3 @@ def dummy_webhook(request):
             return HttpResponse("Invalid JSON", status=400)
     logger.warning(f"Method {request.method} not allowed")
     return HttpResponse("Method not allowed", status=405)
-
-
-# URLs (include these in your main urls.py)
-# urlpatterns = [
-#     path(
-#         "admin/webhook-tester/webhooktest/test-webhook/",
-#         WebhookTestAdmin.test_webhook_view,
-#         name="test_webhook",
-#     ),
-#     path(
-#         "admin/webhook-tester/webhooktest/webhook-results/",
-#         WebhookTestAdmin.webhook_results_view,
-#         name="webhook_results",
-#     ),
-#     path("admin/webhook_tester/webhooktest/dummy-webhook/", dummy_webhook, name="dummy_webhook"),
-# ]
