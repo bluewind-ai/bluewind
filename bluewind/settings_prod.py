@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "workspaces",
-    "public_id",
     "base_model_admin",
     "auto_tests",
     # debugging

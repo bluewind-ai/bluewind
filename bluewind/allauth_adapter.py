@@ -12,4 +12,4 @@ class CustomAccountAdapter(DefaultAccountAdapter):
                 user=request.user, workspace=workspace, is_default=True
             )
 
-        return f"/{workspace.public_id}/admin/"
+        return f"/wks_{workspace.id}/admin/"

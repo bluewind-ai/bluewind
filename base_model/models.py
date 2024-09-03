@@ -14,4 +14,4 @@ class BaseModel(CloneMixin, models.Model):
 
     _clone_excluded_fields = [
         "id",
-    ]  # Exclude id and public_id from cloning
+    ]

@@ -54,7 +54,7 @@ class MessageAdmin(InWorkspace):
                         subject=subject,
                         content=content,
                         workspace=Workspace.objects.get(
-                            public_id=request.environ["WORKSPACE_PUBLIC_ID"]
+                            id=request.environ["WORKSPACE_ID"]
                         ),
                     )
                     logger.info(f"Message created: {message}")

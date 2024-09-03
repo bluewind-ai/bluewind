@@ -5,12 +5,11 @@ from django_object_actions import DjangoObjectActions, action
 # Assuming these are defined elsewhere
 from base_model.models import BaseModel
 from django.contrib import admin, messages
-from django.db import IntegrityError, models
+from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
-from public_id.models import public_id
 from users.models import User
 
 
@@ -18,27 +17,12 @@ class Workspace(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     users = models.ManyToManyField(User, through="WorkspaceUser")
-    public_id = models.CharField(max_length=100, unique=True, editable=False)
-
-    def save(self, *args, **kwargs):
-        if not self.public_id:
-            max_attempts = 3
-            for attempt in range(max_attempts):
-                try:
-                    self.public_id = public_id()
-                    super().save(*args, **kwargs)
-                    return
-                except IntegrityError:
-                    if attempt == max_attempts - 1:
-                        raise
-        else:
-            super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
 
     def get_admin_url(self):
-        return f"/{self.public_id}/admin/"
+        return f"/wks_{self.id}/admin/"
 
     def admin_url_link(self):
         url = self.get_admin_url()
@@ -63,7 +47,7 @@ class WorkspaceUserAdmin(admin.ModelAdmin):
 
 class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
     actions = ["clone_workspace_action"]
-    readonly_fields = ("admin_url_link", "public_id")
+    readonly_fields = ("admin_url_link",)
     changelist_actions = ("delete_current_workspace",)
 
     @action(
@@ -72,10 +56,10 @@ class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
         attrs={"style": "color: red;"},
     )
     def delete_current_workspace(self, request, queryset):
-        current_workspace_public_id = request.environ.get("WORKSPACE_PUBLIC_ID")
-        if current_workspace_public_id:
+        current_workspace_id = request.environ.get("WORKSPACE_ID")
+        if current_workspace_id:
             try:
-                workspace = Workspace.objects.get(public_id=current_workspace_public_id)
+                workspace = Workspace.objects.get(id=current_workspace_id)
                 url = reverse("admin:workspaces_workspace_delete", args=[workspace.id])
                 return HttpResponseRedirect(url)
             except Workspace.DoesNotExist:

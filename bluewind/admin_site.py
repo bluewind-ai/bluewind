@@ -19,13 +19,15 @@ class CustomAdminSite(AdminSite):
         if not request.user.is_authenticated:
             return redirect(reverse("account_login"))
 
-        response = super().login(request, extra_context)
+        # If we're already in a workspace admin, just render the login page
+        if request.path.startswith("/wks_"):
+            return super().login(request, extra_context)
 
         # After successful login, redirect to default workspace
         if request.method == "POST" and request.user.is_authenticated:
             return self.redirect_to_default_workspace(request)
 
-        return response
+        return super().login(request, extra_context)
 
     def redirect_to_default_workspace(self, request):
         try:
@@ -44,7 +46,7 @@ class CustomAdminSite(AdminSite):
                 request, "A new default workspace has been created for you."
             )
 
-        return redirect(f"/{default_workspace.public_id}/admin/")
+        return redirect(f"/wks_{default_workspace.id}/admin/")
 
     def index(self, request, extra_context=None):
         # Check if we're at the root admin URL and not already in a workspace
@@ -52,6 +54,8 @@ class CustomAdminSite(AdminSite):
             "/wks_"
         ):
             return self.redirect_to_default_workspace(request)
+
+        # If we're already in a workspace admin, just render the index page
         return super().index(request, extra_context)
 
 

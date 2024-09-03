@@ -298,8 +298,8 @@ class ChannelAdmin(InWorkspace):
         return self.connect_channel(request)
 
     def connect_channel(self, request):
-        workspace_public_id = request.environ["WORKSPACE_PUBLIC_ID"]
-        workspace = Workspace.objects.get(public_id=workspace_public_id)
+        workspace_id = request.environ["WORKSPACE_ID"]
+        workspace = Workspace.objects.get(id=workspace_id)
         credential = CredentialsModel.objects.get(
             workspace=workspace, key="GMAIL_CLIENT_SECRET_BASE64"
         )
@@ -308,9 +308,9 @@ class ChannelAdmin(InWorkspace):
         client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
         client_config = json.loads(client_secret_json)
 
-        workspace_public_id = request.environ["WORKSPACE_PUBLIC_ID"]
+        workspace_id = request.environ["WORKSPACE_ID"]
         redirect_uri = request.build_absolute_uri(reverse("oauth2callback")).replace(
-            f"/{workspace_public_id}", ""
+            f"/wks_{workspace_id}", ""
         )
 
         flow = Flow.from_client_config(
@@ -321,7 +321,7 @@ class ChannelAdmin(InWorkspace):
             access_type="offline",
             include_granted_scopes="true",
             prompt="consent",
-            state=f"{workspace_public_id}:{os.urandom(16).hex()}",
+            state=f"wks_{workspace_id}:{os.urandom(16).hex()}",
         )
 
         request.session["oauth_client_config"] = client_config
@@ -370,9 +370,9 @@ def oauth2callback(request):
         user_info = service.userinfo().get().execute()
         email = user_info["email"]
 
-        workspace_public_id = request.environ.get("WORKSPACE_PUBLIC_ID")
+        workspace_id = request.environ.get("WORKSPACE_ID")
 
-        workspace = Workspace.objects.get(public_id=workspace_public_id)
+        workspace = Workspace.objects.get(id=workspace_id)
 
         channel, created = Channel.objects.update_or_create(
             email=email,

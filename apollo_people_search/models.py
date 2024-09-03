@@ -127,7 +127,7 @@ class ApolloPeopleSearchAdmin(InWorkspace):
                                 last_name=person.get("last_name", ""),
                                 linkedin_url=person.get("linkedin_url"),
                                 workspace=Workspace.objects.get(
-                                    public_id=request.environ["WORKSPACE_PUBLIC_ID"]
+                                    id=request.environ["WORKSPACE_ID"]
                                 ),
                                 company_domain_name=person.get("organization", {}).get(
                                     "primary_domain", ""

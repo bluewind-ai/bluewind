@@ -40,7 +40,6 @@
 !modify_admin
 !people
 !poetry.lock
-!public_id
 !pyproject.toml
 !requirements.txt
 !sites
