@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 
@@ -8,6 +9,7 @@ from google.oauth2 import service_account
 from base_model_admin.admin import InWorkspace
 from credentials.models import Credentials
 from django.contrib import messages as django_messages
+from django.core.exceptions import ValidationError
 from django.db import models
 from workspaces.models import WorkspaceRelated
 
@@ -38,16 +40,30 @@ class GmailSubscription(WorkspaceRelated):
 
 
 def get_pubsub_credentials(workspace):
-    credential = Credentials.objects.get(
-        workspace=workspace, key="GOOGLE_SERVICE_ACCOUNT_BASE_64"
-    )
+    try:
+        credential = Credentials.objects.get(
+            workspace=workspace, key="GOOGLE_SERVICE_ACCOUNT_BASE64"
+        )
+    except Credentials.DoesNotExist:
+        raise ValidationError(
+            "Google service account credentials not found for this workspace."
+        )
 
-    service_account_info = json.loads(credential.value)
+    try:
+        decoded_value = base64.b64decode(credential.value).decode("utf-8")
+        service_account_info = json.loads(decoded_value)
+    except (json.JSONDecodeError, ValueError) as e:
+        logger.error(f"Error decoding service account info: {str(e)}")
+        raise ValidationError("Invalid Google service account credentials format.")
 
-    return service_account.Credentials.from_service_account_info(
-        service_account_info,
-        scopes=["https://www.googleapis.com/auth/pubsub"],
-    )
+    try:
+        return service_account.Credentials.from_service_account_info(
+            service_account_info,
+            scopes=["https://www.googleapis.com/auth/pubsub"],
+        )
+    except ValueError as e:
+        logger.error(f"Error creating service account credentials: {str(e)}")
+        raise ValidationError("Invalid Google service account credentials.")
 
 
 def setup_pubsub_topic(workspace, project_id, topic_id):
@@ -62,7 +78,7 @@ def setup_pubsub_topic(workspace, project_id, topic_id):
         logger.info(f"PubSub topic already exists: {topic_path}")
     except Exception as e:
         logger.error(f"Error creating PubSub topic: {str(e)}")
-        raise
+        raise ValidationError(f"Failed to create PubSub topic: {str(e)}")
 
 
 def create_push_subscription(
@@ -89,14 +105,14 @@ def create_push_subscription(
         logger.info(f"Push subscription already exists: {subscription_path}")
     except Exception as e:
         logger.error(f"Error creating push subscription: {str(e)}")
-        raise
+        raise ValidationError(f"Failed to create push subscription: {str(e)}")
 
 
 class GmailSubscriptionAdmin(InWorkspace):
     def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-
         try:
+            super().save_model(request, obj, form, change)
+
             setup_pubsub_topic(obj.workspace, obj.topic.project_id, obj.topic.topic_id)
             create_push_subscription(
                 obj.workspace,
@@ -111,9 +127,16 @@ class GmailSubscriptionAdmin(InWorkspace):
                 "Successfully set up PubSub subscription",
                 level=django_messages.SUCCESS,
             )
-        except Exception as e:
+        except ValidationError as e:
             self.message_user(
                 request,
                 f"Error setting up PubSub subscription: {str(e)}",
+                level=django_messages.ERROR,
+            )
+        except Exception as e:
+            logger.exception("Unexpected error in GmailSubscriptionAdmin.save_model")
+            self.message_user(
+                request,
+                f"An unexpected error occurred: {str(e)}",
                 level=django_messages.ERROR,
             )

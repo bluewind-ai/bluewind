@@ -5,10 +5,6 @@ from workspaces.models import Workspace
 
 
 class InWorkspace(admin.ModelAdmin):
-    def get_list_display(self, request):
-        # By default, display all fields in the list view
-        return [field.name for field in self.model._meta.fields]
-
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         workspace_public_id = request.environ.get("WORKSPACE_PUBLIC_ID")

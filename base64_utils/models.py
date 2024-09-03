@@ -1,7 +1,6 @@
 import base64
 
 from base_model_admin.admin import InWorkspace
-from django import forms
 from django.db import models
 from workspaces.models import WorkspaceRelated
 
@@ -23,31 +22,23 @@ class Base64Conversion(WorkspaceRelated):
         return f"{self.operation} at {self.created_at}"
 
 
-class Base64ConversionForm(forms.ModelForm):
-    class Meta:
-        model = Base64Conversion
-        fields = ["input_text", "operation"]
+class Base64ConversionAdmin(InWorkspace):
+    readonly_fields = ["created_at", "output_text"]
 
-    def clean(self):
-        cleaned_data = super().clean()
-        input_text = cleaned_data.get("input_text")
-        operation = cleaned_data.get("operation")
+    def save_model(self, request, obj, form, change):
+        input_text = form.cleaned_data.get("input_text")
+        operation = form.cleaned_data.get("operation")
 
         try:
             if operation == "encode":
                 output_text = base64.b64encode(input_text.encode()).decode()
             else:
                 output_text = base64.b64decode(input_text).decode()
-            cleaned_data["output_text"] = output_text
+            obj.output_text = output_text
         except Exception as e:
-            raise forms.ValidationError(f"Error in base64 {operation}: {str(e)}")
+            self.message_user(
+                request, f"Error in base64 {operation}: {str(e)}", level="ERROR"
+            )
+            return
 
-        return cleaned_data
-
-
-class Base64ConversionAdmin(InWorkspace):
-    form = Base64ConversionForm
-
-    def save_model(self, request, obj, form, change):
-        obj.output_text = form.cleaned_data["output_text"]
         super().save_model(request, obj, form, change)
