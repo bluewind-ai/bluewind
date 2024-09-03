@@ -30,3 +30,4 @@
 !google_backend_service_account.json
 !gmail_subscriptions
 !gmail_events
+!credentials

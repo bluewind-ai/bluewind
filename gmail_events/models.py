@@ -3,7 +3,6 @@ import json
 import logging
 
 from base_model.models import BaseModel
-from bluewind.admin_site import custom_admin_site
 from channels.models import Channel, fetch_messages_from_gmail
 from django.contrib import admin
 from django.db import models
@@ -59,4 +58,4 @@ class GmailEventAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
 
-custom_admin_site.register(GmailEvent, GmailEventAdmin)
+# custom_admin_site.register(GmailEvent, GmailEventAdmin)

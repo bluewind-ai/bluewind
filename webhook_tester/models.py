@@ -6,7 +6,6 @@ import requests
 
 from base_model.models import BaseModel
 from base_model_admin.models import BaseAdmin
-from bluewind.admin_site import custom_admin_site
 from django import forms
 from django.contrib import messages
 from django.db import models
@@ -164,8 +163,8 @@ class IncomingWebhookAdmin(BaseAdmin):
 
 
 # Register with custom admin site
-custom_admin_site.register(WebhookTest, WebhookTestAdmin)
-custom_admin_site.register(IncomingWebhook, IncomingWebhookAdmin)
+# custom_admin_site.register(WebhookTest, WebhookTestAdmin)
+# custom_admin_site.register(IncomingWebhook, IncomingWebhookAdmin)
 
 
 @csrf_exempt

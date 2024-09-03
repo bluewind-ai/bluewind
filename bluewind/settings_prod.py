@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "gmail_events",
     "webhook_tester",
+    "credentials",
 ]
 
 ALLAUTH_UI_THEME = "light"

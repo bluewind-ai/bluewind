@@ -1,13 +1,26 @@
 import sys
 
+from base_model_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 from django.db.migrations.recorder import MigrationRecorder
+from workspaces.models import WorkspaceRelated  # Adjust this import as needed
+
+
+def get_workspace_models():
+    workspace_models = []
+    for app_config in apps.get_app_configs():
+        for model in app_config.get_models():
+            if issubclass(model, WorkspaceRelated) and model != WorkspaceRelated:
+                workspace_models.append(model.__name__)
+    return workspace_models
 
 
 def autoregister():
+    workspace_models = get_workspace_models()
+
     for app_config in apps.get_app_configs():
         app_label = app_config.label
         for model in app_config.get_models():
@@ -30,6 +43,10 @@ def autoregister():
                         admin_class = getattr(admin_module, admin_class_name)
                 except ImportError:
                     pass
+
+            # If still no custom Admin class and model should use InWorkspace, create one
+            if not admin_class and model_name in workspace_models:
+                admin_class = type(admin_class_name, (InWorkspace,), {})
 
             # Register with custom admin site
             try:

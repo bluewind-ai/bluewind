@@ -1,7 +1,7 @@
 import base64
 import logging
 
-from base_model_admin.InWorkspace import InWorkspace
+from base_model_admin.admin import InWorkspace
 from django.contrib import messages
 from django.db import models, transaction
 from django.shortcuts import redirect

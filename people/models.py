@@ -3,7 +3,7 @@ import os
 
 import requests
 
-from base_model_admin.InWorkspace import InWorkspace
+from base_model_admin.admin import InWorkspace
 from django.contrib import messages
 from django.db import models
 from users.models import User

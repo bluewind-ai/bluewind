@@ -8,7 +8,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
-from base_model_admin.InWorkspace import InWorkspace
+from base_model_admin.admin import InWorkspace
 from django.contrib import messages
 from django.db import models
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
