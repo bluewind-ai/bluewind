@@ -2,6 +2,7 @@
 !account
 !additional_dockerignore
 !admin
+!admin_autoregister
 !admin_autoregister.py
 !allauth
 !allauth_ui

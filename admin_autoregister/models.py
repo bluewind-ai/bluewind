@@ -117,7 +117,3 @@ def autoregister():
 
     append_to_dockerignore(app_configs)
     clean_dockerignore()
-
-
-# Run the autoregister function
-autoregister()

@@ -1,6 +1,7 @@
 import os
 from urllib.parse import parse_qs
 
+from bluewind import logger
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
@@ -16,17 +17,17 @@ def workspace_wsgi_middleware(application):
             pass
         elif path_info.startswith("/workspaces/"):
             parts = path_info.split("/")
-
-            workspace_id_with_prefix = parts[1]  # This will be 'workspaces/2121211'
-            assert workspace_id_with_prefix.startswith("workspaces/")
-
+            workspace_id = parts[1]
             # strip out the 'workspaces/' prefix
-            workspace_id = workspace_id_with_prefix[4:]
             # Modify SCRIPT_NAME and PATH_INFO
-            environ["SCRIPT_NAME"] = environ.get("SCRIPT_NAME", "") + f"/{workspace_id}"
-            environ["PATH_INFO"] = "/" + "/".join(parts[2:])
+            environ["SCRIPT_NAME"] = f"/workspaces/{workspace_id}"
+            environ["PATH_INFO"] = "/" + "/".join(parts[3:])
 
             environ["WORKSPACE_ID"] = workspace_id
+            logger.info("Workspace ID: %s", workspace_id)
+            logger.info("PATH_INFO: %s", environ["PATH_INFO"])
+            logger.info("SCRIPT_NAME: %s", environ["SCRIPT_NAME"])
+            logger.info("WORKSPACE_ID: %s", environ["WORKSPACE_ID"])
         else:
             WHITELIST = [
                 "/health/",

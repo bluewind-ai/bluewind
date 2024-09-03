@@ -1,14 +1,19 @@
 import logging
 
+from allauth.account.adapter import DefaultAccountAdapter
+
 from django.contrib.admin import AdminSite
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from django.urls import reverse
+from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger(__name__)
 
 
 class CustomAdminSite(AdminSite):
-    pass
+    def logout(self, request, extra_context=None):
+        super().logout(request, extra_context)
+        return redirect("account_logout")
 
 
 custom_admin_site = CustomAdminSite(name="customadmin")
@@ -21,3 +26,18 @@ def admin_login_middleware(get_response):
         return get_response(request)
 
     return middleware
+
+
+class CustomAccountAdapter(DefaultAccountAdapter):
+    def get_login_redirect_url(self, request):
+        workspace = Workspace.objects.filter(
+            workspaceuser__user=request.user, workspaceuser__is_default=True
+        ).first()
+
+        if not workspace:
+            workspace = Workspace.objects.create(name="Default Workspace")
+            WorkspaceUser.objects.create(
+                user=request.user, workspace=workspace, is_default=True
+            )
+
+        return f"/workspaces/{workspace.id}/admin/"

@@ -60,6 +60,9 @@ INSTALLED_APPS = [
     "webhook_tester",
     "credentials",
     "base64_utils",
+    "debug_toolbar",
+    # needs to be last
+    "admin_autoregister",
 ]
 
 ALLAUTH_UI_THEME = "light"
@@ -182,7 +185,7 @@ SOCIALACCOUNT_PROVIDERS = {
 
 
 LOGIN_URL = "/accounts/login/"
-ACCOUNT_EMAIL_REQUIRED = True  # if you want to require email
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 LOGIN_REDIRECT_URL = "/admin"
@@ -245,8 +248,6 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # GOOGLE_OAUTH_CLIENT_SECRET= env.list('GOOGLE_OAUTH_CLIENT_SECRET')
 
 # Application definition
-
-INSTALLED_APPS += ["debug_toolbar"]
 
 WSGI_APPLICATION = "bluewind.wsgi.application"
 
@@ -343,7 +344,7 @@ TEST_RUNNER = "bluewind.test_runner.NoDbTestRunner"
 
 AUTH_USER_MODEL = "users.User"
 
-# ACCOUNT_ADAPTER = "bluewind.admin_site.CustomAccountAdapter"
+ACCOUNT_ADAPTER = "bluewind.admin_site.CustomAccountAdapter"
 
 EMAIL_BACKEND = "django_ses.SESBackend"
 
