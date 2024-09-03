@@ -20,11 +20,13 @@ logger = logging.getLogger(__name__)
 def log_incoming_webhook(func):
     @wraps(func)
     def wrapper(request, *args, **kwargs):
+        logger.info(f"Received {request.method} request to {request.get_full_path()}")
         IncomingWebhook.objects.create(
             headers=dict(request.headers),
             payload=json.loads(request.body) if request.body else {},
             method=request.method,
             ip_address=request.META.get("REMOTE_ADDR"),
+            url=request.build_absolute_uri(),  # Add this line
         )
         return func(request, *args, **kwargs)
 
@@ -50,9 +52,10 @@ class IncomingWebhook(BaseModel):
     payload = models.JSONField()
     method = models.CharField(max_length=10)
     ip_address = models.GenericIPAddressField()
+    url = models.URLField()  # Add this line
 
     def __str__(self):
-        return f"Incoming Webhook at {self.timestamp}"
+        return f"{self.method} Webhook to {self.url} at {self.timestamp}"
 
     class Meta:
         app_label = "webhook_tester"
@@ -154,6 +157,7 @@ class WebhookTestAdmin(BaseAdmin):
 class IncomingWebhookAdmin(BaseAdmin):
     list_display = ("timestamp", "method", "ip_address")
     readonly_fields = ("timestamp", "headers", "payload", "method", "ip_address")
+    actions = ["replay_webhook"]
 
     def has_add_permission(self, request):
         return False
@@ -161,11 +165,40 @@ class IncomingWebhookAdmin(BaseAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
+    def replay_webhook(self, request, queryset):
+        for webhook in queryset:
+            try:
+                response = requests.request(
+                    method=webhook.method,
+                    url=webhook.url,
+                    json=webhook.payload,
+                    headers={
+                        k: v for k, v in webhook.headers.items() if k.lower() != "host"
+                    },
+                )
+                self.message_user(
+                    request,
+                    f"Replayed webhook {webhook.id}. Status: {response.status_code}",
+                    messages.SUCCESS,
+                )
+            except requests.RequestException as e:
+                self.message_user(
+                    request,
+                    f"Error replaying webhook {webhook.id}: {str(e)}",
+                    messages.ERROR,
+                )
+
+    replay_webhook.short_description = "Replay selected webhooks"
+
 
 @csrf_exempt
 @log_incoming_webhook
+@csrf_exempt
+@log_incoming_webhook
 def dummy_webhook(request):
-    logger.info(f"Received {request.method} request to dummy webhook")
+    logger.info(
+        f"Processing {request.method} request to dummy webhook at {request.build_absolute_uri()}"
+    )
     if request.method in ["POST", "GET", "PUT", "DELETE"]:
         try:
             payload = json.loads(request.body) if request.body else {}
@@ -179,12 +212,19 @@ def dummy_webhook(request):
                 payload=payload,
                 method=request.method,
                 ip_address=request.META.get("REMOTE_ADDR"),
+                url=request.build_absolute_uri(),  # Add this line
             )
 
-            logger.info("Webhook data saved successfully")
+            logger.info(
+                f"Webhook data saved successfully for {request.method} request to {request.build_absolute_uri()}"
+            )
             return HttpResponse("Webhook received and logged", status=200)
         except json.JSONDecodeError:
-            logger.error("Invalid JSON received")
+            logger.error(
+                f"Invalid JSON received for {request.method} request to {request.build_absolute_uri()}"
+            )
             return HttpResponse("Invalid JSON", status=400)
-    logger.warning(f"Method {request.method} not allowed")
+    logger.warning(
+        f"Method {request.method} not allowed for request to {request.build_absolute_uri()}"
+    )
     return HttpResponse("Method not allowed", status=405)

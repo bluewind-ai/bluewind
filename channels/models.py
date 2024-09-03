@@ -23,6 +23,9 @@ from workspaces.models import Workspace, WorkspaceRelated
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
+# Set up logger for this file
+logger = logging.getLogger("channels")
+
 
 class Channel(WorkspaceRelated):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -126,13 +129,15 @@ def setup_gmail_watch(channel):
             .execute()
         )
 
+        logger.info(f"Watch setup result: {result}")
+
         # Store the historyId and expiration
         channel.last_history_id = result["historyId"]
         channel.watch_expiration = timezone.now() + timezone.timedelta(days=7)
         channel.save()
 
         logger.info(
-            f"Watch set up for {channel.email} with historyId: {result['historyId']}"
+            f"Updated channel {channel.id} with historyId: {channel.last_history_id}"
         )
         return True
     except PubSubTopic.DoesNotExist:
@@ -154,6 +159,8 @@ def renew_gmail_watch(channel):
 
 def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
     from chat_messages.models import Message
+
+    logger.info(f"Fetching messages for channel {channel.id}, history_id: {history_id}")
 
     service = get_gmail_service(channel)
 
@@ -190,6 +197,9 @@ def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
                 raise  # Re-raise the exception for other types of errors
 
     if not history_id:
+        logger.warning(
+            f"No history_id provided for channel {channel.id}. Fetching recent messages."
+        )
         try:
             results = (
                 service.users()
@@ -262,26 +272,6 @@ def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
 
     logger.info(f"Processed {created_count} messages for {channel.email}")
     return created_count
-
-
-def handle_gmail_webhook(payload):
-    message_data = payload.get("message", {})
-    message_id = message_data.get("messageId")
-
-    # if not message_id:
-    #     return 0
-
-    # # Decode the data field
-    # data = json.loads(base64.b64decode(message_data.get("data", "")).decode("utf-8"))
-    # email_address = data.get("emailAddress")
-
-    # try:
-    #     channel = Channel.objects.get(email=email_address)
-    # except Channel.DoesNotExist:
-    #     logger.error(f"Channel not found for email: {email_address}")
-    #     return 0
-
-    return fetch_messages_from_gmail(channel=None, message_id=message_id)
 
 
 class ChannelAdmin(InWorkspace):
