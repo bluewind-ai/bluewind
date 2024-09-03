@@ -310,7 +310,7 @@ class ChannelAdmin(InWorkspace):
 
         workspace_id = request.environ["WORKSPACE_ID"]
         redirect_uri = request.build_absolute_uri(reverse("oauth2callback")).replace(
-            f"/wks_{workspace_id}", ""
+            f"/workspaces/{workspace_id}", ""
         )
 
         flow = Flow.from_client_config(
@@ -321,7 +321,7 @@ class ChannelAdmin(InWorkspace):
             access_type="offline",
             include_granted_scopes="true",
             prompt="consent",
-            state=f"wks_{workspace_id}:{os.urandom(16).hex()}",
+            state=f"workspaces/{workspace_id}:{os.urandom(16).hex()}",
         )
 
         request.session["oauth_client_config"] = client_config

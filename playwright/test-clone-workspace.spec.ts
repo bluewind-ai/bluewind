@@ -23,7 +23,7 @@ test("test", async ({ page }) => {
     .getByLabel("Action: --------- Delete")
     .selectOption("clone_workspace_action");
   await page.getByRole("button", { name: "Go" }).click();
-  await page.getByRole("link", { name: /\/wks_[a-f0-9]+\/admin\// }).click();
+  await page.getByRole("link", { name: /\/workspaces/[a-f0-9]+\/admin\// }).click();
   await page.getByRole("link", { name: "Persons" }).click();
   await page.getByRole("link", { name: "To Clone" }).click();
   await page

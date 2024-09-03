@@ -92,9 +92,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "bluewind.admin_site.WksRedirectMiddleware",
-    "bluewind.admin_site.WorkspaceMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "bluewind.admin_site.admin_login_middleware",
 ]
 
 ROOT_URLCONF = "bluewind.urls"
@@ -344,7 +343,7 @@ TEST_RUNNER = "bluewind.test_runner.NoDbTestRunner"
 
 AUTH_USER_MODEL = "users.User"
 
-ACCOUNT_ADAPTER = "bluewind.admin_site.CustomAccountAdapter"
+# ACCOUNT_ADAPTER = "bluewind.admin_site.CustomAccountAdapter"
 
 EMAIL_BACKEND = "django_ses.SESBackend"
 

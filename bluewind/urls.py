@@ -9,14 +9,17 @@ from health_check.views import health_check
 
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
+
+def redirect_to_admin(request):
+    return redirect("admin:index")
+
+
 urlpatterns = [
-    # Workspace admin URLs
-    re_path(r"^wks_(?P<workspace_id>\d+)/admin/", custom_admin_site.urls),
-    # Root admin URL
+    # Redirect root to admin
+    path("", redirect_to_admin, name="root_redirect"),
+    # Use custom_admin_site for /admin
     path("admin/", custom_admin_site.urls),
-    # Root redirect
-    path("", lambda request: redirect("/admin/"), name="root_redirect"),
-    # Requested paths
+    # Existing paths
     path("__debug__/", include("debug_toolbar.urls")),
     path("health/", health_check, name="health_check"),
     re_path(r"^favicon\.ico$", favicon_view),

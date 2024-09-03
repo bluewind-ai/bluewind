@@ -14,13 +14,13 @@ def workspace_wsgi_middleware(application):
         #         pass
         if path_info.startswith("/static"):
             pass
-        elif path_info.startswith("/wks_"):
+        elif path_info.startswith("/workspaces/"):
             parts = path_info.split("/")
 
-            workspace_id_with_prefix = parts[1]  # This will be 'wks_2121211'
-            assert workspace_id_with_prefix.startswith("wks_")
+            workspace_id_with_prefix = parts[1]  # This will be 'workspaces/2121211'
+            assert workspace_id_with_prefix.startswith("workspaces/")
 
-            # strip out the 'wks_' prefix
+            # strip out the 'workspaces/' prefix
             workspace_id = workspace_id_with_prefix[4:]
             # Modify SCRIPT_NAME and PATH_INFO
             environ["SCRIPT_NAME"] = environ.get("SCRIPT_NAME", "") + f"/{workspace_id}"
@@ -53,7 +53,7 @@ def workspace_wsgi_middleware(application):
 
                     # Extract the state from the query string
                     state = parsed_qs.get("state", [""])[0]
-                    if state.startswith("wks_"):
+                    if state.startswith("workspaces/"):
                         workspace_id, _ = state.split(":", 1)
 
                         environ["SCRIPT_NAME"] = (

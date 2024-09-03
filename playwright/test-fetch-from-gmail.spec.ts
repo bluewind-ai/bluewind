@@ -29,7 +29,7 @@ test("test", async ({ page }) => {
   //   )
   //   .click();
   await page.getByRole("button", { name: "Go" }).click();
-  await page.getByRole("link", { name: /\/wks_[a-f0-9]+\/admin\// }).click();
+  await page.getByRole("link", { name: /\/workspaces/[a-f0-9]+\/admin\// }).click();
   await page
     .getByRole("rowheader", { name: "Channels" })
     .getByRole("link")
