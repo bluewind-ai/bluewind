@@ -18,22 +18,41 @@ class CustomAdminSite(AdminSite):
     def login(self, request, extra_context=None):
         if not request.user.is_authenticated:
             return redirect(reverse("account_login"))
+
         response = super().login(request, extra_context)
 
+        # After successful login, redirect to default workspace
         if request.method == "POST" and request.user.is_authenticated:
-            workspace = Workspace.objects.first()
-
-            if not workspace:
-                # Create a new workspace if none exists
-                workspace = Workspace.objects.create(name="Default Workspace")
-                WorkspaceUser.objects.create(
-                    user=request.user, workspace=workspace, is_default=True
-                )
-                messages.success(request, "A new workspace has been created.")
-
-            return redirect(f"/{workspace.public_id}/admin/")
+            return self.redirect_to_default_workspace(request)
 
         return response
+
+    def redirect_to_default_workspace(self, request):
+        try:
+            default_workspace = WorkspaceUser.objects.get(
+                user=request.user, is_default=True
+            ).workspace
+        except WorkspaceUser.DoesNotExist:
+            # If no default workspace, create one
+            default_workspace = Workspace.objects.create(
+                name=f"{request.user.username}'s Workspace"
+            )
+            WorkspaceUser.objects.create(
+                user=request.user, workspace=default_workspace, is_default=True
+            )
+            messages.success(
+                request, "A new default workspace has been created for you."
+            )
+
+        return redirect(f"/{default_workspace.public_id}/admin/")
+
+    def index(self, request, extra_context=None):
+        # Check if we're at the root admin URL and not already in a workspace
+        if request.path == reverse("admin:index") and not request.path.startswith(
+            "/wks_"
+        ):
+            return self.redirect_to_default_workspace(request)
+        return super().index(request, extra_context)
 
 
 custom_admin_site = CustomAdminSite(name="customadmin")
