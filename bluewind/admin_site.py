@@ -1,8 +1,10 @@
-from django.contrib import messages
+import logging
+
 from django.contrib.admin import AdminSite
 from django.shortcuts import redirect
-from django.urls import reverse
 from workspaces.models import Workspace, WorkspaceUser
+
+logger = logging.getLogger(__name__)
 
 
 class CustomAdminSite(AdminSite):
@@ -10,53 +12,74 @@ class CustomAdminSite(AdminSite):
         context = super().each_context(request)
         script_name = request.META.get("SCRIPT_NAME", "")
         if script_name.startswith("/wks_"):
-            context["workspace_id"] = script_name.split("/")[1][
-                4:
-            ]  # Remove 'wks_' prefix
+            context["workspace_id"] = script_name.split("/")[1][4:]
+        logger.debug(f"each_context: script_name={script_name}, context={context}")
         return context
 
-    def login(self, request, extra_context=None):
-        if not request.user.is_authenticated:
-            return redirect(reverse("account_login"))
-
-        # If we're already in a workspace admin, just render the login page
-        if request.path.startswith("/wks_"):
-            return super().login(request, extra_context)
-
-        # After successful login, redirect to default workspace
-        if request.method == "POST" and request.user.is_authenticated:
+    def index(self, request, extra_context=None):
+        logger.debug(f"index: path={request.path}")
+        workspace_id = self.get_workspace_id(request)
+        if not workspace_id:
+            logger.debug("index: No workspace_id, redirecting to default workspace")
             return self.redirect_to_default_workspace(request)
 
-        return super().login(request, extra_context)
+        logger.debug(f"index: Rendering index for workspace {workspace_id}")
+        extra_context = extra_context or {}
+        extra_context["workspace_id"] = workspace_id
+        return super().index(request, extra_context)
+
+    def app_index(self, request, app_label, extra_context=None):
+        workspace_id = self.get_workspace_id(request)
+        if not workspace_id:
+            return self.redirect_to_default_workspace(request)
+
+        extra_context = extra_context or {}
+        extra_context["workspace_id"] = workspace_id
+        return super().app_index(request, app_label, extra_context)
+
+    def get_workspace_id(self, request):
+        script_name = request.META.get("SCRIPT_NAME", "")
+        if script_name.startswith("/wks_"):
+            return script_name.split("/")[1][4:]
+        return None
 
     def redirect_to_default_workspace(self, request):
+        logger.debug("redirect_to_default_workspace: Starting")
         try:
             default_workspace = WorkspaceUser.objects.get(
                 user=request.user, is_default=True
             ).workspace
+            logger.debug(
+                f"redirect_to_default_workspace: Found default workspace {default_workspace.id}"
+            )
         except WorkspaceUser.DoesNotExist:
-            # If no default workspace, create one
+            logger.debug(
+                "redirect_to_default_workspace: No default workspace, creating one"
+            )
             default_workspace = Workspace.objects.create(
                 name=f"{request.user.username}'s Workspace"
             )
             WorkspaceUser.objects.create(
                 user=request.user, workspace=default_workspace, is_default=True
             )
-            messages.success(
-                request, "A new default workspace has been created for you."
-            )
 
-        return redirect(f"/wks_{default_workspace.id}/admin/")
+        redirect_url = f"/wks_{default_workspace.id}/admin/"
+        logger.debug(f"redirect_to_default_workspace: Redirecting to {redirect_url}")
+        return redirect(redirect_url)
 
-    def index(self, request, extra_context=None):
-        # Check if we're at the root admin URL and not already in a workspace
-        if request.path == reverse("admin:index") and not request.path.startswith(
-            "/wks_"
-        ):
-            return self.redirect_to_default_workspace(request)
+    def _build_app_dict(self, request, label=None):
+        app_dict = super()._build_app_dict(request, label)
+        workspace_id = self.get_workspace_id(request)
 
-        # If we're already in a workspace admin, just render the index page
-        return super().index(request, extra_context)
+        for model_name, model_dict in app_dict.get(label, {}).get("models", {}).items():
+            if "admin_url" in model_dict:
+                model_dict["admin_url"] = (
+                    f"/wks_{workspace_id}{model_dict['admin_url']}"
+                )
+            if "add_url" in model_dict:
+                model_dict["add_url"] = f"/wks_{workspace_id}{model_dict['add_url']}"
+
+        return app_dict
 
 
 custom_admin_site = CustomAdminSite(name="customadmin")
