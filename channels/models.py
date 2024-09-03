@@ -11,6 +11,7 @@ from googleapiclient.errors import HttpError
 
 from base_model_admin.admin import InWorkspace
 from bluewind import logger
+from credentials.models import Credentials as CredentialsModel
 from django.contrib import messages
 from django.db import models
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
@@ -22,9 +23,6 @@ from users.models import User
 from workspaces.models import Workspace, WorkspaceRelated
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-
-# Set up logger for this file
-logger = logging.getLogger("channels")
 
 
 class Channel(WorkspaceRelated):
@@ -80,18 +78,25 @@ def get_gmail_service(channel):
             channel.token_expiry = creds.expiry
             channel.save()
         else:
-            client_secret_file = os.path.expanduser(
-                os.getenv("GMAIL_CLIENT_SECRET_FILE")
+            credential = CredentialsModel.objects.get(
+                workspace=channel.workspace, key="GMAIL_CLIENT_SECRET_BASE64"
             )
-            flow = Flow.from_client_secrets_file(
-                client_secret_file,
+            client_secret_base64 = credential.value
+
+            client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
+            client_secret_data = json.loads(client_secret_json)
+
+            flow = Flow.from_client_config(
+                client_secret_data,
                 scopes=SCOPES,
                 redirect_uri="https://green.bluewind.ai/oauth2callback/",
             )
             auth_url, _ = flow.authorization_url(
                 access_type="offline", include_granted_scopes="true"
             )
-            code = input("Enter the authorization code: ")
+            code = input(
+                "Enter the authorization code: "
+            )  # Note: This might need adjustment for your use case
             flow.fetch_token(code=code)
             creds = flow.credentials
 
@@ -108,44 +113,34 @@ def get_gmail_service(channel):
 def setup_gmail_watch(channel):
     service = get_gmail_service(channel)
 
-    try:
-        # Get the PubSubTopic associated with the channel's workspace
-        from channels.models import PubSubTopic
+    from channels.models import PubSubTopic
 
-        pubsub_topic = PubSubTopic.objects.get(workspace=channel.workspace)
-        topic_name = (
-            f"projects/{pubsub_topic.project_id}/topics/{pubsub_topic.topic_id}"
+    pubsub_topic = PubSubTopic.objects.get(workspace=channel.workspace)
+    topic_name = f"projects/{pubsub_topic.project_id}/topics/{pubsub_topic.topic_id}"
+
+    result = (
+        service.users()
+        .watch(
+            userId="me",
+            body={
+                "topicName": topic_name,
+                "labelIds": ["INBOX"],
+            },
         )
+        .execute()
+    )
 
-        result = (
-            service.users()
-            .watch(
-                userId="me",
-                body={
-                    "topicName": topic_name,
-                    "labelIds": ["INBOX"],
-                },
-            )
-            .execute()
-        )
+    logger.info(f"Watch setup result: {result}")
 
-        logger.info(f"Watch setup result: {result}")
+    # Store the historyId and expiration
+    channel.last_history_id = result["historyId"]
+    channel.watch_expiration = timezone.now() + timezone.timedelta(days=7)
+    channel.save()
 
-        # Store the historyId and expiration
-        channel.last_history_id = result["historyId"]
-        channel.watch_expiration = timezone.now() + timezone.timedelta(days=7)
-        channel.save()
-
-        logger.info(
-            f"Updated channel {channel.id} with historyId: {channel.last_history_id}"
-        )
-        return True
-    except PubSubTopic.DoesNotExist:
-        logger.error(f"No PubSubTopic found for workspace: {channel.workspace}")
-        return False
-    except HttpError as error:
-        logger.error(f"An error occurred: {error}")
-        return False
+    logger.info(
+        f"Updated channel {channel.id} with historyId: {channel.last_history_id}"
+    )
+    return True
 
 
 def renew_gmail_watch(channel):
@@ -303,14 +298,23 @@ class ChannelAdmin(InWorkspace):
         return self.connect_channel(request)
 
     def connect_channel(self, request):
-        client_secret_file = os.path.expanduser(os.getenv("GMAIL_CLIENT_SECRET_FILE"))
+        workspace_public_id = request.environ["WORKSPACE_PUBLIC_ID"]
+        workspace = Workspace.objects.get(public_id=workspace_public_id)
+        credential = CredentialsModel.objects.get(
+            workspace=workspace, key="GMAIL_CLIENT_SECRET_BASE64"
+        )
+        client_secret_base64 = credential.value
+
+        client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
+        client_config = json.loads(client_secret_json)
+
         workspace_public_id = request.environ["WORKSPACE_PUBLIC_ID"]
         redirect_uri = request.build_absolute_uri(reverse("oauth2callback")).replace(
             f"/{workspace_public_id}", ""
         )
 
-        flow = Flow.from_client_secrets_file(
-            client_secret_file, scopes=SCOPES, redirect_uri=redirect_uri
+        flow = Flow.from_client_config(
+            client_config, scopes=SCOPES, redirect_uri=redirect_uri
         )
 
         auth_url, _ = flow.authorization_url(
@@ -319,9 +323,6 @@ class ChannelAdmin(InWorkspace):
             prompt="consent",
             state=f"{workspace_public_id}:{os.urandom(16).hex()}",
         )
-
-        with open(client_secret_file, "r") as f:
-            client_config = json.load(f)
 
         request.session["oauth_client_config"] = client_config
         request.session["oauth_scopes"] = SCOPES
@@ -370,8 +371,6 @@ def oauth2callback(request):
         email = user_info["email"]
 
         workspace_public_id = request.environ.get("WORKSPACE_PUBLIC_ID")
-        if not workspace_public_id:
-            return HttpResponseBadRequest("Missing workspace public ID")
 
         workspace = Workspace.objects.get(public_id=workspace_public_id)
 

@@ -2,6 +2,7 @@
 !account
 !additional_dockerignore
 !admin
+!admin_autoregister.py
 !allauth
 !allauth_ui
 !api_providers
@@ -10,7 +11,7 @@
 !auto_factory_model
 !auto_tests
 !automations
-!base_app_config
+!base64_utils
 !base_model
 !base_model_admin
 !behave_django

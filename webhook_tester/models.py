@@ -5,7 +5,7 @@ from functools import wraps
 import requests
 
 from base_model.models import BaseModel
-from base_model_admin.models import BaseAdmin
+from base_model_admin.admin import InWorkspace
 from django import forms
 from django.contrib import messages
 from django.db import models
@@ -34,7 +34,7 @@ def log_incoming_webhook(func):
 
 
 # Model definitions
-class WebhookTest(BaseModel):
+class WebhookTest(InWorkspace):
     timestamp = models.DateTimeField(auto_now_add=True)
     webhook_url = models.URLField()
     payload = models.JSONField()
@@ -69,7 +69,7 @@ class WebhookTestForm(forms.Form):
 
 
 # Admin definitions
-class WebhookTestAdmin(BaseAdmin):
+class WebhookTestAdmin(InWorkspace):
     actions = ["test_webhook_action"]
 
     def get_urls(self):
@@ -154,7 +154,7 @@ class WebhookTestAdmin(BaseAdmin):
         return render(request, "admin/webhook_tester/results.html", {"tests": tests})
 
 
-class IncomingWebhookAdmin(BaseAdmin):
+class IncomingWebhookAdmin(InWorkspace):
     list_display = ("timestamp", "method", "ip_address")
     readonly_fields = ("timestamp", "headers", "payload", "method", "ip_address")
     actions = ["replay_webhook"]

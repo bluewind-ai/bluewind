@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "gmail_events",
     "webhook_tester",
     "credentials",
+    "base64_utils",
 ]
 
 ALLAUTH_UI_THEME = "light"
