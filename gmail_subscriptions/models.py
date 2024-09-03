@@ -1,13 +1,12 @@
-import base64
 import json
 import logging
 
 from google.api_core import exceptions as google_exceptions
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
-from google.oauth2.credentials import Credentials
 
 from base_model_admin.admin import InWorkspace
+from credentials.models import Credentials
 from django.contrib import messages as django_messages
 from django.db import models
 from workspaces.models import WorkspaceRelated
@@ -39,19 +38,16 @@ class GmailSubscription(WorkspaceRelated):
 
 
 def get_pubsub_credentials(workspace):
-    try:
-        credential = Credentials.objects.get(
-            workspace=workspace, key="GOOGLE_SERVICE_ACCOUNT_BASE_64"
-        )
-        service_account_info = json.loads(
-            base64.b64decode(credential.value).decode("utf-8")
-        )
-        return service_account.Credentials.from_service_account_info(
-            service_account_info,
-            scopes=["https://www.googleapis.com/auth/pubsub"],
-        )
-    except Credentials.DoesNotExist:
-        raise ValueError("GOOGLE_SERVICE_ACCOUNT_BASE_64 credential not found")
+    credential = Credentials.objects.get(
+        workspace=workspace, key="GOOGLE_SERVICE_ACCOUNT_BASE_64"
+    )
+
+    service_account_info = json.loads(credential.value)
+
+    return service_account.Credentials.from_service_account_info(
+        service_account_info,
+        scopes=["https://www.googleapis.com/auth/pubsub"],
+    )
 
 
 def setup_pubsub_topic(workspace, project_id, topic_id):
