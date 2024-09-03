@@ -31,7 +31,7 @@ class Message(WorkspaceRelated):
         unique_together = ["workspace", "gmail_message_id"]
 
     def __str__(self):
-        return f"From {self.channel.email} to {self.recipient}: {self.content[:50]}"
+        return f"{self.subject}: {self.content[:50]}"
 
 
 # Admin registration remains the same

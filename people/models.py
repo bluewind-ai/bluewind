@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class Person(WorkspaceRelated):
     first_name = models.CharField(max_length=10, blank=True)
-    last_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(blank=True)
     linkedin_url = models.URLField(blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True)
