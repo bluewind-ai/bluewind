@@ -718,6 +718,21 @@ files = [
 Django = ">=3.2"
 
 [[package]]
+name = "django-fernet-encrypted-fields"
+version = "0.1.3"
+description = "This is inspired by django-encrypted-fields."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-fernet-encrypted-fields-0.1.3.tar.gz", hash = "sha256:8cd10033f0ba153d94f3245551e5beb1b90a149d90e69d98b4581bc65db23b7a"},
+    {file = "django_fernet_encrypted_fields-0.1.3-py3-none-any.whl", hash = "sha256:981be25b42d75dec502c71ddf93f15385ab56d18e0829867fb2ba717ae4dc216"},
+]
+
+[package.dependencies]
+cryptography = ">=35.0.0"
+Django = ">=2.2"
+
+[[package]]
 name = "django-object-actions"
 version = "4.2.0"
 description = "A Django app for adding object tools for models in the admin"
@@ -2069,4 +2084,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "e72bb41cbb61d96edef9670841875628348324fe3f6f8e6529353f8605fab246"
+content-hash = "923b1e9c05aa94883294552785baa9d582ec2884a3f4a7d533aa971d3df5f38f"

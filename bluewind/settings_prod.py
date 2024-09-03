@@ -365,3 +365,5 @@ AWS_SES_REGION_ENDPOINT = "email.us-west-2.amazonaws.com"
 USE_SES_V2 = True
 
 DEFAULT_FROM_EMAIL = "wayne@bluewind.ai"
+
+SALT_KEY = os.environ["SALT_KEY"]
