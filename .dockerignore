@@ -22,7 +22,6 @@
 !credentials
 !db_graph
 !debug_toolbar
-!django-user-sessions
 !django_extensions
 !django_object_actions
 !features
@@ -32,7 +31,6 @@
 !google_backend_service_account.json
 !gunicorn_config.py
 !health_check
-!homepage
 !manage.py
 !messages
 !migrations
@@ -47,9 +45,7 @@
 !socialaccount
 !static
 !staticfiles
-!user_sessions
 !users
 !webhook_tester
 !widget_tweaks
-!workspace_filter
 !workspaces

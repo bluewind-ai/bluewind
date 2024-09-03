@@ -62,10 +62,6 @@ bcrypt = [ "bcrypt",]
 [tool.poetry.scripts]
 django-admin = "django.core.management:execute_from_command_line"
 
-[tool.poetry.dependencies.django-user-sessions]
-path = "django-user-sessions"
-develop = true
-
 [tool.poetry.dependencies.tzdata]
 version = "*"
 markers = "sys_platform == 'win32'"

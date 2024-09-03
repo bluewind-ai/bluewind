@@ -1,85 +1,122 @@
 import logging
 
+from allauth.account.adapter import DefaultAccountAdapter
+
 from django.contrib.admin import AdminSite
 from django.shortcuts import redirect
+from django.urls import path, reverse
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger(__name__)
 
 
 class CustomAdminSite(AdminSite):
-    def each_context(self, request):
-        context = super().each_context(request)
-        script_name = request.META.get("SCRIPT_NAME", "")
-        if script_name.startswith("/wks_"):
-            context["workspace_id"] = script_name.split("/")[1][4:]
-        logger.debug(f"each_context: script_name={script_name}, context={context}")
-        return context
+    def get_workspace_id(self, request):
+        return request.META.get("WORKSPACE_ID") or next(
+            (
+                part[4:]
+                for part in (
+                    request.META.get("SCRIPT_NAME", "")
+                    + request.META.get("PATH_INFO", "")
+                ).split("/")
+                if part.startswith("wks_")
+            ),
+            None,
+        )
 
-    def index(self, request, extra_context=None):
-        logger.debug(f"index: path={request.path}")
-        workspace_id = self.get_workspace_id(request)
-        if not workspace_id:
-            logger.debug("index: No workspace_id, redirecting to default workspace")
-            return self.redirect_to_default_workspace(request)
-
-        logger.debug(f"index: Rendering index for workspace {workspace_id}")
+    def index(self, request, workspace_id=None, extra_context=None):
         extra_context = extra_context or {}
         extra_context["workspace_id"] = workspace_id
+        app_list = self.get_app_list(request)
+        for app in app_list:
+            app["app_url"] = reverse(
+                "admin:app_list",
+                kwargs={"app_label": app["app_label"], "workspace_id": workspace_id},
+                current_app=self.name,
+            )
+        extra_context["app_list"] = app_list
         return super().index(request, extra_context)
 
-    def app_index(self, request, app_label, extra_context=None):
-        workspace_id = self.get_workspace_id(request)
-        if not workspace_id:
-            return self.redirect_to_default_workspace(request)
+    def redirect_to_default_workspace(self, request):
+        default_workspace = WorkspaceUser.objects.get_or_create(
+            user=request.user,
+            is_default=True,
+            defaults={"workspace__name": f"{request.user.username}'s Workspace"},
+        )[0].workspace
+        return redirect(
+            reverse("admin:index", kwargs={"workspace_id": default_workspace.id})
+        )
 
+    def each_context(self, request):
+        context = super().each_context(request)
+        workspace_id = self.get_workspace_id(request)
+        if workspace_id:
+            context["workspace_id"] = workspace_id
+        return context
+
+    def get_urls(self):
+        urlpatterns = super().get_urls()
+        custom_urlpatterns = [
+            path(
+                "wks_<int:workspace_id>/admin/<app_label>/",
+                self.admin_view(self.app_index),
+                name="app_list",
+            ),
+            path(
+                "wks_<int:workspace_id>/admin/",
+                self.admin_view(self.index),
+                name="index",
+            ),
+        ]
+        return custom_urlpatterns + urlpatterns
+
+    def app_index(self, request, app_label, workspace_id=None, extra_context=None):
         extra_context = extra_context or {}
         extra_context["workspace_id"] = workspace_id
         return super().app_index(request, app_label, extra_context)
 
-    def get_workspace_id(self, request):
-        script_name = request.META.get("SCRIPT_NAME", "")
-        if script_name.startswith("/wks_"):
-            return script_name.split("/")[1][4:]
-        return None
-
-    def redirect_to_default_workspace(self, request):
-        logger.debug("redirect_to_default_workspace: Starting")
-        try:
-            default_workspace = WorkspaceUser.objects.get(
-                user=request.user, is_default=True
-            ).workspace
-            logger.debug(
-                f"redirect_to_default_workspace: Found default workspace {default_workspace.id}"
-            )
-        except WorkspaceUser.DoesNotExist:
-            logger.debug(
-                "redirect_to_default_workspace: No default workspace, creating one"
-            )
-            default_workspace = Workspace.objects.create(
-                name=f"{request.user.username}'s Workspace"
-            )
-            WorkspaceUser.objects.create(
-                user=request.user, workspace=default_workspace, is_default=True
-            )
-
-        redirect_url = f"/wks_{default_workspace.id}/admin/"
-        logger.debug(f"redirect_to_default_workspace: Redirecting to {redirect_url}")
-        return redirect(redirect_url)
-
-    def _build_app_dict(self, request, label=None):
-        app_dict = super()._build_app_dict(request, label)
-        workspace_id = self.get_workspace_id(request)
-
-        for model_name, model_dict in app_dict.get(label, {}).get("models", {}).items():
-            if "admin_url" in model_dict:
-                model_dict["admin_url"] = (
-                    f"/wks_{workspace_id}{model_dict['admin_url']}"
-                )
-            if "add_url" in model_dict:
-                model_dict["add_url"] = f"/wks_{workspace_id}{model_dict['add_url']}"
-
-        return app_dict
-
 
 custom_admin_site = CustomAdminSite(name="customadmin")
+
+
+class WorkspaceMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        workspace_id = next(
+            (part[4:] for part in request.path.split("/") if part.startswith("wks_")),
+            None,
+        )
+        if workspace_id:
+            request.workspace_id = workspace_id
+            logger.info(f"Workspace ID set: {workspace_id}")
+        response = self.get_response(request)
+        return response
+
+
+from django.conf import settings
+
+
+class WksRedirectMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if "/wks_" in request.path and "/accounts/" in request.path:
+            # Extract the part after 'wks_XXXXXXXXX/'
+            new_path = "/".join(request.path.split("/")[2:])
+            return redirect(f"{settings.SITE_URL}/{new_path}")
+        return self.get_response(request)
+
+
+class CustomAccountAdapter(DefaultAccountAdapter):
+    def get_login_redirect_url(self, request):
+        workspace = Workspace.objects.first()
+        if not workspace:
+            workspace = Workspace.objects.create(name="Default Workspace")
+            WorkspaceUser.objects.create(
+                user=request.user, workspace=workspace, is_default=True
+            )
+
+        return f"/wks_{workspace.id}/admin/"

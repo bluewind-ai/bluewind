@@ -19,6 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 INSTALLED_APPS = [
     # 'django_extensions',
+    "django.contrib.sessions",
     "django.db.migrations",
     "users",
     "allauth_ui",
@@ -27,7 +28,6 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     ## User sessions
-    "user_sessions",
     "api_providers",
     ## User sessions
     "django.contrib.messages",
@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "behave_django",
     # AUTH PROVIDERS
     "db_graph",
-    "homepage",
     "apollo_people_search",
     "channels",
     "gmail_subscriptions",
@@ -83,9 +82,9 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE = [
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.security.SecurityMiddleware",
     ## third party package
-    "user_sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -93,7 +92,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "bluewind.allauth_redirect.WksRedirectMiddleware",
+    "bluewind.admin_site.WksRedirectMiddleware",
+    "bluewind.admin_site.WorkspaceMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "bluewind.urls"
@@ -222,7 +223,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-SESSION_ENGINE = "user_sessions.backends.db"
+# SESSION_ENGINE = "django.contrib.sessions.middleware.SessionMiddleware"
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -336,11 +337,6 @@ DEBUG_TOOLBAR_PANELS = [
 
 
 # dummy change to test cia
-
-MIDDLEWARE += [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
-    # 'workspace_filter.middleware.WorkspaceFilterMiddleware',
-]
 # cdnsjkcdnsjkcndsk
 
 TEST_RUNNER = "bluewind.test_runner.NoDbTestRunner"
@@ -348,7 +344,7 @@ TEST_RUNNER = "bluewind.test_runner.NoDbTestRunner"
 
 AUTH_USER_MODEL = "users.User"
 
-ACCOUNT_ADAPTER = "bluewind.allauth_adapter.CustomAccountAdapter"
+ACCOUNT_ADAPTER = "bluewind.admin_site.CustomAccountAdapter"
 
 EMAIL_BACKEND = "django_ses.SESBackend"
 
