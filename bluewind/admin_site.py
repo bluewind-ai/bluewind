@@ -15,6 +15,18 @@ class CustomAdminSite(AdminSite):
         super().logout(request, extra_context)
         return redirect("account_logout")
 
+    def index(self, request, extra_context=None):
+        workspace_id = True
+        if not workspace_id:
+            logger.debug("index: No workspace_id, redirecting to default workspace")
+            return self.redirect_to_default_workspace(request)
+
+        logger.debug(f"index: Rendering index for workspace {workspace_id}")
+
+    def redirect_to_default_workspace(self, request):
+        workspace_id = request.environ["WORKSPACE_ID"]
+        return redirect(reverse("admin:index", kwargs={"workspace_id": workspace_id}))
+
 
 custom_admin_site = CustomAdminSite(name="customadmin")
 
