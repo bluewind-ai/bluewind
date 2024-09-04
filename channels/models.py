@@ -1,6 +1,5 @@
 import base64
 import json
-import logging
 import os
 
 from encrypted_fields.fields import EncryptedCharField
@@ -13,8 +12,8 @@ from googleapiclient.errors import HttpError
 from base_model_admin.admin import InWorkspace
 from bluewind import logger
 from credentials.models import Credentials as CredentialsModel
+from django import forms
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -23,7 +22,7 @@ from django.utils import timezone
 from gmail_subscriptions.models import GmailSubscription
 from people.models import Person
 from users.models import User
-from workspaces.models import Workspace, WorkspaceRelated
+from workspaces.models import WorkspaceRelated
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
@@ -160,6 +159,12 @@ def renew_gmail_watch(channel):
     ):
         return setup_gmail_watch(channel)
     return True
+
+
+class ConnectGmailForm(forms.ModelForm):
+    class Meta:
+        model = Channel
+        fields = ["gmail_credentials", "user", "workspace"]
 
 
 def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
@@ -305,127 +310,92 @@ class ChannelAdmin(InWorkspace):
     fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
 
     def add_view(self, request, form_url="", extra_context=None):
-        return self.connect_channel(request)
+        self.form = ConnectGmailForm
+        extra_context = extra_context or {}
+        extra_context["title"] = "Connect Gmail Account"
+        return super().add_view(request, form_url, extra_context)
 
-    def connect_channel(self, request):
-        workspace_id = request.environ["WORKSPACE_ID"]
+    # def response_add(self, request, obj, post_url_continue=None):
+    #     # obj is the newly created Channel instance
+    #     return self.initiate_oauth_flow(request, obj)
 
-        workspace = Workspace.objects.get(id=int(workspace_id))
+    def initiate_oauth_flow(self, request, channel):
         credential = CredentialsModel.objects.get(
-            workspace=workspace, key="GMAIL_CLIENT_SECRET_BASE64"
+            workspace=channel.workspace, key="GMAIL_CLIENT_SECRET_BASE64"
         )
         client_secret_base64 = credential.value
-
         client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
-        client_config = json.loads(client_secret_json)
-
-        redirect_uri = request.build_absolute_uri(reverse("oauth2callback")).replace(
-            f"/workspaces/{workspace_id}", ""
-        )
+        client_secret_data = json.loads(client_secret_json)
 
         flow = Flow.from_client_config(
-            client_config, scopes=SCOPES, redirect_uri=redirect_uri
+            client_secret_data,
+            scopes=SCOPES,
+            redirect_uri=request.build_absolute_uri(reverse("oauth2callback")),
         )
 
-        auth_url, _ = flow.authorization_url(
+        authorization_url, state = flow.authorization_url(
             access_type="offline",
             include_granted_scopes="true",
             prompt="consent",
-            state=f"workspaces/{workspace_id}:{os.urandom(16).hex()}",
         )
 
-        request.session["oauth_client_config"] = client_config
-        request.session["oauth_scopes"] = SCOPES
-        request.session["oauth_redirect_uri"] = redirect_uri
+        request.session["oauth_state"] = state
+        request.session["channel_id"] = channel.id
 
-        return redirect(auth_url)
+        return HttpResponseRedirect(authorization_url)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
 
-        success = setup_gmail_watch(obj)
-        if success:
-            self.message_user(
-                request,
-                f"Successfully set up Gmail watch for {obj.email}",
-                level=messages.SUCCESS,
-            )
-        else:
-            self.message_user(
-                request,
-                f"Failed to set up Gmail watch for {obj.email}",
-                level=messages.ERROR,
-            )
+        # success = setup_gmail_watch(obj)
+        # if success:
+        #     self.message_user(
+        #         request,
+        #         f"Successfully set up Gmail watch for {obj.email}",
+        #         level=messages.SUCCESS,
+        #     )
+        # else:
+        #     self.message_user(
+        #         request,
+        #         f"Failed to set up Gmail watch for {obj.email}",
+        #         level=messages.ERROR,
+        #     )
 
 
 def oauth2callback(request):
-    try:
-        client_config = request.session.get("oauth_client_config")
-        scopes = request.session.get("oauth_scopes")
-        redirect_uri = request.session.get("oauth_redirect_uri")
+    state = request.session.get("oauth_state")
+    channel_id = request.session.get("channel_id")
 
-        if not all([client_config, scopes, redirect_uri]):
-            return HttpResponseBadRequest("Missing OAuth configuration in session")
+    if state is None or channel_id is None:
+        return HttpResponseBadRequest("Invalid session state.")
 
-        flow = Flow.from_client_config(
-            client_config, scopes=scopes, redirect_uri=redirect_uri
-        )
+    channel = Channel.objects.get(id=channel_id)
 
-        # Fetch the authorization code from the request
-        authorization_response = request.build_absolute_uri()
-        flow.fetch_token(authorization_response=authorization_response)
-        credentials = flow.credentials
+    credential = CredentialsModel.objects.get(
+        workspace=channel.workspace, key="GMAIL_CLIENT_SECRET_BASE64"
+    )
+    client_secret_base64 = credential.value
+    client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
+    client_secret_data = json.loads(client_secret_json)
 
-        service = build("oauth2", "v2", credentials=credentials)
-        user_info = service.userinfo().get().execute()
-        email = user_info["email"]
+    flow = Flow.from_client_config(
+        client_secret_data,
+        scopes=SCOPES,
+        state=state,
+        redirect_uri=request.build_absolute_uri(reverse("oauth2callback")),
+    )
 
-        # Extract workspace_id from state parameter
-        state = request.GET.get("state", "")
-        workspace_path, _ = state.split(":", 1)
-        workspace_id = workspace_path.split("/")[-1]
+    flow.fetch_token(authorization_response=request.build_absolute_uri())
+    credentials = flow.credentials
 
-        try:
-            workspace = Workspace.objects.get(id=int(workspace_id))
-        except (ObjectDoesNotExist, ValueError):
-            return HttpResponseBadRequest("Invalid workspace")
+    channel.access_token = credentials.token
+    channel.refresh_token = credentials.refresh_token
+    channel.token_expiry = credentials.expiry
+    channel.client_id = credentials.client_id
+    channel.client_secret = credentials.client_secret
+    channel.save()
 
-        # Get the existing CredentialsModel instance
-        try:
-            gmail_credentials = CredentialsModel.objects.get(
-                workspace=workspace, key="GMAIL_CLIENT_SECRET_BASE64"
-            )
-        except CredentialsModel.DoesNotExist:
-            return HttpResponseBadRequest(
-                "Gmail credentials not found for this workspace"
-            )
+    setup_gmail_watch(channel)
 
-        channel, created = Channel.objects.update_or_create(
-            email=email,
-            workspace=workspace,
-            defaults={
-                "user": request.user,
-                "access_token": credentials.token,
-                "refresh_token": credentials.refresh_token,
-                "token_expiry": credentials.expiry,
-                "client_id": credentials.client_id,
-                "client_secret": credentials.client_secret,
-                "gmail_credentials": gmail_credentials,  # Set the gmail_credentials field
-            },
-        )
-
-        if created:
-            messages.success(request, f"Successfully connected channel for {email}!")
-        else:
-            messages.info(request, f"Updated existing channel connection for {email}.")
-
-        for key in ["oauth_client_config", "oauth_scopes", "oauth_redirect_uri"]:
-            request.session.pop(key, None)
-
-        return HttpResponseRedirect(reverse("admin:channels_channel_changelist"))
-
-    except Exception as e:
-        # Log the exception for debugging
-        logging.exception("Error in oauth2callback")
-        messages.error(request, f"An error occurred: {str(e)}")
-        return HttpResponseRedirect(reverse("admin:channels_channel_changelist"))
+    messages.success(request, f"Successfully connected Gmail for {channel.email}")
+    return redirect("admin:channels_channel_changelist")
