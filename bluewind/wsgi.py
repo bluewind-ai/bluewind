@@ -17,7 +17,7 @@ def workspace_wsgi_middleware(application):
             pass
         elif path_info.startswith("/workspaces/"):
             parts = path_info.split("/")
-            workspace_id = parts[1]
+            workspace_id = parts[2]
             # strip out the 'workspaces/' prefix
             # Modify SCRIPT_NAME and PATH_INFO
             environ["SCRIPT_NAME"] = f"/workspaces/{workspace_id}"

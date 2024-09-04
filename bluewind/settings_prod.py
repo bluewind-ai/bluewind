@@ -26,11 +26,11 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.db.migrations",
     # Third-party apps
+    "allauth_ui",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
-    "allauth_ui",
     "behave_django",
     "channels",
     "debug_toolbar",
@@ -98,19 +98,20 @@ DB_HOST = os.environ["DB_HOST"]
 DB_PORT = os.environ["DB_PORT"]
 DB_NAME = os.environ["DB_NAME"]
 
-DB_INFO = {
-    "ENGINE": "django.db.backends.postgresql",
-    "NAME": DB_NAME,
-    "USER": DB_USERNAME,
-    "PASSWORD": DB_PASSWORD,
-    "HOST": DB_HOST,
-    "PORT": DB_PORT,
-    "CONN_MAX_AGE": 600,
-    "OPTIONS": {
-        "sslmode": "require",
-    },
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": DB_NAME,
+        "USER": DB_USERNAME,
+        "PASSWORD": DB_PASSWORD,
+        "HOST": DB_HOST,
+        "PORT": DB_PORT,
+        "CONN_MAX_AGE": 600,
+        "OPTIONS": {
+            "sslmode": "require",
+        },
+    }
 }
-DATABASES = {"default": DB_INFO}
 
 # Authentication and Authorization
 AUTH_USER_MODEL = "users.User"
