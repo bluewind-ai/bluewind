@@ -3,6 +3,7 @@ import json
 import logging
 import os
 
+from encrypted_fields.fields import EncryptedCharField
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
@@ -18,6 +19,7 @@ from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
+from gmail_subscriptions.models import GmailSubscription
 from people.models import Person
 from users.models import User
 from workspaces.models import Workspace, WorkspaceRelated
@@ -28,13 +30,16 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 class Channel(WorkspaceRelated):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     email = models.EmailField()
-    access_token = models.TextField(null=True, blank=True)
-    refresh_token = models.TextField(null=True, blank=True)
+    access_token = EncryptedCharField(max_length=1000, null=True, blank=True)
+    refresh_token = EncryptedCharField(max_length=1000, null=True, blank=True)
     token_expiry = models.DateTimeField(null=True, blank=True)
-    client_id = models.TextField(null=True, blank=True)
-    client_secret = models.TextField(null=True, blank=True)
+    client_id = EncryptedCharField(max_length=1000, null=True, blank=True)
+    client_secret = EncryptedCharField(max_length=1000, null=True, blank=True)
     last_history_id = models.TextField(null=True, blank=True)
     watch_expiration = models.DateTimeField(null=True, blank=True)
+
+    # New field to reference GmailSubscription
+    gmail_subscription = models.ForeignKey(GmailSubscription, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.email
