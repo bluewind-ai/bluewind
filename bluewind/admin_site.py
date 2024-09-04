@@ -13,29 +13,39 @@ class CustomAdminSite(AdminSite):
         super().logout(request, extra_context)
         return redirect("account_logout")
 
-    def index(self, request, extra_context=None):
+    def each_context(self, request):
+        context = super().each_context(request)
         workspace_id = request.environ.get("WORKSPACE_ID")
 
         if not workspace_id:
-            logger.debug("index: No workspace_id, redirecting to default workspace")
-            return self.redirect_to_default_workspace(request)
-
-        logger.debug(f"index: Rendering index for workspace {workspace_id}")
-        # Call the superclass index method to render the actual admin index
-        return super().index(request, extra_context)
-
-    def redirect_to_default_workspace(self, request):
-        workspace = Workspace.objects.filter(
-            workspaceuser__user=request.user, workspaceuser__is_default=True
-        ).first()
-
-        if not workspace:
-            workspace = Workspace.objects.create(name="Default Workspace")
-            WorkspaceUser.objects.create(
-                user=request.user, workspace=workspace, is_default=True
+            logger.debug(
+                "each_context: No workspace_id, redirecting to default workspace"
             )
+            workspace = Workspace.objects.filter(
+                workspaceuser__user=request.user, workspaceuser__is_default=True
+            ).first()
 
-        return redirect(f"/workspaces/{workspace.id}/admin/")
+            if not workspace:
+                workspace = Workspace.objects.create(name="Default Workspace")
+                WorkspaceUser.objects.create(
+                    user=request.user, workspace=workspace, is_default=True
+                )
+
+            redirect_url = f"/workspaces/{workspace.id}{request.path}"
+            context["redirect_url"] = redirect_url
+        else:
+            logger.debug(f"each_context: Using workspace {workspace_id}")
+
+        return context
+
+    def admin_view(self, view, cacheable=False):
+        def inner(request, *args, **kwargs):
+            context = self.each_context(request)
+            if "redirect_url" in context:
+                return redirect(context["redirect_url"])
+            return view(request, *args, **kwargs)
+
+        return super().admin_view(inner, cacheable)
 
 
 custom_admin_site = CustomAdminSite(name="customadmin")
