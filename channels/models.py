@@ -44,6 +44,8 @@ class Channel(WorkspaceRelated):
         GmailSubscription, on_delete=models.CASCADE, null=True, blank=True
     )
 
+    gmail_credentials = models.ForeignKey(CredentialsModel, on_delete=models.CASCADE)
+
     def __str__(self):
         return self.email
 
@@ -306,9 +308,7 @@ class ChannelAdmin(InWorkspace):
         return self.connect_channel(request)
 
     def connect_channel(self, request):
-        workspace_id = request.environ.get("WORKSPACE_ID")
-        if not workspace_id:
-            raise ValueError("Invalid workspace ID")
+        workspace_id = request.environ["WORKSPACE_ID"]
 
         workspace = Workspace.objects.get(id=int(workspace_id))
         credential = CredentialsModel.objects.get(
@@ -383,14 +383,22 @@ def oauth2callback(request):
         # Extract workspace_id from state parameter
         state = request.GET.get("state", "")
         workspace_path, _ = state.split(":", 1)
-        workspace_id = workspace_path.split("/")[
-            -1
-        ]  # Extract the ID from "workspaces/{id}"
+        workspace_id = workspace_path.split("/")[-1]
 
         try:
             workspace = Workspace.objects.get(id=int(workspace_id))
         except (ObjectDoesNotExist, ValueError):
             return HttpResponseBadRequest("Invalid workspace")
+
+        # Get the existing CredentialsModel instance
+        try:
+            gmail_credentials = CredentialsModel.objects.get(
+                workspace=workspace, key="GMAIL_CLIENT_SECRET_BASE64"
+            )
+        except CredentialsModel.DoesNotExist:
+            return HttpResponseBadRequest(
+                "Gmail credentials not found for this workspace"
+            )
 
         channel, created = Channel.objects.update_or_create(
             email=email,
@@ -402,7 +410,7 @@ def oauth2callback(request):
                 "token_expiry": credentials.expiry,
                 "client_id": credentials.client_id,
                 "client_secret": credentials.client_secret,
-                # We're not setting gmail_subscription here
+                "gmail_credentials": gmail_credentials,  # Set the gmail_credentials field
             },
         )
 
