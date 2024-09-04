@@ -5,15 +5,13 @@ from workspaces.models import Workspace
 
 
 class InWorkspace(admin.ModelAdmin):
-    list_select_related = ["workspace"]
-
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         workspace_id = request.environ.get("WORKSPACE_ID")
         logger.debug(f"get_queryset: workspace_id = {workspace_id}")
         if self.model == Workspace:
             return qs.filter(id=workspace_id)
-        return qs.filter(workspace_id=workspace_id)
+        return qs.filter(workspace_id=workspace_id).select_related("workspace")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         workspace_id = request.environ.get("WORKSPACE_ID")
