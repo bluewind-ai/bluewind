@@ -15,7 +15,7 @@ def register_forms():
 
     def register_form(name, form_class):
         if name not in registered_forms:
-            Form.objects.create(form=name, workspace=default_workspace)
+            Form.objects.create(name=name, workspace=default_workspace)
             print(f"Registered new form: {name}")
 
     # Register forms from django.forms
@@ -29,7 +29,7 @@ def register_forms():
 
     # Register admin-related forms
     admin_forms = [
-        admin.helpers.FormForm,
+        admin.helpers.ActionForm,
         AdminForm,
         admin.widgets.AdminDateWidget,
         admin.widgets.AdminSplitDateTime,
