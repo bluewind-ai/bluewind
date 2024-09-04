@@ -64,7 +64,7 @@ def workspace_wsgi_middleware(application):
 
                         environ["WORKSPACE_ID"] = workspace_id
                     else:
-                        raise ValueError("Invalid state in OAuth2 callback")
+                        pass
                 else:
                     pass
                     # raise ValueError("Invalid path", path_info)

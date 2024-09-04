@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import secrets
 
 from encrypted_fields.fields import EncryptedCharField
 from google.auth.transport.requests import Request
@@ -17,7 +18,6 @@ from django.contrib import admin, messages
 from django.db import models
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.urls import reverse
 from django.utils import timezone
 from gmail_subscriptions.models import GmailSubscription
 from people.models import Person
@@ -323,39 +323,56 @@ class ChannelAdmin(InWorkspace):
         )
 
     def initiate_oauth_flow(self, request, channel):
-        credential = CredentialsModel.objects.get(
-            workspace=channel.workspace, key="GMAIL_CLIENT_SECRET_BASE64"
-        )
-        client_secret_base64 = credential.value
-        client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
-        client_secret_data = json.loads(client_secret_json)
+        try:
+            credential = CredentialsModel.objects.get(
+                workspace=channel.workspace, key="GMAIL_CLIENT_SECRET_BASE64"
+            )
+            client_secret_base64 = credential.value
+            client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
+            client_secret_data = json.loads(client_secret_json)
 
-        # Construct the redirect URI using the current request
-        redirect_uri = request.build_absolute_uri("/oauth2callback/")
+            redirect_uri = "https://green.bluewind.ai/oauth2callback"
+            logger.info(f"Redirect URI: {redirect_uri}")
 
-        # Remove the workspace from the redirect URI
-        redirect_uri = redirect_uri.replace("/workspaces/1", "")
+            flow = Flow.from_client_config(
+                client_secret_data,
+                scopes=SCOPES,
+                redirect_uri=redirect_uri,
+            )
 
-        flow = Flow.from_client_config(
-            client_secret_data,
-            scopes=SCOPES,
-            redirect_uri=redirect_uri,
-        )
+            # Store the workspace_id in the session
+            request.session["gmail_oauth_flow_workspace_id"] = channel.workspace.id
 
-        # Include the workspace_id in the state
-        state = f"workspaces/{channel.workspace_id}:{flow._generate_state()}"
+            # Generate state without including workspace_id
+            random_state = secrets.token_urlsafe(16)
 
-        authorization_url, _ = flow.authorization_url(
-            access_type="offline",
-            include_granted_scopes="true",
-            prompt="consent",
-            state=state,
-        )
+            authorization_url, _ = flow.authorization_url(
+                access_type="offline",
+                include_granted_scopes="true",
+                prompt="consent",
+                state=random_state,
+            )
 
-        request.session["oauth_state"] = state
-        request.session["channel_id"] = channel.id
+            logger.info(f"Authorization URL: {authorization_url}")
 
-        return HttpResponseRedirect(authorization_url)
+            request.session["oauth_state"] = random_state
+            request.session["channel_id"] = channel.id
+
+            return HttpResponseRedirect(authorization_url)
+
+        except Exception as e:
+            logger.error(f"Error initiating OAuth flow: {str(e)}")
+            self.message_user(
+                request, f"Error initiating OAuth flow: {str(e)}", level=messages.ERROR
+            )
+            return redirect("admin:channels_channel_changelist")
+
+        except Exception as e:
+            logger.error(f"Error initiating OAuth flow: {str(e)}")
+            self.message_user(
+                request, f"Error initiating OAuth flow: {str(e)}", level=messages.ERROR
+            )
+            return redirect("admin:channels_channel_changelist")
 
     fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
 
@@ -364,35 +381,6 @@ class ChannelAdmin(InWorkspace):
         extra_context = extra_context or {}
         extra_context["title"] = "Connect Gmail Account"
         return super().add_view(request, form_url, extra_context)
-
-    # def response_add(self, request, obj, post_url_continue=None):
-    #     # obj is the newly created Channel instance
-    #     return self.initiate_oauth_flow(request, obj)
-
-    def initiate_oauth_flow(self, request, channel):
-        credential = CredentialsModel.objects.get(
-            workspace=channel.workspace, key="GMAIL_CLIENT_SECRET_BASE64"
-        )
-        client_secret_base64 = credential.value
-        client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
-        client_secret_data = json.loads(client_secret_json)
-
-        flow = Flow.from_client_config(
-            client_secret_data,
-            scopes=SCOPES,
-            redirect_uri=request.build_absolute_uri(reverse("oauth2callback")),
-        )
-
-        authorization_url, state = flow.authorization_url(
-            access_type="offline",
-            include_granted_scopes="true",
-            prompt="consent",
-        )
-
-        request.session["oauth_state"] = state
-        request.session["channel_id"] = channel.id
-
-        return HttpResponseRedirect(authorization_url)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
@@ -413,45 +401,65 @@ class ChannelAdmin(InWorkspace):
 
 
 def oauth2callback(request):
+    logger.info(f"Callback URL: {request.build_absolute_uri()}")
+
     state = request.GET.get("state")
-    if not state or ":" not in state:
+    if not state:
+        logger.error("Invalid state parameter")
         return HttpResponseBadRequest("Invalid state parameter")
 
-    workspace_part, oauth_state = state.split(":", 1)
-    if not workspace_part.startswith("workspaces/"):
-        return HttpResponseBadRequest("Invalid state format")
+    if state != request.session.get("oauth_state"):
+        logger.error("State mismatch")
+        return HttpResponseBadRequest("State mismatch")
 
-    workspace_id = workspace_part.split("/", 1)[1]
+    workspace_id = request.session.get("gmail_oauth_flow_workspace_id")
     channel_id = request.session.get("channel_id")
 
-    if not channel_id:
+    if not workspace_id or not channel_id:
+        logger.error("Missing workspace_id or channel_id in session")
         return HttpResponseBadRequest("Invalid session state")
 
-    channel = Channel.objects.get(id=channel_id, workspace_id=workspace_id)
+    try:
+        channel = Channel.objects.get(id=channel_id, workspace_id=workspace_id)
 
-    credential = CredentialsModel.objects.get(
-        workspace_id=workspace_id, key="GMAIL_CLIENT_SECRET_BASE64"
-    )
-    client_secret_base64 = credential.value
-    client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
-    client_secret_data = json.loads(client_secret_json)
+        credential = CredentialsModel.objects.get(
+            workspace_id=workspace_id, key="GMAIL_CLIENT_SECRET_BASE64"
+        )
+        client_secret_base64 = credential.value
+        client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
+        client_secret_data = json.loads(client_secret_json)
 
-    flow = Flow.from_client_config(
-        client_secret_data,
-        scopes=SCOPES,
-        state=oauth_state,
-        redirect_uri=request.build_absolute_uri(reverse("oauth2callback")),
-    )
+        redirect_uri = "https://green.bluewind.ai/oauth2callback"
 
-    flow.fetch_token(authorization_response=request.build_absolute_uri())
-    credentials = flow.credentials
+        flow = Flow.from_client_config(
+            client_secret_data,
+            scopes=SCOPES,
+            state=state,
+            redirect_uri=redirect_uri,
+        )
 
-    channel.access_token = credentials.token
-    channel.refresh_token = credentials.refresh_token
-    channel.token_expiry = credentials.expiry
-    channel.client_id = credentials.client_id
-    channel.client_secret = credentials.client_secret
-    channel.save()
+        flow.fetch_token(authorization_response=request.build_absolute_uri())
+        credentials = flow.credentials
 
-    messages.success(request, f"Successfully connected Gmail for {channel.email}")
-    return redirect("admin:channels_channel_changelist")
+        channel.access_token = credentials.token
+        channel.refresh_token = credentials.refresh_token
+        channel.token_expiry = credentials.expiry
+        channel.client_id = credentials.client_id
+        channel.client_secret = credentials.client_secret
+        channel.save()
+
+        messages.success(request, f"Successfully connected Gmail for {channel.email}")
+
+        # Redirect back to the change list view for the specific workspace
+        return redirect(f"/workspaces/{workspace_id}/admin/channels/channel/")
+
+    except Exception as e:
+        logger.error(f"Error in oauth2callback: {str(e)}")
+        messages.error(request, f"Error connecting Gmail: {str(e)}")
+        return redirect(f"/workspaces/{workspace_id}/admin/channels/channel/")
+
+    finally:
+        # Clean up session variables
+        request.session.pop("gmail_oauth_flow_workspace_id", None)
+        request.session.pop("oauth_state", None)
+        request.session.pop("channel_id", None)
