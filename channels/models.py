@@ -13,7 +13,7 @@ from base_model_admin.admin import InWorkspace
 from bluewind import logger
 from credentials.models import Credentials as CredentialsModel
 from django import forms
-from django.contrib import messages
+from django.contrib import admin, messages
 from django.db import models
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -285,10 +285,7 @@ def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
 
 
 class ChannelAdmin(InWorkspace):
-    list_display = ("email", "user")
-    actions = [
-        "fetch_messages_from_gmail",
-    ]
+    actions = ["fetch_messages_from_gmail", "connect_to_gmail"]
 
     def fetch_messages_from_gmail(self, request, queryset):
         total_created_count = 0
@@ -306,6 +303,56 @@ class ChannelAdmin(InWorkspace):
             f"Total messages created: {total_created_count}",
             level=messages.INFO,
         )
+
+    @admin.action(description="Connect selected channels to Gmail")
+    def connect_to_gmail(self, request, queryset):
+        for channel in queryset:
+            try:
+                return self.initiate_oauth_flow(request, channel)
+            except Exception as e:
+                self.message_user(
+                    request,
+                    f"Failed to connect {channel.email} to Gmail: {str(e)}",
+                    level=messages.ERROR,
+                )
+
+        self.message_user(
+            request,
+            "No channels were successfully connected to Gmail.",
+            level=messages.WARNING,
+        )
+
+    def initiate_oauth_flow(self, request, channel):
+        credential = CredentialsModel.objects.get(
+            workspace=channel.workspace, key="GMAIL_CLIENT_SECRET_BASE64"
+        )
+        client_secret_base64 = credential.value
+        client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
+        client_secret_data = json.loads(client_secret_json)
+
+        # Use the correct redirect URI
+        redirect_uri = "https://green.bluewind.ai/oauth2callback/"
+
+        flow = Flow.from_client_config(
+            client_secret_data,
+            scopes=SCOPES,
+            redirect_uri=redirect_uri,
+        )
+
+        # Include the workspace_id in the state
+        state = f"workspaces/{channel.workspace_id}:{flow._generate_state()}"
+
+        authorization_url, _ = flow.authorization_url(
+            access_type="offline",
+            include_granted_scopes="true",
+            prompt="consent",
+            state=state,
+        )
+
+        request.session["oauth_state"] = state
+        request.session["channel_id"] = channel.id
+
+        return HttpResponseRedirect(authorization_url)
 
     fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
 
@@ -363,16 +410,24 @@ class ChannelAdmin(InWorkspace):
 
 
 def oauth2callback(request):
-    state = request.session.get("oauth_state")
+    state = request.GET.get("state")
+    if not state or ":" not in state:
+        return HttpResponseBadRequest("Invalid state parameter")
+
+    workspace_part, oauth_state = state.split(":", 1)
+    if not workspace_part.startswith("workspaces/"):
+        return HttpResponseBadRequest("Invalid state format")
+
+    workspace_id = workspace_part.split("/", 1)[1]
     channel_id = request.session.get("channel_id")
 
-    if state is None or channel_id is None:
-        return HttpResponseBadRequest("Invalid session state.")
+    if not channel_id:
+        return HttpResponseBadRequest("Invalid session state")
 
-    channel = Channel.objects.get(id=channel_id)
+    channel = Channel.objects.get(id=channel_id, workspace_id=workspace_id)
 
     credential = CredentialsModel.objects.get(
-        workspace=channel.workspace, key="GMAIL_CLIENT_SECRET_BASE64"
+        workspace_id=workspace_id, key="GMAIL_CLIENT_SECRET_BASE64"
     )
     client_secret_base64 = credential.value
     client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
@@ -381,7 +436,7 @@ def oauth2callback(request):
     flow = Flow.from_client_config(
         client_secret_data,
         scopes=SCOPES,
-        state=state,
+        state=oauth_state,
         redirect_uri=request.build_absolute_uri(reverse("oauth2callback")),
     )
 
@@ -394,8 +449,6 @@ def oauth2callback(request):
     channel.client_id = credentials.client_id
     channel.client_secret = credentials.client_secret
     channel.save()
-
-    setup_gmail_watch(channel)
 
     messages.success(request, f"Successfully connected Gmail for {channel.email}")
     return redirect("admin:channels_channel_changelist")
