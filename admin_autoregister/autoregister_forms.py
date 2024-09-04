@@ -1,9 +1,9 @@
-from actions.models import Action
 from django import forms
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
 from django.core.exceptions import ImproperlyConfigured
+from forms.models import Form
 from workspaces.models import Workspace
 
 
@@ -11,11 +11,11 @@ def register_forms():
     default_workspace = (
         Workspace.objects.first()
     )  # Or however you want to determine the default workspace
-    registered_forms = set(Action.objects.values_list("form", flat=True))
+    registered_forms = set(Form.objects.values_list("name", flat=True))
 
     def register_form(name, form_class):
         if name not in registered_forms:
-            Action.objects.create(form=name, workspace=default_workspace)
+            Form.objects.create(form=name, workspace=default_workspace)
             print(f"Registered new form: {name}")
 
     # Register forms from django.forms
@@ -29,7 +29,7 @@ def register_forms():
 
     # Register admin-related forms
     admin_forms = [
-        admin.helpers.ActionForm,
+        admin.helpers.FormForm,
         AdminForm,
         admin.widgets.AdminDateWidget,
         admin.widgets.AdminSplitDateTime,
@@ -59,7 +59,7 @@ def register_forms():
             admin_module = __import__(f"{app_config.name}.admin", fromlist=[""])
             for name, obj in admin_module.__dict__.items():
                 if isinstance(obj, type) and issubclass(obj, admin.ModelAdmin):
-                    if hasattr(obj, "form") and obj.form != forms.ModelForm:
+                    if hasattr(obj, "name") and obj.form != forms.ModelForm:
                         register_form(obj.form.__name__, obj.form)
         except ImportError:
             pass

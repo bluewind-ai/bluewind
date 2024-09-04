@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     "base64_utils",
     # This should be last
     "admin_autoregister",
-    "actions",
+    "forms",
 ]
 
 # Middleware Configuration
