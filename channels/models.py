@@ -330,8 +330,11 @@ class ChannelAdmin(InWorkspace):
         client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
         client_secret_data = json.loads(client_secret_json)
 
-        # Use the correct redirect URI
-        redirect_uri = "https://green.bluewind.ai/oauth2callback/"
+        # Construct the redirect URI using the current request
+        redirect_uri = request.build_absolute_uri("/oauth2callback/")
+
+        # Remove the workspace from the redirect URI
+        redirect_uri = redirect_uri.replace("/workspaces/1", "")
 
         flow = Flow.from_client_config(
             client_secret_data,
