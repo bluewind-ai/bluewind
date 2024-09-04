@@ -14,6 +14,7 @@ from base_model_admin.admin import InWorkspace
 from bluewind import logger
 from credentials.models import Credentials as CredentialsModel
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -39,7 +40,9 @@ class Channel(WorkspaceRelated):
     watch_expiration = models.DateTimeField(null=True, blank=True)
 
     # New field to reference GmailSubscription
-    gmail_subscription = models.ForeignKey(GmailSubscription, on_delete=models.CASCADE)
+    gmail_subscription = models.ForeignKey(
+        GmailSubscription, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     def __str__(self):
         return self.email
@@ -303,8 +306,11 @@ class ChannelAdmin(InWorkspace):
         return self.connect_channel(request)
 
     def connect_channel(self, request):
-        workspace_id = request.environ["WORKSPACE_ID"]
-        workspace = Workspace.objects.get(id=workspace_id)
+        workspace_id = request.environ.get("WORKSPACE_ID")
+        if not workspace_id:
+            raise ValueError("Invalid workspace ID")
+
+        workspace = Workspace.objects.get(id=int(workspace_id))
         credential = CredentialsModel.objects.get(
             workspace=workspace, key="GMAIL_CLIENT_SECRET_BASE64"
         )
@@ -313,7 +319,6 @@ class ChannelAdmin(InWorkspace):
         client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")
         client_config = json.loads(client_secret_json)
 
-        workspace_id = request.environ["WORKSPACE_ID"]
         redirect_uri = request.build_absolute_uri(reverse("oauth2callback")).replace(
             f"/workspaces/{workspace_id}", ""
         )
@@ -375,9 +380,17 @@ def oauth2callback(request):
         user_info = service.userinfo().get().execute()
         email = user_info["email"]
 
-        workspace_id = request.environ.get("WORKSPACE_ID")
+        # Extract workspace_id from state parameter
+        state = request.GET.get("state", "")
+        workspace_path, _ = state.split(":", 1)
+        workspace_id = workspace_path.split("/")[
+            -1
+        ]  # Extract the ID from "workspaces/{id}"
 
-        workspace = Workspace.objects.get(id=workspace_id)
+        try:
+            workspace = Workspace.objects.get(id=int(workspace_id))
+        except (ObjectDoesNotExist, ValueError):
+            return HttpResponseBadRequest("Invalid workspace")
 
         channel, created = Channel.objects.update_or_create(
             email=email,
@@ -389,6 +402,7 @@ def oauth2callback(request):
                 "token_expiry": credentials.expiry,
                 "client_id": credentials.client_id,
                 "client_secret": credentials.client_secret,
+                # We're not setting gmail_subscription here
             },
         )
 
