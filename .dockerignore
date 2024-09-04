@@ -1,5 +1,6 @@
 *
 !account
+!actions
 !additional_dockerignore
 !admin
 !admin_autoregister

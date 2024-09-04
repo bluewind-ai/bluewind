@@ -5,6 +5,8 @@ from workspaces.models import Workspace
 
 
 class InWorkspace(admin.ModelAdmin):
+    list_select_related = ["workspace"]
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         workspace_id = request.environ.get("WORKSPACE_ID")

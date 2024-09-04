@@ -1,6 +1,7 @@
 import os
 import sys
 
+from admin_autoregister.autoregister_forms import register_forms
 from base_model_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
 from django.apps import apps
@@ -117,3 +118,4 @@ def autoregister():
 
     append_to_dockerignore(app_configs)
     clean_dockerignore()
+    register_forms()
