@@ -14,7 +14,7 @@ class PersonAdmin(DjangoObjectActions, InWorkspace):
     search_fields = ("first_name", "last_name", "email", "company_domain_name")
     actions = ["enrich_emails"]
     list_select_related = ("assigned_to", "workspace")
-    change_actions = ("do_stuff_action",)
+    change_actions = ("do_stuff_action", "find_leads_action")  # Added new action here
 
     class MessageInline(admin.TabularInline):
         model = Message
@@ -55,6 +55,20 @@ class PersonAdmin(DjangoObjectActions, InWorkspace):
     def do_stuff_action(self, request, obj):
         sleep(5)
         message = obj.do_stuff()
+        self.message_user(request, message, level=messages.SUCCESS)
+        return HttpResponseRedirect(
+            reverse("admin:people_person_change", args=[obj.id])
+        )
+
+    @action(
+        label="Find Leads",
+        description="Find potential leads related to this person",
+    )
+    def find_leads_action(self, request, obj):
+        sleep(3)  # Simulating some processing time
+        # Here you would typically call a method on the Person model to find leads
+        # For this example, we'll just use a dummy message
+        message = f"Found 5 potential leads related to {obj.first_name} {obj.last_name}"
         self.message_user(request, message, level=messages.SUCCESS)
         return HttpResponseRedirect(
             reverse("admin:people_person_change", args=[obj.id])
