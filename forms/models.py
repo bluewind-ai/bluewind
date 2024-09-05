@@ -20,9 +20,17 @@ class Form(WorkspaceRelated):
                 return model, model_admin
             except LookupError:
                 continue
+        return None, None
 
     def __str__(self):
         return f"{self.name}"
+
+
+class FormAdmin(InWorkspace):
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        form = self.get_object(request, object_id)
+        _, model_admin = form.get_model_and_admin()
+        return model_admin.add_view(request)
 
 
 class WizardStep(WorkspaceRelated):
@@ -45,8 +53,36 @@ class Wizard(WorkspaceRelated):
         return self.name
 
 
+from django.urls import reverse
+
+from .models import Wizard
+
+
 class WizardAdmin(InWorkspace):
-    list_display = ("name",)
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        wizard = self.get_object(request, object_id)
+        if not wizard:
+            return self.changeform_view(request, object_id, form_url, extra_context)
+
+        steps = wizard.steps.all().order_by("order")
+        if not steps:
+            self.message_user(request, "This wizard has no steps.")
+            return HttpResponseRedirect(reverse("admin:index"))
+
+        first_step = steps.first()
+        model, model_admin = first_step.form.get_model_and_admin()
+
+        # Instead of redirecting, render the add view directly
+        context = model_admin.add_view(request)
+        if isinstance(context, HttpResponseRedirect):
+            return context  # If it's a redirect, return it as is
+
+        # If it's not a redirect, it's likely a TemplateResponse
+        # We can modify the context if needed
+        context.context_data["title"] = (
+            f"Add {model._meta.verbose_name} (Wizard: {wizard.name})"
+        )
+        return context
 
     def get_urls(self):
         urls = super().get_urls()
@@ -54,7 +90,7 @@ class WizardAdmin(InWorkspace):
             path(
                 "<int:wizard_id>/run/",
                 self.admin_site.admin_view(self.run_wizard),
-                name="run_wizard",
+                name="admin_wizard_run",  # More specific name
             ),
         ]
         return custom_urls + urls
@@ -70,9 +106,8 @@ class WizardAdmin(InWorkspace):
             form = form_class(request.POST)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(
-                    "/admin/"
-                )  # Redirect to admin home after completion
+                # Redirect to the wizard's add page
+                return HttpResponseRedirect(reverse("admin:forms_wizard_add"))
         else:
             # Display the form for the single step
             step = steps[0]
