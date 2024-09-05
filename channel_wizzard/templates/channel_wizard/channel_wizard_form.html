@@ -1,28 +1,33 @@
-{% extends "admin/base_site.html" %} {% load i18n static %} {% block extrastyle
-%}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static
-"admin/css/forms.css" %}">{% endblock %} {% block content %}
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+{% endblock %}
+
+{% block content %}
 <div id="content-main">
-  <form action="" method="post">
-    {% csrf_token %} {{ wizard.management_form }} {% if wizard.form.forms %} {{
-    wizard.form.management_form }} {% for form in wizard.form.forms %} {{
-    form.as_p }} {% endfor %} {% else %} {{ wizard.form.as_p }} {% endif %} {%
-    if wizard.steps.prev %}
-    <button
-      name="wizard_goto_step"
-      type="submit"
-      value="{{ wizard.steps.first }}"
-    >
-      {% trans "First step" %}
-    </button>
-    <button
-      name="wizard_goto_step"
-      type="submit"
-      value="{{ wizard.steps.prev }}"
-    >
-      {% trans "Previous step" %}
-    </button>
-    {% endif %} <input type="submit" value="{% if wizard.steps.last %}{% trans
-    "Submit" %}{% else %}{% trans "Next step" %}{% endif %}"/>
-  </form>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {% if wizard.form.forms %}
+            {{ wizard.form.management_form }}
+            {% for form in wizard.form.forms %}
+                {{ form.as_p }}
+            {% endfor %}
+        {% else %}
+            {{ wizard.form.as_p }}
+        {% endif %}
+        {% if wizard.steps.prev %}
+            <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">
+                {% trans "First step" %}
+            </button>
+            <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">
+                {% trans "Previous step" %}
+            </button>
+        {% endif %}
+        <input type="submit" value="{% if wizard.steps.last %}{% trans "Submit" %}{% else %}{% trans "Next step" %}{% endif %}"/>
+    </form>
 </div>
 {% endblock %}

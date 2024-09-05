@@ -79,7 +79,7 @@ class NewChannelForm(forms.ModelForm):
 @method_decorator(staff_member_required, name="dispatch")
 class ChannelWizardView(SessionWizardView):
     form_list = [ChannelSelectionForm, NewChannelForm]
-    template_name = "admin/channel_wizard/channelwizard_form.html"
+    template_name = "channel_wizard/channel_wizard_form.html"
 
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
