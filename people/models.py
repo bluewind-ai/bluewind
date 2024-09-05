@@ -3,8 +3,6 @@ import os
 
 import requests
 
-from base_model_admin.admin import InWorkspace
-from django.contrib import messages
 from django.db import models
 from users.models import User
 from workspaces.models import WorkspaceRelated
@@ -46,7 +44,7 @@ class Person(WorkspaceRelated):
         unique_together = ["email", "workspace"]
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.email}"
 
     def enrich_email(self):
         print(f"LEADMAGIC_API_KEY: {os.environ.get('LEADMAGIC_API_KEY')}")
@@ -105,30 +103,3 @@ class Person(WorkspaceRelated):
             print(f"Unexpected error enriching email for {self}: {str(e)}")
 
         return False
-
-
-class PersonAdmin(InWorkspace):
-    list_display = ("first_name", "last_name", "email", "company_domain_name", "status")
-    list_filter = ("status", "source")
-    search_fields = ("first_name", "last_name", "email", "company_domain_name")
-    actions = ["enrich_emails"]
-
-    def enrich_emails(self, request, queryset):
-        enriched_count = 0
-        for person in queryset:
-            if person.enrich_email():
-                enriched_count += 1
-        if enriched_count:
-            self.message_user(
-                request,
-                f"{enriched_count} person(s) enriched successfully.",
-                messages.SUCCESS,
-            )
-        else:
-            self.message_user(
-                request,
-                "No people were enriched. Check the logs for details.",
-                messages.WARNING,
-            )
-
-    enrich_emails.short_description = "Enrich emails using PersonMagic"

@@ -27,6 +27,7 @@
 !debug_toolbar
 !django_extensions
 !django_object_actions
+!draft_messages
 !features
 !forms
 !gmail_events

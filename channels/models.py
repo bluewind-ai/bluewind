@@ -20,6 +20,8 @@ from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils import timezone
 from gmail_subscriptions.models import GmailSubscription
+
+# from people.models import Person
 from people.models import Person
 from users.models import User
 from workspaces.models import WorkspaceRelated
@@ -167,7 +169,7 @@ class ConnectGmailForm(forms.ModelForm):
         fields = ["gmail_credentials", "user", "workspace"]
 
 
-def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
+def fetch_messages_from_gmail(channel, history_id=None, max_results=100):
     from chat_messages.models import Message
 
     logger.info(f"Fetching messages for channel {channel.id}, history_id: {history_id}")
@@ -222,17 +224,6 @@ def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
             logger.error(f"Error fetching messages for {channel.email}: {error}")
             return 0
 
-    person, _ = Person.objects.get_or_create(
-        email=channel.email,
-        workspace=channel.workspace,
-        defaults={
-            "first_name": "Gmail",
-            "last_name": "User",
-            "status": "NEW",
-            "source": "Gmail Import",
-        },
-    )
-
     created_count = 0
 
     for message in messages:
@@ -250,6 +241,36 @@ def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
                 "No Subject",
             )
 
+            from_header = next(
+                (
+                    header["value"]
+                    for header in msg["payload"]["headers"]
+                    if header["name"] == "From"
+                ),
+                "",
+            )
+
+            to_header = next(
+                (
+                    header["value"]
+                    for header in msg["payload"]["headers"]
+                    if header["name"] == "To"
+                ),
+                "",
+            )
+
+            sender_email = (
+                from_header.split("<")[-1].split(">")[0]
+                if "<" in from_header
+                else from_header
+            )
+
+            recipient_email = (
+                to_header.split("<")[-1].split(">")[0]
+                if "<" in to_header
+                else to_header
+            )
+
             body = ""
             if "parts" in msg["payload"]:
                 for part in msg["payload"]["parts"]:
@@ -264,9 +285,32 @@ def fetch_messages_from_gmail(channel, history_id=None, max_results=10):
             else:
                 body = msg["snippet"]
 
+            sender, _ = Person.objects.get_or_create(
+                email=sender_email,
+                workspace=channel.workspace,
+                defaults={
+                    "first_name": "Unknown",
+                    "last_name": "Sender",
+                    "status": "NEW",
+                    "source": "Gmail Import",
+                },
+            )
+
+            recipient, _ = Person.objects.get_or_create(
+                email=recipient_email,
+                workspace=channel.workspace,
+                defaults={
+                    "first_name": "Unknown",
+                    "last_name": "Recipient",
+                    "status": "NEW",
+                    "source": "Gmail Import",
+                },
+            )
+
             Message.objects.create(
                 channel=channel,
-                recipient=person,
+                recipient=recipient,
+                sender=sender,
                 subject=subject[:255],
                 content=body,
                 timestamp=timezone.now(),
@@ -374,7 +418,7 @@ class ChannelAdmin(InWorkspace):
             )
             return redirect("admin:channels_channel_changelist")
 
-    fetch_messages_from_gmail.short_description = "Fetch 10 emails from Gmail"
+    fetch_messages_from_gmail.short_description = "Fetch 100 emails from Gmail"
 
     def add_view(self, request, form_url="", extra_context=None):
         self.form = ConnectGmailForm

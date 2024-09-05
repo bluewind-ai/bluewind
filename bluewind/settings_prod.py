@@ -45,8 +45,8 @@ INSTALLED_APPS = [
     "workspaces",
     "base_model_admin",
     "auto_tests",
-    "chat_messages",
     "people",
+    "chat_messages",
     "db_graph",
     "apollo_people_search",
     "gmail_subscriptions",
@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "channel_wizzard",
     "admin_autoregister",
     "forms",
+    "draft_messages",
 ]
 
 # Middleware Configuration

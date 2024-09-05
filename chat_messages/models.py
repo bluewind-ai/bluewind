@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.db import models, transaction
 from django.shortcuts import redirect
 from django.urls import reverse
-from people.models import Person
+from django.utils.html import format_html
 from workspaces.models import Workspace, WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -14,12 +14,16 @@ logger = logging.getLogger(__name__)
 
 class Message(WorkspaceRelated):
     from channels.models import Channel
+    from people.models import Person
 
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, related_name="sent_messages"
     )
     recipient = models.ForeignKey(
         Person, on_delete=models.CASCADE, related_name="received_messages"
+    )
+    sender = models.ForeignKey(
+        Person, on_delete=models.CASCADE, related_name="messages"
     )
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -38,6 +42,24 @@ class Message(WorkspaceRelated):
 
 
 class MessageAdmin(InWorkspace):
+    list_display = ["sender", "recipient_link", "subject"]
+    list_filter = ["sender"]
+    search_fields = ["subject", "content"]
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("workspace", "sender", "recipient", "channel")
+        )
+
+    def recipient_link(self, obj):
+        return format_html(
+            '<a href="{}">{}</a>',
+            reverse("admin:people_person_change", args=[obj.recipient_id]),
+            obj.recipient,
+        )
+
     def add_view(self, request, form_url="", extra_context=None):
         if request.method == "POST":
             try:
