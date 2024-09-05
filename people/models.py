@@ -46,6 +46,21 @@ class Person(WorkspaceRelated):
     def __str__(self):
         return f"{self.email}"
 
+    def do_stuff(self):
+        # Generate random data for all fields
+        self.first_name = "Steph"
+        self.last_name = "Silva"
+        self.linkedin_url = "https://www.linkedin.com/in/steph-silva/"
+        self.company_domain_name = "goingup.xyz"
+        self.company_linkedin_url = "https://www.linkedin.com/company/goinguptech/"
+
+        # Assuming you have a User model, you might want to assign a random user
+        # If not, you can comment out or remove this line
+        # self.assigned_to = User.objects.order_by('?').first()
+
+        self.save()
+        return f"Populated random data for {self.email}"
+
     def enrich_email(self):
         print(f"LEADMAGIC_API_KEY: {os.environ.get('LEADMAGIC_API_KEY')}")
 
