@@ -747,6 +747,20 @@ cryptography = ">=35.0.0"
 Django = ">=2.2"
 
 [[package]]
+name = "django-formtools"
+version = "2.5.1"
+description = "A set of high-level abstractions for Django forms"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django-formtools-2.5.1.tar.gz", hash = "sha256:47cb34552c6efca088863d693284d04fc36eaaf350eb21e1a1d935e0df523c93"},
+    {file = "django_formtools-2.5.1-py3-none-any.whl", hash = "sha256:bce9b64eda52cc1eef6961cc649cf75aacd1a707c2fff08d6c3efcbc8e7e761a"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+
+[[package]]
 name = "django-object-actions"
 version = "4.2.0"
 description = "A Django app for adding object tools for models in the admin"
@@ -2068,4 +2082,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "e03f70c7e35e9ff8fae8e8214a12c674e33eed4a9518eec487eca949faec701b"
+content-hash = "513bf9ec431fb4e4abd97ba04e6e2fb18bff38e8bb40a3576d1448e54d6abe9a"
