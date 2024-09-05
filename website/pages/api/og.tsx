@@ -22,7 +22,7 @@ export default async function handler(request: NextRequest) {
   const rawTitle = searchParams.has("title")
     ? searchParams.get("title")
     : undefined;
-  const title = rawTitle ?? "Langfuse";
+  const title = rawTitle ?? "Bluewind";
 
   const rawDescription = searchParams.has("description")
     ? searchParams.get("description")
@@ -54,7 +54,7 @@ export default async function handler(request: NextRequest) {
           fontSize: 40,
         }}
       >
-        {title !== "Langfuse" ? (
+        {title !== "Bluewind" ? (
           <div
             style={{
               display: "flex",
@@ -68,9 +68,9 @@ export default async function handler(request: NextRequest) {
           >
             <img width="50" height="50" src={imageData} />
             <span style={{ fontWeight: 800 }}>
-              Langfuse
+              Bluewind
               <span style={{ marginLeft: 10, fontWeight: 400 }}>
-                – Open Source LLM Engineering Platform
+                – Open Source Customer Platform
               </span>
             </span>
           </div>
