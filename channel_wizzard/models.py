@@ -15,15 +15,10 @@ from workspaces.models import Workspace, WorkspaceRelated, WorkspaceUser
 
 
 class ChannelWizardWrapper(View):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.view = ChannelWizardView.as_view()
-
     def dispatch(self, request, *args, **kwargs):
-        return self.view(request, *args, **kwargs)
+        return ChannelWizardView.as_view()(request, *args, **kwargs)
 
 
-# Model
 class ChannelWizard(WorkspaceRelated):
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, null=True, blank=True
@@ -40,11 +35,7 @@ class ChannelWizard(WorkspaceRelated):
     email = models.EmailField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Channel Wizard for {self.user} in {self.workspace}"
 
-
-# Forms
 class ChannelSelectionForm(forms.Form):
     action = forms.ChoiceField(
         choices=[
@@ -75,19 +66,10 @@ class NewChannelForm(forms.ModelForm):
             )
 
 
-# Wizard View
 @method_decorator(staff_member_required, name="dispatch")
 class ChannelWizardView(SessionWizardView):
     form_list = [ChannelSelectionForm, NewChannelForm]
     template_name = "channel_wizard/channel_wizard_form.html"
-
-    def get_context_data(self, form, **kwargs):
-        context = super().get_context_data(form=form, **kwargs)
-        admin_site = getattr(self.request, "admin_site", None)
-        if admin_site:
-            context.update(admin_site.each_context(self.request))
-        context["title"] = "Add Channel Wizard"
-        return context
 
     def get_form_kwargs(self, step=None):
         kwargs = super().get_form_kwargs(step)
@@ -106,59 +88,52 @@ class ChannelWizardView(SessionWizardView):
             )
         return form
 
-    def get_form_initial(self, step):
-        initial = super().get_form_initial(step)
-        if step == "1":
-            selection_data = self.get_cleaned_data_for_step("0")
-            if selection_data and selection_data["action"] == "select":
-                channel = selection_data["existing_channel"]
-                if channel:
-                    initial.update(
-                        {
-                            "email": channel.email,
-                            "user": channel.user,
-                            "workspace": channel.workspace,
-                        }
-                    )
-        return initial
-
     def process_step(self, form):
+        step_data = self.get_form_step_data(form)
+
         if self.steps.current == "0":
-            selection_data = form.cleaned_data
-            if selection_data["action"] == "select":
-                self.storage.extra_data["selected_channel"] = selection_data[
-                    "existing_channel"
-                ].id
-        return super().process_step(form)
+            # For the first step, create or update the ChannelWizard instance
+            action = form.cleaned_data["action"]
+            channel_wizard, created = ChannelWizard.objects.update_or_create(
+                user=self.request.user,
+                defaults={
+                    "action": action,
+                    "workspace": form.cleaned_data["existing_channel"].workspace
+                    if action == "select"
+                    else None,
+                    "channel": form.cleaned_data["existing_channel"]
+                    if action == "select"
+                    else None,
+                },
+            )
+        elif self.steps.current == "1":
+            # For the second step, update the existing ChannelWizard instance
+            channel_wizard = ChannelWizard.objects.get(user=self.request.user)
+            channel_wizard.workspace = form.cleaned_data["workspace"]
+            channel_wizard.email = form.cleaned_data["email"]
+            channel_wizard.save()
+
+        return step_data
 
     def done(self, form_list, **kwargs):
-        selection_form = form_list[0]
-        new_channel_form = form_list[1]
+        channel_wizard = ChannelWizard.objects.get(user=self.request.user)
 
-        channel_wizard = ChannelWizard(
-            user=self.request.user,
-            workspace=new_channel_form.cleaned_data["workspace"],
-            action=selection_form.cleaned_data["action"],
-        )
-
-        if selection_form.cleaned_data["action"] == "select":
-            channel_wizard.channel = selection_form.cleaned_data["existing_channel"]
+        if channel_wizard.action == "create":
+            new_channel_form = form_list[1]
+            new_channel = new_channel_form.save()
+            channel_wizard.channel = new_channel
+            channel_wizard.email = new_channel.email
+            channel_wizard.save()
+            messages.success(self.request, f"Created new channel: {new_channel.email}")
+        else:
             messages.success(
                 self.request,
                 f"Selected existing channel: {channel_wizard.channel.email}",
             )
-        else:
-            new_channel = new_channel_form.save()
-            channel_wizard.channel = new_channel
-            channel_wizard.email = new_channel.email
-            messages.success(self.request, f"Created new channel: {new_channel.email}")
-
-        channel_wizard.save()
 
         return redirect("admin:channel_wizzard_channelwizard_changelist")
 
 
-# Admin
 class ChannelWizardAdmin(InWorkspace):
     list_display = ("user", "workspace", "action", "created_at")
 
