@@ -1,11 +1,7 @@
-from base_model_admin.admin import InWorkspace
 from django.apps import apps
 from django.contrib import admin
 from django.db import models
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import path
-from workspaces.models import Workspace, WorkspaceRelated
+from workspaces.models import WorkspaceRelated
 
 
 class Form(WorkspaceRelated):
@@ -23,14 +19,7 @@ class Form(WorkspaceRelated):
         return None, None
 
     def __str__(self):
-        return f"{self.name}"
-
-
-class FormAdmin(InWorkspace):
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        form = self.get_object(request, object_id)
-        _, model_admin = form.get_model_and_admin()
-        return model_admin.add_view(request)
+        return self.name
 
 
 class WizardStep(WorkspaceRelated):
@@ -53,32 +42,32 @@ class Wizard(WorkspaceRelated):
         return self.name
 
 
-from django.urls import reverse
+# Admin classes
 
-from .models import Wizard
+from base_model_admin.admin import InWorkspace
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import path, reverse
+
+
+class FormAdmin(InWorkspace):
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        form = self.get_object(request, object_id)
+        _, model_admin = form.get_model_and_admin()
+        return model_admin.add_view(request)
 
 
 class WizardAdmin(InWorkspace):
     def change_view(self, request, object_id, form_url="", extra_context=None):
         wizard = self.get_object(request, object_id)
-        if not wizard:
-            return self.changeform_view(request, object_id, form_url, extra_context)
-
         steps = wizard.steps.all().order_by("order")
-        if not steps:
-            self.message_user(request, "This wizard has no steps.")
-            return HttpResponseRedirect(reverse("admin:index"))
-
         first_step = steps.first()
         model, model_admin = first_step.form.get_model_and_admin()
 
-        # Instead of redirecting, render the add view directly
         context = model_admin.add_view(request)
         if isinstance(context, HttpResponseRedirect):
-            return context  # If it's a redirect, return it as is
+            return context
 
-        # If it's not a redirect, it's likely a TemplateResponse
-        # We can modify the context if needed
         context.context_data["title"] = (
             f"Add {model._meta.verbose_name} (Wizard: {wizard.name})"
         )
@@ -90,7 +79,7 @@ class WizardAdmin(InWorkspace):
             path(
                 "<int:wizard_id>/run/",
                 self.admin_site.admin_view(self.run_wizard),
-                name="admin_wizard_run",  # More specific name
+                name="admin_wizard_run",
             ),
         ]
         return custom_urls + urls
@@ -100,16 +89,13 @@ class WizardAdmin(InWorkspace):
         steps = wizard.steps.all().order_by("order")
 
         if request.method == "POST":
-            # Process the form submission
             form_model, form_admin = steps[0].form.get_model_and_admin()
             form_class = form_admin.get_form(request)
             form = form_class(request.POST)
             if form.is_valid():
                 form.save()
-                # Redirect to the wizard's add page
                 return HttpResponseRedirect(reverse("admin:forms_wizard_add"))
         else:
-            # Display the form for the single step
             step = steps[0]
             form_model, form_admin = step.form.get_model_and_admin()
             form_class = form_admin.get_form(request)
@@ -125,29 +111,20 @@ class WizardAdmin(InWorkspace):
         return render(request, "admin/run_wizard.html", context)
 
 
-# Create instances
+# Helper function
+
+from workspaces.models import Workspace
 
 
 def create_channel_wizard(workspace=None):
-    # Create Form instance for Channel
-    if workspace is None:
-        # Get or create a default workspace
-        workspace, _ = Workspace.objects.get_or_create(id=1)
-
-    # Create Form instance for Channel
+    workspace, _ = Workspace.objects.get_or_create(id=1)
     channel_form, _ = Form.objects.get_or_create(
         name="ChannelModelForm", workspace=workspace
     )
-
-    # Create WizardStep instance
     wizard_step, _ = WizardStep.objects.get_or_create(
         name="Channel Configuration", form=channel_form, order=1, workspace=workspace
     )
-
-    # Create Wizard instance
     channel_wizard, _ = Wizard.objects.get_or_create(
         name="Channel Setup Wizard", workspace=workspace
     )
     channel_wizard.steps.add(wizard_step)
-
-    print(f"Created Channel Wizard: {channel_wizard}")
