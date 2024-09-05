@@ -9,35 +9,42 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("gmail_subscriptions", "0001_initial"),
+        ("forms", "0001_initial"),
         ("workspaces", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="gmailsubscription",
+            model_name="form",
             name="workspace",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to="workspaces.workspace"
             ),
         ),
         migrations.AddField(
-            model_name="pubsubtopic",
+            model_name="wizard",
             name="workspace",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to="workspaces.workspace"
             ),
         ),
         migrations.AddField(
-            model_name="gmailsubscription",
-            name="topic",
+            model_name="wizardstep",
+            name="form",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                to="gmail_subscriptions.pubsubtopic",
+                on_delete=django.db.models.deletion.CASCADE, to="forms.form"
             ),
         ),
-        migrations.AlterUniqueTogether(
-            name="pubsubtopic",
-            unique_together={("project_id", "topic_id")},
+        migrations.AddField(
+            model_name="wizardstep",
+            name="workspace",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="workspaces.workspace"
+            ),
+        ),
+        migrations.AddField(
+            model_name="wizard",
+            name="steps",
+            field=models.ManyToManyField(to="forms.wizardstep"),
         ),
     ]

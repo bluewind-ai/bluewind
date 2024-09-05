@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     "base64_utils",
     # This should be last
     "channel_wizzard",
-    # "admin_autoregister",
+    "admin_autoregister",
     "forms",
 ]
 
