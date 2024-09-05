@@ -79,13 +79,18 @@ class WizardAdmin(InWorkspace):
                 self.admin_site.admin_view(self.run_wizard),
                 name="forms_wizard_run",
             ),
+            path(
+                "<path:object_id>/run/<int:step>/",
+                self.admin_site.admin_view(self.run_wizard),
+                name="forms_wizard_run_step",
+            ),
         ]
         return custom_urls + urls
 
     def redirect_to_run(self, request, object_id):
         return HttpResponseRedirect(reverse("admin:forms_wizard_run", args=[object_id]))
 
-    def run_wizard(self, request, object_id):
+    def run_wizard(self, request, object_id, step=1):
         wizard = get_object_or_404(Wizard, id=object_id)
         steps = wizard.steps.all().order_by("order")
 
@@ -93,8 +98,8 @@ class WizardAdmin(InWorkspace):
             self.message_user(request, "This wizard has no steps.", level="warning")
             return HttpResponseRedirect(reverse("admin:forms_wizard_changelist"))
 
-        step = steps[0]
-        form_model, model_admin = step.form.get_model_and_admin()
+        current_step = steps[step - 1]
+        form_model, model_admin = current_step.form.get_model_and_admin()
 
         if not form_model or not model_admin:
             self.message_user(
@@ -108,8 +113,18 @@ class WizardAdmin(InWorkspace):
             form = ModelForm(request.POST)
             if form.is_valid():
                 form.save()
-                self.message_user(request, "Form saved successfully.")
-                return HttpResponseRedirect(reverse("admin:forms_wizard_changelist"))
+                self.message_user(request, f"Step {step} saved successfully.")
+                if step < steps.count():
+                    return HttpResponseRedirect(
+                        reverse(
+                            "admin:forms_wizard_run_step", args=[object_id, step + 1]
+                        )
+                    )
+                else:
+                    self.message_user(request, "Wizard completed successfully!")
+                    return HttpResponseRedirect(
+                        reverse("admin:forms_wizard_changelist")
+                    )
         else:
             form = ModelForm()
 
@@ -130,11 +145,11 @@ class WizardAdmin(InWorkspace):
         )
 
         context = {
-            "title": f"Run Wizard: {wizard.name}",
+            "title": f"Run Wizard: {wizard.name} - Step {step}",
             "adminform": admin_form,
             "original": None,
             "wizard": wizard,
-            "step": step,
+            "step": current_step,
             "is_popup": False,
             "save_as": False,
             "has_view_permission": model_admin.has_view_permission(request),
@@ -152,10 +167,18 @@ class WizardAdmin(InWorkspace):
             "change": False,
             "form_url": "",
             "formsets": formsets,
-            "current_step": 1,
+            "current_step": step,
             "total_steps": steps.count(),
         }
         return TemplateResponse(request, "admin/change_form.html", context)
+
+    def run_wizard_link(self, obj):
+        url = reverse("admin:forms_wizard_run", args=[obj.pk])
+        return format_html('<a href="{}">Run Wizard</a>', url)
+
+    run_wizard_link.short_description = "Run"
+
+    list_display = ["name", "run_wizard_link"]
 
     def run_wizard_link(self, obj):
         url = reverse("admin:forms_wizard_run", args=[obj.pk])
