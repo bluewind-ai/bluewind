@@ -1,6 +1,10 @@
 from django.apps import apps
 from django.contrib import admin
+from django.contrib.admin.helpers import AdminForm
 from django.db import models
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
+from django.utils.html import format_html
 from workspaces.models import WorkspaceRelated
 
 
@@ -46,7 +50,6 @@ class Wizard(WorkspaceRelated):
 
 from base_model_admin.admin import InWorkspace
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.urls import path, reverse
 
 
@@ -57,58 +60,110 @@ class FormAdmin(InWorkspace):
         return model_admin.add_view(request)
 
 
+from base_model_admin.admin import InWorkspace
+
+from .models import Wizard
+
+
 class WizardAdmin(InWorkspace):
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        wizard = self.get_object(request, object_id)
-        steps = wizard.steps.all().order_by("order")
-        first_step = steps.first()
-        model, model_admin = first_step.form.get_model_and_admin()
-
-        context = model_admin.add_view(request)
-        if isinstance(context, HttpResponseRedirect):
-            return context
-
-        context.context_data["title"] = (
-            f"Add {model._meta.verbose_name} (Wizard: {wizard.name})"
-        )
-        return context
-
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
             path(
-                "<int:wizard_id>/run/",
+                "<path:object_id>/change/",
+                self.admin_site.admin_view(self.redirect_to_run),
+                name="forms_wizard_change",
+            ),
+            path(
+                "<path:object_id>/run/",
                 self.admin_site.admin_view(self.run_wizard),
-                name="admin_wizard_run",
+                name="forms_wizard_run",
             ),
         ]
         return custom_urls + urls
 
-    def run_wizard(self, request, wizard_id):
-        wizard = Wizard.objects.get(id=wizard_id)
+    def redirect_to_run(self, request, object_id):
+        return HttpResponseRedirect(reverse("admin:forms_wizard_run", args=[object_id]))
+
+    def run_wizard(self, request, object_id):
+        wizard = get_object_or_404(Wizard, id=object_id)
         steps = wizard.steps.all().order_by("order")
 
+        if not steps:
+            self.message_user(request, "This wizard has no steps.", level="warning")
+            return HttpResponseRedirect(reverse("admin:forms_wizard_changelist"))
+
+        step = steps[0]
+        form_model, model_admin = step.form.get_model_and_admin()
+
+        if not form_model or not model_admin:
+            self.message_user(
+                request, "Unable to find the associated model or admin.", level="error"
+            )
+            return HttpResponseRedirect(reverse("admin:forms_wizard_changelist"))
+
+        ModelForm = model_admin.get_form(request)
+
         if request.method == "POST":
-            form_model, form_admin = steps[0].form.get_model_and_admin()
-            form_class = form_admin.get_form(request)
-            form = form_class(request.POST)
+            form = ModelForm(request.POST)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(reverse("admin:forms_wizard_add"))
+                self.message_user(request, "Form saved successfully.")
+                return HttpResponseRedirect(reverse("admin:forms_wizard_changelist"))
         else:
-            step = steps[0]
-            form_model, form_admin = step.form.get_model_and_admin()
-            form_class = form_admin.get_form(request)
-            form = form_class()
+            form = ModelForm()
+
+        fieldsets = model_admin.get_fieldsets(request)
+        readonly_fields = model_admin.get_readonly_fields(request)
+        prepopulated_fields = dict(model_admin.get_prepopulated_fields(request))
+
+        admin_form = AdminForm(
+            form,
+            fieldsets,
+            prepopulated_fields,
+            readonly_fields,
+            model_admin=model_admin,
+        )
+
+        formsets, inline_instances = model_admin._create_formsets(
+            request, form.instance, change=False
+        )
 
         context = {
+            "title": f"Run Wizard: {wizard.name}",
+            "adminform": admin_form,
+            "original": None,
             "wizard": wizard,
             "step": step,
-            "form": form,
-            "current_step": 0,
-            "total_steps": 1,
+            "is_popup": False,
+            "save_as": False,
+            "has_view_permission": model_admin.has_view_permission(request),
+            "has_add_permission": model_admin.has_add_permission(request),
+            "has_change_permission": model_admin.has_change_permission(request),
+            "has_delete_permission": model_admin.has_delete_permission(request),
+            "has_editable_inline_admin_formsets": False,
+            "opts": form_model._meta,
+            "app_label": form_model._meta.app_label,
+            "media": model_admin.media + admin_form.media,
+            "inline_admin_formsets": [],
+            "errors": None,
+            "preserved_filters": model_admin.get_preserved_filters(request),
+            "add": True,
+            "change": False,
+            "form_url": "",
+            "formsets": formsets,
+            "current_step": 1,
+            "total_steps": steps.count(),
         }
-        return render(request, "admin/run_wizard.html", context)
+        return TemplateResponse(request, "admin/change_form.html", context)
+
+    def run_wizard_link(self, obj):
+        url = reverse("admin:forms_wizard_run", args=[obj.pk])
+        return format_html('<a href="{}">Run Wizard</a>', url)
+
+    run_wizard_link.short_description = "Run"
+
+    list_display = ["name", "run_wizard_link"]
 
 
 # Helper function
