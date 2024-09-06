@@ -1,10 +1,17 @@
 from asyncio.log import logger
 
+from django_json_widget.widgets import JSONEditorWidget
+
 from django.contrib import admin
+from django.db.models import JSONField
 from workspaces.models import Workspace
 
 
 class InWorkspace(admin.ModelAdmin):
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditorWidget},
+    }
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         workspace_id = request.environ.get("WORKSPACE_ID")

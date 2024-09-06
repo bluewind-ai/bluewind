@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "slippers",
     "widget_tweaks",
     "admin_events",
+    "django_json_widget",
     # Local apps
     "users",
     "api_providers",

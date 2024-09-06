@@ -761,6 +761,16 @@ files = [
 Django = ">=3.2"
 
 [[package]]
+name = "django-json-widget"
+version = "2.0.1"
+description = "Django json widget is an alternative widget that makes it easy to edit the jsonfield field of django."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-json-widget-2.0.1.tar.gz", hash = "sha256:adb4cab17fe5a04139037d7d84725369530ef35b912c3790d3a7b13f99351358"},
+]
+
+[[package]]
 name = "django-object-actions"
 version = "4.2.0"
 description = "A Django app for adding object tools for models in the admin"
@@ -2082,4 +2092,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "513bf9ec431fb4e4abd97ba04e6e2fb18bff38e8bb40a3576d1448e54d6abe9a"
+content-hash = "71a8bd18403d666c01f45b82db9908fdab463fb7b6c475714a5b8d3c64bf0e43"

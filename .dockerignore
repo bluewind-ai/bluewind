@@ -27,6 +27,7 @@
 !db_graph
 !debug_toolbar
 !django_extensions
+!django_json_widget
 !django_object_actions
 !draft_messages
 !features
