@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class Person(WorkspaceRelated):
     first_name = models.CharField(max_length=10, blank=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
-    email = models.EmailField(blank=True)
+    email = models.EmailField(blank=True, null=True)
     linkedin_url = models.URLField(blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True)
     company_domain_name = models.CharField(max_length=100, blank=True)
@@ -41,7 +41,13 @@ class Person(WorkspaceRelated):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ["email", "workspace"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "workspace"],
+                condition=models.Q(email__isnull=False),
+                name="unique_email_per_workspace",
+            )
+        ]
 
     def __str__(self):
         if self.email:

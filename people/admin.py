@@ -3,10 +3,12 @@ from time import sleep
 
 from django_object_actions import DjangoObjectActions, action
 
+from admin_events.models import AdminEvent
 from base_model_admin.admin import InWorkspace
 from channels.models import Channel
 from chat_messages.models import Message
 from django.contrib import admin, messages
+from django.forms import model_to_dict
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from draft_messages.models import DraftMessage
@@ -62,6 +64,44 @@ class PersonAdmin(DjangoObjectActions, InWorkspace):
         self.message_user(request, message, level=messages.SUCCESS)
         return HttpResponseRedirect(
             reverse("admin:people_person_change", args=[obj.id])
+        )
+
+    from django.forms.models import model_to_dict
+
+    def save_model(self, request, obj, form, change):
+        # Capture the input data
+        input_data = form.cleaned_data.copy()
+
+        # Convert non-serializable objects in input_data
+        for key, value in input_data.items():
+            if not isinstance(value, (str, int, float, bool, type(None))):
+                input_data[key] = str(value)
+
+        # Determine if this is a create or update action
+        action = "update" if change else "create"
+
+        # Call the original save_model method
+        super().save_model(request, obj, form, change)
+
+        # Capture the output data
+        output_data = model_to_dict(obj)
+
+        # Convert non-serializable objects in output_data
+        for key, value in output_data.items():
+            if not isinstance(value, (str, int, float, bool, type(None))):
+                output_data[key] = str(value)
+
+        # Combine input and output data
+        event_data = {"input": input_data, "output": output_data}
+
+        # Record the event
+        AdminEvent.objects.create(
+            user=request.user,
+            action=action,
+            model_name="Person",
+            object_id=obj.id,
+            data=event_data,
+            workspace_id=obj.workspace_id,
         )
 
     @action(

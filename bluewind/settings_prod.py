@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "model_clone",
     "slippers",
     "widget_tweaks",
+    "admin_events",
     # Local apps
     "users",
     "api_providers",
