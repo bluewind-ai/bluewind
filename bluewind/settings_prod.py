@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "django.db.migrations",
+    "bluewind",
     # Third-party apps
     "allauth_ui",
     "allauth",
@@ -81,8 +82,11 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "channel_wizzard", "templates")],
-        "APP_DIRS": True,
+        "DIRS": [
+            os.path.join(BASE_DIR, "bluewind", "templates"),  # Move this to the top
+            os.path.join(BASE_DIR, "channel_wizzard", "templates"),
+        ],
+        "APP_DIRS": False,  # Change this to False
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -90,6 +94,17 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "loaders": [
+                (
+                    "django.template.loaders.filesystem.Loader",
+                    [
+                        os.path.join(BASE_DIR, "bluewind", "templates"),
+                        os.path.join(BASE_DIR, "channel_wizzard", "templates"),
+                    ],
+                ),
+                "django.template.loaders.app_directories.Loader",
+            ],
+            "debug": True,  # Add this line to disable template caching
         },
     },
 ]
