@@ -69,7 +69,7 @@ class PersonAdmin(DjangoObjectActions, InWorkspace):
         description="Find potential leads and create a draft message",
     )
     def find_leads_action(self, request, obj):
-        sleep(3)  # Simulating some processing time
+        sleep(7)  # Simulating some processing time
 
         # Create a draft message
         channel = Channel.objects.filter(workspace=obj.workspace).first()

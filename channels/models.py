@@ -48,7 +48,7 @@ class Channel(WorkspaceRelated):
     gmail_credentials = models.ForeignKey(CredentialsModel, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.email
+        return f"{self.user}"
 
     class Meta:
         unique_together = ["workspace", "email"]

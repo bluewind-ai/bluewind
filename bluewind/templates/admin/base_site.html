@@ -4,17 +4,11 @@
 
 {% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
-{% block extrastyle %}
-{{ block.super }}
-<link rel="stylesheet" href="https://unpkg.com/cmdk/dist/cmdk.css" />
-{% endblock %}
-
 {% block branding %}
 <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
 {% endblock %}
 
 {% block footer %}
     {{ block.super }}
-    <script src="https://unpkg.com/cmdk/dist/cmdk.js"></script>
-    <script type="module" src="{% static 'bluewind/js/admin_shortcuts.js' %}"></script>
+    <script src="{% static 'bluewind/js/admin_shortcuts.js' %}"></script>
 {% endblock %}
