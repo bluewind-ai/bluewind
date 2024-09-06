@@ -44,7 +44,9 @@ class Person(WorkspaceRelated):
         unique_together = ["email", "workspace"]
 
     def __str__(self):
-        return f"{self.email}"
+        if self.email:
+            return f"{self.email}"
+        return f"{self.first_name} {self.last_name}"
 
     def do_stuff(self):
         # Generate random data for all fields

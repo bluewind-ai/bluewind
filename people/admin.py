@@ -1,12 +1,16 @@
+import random
 from time import sleep
 
 from django_object_actions import DjangoObjectActions, action
 
 from base_model_admin.admin import InWorkspace
+from channels.models import Channel
 from chat_messages.models import Message
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from draft_messages.models import DraftMessage
+from people.models import Person
 
 
 class PersonAdmin(DjangoObjectActions, InWorkspace):
@@ -14,7 +18,7 @@ class PersonAdmin(DjangoObjectActions, InWorkspace):
     search_fields = ("first_name", "last_name", "email", "company_domain_name")
     actions = ["enrich_emails"]
     list_select_related = ("assigned_to", "workspace")
-    change_actions = ("do_stuff_action", "find_leads_action")  # Added new action here
+    change_actions = ("do_stuff_action", "find_leads_action")
 
     class MessageInline(admin.TabularInline):
         model = Message
@@ -62,14 +66,67 @@ class PersonAdmin(DjangoObjectActions, InWorkspace):
 
     @action(
         label="Find Leads",
-        description="Find potential leads related to this person",
+        description="Find potential leads and create a draft message",
     )
     def find_leads_action(self, request, obj):
         sleep(3)  # Simulating some processing time
-        # Here you would typically call a method on the Person model to find leads
-        # For this example, we'll just use a dummy message
-        message = f"Found 5 potential leads related to {obj.first_name} {obj.last_name}"
-        self.message_user(request, message, level=messages.SUCCESS)
+
+        # Create a draft message
+        channel = Channel.objects.filter(workspace=obj.workspace).first()
+        if not channel:
+            self.message_user(
+                request, "No channel found for this workspace.", level=messages.ERROR
+            )
+            return HttpResponseRedirect(
+                reverse("admin:people_person_change", args=[obj.id])
+            )
+
+        # Try to get a sender, with fallback options
+        sender = Person.objects.filter(id=1).first()
+        if not sender:
+            # Fallback 1: Try to get any Person object
+            sender = Person.objects.first()
+
+        if not sender:
+            # Fallback 2: If still no sender, use the current person as both sender and recipient
+            sender = obj
+
+        if not sender:
+            # If we still don't have a sender, we can't create the draft message
+            self.message_user(
+                request,
+                "No valid sender found for the draft message.",
+                level=messages.ERROR,
+            )
+            return HttpResponseRedirect(
+                reverse("admin:people_person_change", args=[obj.id])
+            )
+
+        draft_content = f"Dear {obj.first_name},\n\nI hope this email finds you well. I came across your profile and thought you might be interested in our services...\n\nBest regards,\nYour Name"
+
+        try:
+            draft_message = DraftMessage.objects.create(
+                workspace=obj.workspace,
+                channel=channel,
+                recipient=obj,
+                sender=sender,
+                content="""Do you want to talk to people like Sara for example:
+
+http://www.linkedin.com/in/saravandenbroek
+
+Let me know and I will build you a list.""",
+                subject="ESG pivot",
+                gmail_draft_id=f"draft_{random.randint(1000, 9999)}",  # Generate a random draft ID for this example
+            )
+            message = f"Created a draft message for {obj.first_name} {obj.last_name}"
+            self.message_user(request, message, level=messages.SUCCESS)
+        except Exception as e:
+            self.message_user(
+                request,
+                f"Failed to create draft message: {str(e)}",
+                level=messages.ERROR,
+            )
+
         return HttpResponseRedirect(
             reverse("admin:people_person_change", args=[obj.id])
         )
