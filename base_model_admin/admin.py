@@ -67,6 +67,7 @@ class InWorkspace(admin.ModelAdmin):
             object_id=obj.id,
             data=event_data,
             workspace_id=obj.workspace_id,
+            recording_id=1,  # Always use Recording with ID 1
         )
 
     def get_queryset(self, request):
@@ -122,6 +123,7 @@ class InWorkspace(admin.ModelAdmin):
                 object_id=obj.id,
                 data=event_data,
                 workspace_id=workspace_id,
+                recording_id=1,  # Always use Recording with ID 1
             )
 
     def get_actions(self, request):
@@ -248,4 +250,5 @@ class InWorkspace(admin.ModelAdmin):
             object_id=0,  # Use a placeholder value instead of None
             data=event_data,
             workspace_id=workspace_id,
+            recording_id=1,  # Always use Recording with ID 1
         )

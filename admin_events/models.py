@@ -6,6 +6,16 @@ from django.forms.models import modelformset_factory
 from workspaces.models import WorkspaceRelated
 
 
+class Recording(WorkspaceRelated):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
 class AdminEvent(WorkspaceRelated):
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
@@ -13,6 +23,13 @@ class AdminEvent(WorkspaceRelated):
     model_name = models.CharField(max_length=100)
     object_id = models.IntegerField(null=True, blank=True)
     data = models.JSONField(encoder=DjangoJSONEncoder)
+    recording = models.ForeignKey(
+        Recording,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="admin_events",
+    )
 
     def __str__(self):
         return f"{self.action} on {self.model_name} {self.object_id} by {self.user}"
@@ -192,3 +209,11 @@ class AdminEventAdmin(admin.ModelAdmin):
                     )
 
         return super().change_view(request, object_id, form_url, extra_context)
+
+
+class RecordingAdmin(admin.ModelAdmin):
+    list_display = ["name", "start_time", "end_time"]
+    search_fields = ["name", "description"]
+
+
+admin.site.register(Recording, RecordingAdmin)
