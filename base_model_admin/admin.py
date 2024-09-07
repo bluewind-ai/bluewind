@@ -14,6 +14,8 @@ from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from workspaces.models import Workspace
 
+RECORDING_ID = 3
+
 
 class CustomChangeList(ChangeList):
     def __init__(self, *args, **kwargs):
@@ -67,7 +69,7 @@ class InWorkspace(admin.ModelAdmin):
             object_id=obj.id,
             data=event_data,
             workspace_id=obj.workspace_id,
-            recording_id=1,  # Always use Recording with ID 1
+            recording_id=RECORDING_ID,  # Always use Recording with ID 1
         )
 
     def get_queryset(self, request):
@@ -123,7 +125,7 @@ class InWorkspace(admin.ModelAdmin):
                 object_id=obj.id,
                 data=event_data,
                 workspace_id=workspace_id,
-                recording_id=1,  # Always use Recording with ID 1
+                recording_id=RECORDING_ID,  # Always use Recording with ID 1
             )
 
     def get_actions(self, request):
@@ -250,5 +252,5 @@ class InWorkspace(admin.ModelAdmin):
             object_id=0,  # Use a placeholder value instead of None
             data=event_data,
             workspace_id=workspace_id,
-            recording_id=1,  # Always use Recording with ID 1
+            recording_id=RECORDING_ID,  # Always use Recording with ID 1
         )

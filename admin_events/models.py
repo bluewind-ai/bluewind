@@ -1,3 +1,5 @@
+import json
+
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin import helpers
@@ -13,34 +15,68 @@ class RecordingAdmin(admin.ModelAdmin):
     list_display = ["name", "start_time", "end_time"]
     search_fields = ["name", "description"]
 
+    import json
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         recording = self.get_object(request, object_id)
         admin_events = AdminEvent.objects.filter(recording=recording).order_by(
             "timestamp"
         )
 
-        admin_event_admin = AdminEventAdmin(AdminEvent, self.admin_site)
+        nodes = [
+            {
+                "id": "recording",
+                "type": "input",
+                "data": {"label": recording.name},
+                "position": {"x": 250, "y": 0},
+            }
+        ]
+        edges = []
 
-        event_views = []
-        for event in admin_events:
-            event_view = admin_event_admin.change_view(
-                request,
-                str(event.id),
-                form_url="",
-                extra_context={"show_save": False, "show_save_and_continue": False},
+        for i, event in enumerate(admin_events):
+            node_id = f"event_{i}"
+            nodes.append(
+                {
+                    "id": node_id,
+                    "data": {"label": f"{event.action} on {event.model_name}"},
+                    "position": {"x": 250, "y": (i + 1) * 100},
+                }
             )
-            if isinstance(event_view, TemplateResponse):
-                event_view.render()
-                event_views.append(event_view.content.decode("utf-8"))
+            if i == 0:
+                edges.append(
+                    {
+                        "id": f"e-recording-{node_id}",
+                        "source": "recording",
+                        "target": node_id,
+                    }
+                )
             else:
-                # Handle other types of responses if necessary
-                event_views.append(str(event_view))
+                edges.append(
+                    {
+                        "id": f"e-event_{i-1}-{node_id}",
+                        "source": f"event_{i-1}",
+                        "target": node_id,
+                    }
+                )
+
+        admin_events_data = [
+            {
+                "id": event.id,
+                "action": event.action,
+                "model_name": event.model_name,
+                "timestamp": event.timestamp.isoformat(),
+                "user": str(event.user),
+                "data": event.data,
+            }
+            for event in admin_events
+        ]
 
         context = {
             "original": recording,
-            "event_views": event_views,
             "opts": self.model._meta,
             "app_label": self.model._meta.app_label,
+            "graph_data": json.dumps({"nodes": nodes, "edges": edges}),
+            "admin_events": json.dumps(admin_events_data, cls=DjangoJSONEncoder),
         }
 
         return TemplateResponse(
