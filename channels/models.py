@@ -31,7 +31,7 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 class Channel(WorkspaceRelated):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    email = models.EmailField()
+    email = models.EmailField(null=True, blank=True)
     access_token = EncryptedCharField(max_length=1000, null=True, blank=True)
     refresh_token = EncryptedCharField(max_length=1000, null=True, blank=True)
     token_expiry = models.DateTimeField(null=True, blank=True)
@@ -420,11 +420,11 @@ class ChannelAdmin(InWorkspace):
 
     fetch_messages_from_gmail.short_description = "Fetch 100 emails from Gmail"
 
-    def add_view(self, request, form_url="", extra_context=None):
-        self.form = ConnectGmailForm
-        extra_context = extra_context or {}
-        extra_context["title"] = "Connect Gmail Account"
-        return super().add_view(request, form_url, extra_context)
+    # def add_view(self, request, form_url="", extra_context=None):
+    #     self.form = ConnectGmailForm
+    #     extra_context = extra_context or {}
+    #     extra_context["title"] = "Connect Gmail Account"
+    #     return super().add_view(request, form_url, extra_context)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
