@@ -39,13 +39,13 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  width: 300px;
+  width: 80%;
+  height: 80%;
   background: white;
   border: 1px solid #ddd;
   padding: 15px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   z-index: 1000;
-  max-height: 80vh;
   overflow-y: auto;
 }
 </style>
@@ -180,27 +180,64 @@
     console.log('Graph data:', graphData);
     console.log('Total nodes:', graphData.nodes.length);
     console.log('Total edges:', graphData.edges.length);
+    console.log('Admin events:', adminEvents);
     
     function Flow() {
       const [nodes, setNodes] = React.useState(() => forestLayout(graphData.nodes, graphData.edges));
       const [edges, setEdges] = React.useState(graphData.edges);
       const [selectedEvent, setSelectedEvent] = React.useState(null);
     
-      const handleNodeClick = (node) => {
-        const eventId = node.id.replace('event_', '');
+      const handleNodeClick = async (node) => {
+        console.log('Node clicked:', node);
+        let eventId;
+        if (node.id === 'recording') {
+          eventId = adminEvents[0].id.toString();
+        } else {
+          const index = parseInt(node.id.replace('event_', ''), 10);
+          eventId = adminEvents[index] ? adminEvents[index].id.toString() : null;
+        }
+        console.log('Looking for event with id:', eventId);
         const event = adminEvents.find(e => e.id.toString() === eventId);
+        console.log('Found event:', event);
         setSelectedEvent(event);
         const detailsElement = document.getElementById('event-details');
         if (event) {
+          try {
+            const response = await fetch(`/admin/admin_events/adminevent/${event.id}/change/`);
+            if (response.ok) {
+              const html = await response.text();
+              detailsElement.innerHTML = html;
+              detailsElement.style.display = 'block';
+              
+              // Remove the header, submit row, and other unnecessary elements
+              const elementsToRemove = detailsElement.querySelectorAll('.navbar, .submit-row, .breadcrumbs');
+              elementsToRemove.forEach(el => el.remove());
+              
+              // Disable all inputs
+              const inputs = detailsElement.querySelectorAll('input, select, textarea');
+              inputs.forEach(input => input.disabled = true);
+            } else {
+              throw new Error('Failed to fetch admin change form');
+            }
+          } catch (error) {
+            console.error('Error fetching admin change form:', error);
+            detailsElement.innerHTML = `
+              <h3>${event.action} on ${event.model_name}</h3>
+              <p>Timestamp: ${event.timestamp}</p>
+              <p>User: ${event.user}</p>
+              <pre>${JSON.stringify(event.data, null, 2)}</pre>
+            `;
+            detailsElement.style.display = 'block';
+          }
+        } else {
+          console.log('No event found, showing debug info');
           detailsElement.innerHTML = `
-            <h3>${event.action} on ${event.model_name}</h3>
-            <p>Timestamp: ${event.timestamp}</p>
-            <p>User: ${event.user}</p>
-            <pre>${JSON.stringify(event.data, null, 2)}</pre>
+            <h3>Debug Info</h3>
+            <p>Node ID: ${node.id}</p>
+            <p>Event ID: ${eventId}</p>
+            <p>Admin Events: ${JSON.stringify(adminEvents, null, 2)}</p>
           `;
           detailsElement.style.display = 'block';
-        } else {
-          detailsElement.style.display = 'none';
         }
       };
     
