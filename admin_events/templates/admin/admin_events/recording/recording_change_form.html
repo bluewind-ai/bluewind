@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<h1>{{ original.name }}</h1>
+<p>Start Time: {{ original.start_time }}</p>
+<p>End Time: {{ original.end_time }}</p>
+
+{% for event_view in event_views %}
+    <div class="admin-event">
+        {{ event_view|safe }}
+    </div>
+{% endfor %}
+{% endblock %}

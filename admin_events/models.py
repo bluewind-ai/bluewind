@@ -1,9 +1,44 @@
 from django.apps import apps
+from django.contrib import admin
+from django.contrib.admin import helpers
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.forms.models import modelformset_factory
+from django.shortcuts import render
 from workspaces.models import WorkspaceRelated
+
+
+class RecordingAdmin(admin.ModelAdmin):
+    list_display = ["name", "start_time", "end_time"]
+    search_fields = ["name", "description"]
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        recording = self.get_object(request, object_id)
+        admin_events = AdminEvent.objects.filter(recording=recording).order_by(
+            "timestamp"
+        )
+
+        admin_event_admin = AdminEventAdmin(AdminEvent, self.admin_site)
+
+        event_views = []
+        for event in admin_events:
+            event_view = admin_event_admin.change_view(
+                request,
+                str(event.id),
+                form_url="",
+                extra_context={"show_save": False, "show_save_and_continue": False},
+            )
+            event_views.append(event_view.content.decode("utf-8"))
+
+        context = {
+            "original": recording,
+            "event_views": event_views,
+            "opts": self.model._meta,
+            "app_label": self.model._meta.app_label,
+        }
+
+        return render(request, "admin/recording_change_form.html", context)
 
 
 class Recording(WorkspaceRelated):
@@ -47,12 +82,6 @@ class AdminEvent(WorkspaceRelated):
                 except LookupError:
                     continue
         return None
-
-
-# In the same file or in admin.py, update the AdminEventAdmin class:
-
-from django.contrib import admin
-from django.contrib.admin import helpers
 
 
 class AdminEventAdmin(admin.ModelAdmin):
@@ -209,11 +238,3 @@ class AdminEventAdmin(admin.ModelAdmin):
                     )
 
         return super().change_view(request, object_id, form_url, extra_context)
-
-
-class RecordingAdmin(admin.ModelAdmin):
-    list_display = ["name", "start_time", "end_time"]
-    search_fields = ["name", "description"]
-
-
-admin.site.register(Recording, RecordingAdmin)
