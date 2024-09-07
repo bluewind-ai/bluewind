@@ -190,10 +190,11 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-# Logging Configuration
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {"hide_staticfiles": {"()": "bluewind.log_filters.SkipStaticFilter"}},
     "handlers": {
         "console": {
             "class": "rich.logging.RichHandler",
@@ -209,6 +210,12 @@ LOGGING = {
         "django.db.backends": {
             "level": "DEBUG",
             "handlers": ["console"],
+            "propagate": False,
+        },
+        "django.server": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "filters": ["hide_staticfiles"],
             "propagate": False,
         },
     },
