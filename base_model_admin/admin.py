@@ -157,6 +157,8 @@ class InWorkspace(admin.ModelAdmin):
                 self.model, fields=self.list_editable, extra=0
             )
             cl.formset = FormSet(queryset=cl.result_list)
+        else:
+            cl.formset = None
         return cl
 
     def changelist_view(self, request, extra_context=None):
