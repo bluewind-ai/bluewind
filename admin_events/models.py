@@ -29,11 +29,10 @@ class AdminEvent(WorkspaceRelated):
         return None
 
 
-# In the same file or in admin.py, update the AdminEventAdmin class:
-
 from django.contrib import admin
-from django.shortcuts import redirect
-from django.urls import reverse
+from django.shortcuts import render
+
+from .models import AdminEvent
 
 
 class AdminEventAdmin(admin.ModelAdmin):
@@ -44,16 +43,55 @@ class AdminEventAdmin(admin.ModelAdmin):
             if model_class:
                 model_admin = self.admin_site._registry.get(model_class)
                 if model_admin:
-                    if admin_event.action == "create":
-                        return model_admin.add_view(request)
-                    elif admin_event.action == "update" and admin_event.object_id:
-                        change_url = reverse(
-                            f"admin:{model_class._meta.app_label}_{model_class._meta.model_name}_change",
-                            args=[admin_event.object_id],
-                        )
-                        return redirect(change_url)
+                    # Get the form class name from the admin event data
+                    form_class_name = admin_event.data.get(
+                        "form_class", "ConnectGmailForm"
+                    )
+
+                    # Get the form class from the model admin
+                    form_class = getattr(model_admin, form_class_name, model_admin.form)
+
+                    # Create an instance of the form with the stored data
+                    form = form_class(initial=admin_event.data.get("input", {}))
+
+                    # Make the form read-only
+                    for field in form.fields.values():
+                        field.widget.attrs["readonly"] = True
+                        field.widget.attrs["disabled"] = "disabled"
+
+                    # Prepare the context
+                    context = {
+                        "title": f"{admin_event.action.capitalize()} {model_class._meta.verbose_name}",
+                        "form": form,
+                        "original": admin_event,
+                        "adminform": admin.helpers.AdminForm(
+                            form,
+                            list(model_admin.get_fieldsets(request)),
+                            model_admin.get_prepopulated_fields(request),
+                        ),
+                        "is_popup": False,
+                        "save_as": False,
+                        "show_save": False,
+                        "show_save_and_continue": False,
+                        "show_save_and_add_another": False,
+                        "show_delete": False,
+                        "app_label": model_class._meta.app_label,
+                        "opts": model_class._meta,
+                    }
+
+                    # Add admin_site context
+                    context.update(self.admin_site.each_context(request))
+
+                    # Render the form
+                    return render(request, "admin/change_form.html", context)
 
         return super().change_view(request, object_id, form_url, extra_context)
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 admin.site.register(AdminEvent, AdminEventAdmin)
