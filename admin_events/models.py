@@ -5,7 +5,7 @@ from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.forms.models import modelformset_factory
-from django.shortcuts import render
+from django.template.response import TemplateResponse
 from workspaces.models import WorkspaceRelated
 
 
@@ -29,7 +29,12 @@ class RecordingAdmin(admin.ModelAdmin):
                 form_url="",
                 extra_context={"show_save": False, "show_save_and_continue": False},
             )
-            event_views.append(event_view.content.decode("utf-8"))
+            if isinstance(event_view, TemplateResponse):
+                event_view.render()
+                event_views.append(event_view.content.decode("utf-8"))
+            else:
+                # Handle other types of responses if necessary
+                event_views.append(str(event_view))
 
         context = {
             "original": recording,
@@ -38,7 +43,9 @@ class RecordingAdmin(admin.ModelAdmin):
             "app_label": self.model._meta.app_label,
         }
 
-        return render(request, "admin/recording_change_form.html", context)
+        return TemplateResponse(
+            request, "admin/admin_events/recording/recording_change_form.html", context
+        )
 
 
 class Recording(WorkspaceRelated):
