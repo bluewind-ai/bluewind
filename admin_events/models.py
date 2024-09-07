@@ -12,7 +12,7 @@ class AdminEvent(WorkspaceRelated):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     action = models.CharField(max_length=100)
     model_name = models.CharField(max_length=100)
-    object_id = models.PositiveIntegerField()
+    object_id = models.IntegerField(null=True, blank=True)
     data = models.JSONField()
 
     def __str__(self):

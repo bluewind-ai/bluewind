@@ -2,8 +2,10 @@ from asyncio.log import logger
 
 from django_json_widget.widgets import JSONEditorWidget
 
+from admin_events.models import AdminEvent
 from django.contrib import admin
 from django.db.models import JSONField
+from django.forms import model_to_dict
 from workspaces.models import Workspace
 
 
@@ -11,6 +13,45 @@ class InWorkspace(admin.ModelAdmin):
     formfield_overrides = {
         JSONField: {"widget": JSONEditorWidget},
     }
+
+    def save_model(self, request, obj, form, change):
+        # Capture the input data
+        input_data = form.cleaned_data.copy()
+
+        # Convert non-serializable objects in input_data
+        for key, value in input_data.items():
+            if not isinstance(value, (str, int, float, bool, type(None))):
+                input_data[key] = str(value)
+
+        # Determine if this is a create or update action
+        action = "update" if change else "create"
+
+        # Call the original save_model method
+        super().save_model(request, obj, form, change)
+
+        # Capture the output data
+        output_data = model_to_dict(obj)
+
+        # Convert non-serializable objects in output_data
+        for key, value in output_data.items():
+            if not isinstance(value, (str, int, float, bool, type(None))):
+                output_data[key] = str(value)
+
+        # Combine input and output data
+        event_data = {"input": input_data, "output": output_data}
+
+        # Get the actual model name
+        model_name = obj._meta.model_name
+
+        # Record the event
+        AdminEvent.objects.create(
+            user=request.user,
+            action=action,
+            model_name=model_name,
+            object_id=obj.id,
+            data=event_data,
+            workspace_id=obj.workspace_id,
+        )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -42,3 +83,76 @@ class InWorkspace(admin.ModelAdmin):
             )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def _log_admin_action(self, request, action, queryset, action_name):
+        workspace_id = request.environ.get("WORKSPACE_ID")
+        model_name = queryset.model._meta.model_name
+
+        for obj in queryset:
+            input_data = model_to_dict(obj)
+
+            # Convert non-serializable objects in input_data
+            for key, value in input_data.items():
+                if not isinstance(value, (str, int, float, bool, type(None))):
+                    input_data[key] = str(value)
+
+            event_data = {"input": input_data}
+
+            # Record the event
+            AdminEvent.objects.create(
+                user=request.user,
+                action=action_name,
+                model_name=model_name,
+                object_id=obj.id,
+                data=event_data,
+                workspace_id=workspace_id,
+            )
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+
+        # Wrap each action with our logging function
+        for name, (func, description, short_description) in actions.items():
+            actions[name] = (
+                self._wrap_action(func, name),
+                description,
+                short_description,
+            )
+
+        return actions
+
+    def _wrap_action(self, action, action_name):
+        def wrapped_action(self, request, queryset):
+            # Log the action before executing it
+            self._log_admin_action(request, action, queryset, action_name)
+
+            # Execute the original action
+            return action(self, request, queryset)
+
+        return wrapped_action
+
+    def changelist_view(self, request, extra_context=None):
+        # Log the GET request
+        self._log_get_request(request)
+
+        # Call the original changelist_view
+        return super().changelist_view(request, extra_context)
+
+    def _log_get_request(self, request):
+        workspace_id = request.environ.get("WORKSPACE_ID")
+        model_name = self.model._meta.model_name
+
+        # Capture GET parameters
+        input_data = dict(request.GET.items())
+
+        event_data = {"input": input_data}
+
+        # Record the event
+        AdminEvent.objects.create(
+            user=request.user,
+            action="list_view",
+            model_name=model_name,
+            object_id=0,  # Use a placeholder value instead of None
+            data=event_data,
+            workspace_id=workspace_id,
+        )
