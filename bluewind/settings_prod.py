@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     "base64_utils",
     # This should be last
     "channel_wizzard",
-    "admin_autoregister",
+    # "admin_autoregister",
     "forms",
     "draft_messages",
 ]
@@ -132,7 +132,7 @@ DATABASES = {
         "PORT": DB_PORT,
         "CONN_MAX_AGE": 600,
         "OPTIONS": {
-            "sslmode": "require",
+            "sslmode": "disable",
         },
     }
 }
