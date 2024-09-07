@@ -1,6 +1,8 @@
 from django.apps import apps
+from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.forms.models import modelformset_factory
 from workspaces.models import WorkspaceRelated
 
 
@@ -49,7 +51,82 @@ class AdminEventAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         admin_event = self.get_object(request, object_id)
-        if admin_event and admin_event.action in ["create", "update"]:
+        if admin_event:
+            model_class = admin_event.get_model_class()
+            if model_class:
+                model_admin = self.admin_site._registry.get(model_class)
+                if model_admin:
+                    if admin_event.action == "list_view":
+                        # Handle list view
+                        list_display = model_admin.get_list_display(request)
+                        list_display_links = model_admin.get_list_display_links(
+                            request, list_display
+                        )
+                        list_filter = model_admin.get_list_filter(request)
+                        search_fields = model_admin.get_search_fields(request)
+
+                        sortable_by = model_admin.get_sortable_by(request)
+                        search_help_text = model_admin.search_help_text
+
+                        # Create a ChangeList instance
+                        cl = ChangeList(
+                            request,
+                            model_class,
+                            list_display,
+                            list_display_links,
+                            list_filter,
+                            model_admin.date_hierarchy,
+                            search_fields,
+                            model_admin.list_select_related,
+                            model_admin.list_per_page,
+                            model_admin.list_max_show_all,
+                            model_admin.list_editable,
+                            model_admin,
+                            sortable_by=sortable_by,
+                            search_help_text=search_help_text,
+                        )
+
+                        # Override the queryset with the stored data
+                        cl.queryset = model_class.objects.filter(
+                            id__in=[obj["id"] for obj in admin_event.data["output"]]
+                        )
+
+                        # Add formset to ChangeList
+                        if model_admin.list_editable:
+                            FormSet = modelformset_factory(
+                                model_class,
+                                fields=model_admin.list_editable,
+                                extra=0,
+                                widgets=model_admin.get_widgets(request),
+                            )
+                            formset = FormSet(queryset=cl.result_list)
+                            cl.formset = formset
+                        else:
+                            cl.formset = None
+
+                        # Prepare the context
+                        context = {
+                            "cl": cl,
+                            "title": cl.title,
+                            "is_popup": cl.is_popup,
+                            "to_field": cl.to_field,
+                            "media": model_admin.media,
+                            "has_add_permission": model_admin.has_add_permission(
+                                request
+                            ),
+                            "opts": cl.opts,
+                            "app_label": cl.opts.app_label,
+                            "action_form": model_admin.action_form,
+                            "actions_on_top": model_admin.actions_on_top,
+                            "actions_on_bottom": model_admin.actions_on_bottom,
+                            "actions_selection_counter": model_admin.actions_selection_counter,
+                            "preserved_filters": model_admin.get_preserved_filters(
+                                request
+                            ),
+                        }
+
+                        return model_admin.changelist_view(request, context)
+        elif admin_event.action in ["create", "update"]:
             model_class = admin_event.get_model_class()
             if model_class:
                 model_admin = self.admin_site._registry.get(model_class)
