@@ -9,26 +9,26 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("chat_messages", "0001_initial"),
+        ("draft_messages", "0001_initial"),
         ("people", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="message",
+            model_name="draftmessage",
             name="recipient",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name="received_messages",
+                related_name="received_draft_messages",
                 to="people.person",
             ),
         ),
         migrations.AddField(
-            model_name="message",
+            model_name="draftmessage",
             name="sender",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name="messages",
+                related_name="draft_messages",
                 to="people.person",
             ),
         ),

@@ -9,7 +9,7 @@
 
 # PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$DB_NAME';"
 
-# PGPASSWORD=$DB_PASSWORD dropdb -h $DB_HOST -U $DB_USERNAME $DB_NAME
+PGPASSWORD=$DB_PASSWORD dropdb -h $DB_HOST -U $DB_USERNAME $DB_NAME
 PGPASSWORD=$DB_PASSWORD createdb -h $DB_HOST -U $DB_USERNAME $DB_NAME
 # PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USERNAME -d $DB_NAME <backup.sql
 
