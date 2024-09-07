@@ -4,6 +4,8 @@ from django_json_widget.widgets import JSONEditorWidget
 
 from admin_events.models import AdminEvent
 from django.contrib import admin
+from django.core import serializers
+from django.db import models
 from django.db.models import JSONField
 from django.forms import model_to_dict
 from workspaces.models import Workspace
@@ -20,8 +22,12 @@ class InWorkspace(admin.ModelAdmin):
 
         # Convert non-serializable objects in input_data
         for key, value in input_data.items():
-            if not isinstance(value, (str, int, float, bool, type(None))):
-                input_data[key] = str(value)
+            if isinstance(value, models.Model):
+                # For foreign key relationships, store the primary key
+                input_data[key] = value.pk
+            elif not isinstance(value, (str, int, float, bool, type(None))):
+                # For other complex types, use JSON serialization
+                input_data[key] = serializers.serialize("json", [value])
 
         # Determine if this is a create or update action
         action = "update" if change else "create"

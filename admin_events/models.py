@@ -32,11 +32,20 @@ class AdminEvent(WorkspaceRelated):
 # In the same file or in admin.py, update the AdminEventAdmin class:
 
 from django.contrib import admin
-from django.shortcuts import redirect
-from django.urls import reverse
+from django.contrib.admin import helpers
 
 
 class AdminEventAdmin(admin.ModelAdmin):
+    list_display = [
+        "__str__",
+        "data",
+        "timestamp",
+        "user",
+        "action",
+        "model_name",
+        "object_id",
+    ]
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         admin_event = self.get_object(request, object_id)
         if admin_event and admin_event.action in ["create", "update"]:
@@ -44,16 +53,64 @@ class AdminEventAdmin(admin.ModelAdmin):
             if model_class:
                 model_admin = self.admin_site._registry.get(model_class)
                 if model_admin:
+                    initial_data = admin_event.data.get("input", {})
+
                     if admin_event.action == "create":
-                        return model_admin.add_view(request)
+                        ModelForm = model_admin.get_form(request)
+                        form = ModelForm(initial=initial_data)
+                        obj = None
+                        add = True
                     elif admin_event.action == "update" and admin_event.object_id:
-                        change_url = reverse(
-                            f"admin:{model_class._meta.app_label}_{model_class._meta.model_name}_change",
-                            args=[admin_event.object_id],
+                        obj = model_class.objects.get(pk=admin_event.object_id)
+                        ModelForm = model_admin.get_form(request, obj)
+                        form = ModelForm(initial=initial_data, instance=obj)
+                        form.data = form.initial.copy()
+                        add = False
+
+                    # Prepare inline formsets
+                    inline_instances = model_admin.get_inline_instances(request, obj)
+                    inline_admin_formsets = []
+                    for inline in inline_instances:
+                        InlineFormSet = inline.get_formset(request, obj)
+                        inline_admin_formset = helpers.InlineAdminFormSet(
+                            inline, form, InlineFormSet, request=request
                         )
-                        return redirect(change_url)
+                        inline_admin_formsets.append(inline_admin_formset)
+
+                    adminForm = helpers.AdminForm(
+                        form,
+                        model_admin.get_fieldsets(request, obj),
+                        model_admin.get_prepopulated_fields(request, obj),
+                        model_admin.get_readonly_fields(request, obj),
+                        model_admin=model_admin,
+                    )
+
+                    context = {
+                        "adminform": adminForm,
+                        "form": form,
+                        "object_id": object_id,
+                        "original": obj,
+                        "is_popup": False,
+                        "save_as": model_admin.save_as,
+                        "has_delete_permission": model_admin.has_delete_permission(
+                            request, obj
+                        ),
+                        "has_add_permission": model_admin.has_add_permission(request),
+                        "has_change_permission": model_admin.has_change_permission(
+                            request, obj
+                        ),
+                        "opts": model_class._meta,
+                        "app_label": model_class._meta.app_label,
+                        "inline_admin_formsets": inline_admin_formsets,
+                        "errors": helpers.AdminErrorList(form, inline_admin_formsets),
+                        "preserved_filters": model_admin.get_preserved_filters(request),
+                        "add": add,
+                        "change": not add,
+                        "has_editable_inline_admin_formsets": False,
+                    }
+
+                    return model_admin.render_change_form(
+                        request, context, add=add, change=not add, obj=obj
+                    )
 
         return super().change_view(request, object_id, form_url, extra_context)
-
-
-admin.site.register(AdminEvent, AdminEventAdmin)
