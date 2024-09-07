@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from workspaces.models import WorkspaceRelated
 
@@ -9,7 +10,7 @@ class AdminEvent(WorkspaceRelated):
     action = models.CharField(max_length=100)
     model_name = models.CharField(max_length=100)
     object_id = models.IntegerField(null=True, blank=True)
-    data = models.JSONField()
+    data = models.JSONField(encoder=DjangoJSONEncoder)
 
     def __str__(self):
         return f"{self.action} on {self.model_name} {self.object_id} by {self.user}"

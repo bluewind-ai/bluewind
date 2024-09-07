@@ -1,14 +1,24 @@
+import json
 from asyncio.log import logger
 
 from django_json_widget.widgets import JSONEditorWidget
 
 from admin_events.models import AdminEvent
 from django.contrib import admin
+from django.contrib.admin.views.main import ChangeList
 from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models import JSONField
 from django.forms import model_to_dict
+from django.forms.models import modelformset_factory
 from workspaces.models import Workspace
+
+
+class CustomChangeList(ChangeList):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.formset = None
 
 
 class InWorkspace(admin.ModelAdmin):
@@ -137,12 +147,79 @@ class InWorkspace(admin.ModelAdmin):
 
         return wrapped_action
 
+    def get_changelist_class(self, request):
+        return CustomChangeList
+
+    def get_changelist_instance(self, request):
+        cl = super().get_changelist_instance(request)
+        if self.list_editable:
+            FormSet = modelformset_factory(
+                self.model, fields=self.list_editable, extra=0
+            )
+            cl.formset = FormSet(queryset=cl.result_list)
+        return cl
+
     def changelist_view(self, request, extra_context=None):
         # Log the GET request
         self._log_get_request(request)
 
-        # Call the original changelist_view
-        return super().changelist_view(request, extra_context)
+        # Get the queryset
+        qs = self.get_queryset(request)
+
+        # Get the most recent AdminEvent for this list view
+        admin_event = (
+            AdminEvent.objects.filter(
+                model_name=self.model._meta.model_name,
+                action="list_view",
+                workspace_id=request.environ.get("WORKSPACE_ID"),
+            )
+            .order_by("-timestamp")
+            .first()
+        )
+
+        if admin_event:
+            # Use the output data from the admin event
+            object_list = admin_event.data.get("output", [])
+            # Convert the object_list back to a queryset
+            try:
+                id_list = [
+                    obj.get("id") for obj in object_list if obj.get("id") is not None
+                ]
+                if id_list:
+                    qs = self.model.objects.filter(id__in=id_list)
+                else:
+                    # If no valid IDs, return an empty queryset
+                    qs = self.model.objects.none()
+            except Exception as e:
+                # Log the error and continue with the original queryset
+                print(f"Error processing admin event data: {e}")
+
+        # Create a ChangeList instance
+        cl = self.get_changelist_instance(request)
+
+        # Apply filters and search
+        qs = cl.get_queryset(request)
+
+        # Prepare the context
+        context = {
+            "cl": cl,
+            "title": cl.title,
+            "is_popup": cl.is_popup,
+            "to_field": cl.to_field,
+            "opts": cl.model._meta,
+            "app_label": cl.model._meta.app_label,
+            "actions_on_top": self.actions_on_top,
+            "actions_on_bottom": self.actions_on_bottom,
+            "actions_selection_counter": self.actions_selection_counter,
+            "preserved_filters": self.get_preserved_filters(request),
+        }
+
+        context.update(extra_context or {})
+
+        # Override the template
+        self.change_list_template = "admin/change_list.html"
+
+        return super().changelist_view(request, context)
 
     def _log_get_request(self, request):
         workspace_id = request.environ.get("WORKSPACE_ID")
@@ -151,7 +228,15 @@ class InWorkspace(admin.ModelAdmin):
         # Capture GET parameters
         input_data = dict(request.GET.items())
 
-        event_data = {"input": input_data}
+        # Get the queryset
+        queryset = self.get_queryset(request)
+
+        # Capture the output data (list of objects)
+        output_data = json.loads(
+            json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        )
+
+        event_data = {"input": input_data, "output": output_data}
 
         # Record the event
         AdminEvent.objects.create(
