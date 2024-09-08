@@ -615,36 +615,17 @@ class FlowStepAdmin(admin.ModelAdmin):
             model, model_admin = obj.form.get_model_and_admin()
             if model and model_admin:
                 try:
-                    FormModelForm = model_admin.get_form(self.request)
-                    form = FormModelForm()
+                    # Create a dummy object of the model
+                    dummy_obj = model()
 
-                    rendered_fields = []
-                    for field_name, field in form.fields.items():
-                        widget = field.widget
-                        attrs = widget.build_attrs(
-                            widget.attrs, {"class": "vTextField"}
-                        )
-                        rendered_widget = widget.render(field_name, None, attrs)
-                        rendered_fields.append(
-                            format_html(
-                                '<div class="form-row">'
-                                '<div class="field-box">'
-                                '<label for="{0}">{1}:</label> {2}'
-                                "</div>"
-                                "</div>",
-                                field_name,
-                                field.label,
-                                rendered_widget,
-                            )
-                        )
+                    # Get the admin form for this object
+                    ModelForm = model_admin.get_form(self.request, dummy_obj)
+                    form = ModelForm(instance=dummy_obj)
 
-                    return mark_safe(f"""
-                        <div style='border: 1px solid #ccc; padding: 10px;'>
-                            <fieldset class="module aligned">
-                                {''.join(rendered_fields)}
-                            </fieldset>
-                        </div>
-                    """)
+                    # Use the helper method to render the form
+                    return mark_safe(
+                        self.render_associated_form(model_admin, form, dummy_obj)
+                    )
                 except Exception as e:
                     return f"Error rendering form: {str(e)}"
             else:
@@ -653,6 +634,78 @@ class FlowStepAdmin(admin.ModelAdmin):
 
     html_form.short_description = "Form Preview"
 
+    def render_associated_form(self, model_admin, form, obj):
+        from django.contrib.admin.helpers import AdminForm
+
+        # Get fieldsets, readonly fields, and prepopulated fields from the model admin
+        fieldsets = model_admin.get_fieldsets(self.request)
+        readonly_fields = model_admin.get_readonly_fields(self.request)
+        prepopulated_fields = model_admin.get_prepopulated_fields(self.request)
+
+        admin_form = AdminForm(
+            form,
+            fieldsets,
+            prepopulated_fields,
+            readonly_fields,
+            model_admin=model_admin,
+        )
+
+        # Get inline formsets
+        inline_instances = model_admin.get_inline_instances(self.request, obj)
+        inline_admin_formsets = []
+        for inline in inline_instances:
+            InlineFormSet = inline.get_formset(self.request, obj)
+            formset = InlineFormSet(
+                instance=obj,
+                prefix=inline.get_formset_kwargs(self.request, obj).get("prefix", None),
+            )
+            inline_admin_formset = model_admin.get_admin_formset_helper(
+                self.request, inline, formset
+            )
+            inline_admin_formsets.append(inline_admin_formset)
+
+        # Check if there are any editable inline formsets
+        has_editable_inline_admin_formsets = any(
+            not inline_admin_formset.opts.readonly
+            for inline_admin_formset in inline_admin_formsets
+        )
+
+        # Render the form using the change_form template
+        context = {
+            "adminform": admin_form,
+            "form": form,
+            "inline_admin_formsets": inline_admin_formsets,
+            "is_popup": False,
+            "add": True,
+            "change": False,
+            "has_view_permission": model_admin.has_view_permission(self.request, obj),
+            "has_add_permission": model_admin.has_add_permission(self.request),
+            "has_change_permission": model_admin.has_change_permission(
+                self.request, obj
+            ),
+            "has_delete_permission": model_admin.has_delete_permission(
+                self.request, obj
+            ),
+            "has_editable_inline_admin_formsets": has_editable_inline_admin_formsets,
+            "has_absolute_url": False,
+            "opts": model_admin.model._meta,
+            "original": obj,
+            "save_as": False,
+            "show_save": False,
+        }
+
+        # Render to string instead of HttpResponse
+        from django.template.loader import render_to_string
+
+        return render_to_string(
+            model_admin.change_form_template or "admin/change_form.html",
+            context,
+            request=self.request,
+        )
+
     def get_form(self, request, obj=None, **kwargs):
         self.request = request
         return super().get_form(request, obj, **kwargs)
+
+
+admin.site.register(FlowStep, FlowStepAdmin)
