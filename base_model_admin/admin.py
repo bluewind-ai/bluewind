@@ -6,7 +6,6 @@ from django_json_widget.widgets import JSONEditorWidget
 from admin_events.models import AdminEvent
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
-from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models import JSONField
@@ -30,16 +29,17 @@ class InWorkspace(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         # Capture the input data
-        input_data = form.cleaned_data.copy()
-
-        # Convert non-serializable objects in input_data
-        for key, value in input_data.items():
-            if isinstance(value, models.Model):
+        input_data = {}
+        for field_name, field_value in form.cleaned_data.items():
+            if isinstance(field_value, models.Model):
                 # For foreign key relationships, store the primary key
-                input_data[key] = value.pk
-            elif not isinstance(value, (str, int, float, bool, type(None))):
-                # For other complex types, use JSON serialization
-                input_data[key] = serializers.serialize("json", [value])
+                input_data[field_name] = field_value.pk
+            elif isinstance(field_value, (str, int, float, bool, type(None))):
+                # For simple types, store as is
+                input_data[field_name] = field_value
+            else:
+                # For other complex types, use string representation
+                input_data[field_name] = str(field_value)
 
         # Determine if this is a create or update action
         action = "update" if change else "create"
@@ -48,12 +48,15 @@ class InWorkspace(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
         # Capture the output data
-        output_data = model_to_dict(obj)
-
-        # Convert non-serializable objects in output_data
-        for key, value in output_data.items():
-            if not isinstance(value, (str, int, float, bool, type(None))):
-                output_data[key] = str(value)
+        output_data = {}
+        for field in obj._meta.fields:
+            value = getattr(obj, field.name)
+            if isinstance(value, models.Model):
+                output_data[field.name] = value.pk
+            elif isinstance(value, (str, int, float, bool, type(None))):
+                output_data[field.name] = value
+            else:
+                output_data[field.name] = str(value)
 
         # Combine input and output data
         event_data = {"input": input_data, "output": output_data}

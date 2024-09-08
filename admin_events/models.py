@@ -558,10 +558,39 @@ class StepRun(WorkspaceRelated):
         FlowStep, on_delete=models.CASCADE, related_name="step_runs"
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    input_data = models.JSONField(default=dict, blank=True)
 
     def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        # Ensure input_data is JSON serializable
+        self.input_data = json.loads(json.dumps(self.input_data, cls=DjangoJSONEncoder))
         super().save(*args, **kwargs)
+
+        # if is_new and self.flow_step.action_type == FlowStep.ActionType.CREATE:
+        #     # Get the model class dynamically
+        #     ModelClass = apps.get_model(
+        #         self.flow_step.model.app_label, self.flow_step.model.name
+        #     )
+
+        #     # Create the object
+        #     obj = ModelClass.objects.create(
+        #         name=f"{self.flow_step.model.name} from Flow {self.flow_run.id}",
+        #         description=f"This {self.flow_step.model.name} was created by a flow run",
+        #         workspace_id=self.flow_run.workspace_id,
+        #     )
+
+        #     # Update the result
+        #     self.result = {
+        #         f"{self.flow_step.model.name.lower()}_id": obj.id,
+        #         f"{self.flow_step.model.name.lower()}_name": obj.name,
+        #         "action": "create",
+        #     }
+        #     super().save(update_fields=["result"])
+
         self.flow_run.update_status()
+
+    def __str__(self):
+        return f"Step Run {self.id} of {self.flow_run}"
 
     def delete(self, *args, **kwargs):
         flow_run = self.flow_run
