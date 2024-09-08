@@ -14,6 +14,7 @@ from django.http import HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
+from forms.models import Form
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -537,6 +538,7 @@ class FlowStep(WorkspaceRelated):
         max_length=10, choices=ActionType.choices, default=ActionType.ACTION
     )
     model = models.ForeignKey("Model", on_delete=models.PROTECT)
+    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="flow_steps")
 
     def __str__(self):
         return (
