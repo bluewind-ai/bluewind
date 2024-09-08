@@ -435,6 +435,13 @@ class ReadOnlyJSONWidget(Widget):
 from django.utils.html import format_html
 
 
+class CustomJSONEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        if hasattr(obj, "value"):
+            return obj.value
+        return super().default(obj)
+
+
 class FlowRunAdmin(admin.ModelAdmin):
     list_display = ["id", "flow", "workspace", "created_at", "updated_at", "status"]
     fields = [
@@ -446,6 +453,52 @@ class FlowRunAdmin(admin.ModelAdmin):
         "get_general_info",
     ]
     readonly_fields = ["get_general_info", "created_at", "updated_at"]
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        logger.debug(f"Entering changeform_view for object_id: {object_id}")
+
+        extra_context = extra_context or {}
+
+        # Get the form
+        form_class = self.get_form(request, object_id)
+        initial_data = self.get_changeform_initial_data(request)
+        form = form_class(initial=initial_data)
+
+        logger.debug(f"Form class: {form_class.__name__}")
+        logger.debug(f"Initial form data: {initial_data}")
+
+        # Attempt to serialize the entire form
+        form_data = {
+            "fields": {},
+            "initial": form.initial,
+            "data": form.data,
+            "errors": form.errors,
+        }
+
+        for name, field in form.fields.items():
+            form_data["fields"][name] = {
+                "label": field.label,
+                "help_text": field.help_text,
+                "required": field.required,
+                "widget": str(field.widget.__class__.__name__),
+            }
+            if hasattr(field, "choices"):
+                form_data["fields"][name]["choices"] = [
+                    {"value": str(choice[0]), "display": str(choice[1])}
+                    for choice in field.choices
+                ]
+
+        try:
+            json_data = json.dumps(form_data, cls=CustomJSONEncoder, indent=2)
+            logger.debug(f"Serialized form data:\n{json_data}")
+        except Exception as e:
+            logger.error(f"Error serializing form data to JSON: {str(e)}")
+            json_data = json.dumps({})
+
+        extra_context["initial_json"] = json_data
+
+        logger.debug("Calling super().changeform_view")
+        return super().changeform_view(request, object_id, form_url, extra_context)
 
     def get_general_info(self, obj):
         info = obj.general_info

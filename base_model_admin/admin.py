@@ -1,4 +1,5 @@
 import json
+import logging
 from asyncio.log import logger
 
 from django_json_widget.widgets import JSONEditorWidget
@@ -23,6 +24,9 @@ class CustomChangeList(ChangeList):
         self.formset = None
 
 
+logger = logging.getLogger(__name__)
+
+
 class InWorkspace(admin.ModelAdmin):
     change_form_template = "admin/change_form.html"
 
@@ -31,6 +35,68 @@ class InWorkspace(admin.ModelAdmin):
     }
 
     actions = ["custom_action"]
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        obj = self.get_object(request, object_id)
+        if obj:
+            # Assuming 'general_info' is the field you want to edit as JSON
+            extra_context["initial_json"] = json.dumps(obj.general_info)
+        else:
+            # Provide default JSON for new objects
+            extra_context["initial_json"] = json.dumps(
+                {"key": "value", "array": [1, 2, 3], "nested": {"a": 1, "b": 2}}
+            )
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context
+        )
+
+    def save_model(self, request, obj, form, change):
+        json_data = request.POST.get("json_data")
+        if json_data:
+            # Assuming 'general_info' is the field you want to populate with JSON
+            obj.general_info = json.loads(json_data)
+
+        # Capture the input data
+        input_data = {}
+        for field_name, field_value in form.cleaned_data.items():
+            if isinstance(field_value, models.Model):
+                input_data[field_name] = field_value.pk
+            elif isinstance(field_value, (str, int, float, bool, type(None))):
+                input_data[field_name] = field_value
+            else:
+                input_data[field_name] = str(field_value)
+
+        # Determine if this is a create or update action
+        action = "update" if change else "create"
+
+        # Call the original save_model method
+        super().save_model(request, obj, form, change)
+
+        # Capture the output data
+        output_data = {}
+        for field in obj._meta.fields:
+            value = getattr(obj, field.name)
+            if isinstance(value, models.Model):
+                output_data[field.name] = value.pk
+            elif isinstance(value, (str, int, float, bool, type(None))):
+                output_data[field.name] = value
+            else:
+                output_data[field.name] = str(value)
+
+        # Combine input and output data
+        event_data = {"input": input_data, "output": output_data}
+
+        # Record the event (assuming AdminEvent is imported and RECORDING_ID is defined)
+        AdminEvent.objects.create(
+            user=request.user,
+            action=action,
+            model_name=obj._meta.model_name,
+            object_id=obj.id,
+            data=event_data,
+            workspace_id=obj.workspace_id,
+            recording_id=RECORDING_ID,
+        )
 
     def custom_action(self, request, queryset):
         # Your custom action logic here

@@ -1,14 +1,51 @@
 {% extends "admin/change_form.html" %}
 {% load i18n %}
 
-{% block content %}
-<h1 style="color: red; font-size: 24px; text-align: center;">CUSTOM TEMPLATE LOADED</h1>
+{% block extrahead %}
 {{ block.super }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.css" rel="stylesheet" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.js"></script>
+<style>
+    #jsoneditor {
+        width: 100%;
+        height: 400px;
+        margin: 20px 0;
+    }
+</style>
 {% endblock %}
 
-{% block submit_buttons_bottom %}
-    {{ block.super }}
-    <div class="submit-row">
-        <input type="submit" value="{% trans 'Refresh JSON' %}" name="_custom_action">
-    </div>
+{% block content %}
+{{ block.super }}
+<h2>General Info</h2>
+<div id="jsoneditor"></div>
+{% endblock %}
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+<script>
+    (function($) {
+        $(document).ready(function() {
+            const container = document.getElementById("jsoneditor");
+            const options = {
+                mode: 'code',
+                modes: ['code', 'form', 'text', 'tree', 'view'],
+            };
+            const editor = new JSONEditor(container, options);
+
+            // Set initial JSON
+            const initialJson = {{ initial_json|default:"{}" | safe }};
+            editor.set(initialJson);
+
+            // Add event listener for the form submission
+            $('form').on('submit', function(e) {
+                const jsonData = editor.get();
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'general_info',
+                    value: JSON.stringify(jsonData)
+                }).appendTo($(this));
+            });
+        });
+    })(django.jQuery);
+</script>
 {% endblock %}
