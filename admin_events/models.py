@@ -428,3 +428,12 @@ class FlowStepInline(admin.TabularInline):
     model = FlowStep
     fk_name = "parent"
     extra = 1
+
+
+class StepRun(WorkspaceRelated):
+    flow_run = models.ForeignKey(
+        FlowRun, on_delete=models.CASCADE, related_name="step_runs"
+    )
+
+    def __str__(self):
+        return f"Step Run {self.id} of {self.flow_run}"
