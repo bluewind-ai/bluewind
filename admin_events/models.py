@@ -2,14 +2,13 @@ import json
 import logging
 
 from django.apps import apps
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.contrib.admin import helpers
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.forms.models import modelformset_factory
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
@@ -358,32 +357,38 @@ class FlowRun(WorkspaceRelated):
 
     @property
     def general_info(self):
-        step_runs = self.step_runs.all().order_by("id")
+        try:
+            step_runs = (
+                self.step_runs.all()
+                .order_by("id")
+                .select_related("flow_step", "flow_step__model")
+            )
 
-        step_runs_info = [
-            {
-                "id": step_run.id,
-                "action_type": step_run.flow_step.get_action_type_display(),
-                "model": step_run.flow_step.model.name,
-                "is_completed": True,  # Assuming all StepRuns are completed
-                "created_at": step_run.created_at.isoformat(),
-                # Add any other relevant StepRun fields here
+            step_runs_info = [
+                {
+                    "id": step_run.id,
+                    "action_type": step_run.flow_step.get_action_type_display(),
+                    "model": step_run.flow_step.model.name,
+                    "is_completed": True,
+                    "created_at": step_run.created_at.isoformat(),
+                }
+                for step_run in step_runs
+            ]
+
+            return {
+                "id": self.id,
+                "flow_name": self.flow.name,
+                "flow_id": self.flow.id,
+                "workspace_id": self.workspace_id,
+                "created_at": self.created_at.isoformat(),
+                "updated_at": self.updated_at.isoformat(),
+                "total_steps": self.flow.steps.count(),
+                "completed_steps": step_runs.count(),
+                "status": self.get_status_display(),
+                "step_runs": step_runs_info,
             }
-            for step_run in step_runs
-        ]
-
-        return {
-            "id": self.id,
-            "flow_name": self.flow.name,
-            "flow_id": self.flow.id,
-            "workspace_id": self.workspace_id,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat(),
-            "total_steps": self.flow.steps.count(),
-            "completed_steps": step_runs.count(),
-            "status": self.get_status_display(),
-            "step_runs": step_runs_info,
-        }
+        except Exception as e:
+            return {"error": str(e)}
 
     def get_status(self):
         total_steps = self.flow.steps.count()
@@ -410,7 +415,6 @@ class FlowRun(WorkspaceRelated):
             self.save(update_fields=["status"])
 
 
-from django.contrib import admin
 from django.db import models
 from django.forms.widgets import Widget
 from django.utils.safestring import mark_safe
@@ -425,7 +429,6 @@ class ReadOnlyJSONWidget(Widget):
         return mark_safe(f"<pre>{json.dumps(value, indent=2)}</pre>")
 
 
-from django.contrib import admin
 from django.utils.html import format_html
 
 
@@ -435,9 +438,11 @@ class FlowRunAdmin(admin.ModelAdmin):
         "flow",
         "workspace",
         "status",
+        "created_at",
+        "updated_at",
         "get_general_info",
     ]
-    readonly_fields = ["get_general_info"]
+    readonly_fields = ["get_general_info", "created_at", "updated_at"]
 
     def get_general_info(self, obj):
         info = obj.general_info
@@ -447,6 +452,7 @@ class FlowRunAdmin(admin.ModelAdmin):
             mark_safe(formatted_json),
         )
 
+    get_general_info.short_description = "General Info"
     get_general_info.short_description = "General Info"
 
     def has_add_permission(self, request):
@@ -546,6 +552,10 @@ class StepRun(WorkspaceRelated):
     flow_run = models.ForeignKey(
         FlowRun, on_delete=models.CASCADE, related_name="step_runs"
     )
+    flow_step = models.ForeignKey(
+        FlowStep, on_delete=models.CASCADE, related_name="step_runs"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -555,26 +565,6 @@ class StepRun(WorkspaceRelated):
         flow_run = self.flow_run
         super().delete(*args, **kwargs)
         flow_run.update_status()
-
-    def save_step_run(self, request, queryset):
-        for step in queryset:
-            # Assuming each step is associated with a flow
-            flow = step.flow
-
-            # Fetch all steps for this flow
-            all_steps = FlowStep.objects.filter(flow=flow).order_by("id")
-
-            # Log all steps
-            logger.info(f"Saving step run for Flow: {flow.name}")
-            for s in all_steps:
-                logger.info(f"  Step: {s.action_type} on {s.model.name}")
-
-            # Here you would typically create a StepRun object
-            # For demonstration, we're just logging and adding a message
-            logger.info(f"Created StepRun for Step: {step}")
-            messages.success(request, f"Saved step run for Flow Step: {step}")
-
-        return redirect(request.get_full_path())
 
     def __str__(self):
         return f"Step Run {self.id} of {self.flow_run}"
