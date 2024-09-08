@@ -318,3 +318,113 @@ class AdminEventAdmin(admin.ModelAdmin):
             return None
 
     actions = ["detach_from_recording"]
+
+
+class Flow(WorkspaceRelated):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class FlowAdmin(admin.ModelAdmin):
+    list_display = ["name", "created_at", "updated_at"]
+    search_fields = ["name", "description"]
+
+
+class FlowRun(WorkspaceRelated):
+    flow = models.ForeignKey(Flow, on_delete=models.CASCADE, related_name="runs")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Run of {self.flow.name} at {self.created_at}"
+
+
+from django.db import transaction
+
+
+class Model(WorkspaceRelated):
+    name = models.CharField(max_length=100)
+    app_label = models.CharField(max_length=100)
+    workspace = models.ForeignKey(
+        "workspaces.Workspace", on_delete=models.CASCADE, null=True
+    )
+
+    class Meta:
+        unique_together = ("app_label", "name")
+        ordering = ["app_label", "name"]
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def full_name(self):
+        return f"{self.app_label}.{self.name}"
+
+    @classmethod
+    def insert_all_models(cls):
+        from workspaces.models import Workspace  # Import here to avoid circular imports
+
+        try:
+            with transaction.atomic():
+                # Get or create a default workspace
+                default_workspace, _ = Workspace.objects.get_or_create(
+                    name="Default Workspace"
+                )
+
+                models_to_create = []
+                for app_config in apps.get_app_configs():
+                    for model in app_config.get_models():
+                        model_instance = cls(
+                            name=model._meta.model_name,
+                            app_label=model._meta.app_label,
+                            workspace=default_workspace,
+                        )
+                        models_to_create.append(model_instance)
+                        print(f"Preparing to insert: {model_instance.full_name}")
+
+                created = cls.objects.bulk_create(
+                    models_to_create, ignore_conflicts=True
+                )
+                print(f"Successfully inserted {len(created)} models")
+                return len(created)
+        except Exception as e:
+            print(f"Error inserting models: {e}")
+            import traceback
+
+            traceback.print_exc()
+            return 0
+
+
+from django.db import models
+from workspaces.models import WorkspaceRelated
+
+
+class FlowStep(WorkspaceRelated):
+    class ActionType(models.TextChoices):
+        CREATE = "CREATE", "Create"
+        SAVE = "SAVE", "Save"
+        DELETE = "DELETE", "Delete"
+        ACTION = "ACTION", "Action"
+        SELECT = "SELECT", "Select"
+
+    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="steps")
+    action_type = models.CharField(
+        max_length=10, choices=ActionType.choices, default=ActionType.ACTION
+    )
+    model = models.ForeignKey("Model", on_delete=models.PROTECT)
+
+    def __str__(self):
+        return (
+            f"{self.flow.name} - {self.get_action_type_display()} on {self.model.name}"
+        )
+
+
+class FlowStepInline(admin.TabularInline):
+    model = FlowStep
+    fk_name = "parent"
+    extra = 1

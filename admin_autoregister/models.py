@@ -2,6 +2,7 @@ import os
 import sys
 
 from admin_autoregister.autoregister_forms import register_forms
+from admin_events.models import Model
 from base_model_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
 from django.apps import apps
@@ -121,3 +122,5 @@ def autoregister():
     clean_dockerignore()
     register_forms()
     create_channel_wizard()
+    inserted_count = Model.insert_all_models()
+    print(f"Inserted {inserted_count} models into the Model table.")
