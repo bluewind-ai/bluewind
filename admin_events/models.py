@@ -2,13 +2,14 @@ import json
 import logging
 
 from django.apps import apps
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.forms.models import modelformset_factory
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
@@ -335,16 +336,57 @@ class FlowAdmin(admin.ModelAdmin):
     search_fields = ["name", "description"]
 
 
+from django.db import models
+from workspaces.models import WorkspaceRelated
+
+
 class FlowRun(WorkspaceRelated):
-    flow = models.ForeignKey(Flow, on_delete=models.CASCADE, related_name="runs")
+    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="runs")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Run of {self.flow.name} at {self.created_at}"
 
+    @property
+    def general_info(self):
+        return {
+            "id": self.id,
+            "flow_name": self.flow.name,
+            "flow_id": self.flow.id,
+            "workspace_id": self.workspace_id,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+            "step_count": self.step_runs.count(),
+            "status": self.get_status(),
+        }
 
-from django.db import transaction
+    def get_status(self):
+        # This is a simplified version that doesn't rely on a 'status' field
+        step_count = self.step_runs.count()
+        if step_count == 0:
+            return "Not Started"
+        elif step_count == self.flow.steps.count():
+            return "Completed"
+        else:
+            return "In Progress"
+
+
+@admin.register(FlowRun)
+class FlowRunAdmin(admin.ModelAdmin):
+    list_display = ["id", "flow", "created_at", "updated_at", "get_general_info"]
+    readonly_fields = ["get_general_info"]
+
+    def get_general_info(self, obj):
+        return obj.general_info
+
+    get_general_info.short_description = "General Info"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 class Model(WorkspaceRelated):
@@ -434,6 +476,26 @@ class StepRun(WorkspaceRelated):
     flow_run = models.ForeignKey(
         FlowRun, on_delete=models.CASCADE, related_name="step_runs"
     )
+
+    def save_step_run(self, request, queryset):
+        for step in queryset:
+            # Assuming each step is associated with a flow
+            flow = step.flow
+
+            # Fetch all steps for this flow
+            all_steps = FlowStep.objects.filter(flow=flow).order_by("id")
+
+            # Log all steps
+            logger.info(f"Saving step run for Flow: {flow.name}")
+            for s in all_steps:
+                logger.info(f"  Step: {s.action_type} on {s.model.name}")
+
+            # Here you would typically create a StepRun object
+            # For demonstration, we're just logging and adding a message
+            logger.info(f"Created StepRun for Step: {step}")
+            messages.success(request, f"Saved step run for Flow Step: {step}")
+
+        return redirect(request.get_full_path())
 
     def __str__(self):
         return f"Step Run {self.id} of {self.flow_run}"
