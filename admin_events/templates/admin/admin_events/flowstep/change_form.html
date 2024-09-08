@@ -1,0 +1,14 @@
+{% extends "admin/change_form.html" %}
+
+{% block content %}
+{{ block.super }}
+
+{% if form_adminform %}
+    <h2>Associated Form Preview</h2>
+    <fieldset class="module aligned">
+    {% for fieldset in form_adminform %}
+        {% include "admin/includes/fieldset.html" %}
+    {% endfor %}
+    </fieldset>
+{% endif %}
+{% endblock %}

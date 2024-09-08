@@ -4,6 +4,7 @@ import logging
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin import helpers
+from django.contrib.admin.helpers import AdminForm
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -601,3 +602,42 @@ class StepRun(WorkspaceRelated):
 
     def __str__(self):
         return f"Step Run {self.id} of {self.flow_run}"
+
+
+class FlowStepAdmin(admin.ModelAdmin):
+    fields = ["action_type", "model", "form"]
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        flow_step = self.get_object(request, object_id)
+
+        # Get the standard context
+        context = self.get_changeform_initial_data(request)
+
+        # Add the FlowStep form
+        ModelForm = self.get_form(request, flow_step)
+        adminForm = AdminForm(
+            ModelForm(instance=flow_step),
+            list(self.get_fieldsets(request, flow_step)),
+            self.get_prepopulated_fields(request, flow_step),
+        )
+        context["adminform"] = adminForm
+
+        # If we have a form associated with this FlowStep, add its form to the context
+        if flow_step and flow_step.form:
+            form_instance = flow_step.form
+            model, model_admin = form_instance.get_model_and_admin()
+            if model and model_admin:
+                FormModelForm = model_admin.get_form(request)
+                form_adminform = AdminForm(
+                    FormModelForm(),
+                    list(model_admin.get_fieldsets(request)),
+                    model_admin.get_prepopulated_fields(request),
+                    model_admin.get_readonly_fields(request),
+                    model_admin=model_admin,
+                )
+                context["form_adminform"] = form_adminform
+
+        return super().change_view(request, object_id, form_url, extra_context=context)
+
+
+admin.site.register(FlowStep, FlowStepAdmin)
