@@ -341,15 +341,36 @@ from workspaces.models import WorkspaceRelated
 
 
 class FlowRun(WorkspaceRelated):
+    class Status(models.TextChoices):
+        NOT_STARTED = "NOT_STARTED", "Not Started"
+        IN_PROGRESS = "IN_PROGRESS", "In Progress"
+        COMPLETED = "COMPLETED", "Completed"
+
     flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="runs")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.NOT_STARTED
+    )
 
     def __str__(self):
         return f"Run of {self.flow.name} at {self.created_at}"
 
     @property
     def general_info(self):
+        flow_steps = self.flow.steps.all().order_by("id")
+        completed_step_count = self.step_runs.count()
+
+        steps_info = [
+            {
+                "id": step.id,
+                "action_type": step.get_action_type_display(),
+                "model": step.model.name,
+                "is_completed": idx < completed_step_count,
+            }
+            for idx, step in enumerate(flow_steps)
+        ]
+
         return {
             "id": self.id,
             "flow_name": self.flow.name,
@@ -357,36 +378,73 @@ class FlowRun(WorkspaceRelated):
             "workspace_id": self.workspace_id,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
-            "step_count": self.step_runs.count(),
-            "status": self.get_status(),
+            "total_steps": len(steps_info),
+            "status": self.get_status_display(),
+            "steps": steps_info,
         }
 
-    def get_status(self):
-        # This is a simplified version that doesn't rely on a 'status' field
-        step_count = self.step_runs.count()
-        if step_count == 0:
-            return "Not Started"
-        elif step_count == self.flow.steps.count():
-            return "Completed"
+    def update_status(self):
+        total_steps = self.flow.steps.count()
+        completed_steps = self.step_runs.count()
+        if completed_steps == 0:
+            new_status = self.Status.NOT_STARTED
+        elif completed_steps == total_steps:
+            new_status = self.Status.COMPLETED
         else:
-            return "In Progress"
+            new_status = self.Status.IN_PROGRESS
+
+        if self.status != new_status:
+            self.status = new_status
+            self.save(update_fields=["status"])
 
 
-@admin.register(FlowRun)
+from django.contrib import admin
+from django.db import models
+from django.forms.widgets import Widget
+from django.utils.safestring import mark_safe
+
+from .models import FlowRun
+
+
+class ReadOnlyJSONWidget(Widget):
+    def render(self, name, value, attrs=None, renderer=None):
+        if value is None:
+            value = {}
+        return mark_safe(f"<pre>{json.dumps(value, indent=2)}</pre>")
+
+
+from django.contrib import admin
+from django.utils.html import format_html
+
+
 class FlowRunAdmin(admin.ModelAdmin):
-    list_display = ["id", "flow", "created_at", "updated_at", "get_general_info"]
+    list_display = ["id", "flow", "workspace", "created_at", "updated_at", "status"]
+    fields = [
+        "flow",
+        "workspace",
+        "status",
+        "get_general_info",
+    ]
     readonly_fields = ["get_general_info"]
 
     def get_general_info(self, obj):
-        return obj.general_info
+        info = obj.general_info
+        formatted_json = json.dumps(info, indent=2)
+        return format_html(
+            '<pre style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">{}</pre>',
+            mark_safe(formatted_json),
+        )
 
     get_general_info.short_description = "General Info"
 
     def has_add_permission(self, request):
-        return False
+        return True
 
     def has_change_permission(self, request, obj=None):
-        return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return True
 
 
 class Model(WorkspaceRelated):
@@ -476,6 +534,15 @@ class StepRun(WorkspaceRelated):
     flow_run = models.ForeignKey(
         FlowRun, on_delete=models.CASCADE, related_name="step_runs"
     )
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.flow_run.update_status()
+
+    def delete(self, *args, **kwargs):
+        flow_run = self.flow_run
+        super().delete(*args, **kwargs)
+        flow_run.update_status()
 
     def save_step_run(self, request, queryset):
         for step in queryset:
