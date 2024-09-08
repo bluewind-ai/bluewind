@@ -14,7 +14,7 @@ from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from workspaces.models import Workspace
 
-RECORDING_ID = 4
+RECORDING_ID = 1
 
 
 class CustomChangeList(ChangeList):

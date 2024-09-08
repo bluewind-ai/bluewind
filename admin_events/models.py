@@ -6,7 +6,9 @@ from django.contrib import admin
 from django.contrib.admin import helpers
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db import models
+
+# please import transaction
+from django.db import models, transaction
 from django.forms.models import modelformset_factory
 from django.http import HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
