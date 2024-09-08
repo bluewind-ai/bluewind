@@ -1,0 +1,14 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1 style="color: red; font-size: 24px; text-align: center;">CUSTOM TEMPLATE LOADED</h1>
+{{ block.super }}
+{% endblock %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+    <div class="submit-row">
+        <input type="submit" value="{% trans 'Refresh JSON' %}" name="_custom_action">
+    </div>
+{% endblock %}

@@ -11,6 +11,7 @@ from django.db import models
 from django.db.models import JSONField
 from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
+from django.http import HttpResponseRedirect
 from workspaces.models import Workspace
 
 RECORDING_ID = 1
@@ -23,9 +24,33 @@ class CustomChangeList(ChangeList):
 
 
 class InWorkspace(admin.ModelAdmin):
+    change_form_template = "admin/change_form.html"
+
     formfield_overrides = {
         JSONField: {"widget": JSONEditorWidget},
     }
+
+    actions = ["custom_action"]
+
+    def custom_action(self, request, queryset):
+        # Your custom action logic here
+        self.message_user(request, "Custom action performed")
+
+    custom_action.short_description = "Perform custom action"
+
+    def response_change(self, request, obj):
+        if "_custom_action" in request.POST:
+            # Your custom action logic for a single object
+            self.message_user(request, "Custom action performed for this object")
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
+
+    def response_add(self, request, obj, post_url_continue=None):
+        if "_custom_action" in request.POST:
+            # Your custom action logic for a newly added object
+            self.message_user(request, "Custom action performed for new object")
+            return HttpResponseRedirect(".")
+        return super().response_add(request, obj, post_url_continue)
 
     def save_model(self, request, obj, form, change):
         # Capture the input data

@@ -88,6 +88,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, "bluewind", "templates"),  # Move this to the top
             os.path.join(BASE_DIR, "channel_wizzard", "templates"),
             os.path.join(BASE_DIR, "admin_events", "templates"),  # Add this line
+            os.path.join(BASE_DIR, "base_model_admin", "templates"),  # Add this line
         ],
         "APP_DIRS": False,  # Change this to False
         "OPTIONS": {
@@ -105,6 +106,9 @@ TEMPLATES = [
                         os.path.join(BASE_DIR, "channel_wizzard", "templates"),
                         os.path.join(
                             BASE_DIR, "admin_events", "templates"
+                        ),  # Add this line
+                        os.path.join(
+                            BASE_DIR, "base_model_admin", "templates"
                         ),  # Add this line
                     ],
                 ),
