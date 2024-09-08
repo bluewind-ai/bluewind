@@ -358,17 +358,18 @@ class FlowRun(WorkspaceRelated):
 
     @property
     def general_info(self):
-        flow_steps = self.flow.steps.all().order_by("id")
-        completed_step_count = self.step_runs.count()
+        step_runs = self.step_runs.all().order_by("id")
 
-        steps_info = [
+        step_runs_info = [
             {
-                "id": step.id,
-                "action_type": step.get_action_type_display(),
-                "model": step.model.name,
-                "is_completed": idx < completed_step_count,
+                "id": step_run.id,
+                "action_type": step_run.flow_step.get_action_type_display(),
+                "model": step_run.flow_step.model.name,
+                "is_completed": True,  # Assuming all StepRuns are completed
+                "created_at": step_run.created_at.isoformat(),
+                # Add any other relevant StepRun fields here
             }
-            for idx, step in enumerate(flow_steps)
+            for step_run in step_runs
         ]
 
         return {
@@ -378,10 +379,21 @@ class FlowRun(WorkspaceRelated):
             "workspace_id": self.workspace_id,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
-            "total_steps": len(steps_info),
+            "total_steps": self.flow.steps.count(),
+            "completed_steps": step_runs.count(),
             "status": self.get_status_display(),
-            "steps": steps_info,
+            "step_runs": step_runs_info,
         }
+
+    def get_status(self):
+        total_steps = self.flow.steps.count()
+        completed_steps = self.step_runs.count()
+        if completed_steps == 0:
+            return self.Status.NOT_STARTED
+        elif completed_steps == total_steps:
+            return self.Status.COMPLETED
+        else:
+            return self.Status.IN_PROGRESS
 
     def update_status(self):
         total_steps = self.flow.steps.count()
