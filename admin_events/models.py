@@ -4,7 +4,6 @@ import logging
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin import helpers
-from django.contrib.admin.helpers import AdminForm
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -14,6 +13,7 @@ from django.forms.models import modelformset_factory
 from django.http import HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_POST
 from forms.models import Form
 from workspaces.models import WorkspaceRelated
@@ -421,7 +421,6 @@ class FlowRun(WorkspaceRelated):
 
 from django.db import models
 from django.forms.widgets import Widget
-from django.utils.safestring import mark_safe
 
 from .models import FlowRun
 
@@ -604,40 +603,56 @@ class StepRun(WorkspaceRelated):
         return f"Step Run {self.id} of {self.flow_run}"
 
 
+from django.contrib import admin
+
+
 class FlowStepAdmin(admin.ModelAdmin):
-    fields = ["action_type", "model", "form"]
+    fields = ["action_type", "model", "form", "html_form"]
+    readonly_fields = ["html_form"]
 
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        flow_step = self.get_object(request, object_id)
-
-        # Get the standard context
-        context = self.get_changeform_initial_data(request)
-
-        # Add the FlowStep form
-        ModelForm = self.get_form(request, flow_step)
-        adminForm = AdminForm(
-            ModelForm(instance=flow_step),
-            list(self.get_fieldsets(request, flow_step)),
-            self.get_prepopulated_fields(request, flow_step),
-        )
-        context["adminform"] = adminForm
-
-        # If we have a form associated with this FlowStep, add its form to the context
-        if flow_step and flow_step.form:
-            form_instance = flow_step.form
-            model, model_admin = form_instance.get_model_and_admin()
+    def html_form(self, obj):
+        if obj and obj.form:
+            model, model_admin = obj.form.get_model_and_admin()
             if model and model_admin:
-                FormModelForm = model_admin.get_form(request)
-                form_adminform = AdminForm(
-                    FormModelForm(),
-                    list(model_admin.get_fieldsets(request)),
-                    model_admin.get_prepopulated_fields(request),
-                    model_admin.get_readonly_fields(request),
-                    model_admin=model_admin,
-                )
-                context["form_adminform"] = form_adminform
+                try:
+                    FormModelForm = model_admin.get_form(self.request)
+                    form = FormModelForm()
 
-        return super().change_view(request, object_id, form_url, extra_context=context)
+                    rendered_fields = []
+                    for field_name, field in form.fields.items():
+                        widget = field.widget
+                        attrs = widget.build_attrs(
+                            widget.attrs, {"class": "vTextField"}
+                        )
+                        rendered_widget = widget.render(field_name, None, attrs)
+                        rendered_fields.append(
+                            format_html(
+                                '<div class="form-row">'
+                                '<div class="field-box">'
+                                '<label for="{0}">{1}:</label> {2}'
+                                "</div>"
+                                "</div>",
+                                field_name,
+                                field.label,
+                                rendered_widget,
+                            )
+                        )
 
+                    return mark_safe(f"""
+                        <div style='border: 1px solid #ccc; padding: 10px;'>
+                            <fieldset class="module aligned">
+                                {''.join(rendered_fields)}
+                            </fieldset>
+                        </div>
+                    """)
+                except Exception as e:
+                    return f"Error rendering form: {str(e)}"
+            else:
+                return f"Model: {model}, ModelAdmin: {model_admin}"
+        return "No form associated with this FlowStep"
 
-admin.site.register(FlowStep, FlowStepAdmin)
+    html_form.short_description = "Form Preview"
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.request = request
+        return super().get_form(request, obj, **kwargs)
