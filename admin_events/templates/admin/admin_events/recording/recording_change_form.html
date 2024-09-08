@@ -56,6 +56,9 @@
 <p>Start Time: {{ original.start_time }}</p>
 <p>End Time: {{ original.end_time }}</p>
 
+
+<button id="rerunFirstEvent" style="margin-bottom: 20px;">Rerun First Event</button>
+
 <div id="react-flow-root" style="height: 8000px; width: 3000px; overflow: auto;"></div>
 <div id="event-details" style="display: none;"></div>
 
@@ -333,5 +336,37 @@
     document.getElementById('react-flow-root')
   );
 </script>
+
+<script>
+  document.getElementById('rerunFirstEvent').addEventListener('click', async function() {
+    if (adminEvents.length > 0) {
+      const firstEvent = adminEvents[0];
+      try {
+        const response = await fetch('/workspaces/1/admin/admin_events/adminevent/rerun/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+          },
+          body: JSON.stringify({ event_id: firstEvent.id }),
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          alert('Event rerun successfully: ' + result.message);
+          // Optionally, refresh the page or update the graph
+          location.reload();
+        } else {
+          throw new Error('Failed to rerun event');
+        }
+      } catch (error) {
+        console.error('Error rerunning event:', error);
+        alert('Failed to rerun event: ' + error.message);
+      }
+    } else {
+      alert('No events to rerun');
+    }
+  });
+  </script>
 
 {% endblock %}
