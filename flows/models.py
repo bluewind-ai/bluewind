@@ -201,7 +201,7 @@ class FlowStep(WorkspaceRelated):
     action_type = models.CharField(
         max_length=10, choices=ActionType.choices, default=ActionType.ACTION
     )
-    model = models.ForeignKey("Model", on_delete=models.PROTECT)
+    model = models.ForeignKey("Model", on_delete=models.CASCADE)
 
     def __str__(self):
         return (
