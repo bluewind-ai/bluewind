@@ -1,12 +1,11 @@
-import json
 import logging
+import uuid
 
 from django.apps import apps
 from django.contrib import admin
 
 # please import transaction
 from django.db import models, transaction
-from django.utils.safestring import mark_safe
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -112,9 +111,6 @@ class FlowRun(WorkspaceRelated):
             self.save(update_fields=["status"])
 
 
-from django.db import models
-
-
 class FlowRunAdmin(admin.ModelAdmin):
     list_display = ["id", "flow", "workspace", "created_at", "updated_at", "status"]
     fields = [
@@ -123,66 +119,8 @@ class FlowRunAdmin(admin.ModelAdmin):
         "status",
         "created_at",
         "updated_at",
-        "get_general_info",
     ]
-    readonly_fields = ["get_general_info", "created_at", "updated_at"]
-
-    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
-        logger.debug(f"Entering changeform_view for object_id: {object_id}")
-
-        extra_context = extra_context or {}
-
-        # Get the form
-        form_class = self.get_form(request, object_id)
-        initial_data = self.get_changeform_initial_data(request)
-        form = form_class(initial=initial_data)
-
-        logger.debug(f"Form class: {form_class.__name__}")
-        logger.debug(f"Initial form data: {initial_data}")
-
-        # Attempt to serialize the entire form
-        form_data = {
-            "fields": {},
-            "initial": form.initial,
-            "data": form.data,
-            "errors": form.errors,
-        }
-
-        for name, field in form.fields.items():
-            form_data["fields"][name] = {
-                "label": field.label,
-                "help_text": field.help_text,
-                "required": field.required,
-                "widget": str(field.widget.__class__.__name__),
-            }
-            if hasattr(field, "choices"):
-                form_data["fields"][name]["choices"] = [
-                    {"value": str(choice[0]), "display": str(choice[1])}
-                    for choice in field.choices
-                ]
-
-        try:
-            json_data = json.dumps(form_data, cls=CustomJSONEncoder, indent=2)
-            logger.debug(f"Serialized form data:\n{json_data}")
-        except Exception as e:
-            logger.error(f"Error serializing form data to JSON: {str(e)}")
-            json_data = json.dumps({})
-
-        extra_context["initial_json"] = json_data
-
-        logger.debug("Calling super().changeform_view")
-        return super().changeform_view(request, object_id, form_url, extra_context)
-
-    def get_general_info(self, obj):
-        info = obj.general_info
-        formatted_json = json.dumps(info, indent=2)
-        return format_html(
-            '<pre style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">{}</pre>',
-            mark_safe(formatted_json),
-        )
-
-    get_general_info.short_description = "General Info"
-    get_general_info.short_description = "General Info"
+    readonly_fields = ["created_at", "updated_at"]
 
     def has_add_permission(self, request):
         return True
@@ -349,45 +287,40 @@ class StepRun(WorkspaceRelated):
             self.flow_step.model.app_label, self.flow_step.model.name
         )
 
+        logger.info(
+            f"Performing action: {action_type} on model: {model_class.__name__}"
+        )
+
         if action_type == "CREATE" and model_class == Channel:
             flow_run_state = self.flow_run.state
+            default_user = User.objects.first()
+            default_credentials, _ = CredentialsModel.objects.get_or_create(
+                workspace=self.flow_run.workspace,
+                key="DEFAULT_GMAIL_CREDENTIALS",
+                defaults={"value": '{"dummy": "credentials"}'},
+            )
+            channel_email = (
+                flow_run_state.get("channel_email")
+                or f"default_{uuid.uuid4().hex[:8]}@example.com"
+            )
 
-            try:
-                default_user = User.objects.first()
+            new_channel = Channel.objects.create(
+                email=channel_email,
+                workspace=self.flow_run.workspace,
+                user=default_user,
+                gmail_credentials=default_credentials,
+            )
 
-                default_credentials, _ = CredentialsModel.objects.get_or_create(
-                    workspace=self.flow_run.workspace,
-                    key="DEFAULT_GMAIL_CREDENTIALS",
-                    defaults={"value": '{"dummy": "credentials"}'},
-                )
+            self.result = {
+                "action": "CREATE",
+                "model": "Channel",
+                "id": new_channel.id,
+                "email": new_channel.email,
+            }
 
-                channel_email = flow_run_state.get(
-                    "channel_email", "default@example.com"
-                )
-
-                new_channel = Channel.objects.create(
-                    user=default_user,
-                    email=channel_email,
-                    workspace=self.flow_run.workspace,
-                    gmail_credentials=default_credentials,
-                )
-
-                self.result = {
-                    "action": "CREATE",
-                    "model": "Channel",
-                    "id": new_channel.id,
-                    "email": new_channel.email,
-                }
-
-                self.flow_run.state["created_channel_id"] = new_channel.id
-                self.flow_run.save(update_fields=["state"])
-
-                logger.info(
-                    f"Created new channel: {new_channel.email} (ID: {new_channel.id})"
-                )
-            except Exception as e:
-                logger.exception(f"Error creating channel: {str(e)}")
-                raise
+            self.flow_run.state["created_channel_id"] = new_channel.id
+            self.flow_run.state["created_channel_email"] = new_channel.email
+            self.flow_run.save(update_fields=["state"])
 
         else:
             self.result = {
@@ -395,6 +328,8 @@ class StepRun(WorkspaceRelated):
                 "model": model_class.__name__,
                 "message": "Action not implemented",
             }
+
+        logger.info(f"Action result: {self.result}")
 
     def determine_next_step(self):
         # Logic to determine the next step based on the flow and previous steps
