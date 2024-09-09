@@ -267,11 +267,18 @@ class InWorkspace(admin.ModelAdmin):
         # Get the queryset
         qs = self.get_queryset(request)
 
+        # Get or create the Action instance for LIST_VIEW
+        list_view_action, _ = Action.objects.get_or_create(
+            action_type=Action.ActionType.LIST_VIEW,
+            model=Model.objects.get(name=self.model._meta.model_name),
+            workspace_id=request.environ.get("WORKSPACE_ID"),
+        )
+
         # Get the most recent AdminEvent for this list view
         admin_event = (
             AdminEvent.objects.filter(
                 model_name=self.model._meta.model_name,
-                action="list_view",
+                action=list_view_action,  # Use the Action instance here
                 workspace_id=request.environ.get("WORKSPACE_ID"),
             )
             .order_by("-timestamp")
