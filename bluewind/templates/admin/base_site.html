@@ -40,7 +40,7 @@
     <script src="{% static 'bluewind/js/admin_shortcuts.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.js"></script>
     <div id="jsoneditor">
-        <button id="jsoneditor-close" onclick="closeJsonEditor()">Close</button>
+        <button id="jsoneditor-close" onclick="toggleJsonEditor()">Close</button>
     </div>
     <script>
         let editor = null;
@@ -49,22 +49,54 @@
         function toggleJsonEditor() {
             var editorContainer = document.getElementById('jsoneditor');
             var contentMain = document.getElementById('content');
+            var currentUrl = new URL(window.location.href);
             
-            if (editorContainer.style.display === 'none') {
-                editorContainer.style.display = 'block';
-                contentMain.style.display = 'none';
-                if (!editor) {
-                    editor = new JSONEditor(editorContainer, {});
-                }
-                editor.set(pageJsonData);
+            if (currentUrl.searchParams.get('json_view') !== 'true') {
+                currentUrl.searchParams.set('json_view', 'true');
+                showJsonEditor();
             } else {
-                closeJsonEditor();
+                currentUrl.searchParams.delete('json_view');
+                hideJsonEditor();
+            }
+            
+            window.history.pushState({jsonView: currentUrl.searchParams.get('json_view') === 'true'}, '', currentUrl);
+        }
+
+        function showJsonEditor() {
+            var editorContainer = document.getElementById('jsoneditor');
+            var contentMain = document.getElementById('content');
+            
+            editorContainer.style.display = 'block';
+            contentMain.style.display = 'none';
+            if (!editor) {
+                editor = new JSONEditor(editorContainer, {});
+            }
+            editor.set(pageJsonData);
+        }
+
+        function hideJsonEditor() {
+            var editorContainer = document.getElementById('jsoneditor');
+            var contentMain = document.getElementById('content');
+            
+            editorContainer.style.display = 'none';
+            contentMain.style.display = 'block';
+        }
+
+        function updateViewFromUrl() {
+            var url = new URL(window.location.href);
+            if (url.searchParams.get('json_view') === 'true') {
+                showJsonEditor();
+            } else {
+                hideJsonEditor();
             }
         }
 
-        function closeJsonEditor() {
-            document.getElementById('jsoneditor').style.display = 'none';
-            document.getElementById('content').style.display = 'block';
-        }
+        // Check URL on page load
+        window.addEventListener('load', updateViewFromUrl);
+
+        // Listen for popstate events (back/forward browser buttons)
+        window.addEventListener('popstate', function(event) {
+            updateViewFromUrl();
+        });
     </script>
 {% endblock %}

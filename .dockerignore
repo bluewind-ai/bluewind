@@ -31,6 +31,7 @@
 !django_object_actions
 !draft_messages
 !features
+!flows
 !forms
 !gmail_events
 !gmail_subscriptions

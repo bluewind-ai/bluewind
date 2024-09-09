@@ -2,13 +2,13 @@ import os
 import sys
 
 from admin_autoregister.autoregister_forms import register_forms
-from admin_events.models import Model
 from base_model_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 from django.db.migrations.recorder import MigrationRecorder
+from flows.models import Model
 from forms.models import create_channel_wizard
 from workspaces.models import WorkspaceRelated  # Adjust this import as needed
 
