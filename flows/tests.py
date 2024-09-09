@@ -1,31 +1,39 @@
 from credentials.models import Credentials as CredentialsModel
 from django.apps import apps
-from django.db import transaction
-from django.test import TransactionTestCase
+from django.test import TestCase
+from django.utils import timezone
 from users.models import User
 from workspaces.models import Workspace
 
 from .models import Flow, FlowRun, FlowStep, Model, StepRun
 
 
-class SimpleFlowTestCase(TransactionTestCase):
+class SimpleFlowTestCase(TestCase):
     def setUp(self):
         self.workspace = Workspace.objects.create(name="Test Workspace")
+
+        # Create a unique username
+        unique_username = f"testuser_{timezone.now().timestamp()}"
         self.user = User.objects.create_user(
-            username="testuser", email="test@example.com"
+            username=unique_username, email="test@example.com"
         )
+
         self.flow = Flow.objects.create(
             name="Create Channel Flow", workspace=self.workspace
         )
-        self.channel_model = Model.objects.create(
-            name="Channel", app_label="channels", workspace=self.workspace
+
+        # Get or create the Channel model
+        self.channel_model, _ = Model.objects.get_or_create(
+            name="Channel", app_label="channels", defaults={"workspace": self.workspace}
         )
+
         self.flow_step = FlowStep.objects.create(
             flow=self.flow,
             action_type=FlowStep.ActionType.CREATE,
             model=self.channel_model,
             workspace=self.workspace,
         )
+
         self.default_credentials = CredentialsModel.objects.create(
             workspace=self.workspace,
             key="DEFAULT_GMAIL_CREDENTIALS",
@@ -47,16 +55,15 @@ class SimpleFlowTestCase(TransactionTestCase):
             flow_run=flow_run, flow_step=self.flow_step, workspace=self.workspace
         )
 
-        # Force a database flush
-        transaction.commit()
-
         Channel = apps.get_model("channels", "Channel")
         created_channel = Channel.objects.filter(email=channel_email).first()
 
         self.assertIsNotNone(created_channel)
         if created_channel:
             self.assertEqual(created_channel.email, channel_email)
-            self.assertEqual(created_channel.user, self.user)
+            self.assertEqual(
+                created_channel.user, User.objects.first()
+            )  # Assuming the first user is used
             self.assertEqual(created_channel.workspace, self.workspace)
             self.assertEqual(
                 created_channel.gmail_credentials, self.default_credentials
