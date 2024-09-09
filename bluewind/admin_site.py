@@ -1,11 +1,49 @@
+import json
 import logging
 
 from django.contrib.admin import AdminSite
-from django.shortcuts import redirect, reverse
-from django.urls import reverse
+from django.contrib.admin.helpers import ActionForm, AdminForm
+from django.contrib.admin.views.main import ChangeList
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Model, QuerySet
+from django.http.response import HttpResponseRedirectBase
+from django.shortcuts import redirect
+from django.template.response import TemplateResponse
+from django.utils.html import escapejs
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger(__name__)
+
+from django import template
+from django.utils.safestring import mark_safe
+
+register = template.Library()
+
+
+@register.filter(is_safe=True)
+def json_script(value):
+    return mark_safe(json.dumps(value))
+
+
+class MyJsonEncoder(DjangoJSONEncoder):
+    def default(self, o):
+        if isinstance(o, (HttpResponseRedirectBase, ActionForm, AdminForm, ChangeList)):
+            return str(o)
+        if isinstance(o, Model):
+            return str(o)
+        if isinstance(o, QuerySet):
+            return list(o)
+        if isinstance(o, bytes):
+            return o.decode("utf-8")
+        try:
+            return super().default(o)
+        except TypeError:
+            return str(o)
+
+
+def custom_json_dumps(data):
+    json_string = json.dumps(data, cls=MyJsonEncoder, ensure_ascii=False)
+    return escapejs(json_string)
 
 
 class CustomAdminSite(AdminSite):
@@ -43,9 +81,24 @@ class CustomAdminSite(AdminSite):
             context = self.each_context(request)
             if "redirect_url" in context:
                 return redirect(context["redirect_url"])
-            return view(request, *args, **kwargs)
+
+            response = view(request, *args, **kwargs)
+
+            if isinstance(response, TemplateResponse):
+                # Convert the context data to JSON
+                json_data = json.dumps(
+                    response.context_data, cls=MyJsonEncoder, ensure_ascii=False
+                )
+
+                # Add the JSON data to the context
+                response.context_data["json_data"] = json_data
+
+            return response
 
         return super().admin_view(inner, cacheable)
+
+    def is_ajax(self, request):
+        return request.headers.get("x-requested-with") == "XMLHttpRequest"
 
 
 custom_admin_site = CustomAdminSite(name="customadmin")
@@ -54,7 +107,7 @@ custom_admin_site = CustomAdminSite(name="customadmin")
 def admin_login_middleware(get_response):
     def middleware(request):
         if request.path.startswith("/admin/") and not request.user.is_authenticated:
-            return redirect(reverse("account_login"))
+            return redirect("account_login")
         return get_response(request)
 
     return middleware

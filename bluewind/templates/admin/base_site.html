@@ -4,11 +4,67 @@
 
 {% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
+{% block extrastyle %}
+{{ block.super }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.css" rel="stylesheet" type="text/css">
+<style>
+    #jsoneditor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1000;
+        display: none;
+    }
+    #jsoneditor-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1001;
+    }
+</style>
+{% endblock %}
+
 {% block branding %}
 <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+{{ block.super }}
+<button onclick="toggleJsonEditor()" style="margin-left: 10px;">Toggle JSON Editor</button>
 {% endblock %}
 
 {% block footer %}
     {{ block.super }}
     <script src="{% static 'bluewind/js/admin_shortcuts.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.js"></script>
+    <div id="jsoneditor">
+        <button id="jsoneditor-close" onclick="closeJsonEditor()">Close</button>
+    </div>
+    <script>
+        let editor = null;
+        let pageJsonData = JSON.parse('{{ json_data|escapejs }}');
+        
+        function toggleJsonEditor() {
+            var editorContainer = document.getElementById('jsoneditor');
+            var contentMain = document.getElementById('content');
+            
+            if (editorContainer.style.display === 'none') {
+                editorContainer.style.display = 'block';
+                contentMain.style.display = 'none';
+                if (!editor) {
+                    editor = new JSONEditor(editorContainer, {});
+                }
+                editor.set(pageJsonData);
+            } else {
+                closeJsonEditor();
+            }
+        }
+
+        function closeJsonEditor() {
+            document.getElementById('jsoneditor').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+    </script>
 {% endblock %}
