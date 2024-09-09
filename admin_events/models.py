@@ -105,7 +105,9 @@ class Recording(WorkspaceRelated):
 class AdminEvent(WorkspaceRelated):
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
-    action = models.CharField(max_length=100)
+    action = models.ForeignKey(
+        "flows.Action", on_delete=models.CASCADE, related_name="admin_events"
+    )
     model_name = models.CharField(max_length=100)
     object_id = models.IntegerField(null=True, blank=True)
     data = models.JSONField(encoder=DjangoJSONEncoder)

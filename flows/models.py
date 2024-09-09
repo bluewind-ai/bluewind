@@ -7,7 +7,7 @@ from django.contrib import admin
 
 # please import transaction
 from django.db import models, transaction
-from workspaces.models import WorkspaceRelated
+from workspaces.models import Workspace, WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
@@ -190,18 +190,18 @@ from django.db import models
 from workspaces.models import WorkspaceRelated
 
 
-class Action(WorkspaceRelated):
+class Action(models.Model):
     class ActionType(models.TextChoices):
         CREATE = "CREATE", "Create"
         SAVE = "SAVE", "Save"
         DELETE = "DELETE", "Delete"
         ACTION = "ACTION", "Action"
         SELECT = "SELECT", "Select"
+        LIST_VIEW = "LIST_VIEW", "List View"
 
-    action_type = models.CharField(
-        max_length=10, choices=ActionType.choices, default=ActionType.ACTION
-    )
-    model = models.ForeignKey("Model", on_delete=models.CASCADE)
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
+    action_type = models.CharField(max_length=20, choices=ActionType.choices)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE)
     action_input = models.JSONField(default=dict, blank=True)
     admin_event = models.ForeignKey(
         "admin_events.AdminEvent",

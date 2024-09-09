@@ -13,6 +13,7 @@ from django.db.models import JSONField
 from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
+from flows.models import Action, Model
 from workspaces.models import Workspace
 
 RECORDING_ID = 1
@@ -338,13 +339,25 @@ class InWorkspace(admin.ModelAdmin):
 
         event_data = {"input": input_data, "output": output_data}
 
+        # Get or create the Model instance for this model
+        model_instance, _ = Model.objects.get_or_create(
+            name=self.model._meta.model_name, app_label=self.model._meta.app_label
+        )
+
+        # Get or create the Action instance for LIST_VIEW
+        list_view_action, _ = Action.objects.get_or_create(
+            action_type=Action.ActionType.LIST_VIEW,
+            model=model_instance,
+            workspace_id=workspace_id,
+        )
+
         # Record the event
         AdminEvent.objects.create(
             user=request.user,
-            action="list_view",
+            action=list_view_action,
             model_name=model_name,
-            object_id=0,  # Use a placeholder value instead of None
+            object_id=None,  # Use None instead of 0 for list views
             data=event_data,
             workspace_id=workspace_id,
-            recording_id=RECORDING_ID,  # Always use Recording with ID 1
+            recording_id=RECORDING_ID,
         )
