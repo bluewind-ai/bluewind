@@ -62,8 +62,8 @@ INSTALLED_APPS = [
     "admin_autoregister",
     "forms",
     "draft_messages",
-    "flows",
     "admin_events",
+    "flows",
 ]
 
 # Middleware Configuration

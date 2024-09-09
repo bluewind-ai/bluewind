@@ -204,7 +204,7 @@ class Action(WorkspaceRelated):
     model = models.ForeignKey("Model", on_delete=models.CASCADE)
     action_input = models.JSONField(default=dict, blank=True)
     admin_event = models.ForeignKey(
-        "AdminEvent",
+        "admin_events.AdminEvent",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
