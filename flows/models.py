@@ -1,5 +1,6 @@
 import logging
-import uuid
+
+from django_json_widget.widgets import JSONEditorWidget
 
 from django.apps import apps
 from django.contrib import admin
@@ -189,7 +190,7 @@ from django.db import models
 from workspaces.models import WorkspaceRelated
 
 
-class FlowStep(WorkspaceRelated):
+class Action(WorkspaceRelated):
     class ActionType(models.TextChoices):
         CREATE = "CREATE", "Create"
         SAVE = "SAVE", "Save"
@@ -197,13 +198,53 @@ class FlowStep(WorkspaceRelated):
         ACTION = "ACTION", "Action"
         SELECT = "SELECT", "Select"
 
-    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="steps")
     action_type = models.CharField(
         max_length=10, choices=ActionType.choices, default=ActionType.ACTION
     )
     model = models.ForeignKey("Model", on_delete=models.CASCADE)
+    action_input = models.JSONField(default=dict, blank=True)
+    admin_event = models.ForeignKey(
+        "AdminEvent",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="actions",
+    )
 
     def __str__(self):
+        return f"{self.get_action_type_display()} on {self.model.name}"
+
+
+class ActionAdmin(admin.ModelAdmin):
+    list_display = ["action_type", "model"]
+    list_filter = ["action_type", "model"]
+    search_fields = ["model__name"]
+    formfield_overrides = {
+        models.JSONField: {"widget": JSONEditorWidget},
+    }
+
+
+admin.site.register(Action, ActionAdmin)
+
+
+class FlowStep(WorkspaceRelated):
+    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="steps")
+    action_type = models.CharField(
+        max_length=10,
+        choices=Action.ActionType.choices,
+        default=Action.ActionType.ACTION,
+    )
+    model = models.ForeignKey("Model", on_delete=models.CASCADE)
+    default_values = models.JSONField(default=dict, blank=True)
+
+    # New field
+    action = models.ForeignKey(
+        "Action", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    def __str__(self):
+        if self.action:
+            return f"{self.flow.name} - {self.action}"
         return (
             f"{self.flow.name} - {self.get_action_type_display()} on {self.model.name}"
         )
@@ -275,10 +316,6 @@ class StepRun(WorkspaceRelated):
             self.save(update_fields=["status", "result"])
 
     def perform_action(self):
-        from channels.models import Channel
-        from credentials.models import Credentials as CredentialsModel
-        from users.models import User
-
         if not self.flow_step:
             raise ValueError("No flow step associated with this StepRun")
 
@@ -291,36 +328,63 @@ class StepRun(WorkspaceRelated):
             f"Performing action: {action_type} on model: {model_class.__name__}"
         )
 
-        if action_type == "CREATE" and model_class == Channel:
-            flow_run_state = self.flow_run.state
-            default_user = User.objects.first()
-            default_credentials, _ = CredentialsModel.objects.get_or_create(
-                workspace=self.flow_run.workspace,
-                key="DEFAULT_GMAIL_CREDENTIALS",
-                defaults={"value": '{"dummy": "credentials"}'},
-            )
-            channel_email = (
-                flow_run_state.get("channel_email")
-                or f"default_{uuid.uuid4().hex[:8]}@example.com"
-            )
+        if action_type == FlowStep.ActionType.CREATE:
+            # Get default values from the FlowStep
+            default_values = self.flow_step.default_values.copy()
 
-            new_channel = Channel.objects.create(
-                email=channel_email,
-                workspace=self.flow_run.workspace,
-                user=default_user,
-                gmail_credentials=default_credentials,
-            )
+            # Add any runtime values or override existing ones
+            default_values["workspace"] = self.flow_run.workspace
+
+            # Create the instance
+            new_instance = model_class.objects.create(**default_values)
 
             self.result = {
                 "action": "CREATE",
-                "model": "Channel",
-                "id": new_channel.id,
-                "email": new_channel.email,
+                "model": model_class.__name__,
+                "id": new_instance.id,
             }
 
-            self.flow_run.state["created_channel_id"] = new_channel.id
-            self.flow_run.state["created_channel_email"] = new_channel.email
+            # Update flow_run state
+            self.flow_run.state[f"created_{model_class.__name__.lower()}_id"] = (
+                new_instance.id
+            )
+            if hasattr(new_instance, "email"):
+                self.flow_run.state[f"created_{model_class.__name__.lower()}_email"] = (
+                    new_instance.email
+                )
             self.flow_run.save(update_fields=["state"])
+
+        elif action_type == FlowStep.ActionType.SAVE:
+            # Implement save logic
+            self.result = {
+                "action": "SAVE",
+                "model": model_class.__name__,
+                "message": "Not implemented yet",
+            }
+
+        elif action_type == FlowStep.ActionType.DELETE:
+            # Implement delete logic
+            self.result = {
+                "action": "DELETE",
+                "model": model_class.__name__,
+                "message": "Not implemented yet",
+            }
+
+        elif action_type == FlowStep.ActionType.ACTION:
+            # Implement custom action logic
+            self.result = {
+                "action": "ACTION",
+                "model": model_class.__name__,
+                "message": "Not implemented yet",
+            }
+
+        elif action_type == FlowStep.ActionType.SELECT:
+            # Implement select logic
+            self.result = {
+                "action": "SELECT",
+                "model": model_class.__name__,
+                "message": "Not implemented yet",
+            }
 
         else:
             self.result = {
@@ -395,11 +459,27 @@ class StepRunAdmin(admin.ModelAdmin):
         return super().change_view(request, object_id, form_url, extra_context)
 
 
-from django.contrib import admin
-
-
 class FlowStepAdmin(admin.ModelAdmin):
-    fields = ["action_type", "model", "flow", "workspace"]
+    list_display = ["flow", "get_action_type", "get_model", "action"]
+    list_filter = ["flow", "action_type", "model"]
+    search_fields = ["flow__name", "model__name"]
+    formfield_overrides = {
+        models.JSONField: {"widget": JSONEditorWidget},
+    }
+
+    def get_action_type(self, obj):
+        return (
+            obj.action.get_action_type_display()
+            if obj.action
+            else obj.get_action_type_display()
+        )
+
+    get_action_type.short_description = "Action Type"
+
+    def get_model(self, obj):
+        return obj.action.model if obj.action else obj.model
+
+    get_model.short_description = "Model"
 
     def render_associated_form(self, model_admin, form, obj):
         from django.contrib.admin.helpers import AdminForm

@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     "model_clone",
     "slippers",
     "widget_tweaks",
-    "admin_events",
     "django_json_widget",
     # Local apps
     "users",
@@ -64,6 +63,7 @@ INSTALLED_APPS = [
     "forms",
     "draft_messages",
     "flows",
+    "admin_events",
 ]
 
 # Middleware Configuration

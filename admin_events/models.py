@@ -116,6 +116,7 @@ class AdminEvent(WorkspaceRelated):
         blank=True,
         related_name="admin_events",
     )
+    action = models.CharField(max_length=100)
 
     def __str__(self):
         return f"{self.action} on {self.model_name} {self.object_id} by {self.user}"
