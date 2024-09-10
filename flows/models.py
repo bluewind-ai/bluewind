@@ -178,7 +178,7 @@ class ActionRun(WorkspaceRelated):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     model_name = models.CharField(max_length=100)
     object_id = models.IntegerField(null=True, blank=True)
-    results = models.JSONField(encoder=DjangoJSONEncoder, default=dict, blank=True)
+    data = models.JSONField(encoder=DjangoJSONEncoder)
     recording = models.ForeignKey(
         Recording,
         on_delete=models.SET_NULL,
@@ -213,6 +213,7 @@ class ActionRun(WorkspaceRelated):
                 self.status = "ERROR"
                 self.action_input["error"] = str(e)
                 super().save(update_fields=["status", "action_input"])
+                raise  # Re-raise the ValidationError
         else:
             super().save(*args, **kwargs)
 
@@ -231,7 +232,11 @@ class ActionRun(WorkspaceRelated):
                 new_instance = model_class(
                     workspace=self.step_run.flow_run.workspace,
                     user=self.user,
-                    **self.action_input,
+                    **{
+                        k: v
+                        for k, v in self.action_input.items()
+                        if k in [f.name for f in model_class._meta.fields]
+                    },
                 )
 
                 default_credentials = Credentials.objects.get(
@@ -240,10 +245,10 @@ class ActionRun(WorkspaceRelated):
                 )
                 new_instance.gmail_credentials = default_credentials
 
-                new_instance.full_clean()
+                new_instance.full_clean()  # This will raise ValidationError if the data is invalid
                 new_instance.save()
 
-                self.results = {
+                self.action_input["result"] = {
                     "action": "CREATE",
                     "model": "Channel",
                     "id": new_instance.id,
@@ -255,16 +260,15 @@ class ActionRun(WorkspaceRelated):
                 self.step_run.flow_run.save(update_fields=["state"])
 
             self.status = "COMPLETED"
-            super().save(update_fields=["status", "results"])
+            super().save(update_fields=["status"])
 
-        except ValidationError as e:
-            self.status = "ERROR"
-            self.action_input["error"] = str(e)
-            raise
+        except ValidationError:
+            raise  # Re-raise ValidationError to be caught in the save method
         except Exception as e:
-            self.status = "ERROR"
-            self.action_input["error"] = f"Unexpected error: {str(e)}"
             raise ValidationError(f"Error in action execution: {str(e)}")
+
+        self.data = self.action_input.get("result", {})
+        super().save(update_fields=["data"])
 
     def get_model_class(self):
         parts = self.model_name.split(".")
@@ -303,6 +307,10 @@ class StepRun(WorkspaceRelated):
             raise ValidationError(
                 "Step and ActionRun must be set before completing the StepRun"
             )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"StepRun for {self.step} (Started: {self.start_date})"

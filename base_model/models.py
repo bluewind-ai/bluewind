@@ -9,10 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 class BaseModel(CloneMixin, models.Model):
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
     class Meta:
         abstract = True
 
