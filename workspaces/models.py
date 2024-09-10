@@ -34,12 +34,22 @@ class Workspace(models.Model):
     def save(self, *args, **kwargs):
         from admin_autoregister.autoregister_models import insert_all_models
         from admin_autoregister.register_actions import register_actions
+        from flows.models import Recording  # Import the Recording model
 
         is_new = self.pk is None
         super().save(*args, **kwargs)
+
         if is_new:
             register_actions(self)
             insert_all_models(self)
+
+            # Create a new Recording for this workspace
+            Recording.objects.create(
+                name=f"Default Recording for {self.name}",
+                description=f"Automatically created recording for workspace {self.name}",
+                start_time=timezone.now(),
+                workspace=self,
+            )
 
 
 class WorkspaceUser(models.Model):
@@ -118,3 +128,11 @@ class WorkspaceRelated(BaseModel):
 
     class Meta:
         abstract = True
+
+    # def get_queryset(self, request):
+    #     qs = super().get_queryset(request)
+    #     workspace_id = request.environ.get("WORKSPACE_ID")
+    #     logger.debug(f"get_queryset: workspace_id = {workspace_id}")
+    #     if self.model == Workspace:
+    #         return qs.filter(id=workspace_id)
+    #     return qs.filter(workspace_id=workspace_id).select_related("workspace")

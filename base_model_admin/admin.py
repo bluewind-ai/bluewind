@@ -231,20 +231,22 @@ class InWorkspace(admin.ModelAdmin):
         admin_event = (
             ActionRun.objects.filter(
                 model_name=self.model._meta.model_name,
-                action=list_view_action,  # Use the Action instance here
+                action=list_view_action,
                 workspace_id=request.environ.get("WORKSPACE_ID"),
             )
             .order_by("-timestamp")
             .first()
         )
 
-        if admin_event:
+        if admin_event and isinstance(admin_event.results, list):
             # Use the output data from the admin event
-            object_list = admin_event.data.get("output", [])
+            object_list = admin_event.results
             # Convert the object_list back to a queryset
             try:
                 id_list = [
-                    obj.get("id") for obj in object_list if obj.get("id") is not None
+                    obj.get("id")
+                    for obj in object_list
+                    if isinstance(obj, dict) and obj.get("id") is not None
                 ]
                 if id_list:
                     qs = self.model.objects.filter(id__in=id_list)
@@ -297,11 +299,11 @@ class InWorkspace(admin.ModelAdmin):
             json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
         )
 
-        event_data = {"input": input_data, "output": output_data}
-
         # Get or create the Model instance for this model
         model_instance, _ = Model.objects.get_or_create(
-            name=self.model._meta.model_name, app_label=self.model._meta.app_label
+            name=self.model._meta.model_name,
+            app_label=self.model._meta.app_label,
+            workspace_id=workspace_id,
         )
 
         # Get or create the Action instance for LIST
@@ -317,7 +319,8 @@ class InWorkspace(admin.ModelAdmin):
             action=list_view_action,
             model_name=model_name,
             object_id=None,  # Use None instead of 0 for list views
-            data=event_data,
+            action_input=input_data,  # Use action_input instead of data
+            results=output_data,  # Use results for the output data
             workspace_id=workspace_id,
             recording_id=RECORDING_ID,
         )

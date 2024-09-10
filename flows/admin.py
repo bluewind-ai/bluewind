@@ -1,13 +1,10 @@
-import json
 import logging
 
 from base_model_admin.admin import InWorkspace
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
-from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.models import modelformset_factory
-from django.http import HttpResponse, JsonResponse
-from django.template.response import TemplateResponse
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 
@@ -37,74 +34,6 @@ class ActionAdmin(InWorkspace):
 class RecordingAdmin(InWorkspace):
     list_display = ["name", "start_time", "end_time"]
     search_fields = ["name", "description"]
-
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        recording = self.get_object(request, object_id)
-        if recording is None:
-            return HttpResponse("Recording not found", status=404)
-        action_runs = ActionRun.objects.filter(recording=recording).order_by(
-            "timestamp"
-        )
-
-        nodes = [
-            {
-                "id": "recording",
-                "type": "input",
-                "data": {"label": recording.name},
-                "position": {"x": 250, "y": 0},
-            }
-        ]
-        edges = []
-
-        for i, event in enumerate(action_runs):
-            node_id = f"event_{i}"
-            nodes.append(
-                {
-                    "id": node_id,
-                    "data": {"label": f"{event.action} on {event.model_name}"},
-                    "position": {"x": 250, "y": (i + 1) * 100},
-                }
-            )
-            if i == 0:
-                edges.append(
-                    {
-                        "id": f"e-recording-{node_id}",
-                        "source": "recording",
-                        "target": node_id,
-                    }
-                )
-            else:
-                edges.append(
-                    {
-                        "id": f"e-event_{i-1}-{node_id}",
-                        "source": f"event_{i-1}",
-                        "target": node_id,
-                    }
-                )
-
-        action_runs_data = [
-            {
-                "id": event.id,
-                "action": event.action,
-                "model_name": event.model_name,
-                "timestamp": event.timestamp.isoformat(),
-                "user": str(event.user),
-                "data": event.data,
-            }
-            for event in action_runs
-        ]
-
-        context = {
-            "original": recording,
-            "opts": self.model._meta,
-            "app_label": self.model._meta.app_label,
-            "graph_data": json.dumps({"nodes": nodes, "edges": edges}),
-            "action_runs": json.dumps(action_runs_data, cls=DjangoJSONEncoder),
-        }
-
-        return TemplateResponse(
-            request, "admin/action_runs/recording/recording_change_form.html", context
-        )
 
 
 class StepAdmin(InWorkspace):
