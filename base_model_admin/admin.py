@@ -12,19 +12,24 @@ from django.db.models import JSONField
 from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
-from flows.models import Action, ActionRun, Model
+from flows.models import Action, ActionRun, Model, Recording
 from workspaces.models import Workspace
 
-RECORDING_ID = 1
+logger = logging.getLogger(__name__)
+
+
+def get_latest_recording(workspace_id):
+    return (
+        Recording.objects.filter(workspace_id=workspace_id)
+        .order_by("-start_time")
+        .first()
+    )
 
 
 class CustomChangeList(ChangeList):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.formset = None
-
-
-logger = logging.getLogger(__name__)
 
 
 class InWorkspace(admin.ModelAdmin):
@@ -74,8 +79,8 @@ class InWorkspace(admin.ModelAdmin):
             else:
                 output_data[field.name] = str(value)
 
-        # Combine input and output data
-        event_data = {"input": input_data, "output": output_data}
+        # Get the latest recording
+        latest_recording = get_latest_recording(obj.workspace_id)
 
         # Record the event
         ActionRun.objects.create(
@@ -83,9 +88,10 @@ class InWorkspace(admin.ModelAdmin):
             action=action_instance,
             model_name=obj._meta.model_name,
             object_id=obj.id,
-            data=event_data,
+            action_input=input_data,
+            results=output_data,
             workspace_id=obj.workspace_id,
-            recording_id=RECORDING_ID,
+            recording=latest_recording,
         )
 
     def custom_action(self, request, queryset):
@@ -155,6 +161,9 @@ class InWorkspace(admin.ModelAdmin):
             workspace_id=workspace_id,
         )
 
+        # Get the latest recording
+        latest_recording = get_latest_recording(workspace_id)
+
         for obj in queryset:
             input_data = model_to_dict(obj)
 
@@ -163,17 +172,16 @@ class InWorkspace(admin.ModelAdmin):
                 if not isinstance(value, (str, int, float, bool, type(None))):
                     input_data[key] = str(value)
 
-            event_data = {"input": input_data}
-
             # Record the event
             ActionRun.objects.create(
                 user=request.user,
-                action=action_instance,  # Use the Action instance here
+                action=action_instance,
                 model_name=model_name,
                 object_id=obj.id,
-                data=event_data,
+                action_input=input_data,
+                results={},  # Add this (or include actual results if available)
                 workspace_id=workspace_id,
-                recording_id=RECORDING_ID,  # Always use Recording with ID 1
+                recording=latest_recording,
             )
 
     def get_actions(self, request):
@@ -221,9 +229,31 @@ class InWorkspace(admin.ModelAdmin):
         qs = self.get_queryset(request)
 
         # Get or create the Action instance for LIST
+        try:
+            model = Model.objects.get(
+                name=self.model._meta.model_name,
+                app_label=self.model._meta.app_label,
+                workspace_id=request.environ.get("WORKSPACE_ID"),
+            )
+        except Model.DoesNotExist:
+            model = Model.objects.create(
+                name=self.model._meta.model_name,
+                app_label=self.model._meta.app_label,
+                workspace_id=request.environ.get("WORKSPACE_ID"),
+            )
+        except Model.MultipleObjectsReturned:
+            logger.warning(
+                f"Multiple Model objects found for {self.model._meta.model_name} in workspace {request.environ.get('WORKSPACE_ID')}"
+            )
+            model = Model.objects.filter(
+                name=self.model._meta.model_name,
+                app_label=self.model._meta.app_label,
+                workspace_id=request.environ.get("WORKSPACE_ID"),
+            ).first()
+
         list_view_action, _ = Action.objects.get_or_create(
             action_type=Action.ActionType.LIST,
-            model=Model.objects.get(name=self.model._meta.model_name),
+            model=model,
             workspace_id=request.environ.get("WORKSPACE_ID"),
         )
 
@@ -255,7 +285,7 @@ class InWorkspace(admin.ModelAdmin):
                     qs = self.model.objects.none()
             except Exception as e:
                 # Log the error and continue with the original queryset
-                print(f"Error processing admin event data: {e}")
+                logger.error(f"Error processing admin event data: {e}")
 
         # Create a ChangeList instance
         cl = self.get_changelist_instance(request)
@@ -313,14 +343,17 @@ class InWorkspace(admin.ModelAdmin):
             workspace_id=workspace_id,
         )
 
+        # Get the latest recording
+        latest_recording = get_latest_recording(workspace_id)
+
         # Record the event
         ActionRun.objects.create(
             user=request.user,
             action=list_view_action,
             model_name=model_name,
             object_id=None,  # Use None instead of 0 for list views
-            action_input=input_data,  # Use action_input instead of data
-            results=output_data,  # Use results for the output data
+            action_input=input_data,
+            results=output_data,
             workspace_id=workspace_id,
-            recording_id=RECORDING_ID,
+            recording=latest_recording,
         )
