@@ -5,6 +5,7 @@ from django_object_actions import DjangoObjectActions, action
 # Assuming these are defined elsewhere
 from base_model.models import BaseModel
 from django.contrib import admin, messages
+from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -29,6 +30,16 @@ class Workspace(models.Model):
         return format_html('<a href="{}">{}</a>', url, url)
 
     admin_url_link.short_description = "Admin URL"
+
+    def save(self, *args, **kwargs):
+        from admin_autoregister.autoregister_models import insert_all_models
+        from admin_autoregister.register_actions import register_actions
+
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            register_actions(self)
+            insert_all_models(self)
 
 
 class WorkspaceUser(models.Model):

@@ -1,16 +1,12 @@
 import os
 import sys
 
-from admin_autoregister.autoregister_forms import register_forms
-from admin_autoregister.register_actions import register_actions
 from base_model_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 from django.db.migrations.recorder import MigrationRecorder
-from flows.models import Model
-from forms.models import create_channel_wizard
 from workspaces.models import WorkspaceRelated  # Adjust this import as needed
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -121,9 +117,9 @@ def autoregister():
 
     append_to_dockerignore(app_configs)
     clean_dockerignore()
-    register_forms()
-    register_actions()  # Add this line
+    # register_forms()
+    # register_actions()  # Add this line
 
-    create_channel_wizard()
-    inserted_count = Model.insert_all_models()
-    print(f"Inserted {inserted_count} models into the Model table.")
+    # create_channel_wizard()
+    # inserted_count = Model.insert_all_models()
+    # print(f"Inserted {inserted_count} models into the Model table.")

@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 import environ
@@ -253,3 +254,11 @@ if os.environ["ENVIRONMENT"] == "prod":
     SITE_URL = os.environ["SITE_URL"]
 else:
     SITE_URL = "https://green.bluewind.ai"
+
+if "test" in sys.argv:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    }

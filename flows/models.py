@@ -79,39 +79,6 @@ class Model(WorkspaceRelated):
     def full_name(self):
         return f"{self.app_label}.{self.name}"
 
-    @classmethod
-    def insert_all_models(cls):
-        from workspaces.models import Workspace  # Import here to avoid circular imports
-
-        try:
-            with transaction.atomic():
-                default_workspace, _ = Workspace.objects.get_or_create(
-                    name="Default Workspace"
-                )
-
-                models_to_create = []
-                for app_config in apps.get_app_configs():
-                    for model in app_config.get_models():
-                        model_instance = cls(
-                            name=model._meta.model_name,
-                            app_label=model._meta.app_label,
-                            workspace=default_workspace,
-                        )
-                        models_to_create.append(model_instance)
-                        print(f"Preparing to insert: {model_instance.full_name}")
-
-                created = cls.objects.bulk_create(
-                    models_to_create, ignore_conflicts=True
-                )
-                print(f"Successfully inserted {len(created)} models")
-                return len(created)
-        except Exception as e:
-            print(f"Error inserting models: {e}")
-            import traceback
-
-            traceback.print_exc()
-            return 0
-
 
 class Action(WorkspaceRelated):
     class ActionType(models.TextChoices):
@@ -178,7 +145,7 @@ class ActionRun(WorkspaceRelated):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     model_name = models.CharField(max_length=100)
     object_id = models.IntegerField(null=True, blank=True)
-    data = models.JSONField(encoder=DjangoJSONEncoder)
+    results = models.JSONField(encoder=DjangoJSONEncoder, default=dict, blank=True)
     recording = models.ForeignKey(
         Recording,
         on_delete=models.SET_NULL,
@@ -213,7 +180,6 @@ class ActionRun(WorkspaceRelated):
                 self.status = "ERROR"
                 self.action_input["error"] = str(e)
                 super().save(update_fields=["status", "action_input"])
-                raise  # Re-raise the ValidationError
         else:
             super().save(*args, **kwargs)
 
@@ -232,11 +198,7 @@ class ActionRun(WorkspaceRelated):
                 new_instance = model_class(
                     workspace=self.step_run.flow_run.workspace,
                     user=self.user,
-                    **{
-                        k: v
-                        for k, v in self.action_input.items()
-                        if k in [f.name for f in model_class._meta.fields]
-                    },
+                    **self.action_input,
                 )
 
                 default_credentials = Credentials.objects.get(
@@ -245,10 +207,10 @@ class ActionRun(WorkspaceRelated):
                 )
                 new_instance.gmail_credentials = default_credentials
 
-                new_instance.full_clean()  # This will raise ValidationError if the data is invalid
+                new_instance.full_clean()
                 new_instance.save()
 
-                self.action_input["result"] = {
+                self.results = {
                     "action": "CREATE",
                     "model": "Channel",
                     "id": new_instance.id,
@@ -260,15 +222,16 @@ class ActionRun(WorkspaceRelated):
                 self.step_run.flow_run.save(update_fields=["state"])
 
             self.status = "COMPLETED"
-            super().save(update_fields=["status"])
+            super().save(update_fields=["status", "results"])
 
-        except ValidationError:
-            raise  # Re-raise ValidationError to be caught in the save method
+        except ValidationError as e:
+            self.status = "ERROR"
+            self.action_input["error"] = str(e)
+            raise
         except Exception as e:
+            self.status = "ERROR"
+            self.action_input["error"] = f"Unexpected error: {str(e)}"
             raise ValidationError(f"Error in action execution: {str(e)}")
-
-        self.data = self.action_input.get("result", {})
-        super().save(update_fields=["data"])
 
     def get_model_class(self):
         parts = self.model_name.split(".")
@@ -307,10 +270,6 @@ class StepRun(WorkspaceRelated):
             raise ValidationError(
                 "Step and ActionRun must be set before completing the StepRun"
             )
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"StepRun for {self.step} (Started: {self.start_date})"
