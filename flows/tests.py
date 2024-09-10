@@ -29,7 +29,6 @@ class SimpleFlowTestCase(TestCase):
         )
 
         cls.action = Action.objects.create(
-            flow=cls.flow,
             workspace=cls.workspace,
             action_type=Action.ActionType.CREATE,
             model=cls.channel_model,
@@ -67,7 +66,7 @@ class SimpleFlowTestCase(TestCase):
             user=self.user,
             model_name="Channel",
             action_input=action_input,
-            data=json.dumps({"input": action_input}),  # Add this line
+            data=json.dumps({"input": action_input}),
         )
 
         action_run.process_action_run()

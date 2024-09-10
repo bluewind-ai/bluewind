@@ -223,9 +223,9 @@ class InWorkspace(admin.ModelAdmin):
         # Get the queryset
         qs = self.get_queryset(request)
 
-        # Get or create the Action instance for LIST_VIEW
+        # Get or create the Action instance for LIST
         list_view_action, _ = Action.objects.get_or_create(
-            action_type=Action.ActionType.LIST_VIEW,
+            action_type=Action.ActionType.LIST,
             model=Model.objects.get(name=self.model._meta.model_name),
             workspace_id=request.environ.get("WORKSPACE_ID"),
         )
@@ -307,7 +307,7 @@ class InWorkspace(admin.ModelAdmin):
             name=self.model._meta.model_name, app_label=self.model._meta.app_label
         )
 
-        # Get or create the Action instance for LIST_VIEW
+        # Get or create the Action instance for LIST
         list_view_action, _ = Action.objects.get_or_create(
             action_type=Action.ActionType.LIST,
             model=model_instance,

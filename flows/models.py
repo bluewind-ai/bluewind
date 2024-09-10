@@ -290,8 +290,9 @@ admin.site.register(Step, StepAdmin)
 
 class ActionRun(WorkspaceRelated):
     flow_run = models.ForeignKey(
-        FlowRun, on_delete=models.CASCADE, related_name="action_runs"
+        FlowRun, on_delete=models.CASCADE, null=True, blank=True
     )
+
     step = models.ForeignKey(
         Step,
         on_delete=models.SET_NULL,
