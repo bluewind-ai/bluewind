@@ -52,11 +52,6 @@ class InWorkspace(admin.ModelAdmin):
         )
 
     def save_model(self, request, obj, form, change):
-        json_data = request.POST.get("json_data")
-        if json_data:
-            # Assuming 'general_info' is the field you want to populate with JSON
-            obj.general_info = json.loads(json_data)
-
         # Capture the input data
         input_data = {}
         for field_name, field_value in form.cleaned_data.items():
@@ -68,69 +63,7 @@ class InWorkspace(admin.ModelAdmin):
                 input_data[field_name] = str(field_value)
 
         # Determine if this is a create or update action
-        action = "update" if change else "create"
-
-        # Call the original save_model method
-        super().save_model(request, obj, form, change)
-
-        # Capture the output data
-        output_data = {}
-        for field in obj._meta.fields:
-            value = getattr(obj, field.name)
-            if isinstance(value, models.Model):
-                output_data[field.name] = value.pk
-            elif isinstance(value, (str, int, float, bool, type(None))):
-                output_data[field.name] = value
-            else:
-                output_data[field.name] = str(value)
-
-        # Combine input and output data
-        event_data = {"input": input_data, "output": output_data}
-
-        # Record the event (assuming AdminEvent is imported and RECORDING_ID is defined)
-        ActionRun.objects.create(
-            user=request.user,
-            action=action,
-            model_name=obj._meta.model_name,
-            object_id=obj.id,
-            data=event_data,
-            workspace_id=obj.workspace_id,
-            recording_id=RECORDING_ID,
-        )
-
-    def custom_action(self, request, queryset):
-        # Your custom action logic here
-        self.message_user(request, "Custom action performed")
-
-    custom_action.short_description = "Perform custom action"
-
-    def response_change(self, request, obj):
-        if "_custom_action" in request.POST:
-            # Your custom action logic for a single object
-            self.message_user(request, "Custom action performed for this object")
-            return HttpResponseRedirect(".")
-        return super().response_change(request, obj)
-
-    def response_add(self, request, obj, post_url_continue=None):
-        if "_custom_action" in request.POST:
-            # Your custom action logic for a newly added object
-            self.message_user(request, "Custom action performed for new object")
-            return HttpResponseRedirect(".")
-        return super().response_add(request, obj, post_url_continue)
-
-    def save_model(self, request, obj, form, change):
-        # Capture the input data
-        input_data = {}
-        for field_name, field_value in form.cleaned_data.items():
-            if isinstance(field_value, models.Model):
-                input_data[field_name] = field_value.pk
-            elif isinstance(field_value, (str, int, float, bool, type(None))):
-                input_data[field_name] = field_value
-            else:
-                input_data[field_name] = str(field_value)
-
-        # Determine if this is a create or update action
-        action_type = Action.ActionType.UPDATE if change else Action.ActionType.CREATE
+        action_type = Action.ActionType.SAVE if change else Action.ActionType.CREATE
 
         # Get or create the Model instance for this model
         model_instance, _ = Model.objects.get_or_create(
@@ -162,13 +95,33 @@ class InWorkspace(admin.ModelAdmin):
         # Record the event
         ActionRun.objects.create(
             user=request.user,
-            action=action_instance,  # Use the Action instance here
+            action=action_instance,
             model_name=obj._meta.model_name,
             object_id=obj.id,
             data=event_data,
             workspace_id=obj.workspace_id,
             recording_id=RECORDING_ID,
         )
+
+    def custom_action(self, request, queryset):
+        # Your custom action logic here
+        self.message_user(request, "Custom action performed")
+
+    custom_action.short_description = "Perform custom action"
+
+    def response_change(self, request, obj):
+        if "_custom_action" in request.POST:
+            # Your custom action logic for a single object
+            self.message_user(request, "Custom action performed for this object")
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
+
+    def response_add(self, request, obj, post_url_continue=None):
+        if "_custom_action" in request.POST:
+            # Your custom action logic for a newly added object
+            self.message_user(request, "Custom action performed for new object")
+            return HttpResponseRedirect(".")
+        return super().response_add(request, obj, post_url_continue)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -356,7 +309,7 @@ class InWorkspace(admin.ModelAdmin):
 
         # Get or create the Action instance for LIST_VIEW
         list_view_action, _ = Action.objects.get_or_create(
-            action_type=Action.ActionType.LIST_VIEW,
+            action_type=Action.ActionType.LIST,
             model=model_instance,
             workspace_id=workspace_id,
         )

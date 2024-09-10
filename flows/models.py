@@ -134,24 +134,25 @@ class Action(models.Model):
         CREATE = "CREATE", "Create"
         SAVE = "SAVE", "Save"
         DELETE = "DELETE", "Delete"
-        ACTION = "ACTION", "Action"
-        SELECT = "SELECT", "Select"
-        LIST_VIEW = "LIST_VIEW", "List View"
+        CUSTOM = "CUSTOM", "Custom"
+        LIST = "LIST", "List"
+        SHOW = "SHOW", "Show"
 
-    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="actions")
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     action_type = models.CharField(max_length=20, choices=ActionType.choices)
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
-    action_input = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
         return f"{self.get_action_type_display()} on {self.model.name}"
 
 
 class ActionAdmin(admin.ModelAdmin):
-    list_display = ["action_type", "model", "flow"]
-    list_filter = ["action_type", "model", "flow"]
-    search_fields = ["model__name", "flow__name"]
+    list_display = [
+        "action_type",
+        "model",
+    ]
+    list_filter = ["action_type", "model"]
+    search_fields = ["model__name"]
 
 
 admin.site.register(Action, ActionAdmin)
