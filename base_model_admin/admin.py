@@ -4,7 +4,6 @@ from asyncio.log import logger
 
 from django_json_widget.widgets import JSONEditorWidget
 
-from action_runs.models import ActionRun
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
@@ -13,7 +12,7 @@ from django.db.models import JSONField
 from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
-from flows.models import Action, Model
+from flows.models import Action, ActionRun, Model
 from workspaces.models import Workspace
 
 RECORDING_ID = 1

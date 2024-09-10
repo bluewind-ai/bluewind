@@ -228,7 +228,7 @@
       const detailsElement = document.getElementById('event-details');
       if (event) {
         try {
-          const response = await fetch(`/workspaces/1/admin/action_runs/actionrun/${event.id}/change/`);
+          const response = await fetch(`/workspaces/1/admin/flows/actionrun/${event.id}/change/`);
           if (response.ok) {
             const html = await response.text();
             detailsElement.innerHTML = html;
@@ -283,7 +283,7 @@
           formData.append('_selected_action', eventId);
           formData.append('post', 'yes');
     
-          const response = await fetch(`/workspaces/1/admin/action_runs/actionrun/`, {
+          const response = await fetch(`/workspaces/1/admin/flows/actionrun/`, {
             method: 'POST',
             headers: {
               'X-CSRFToken': getCookie('csrftoken'),
@@ -342,7 +342,7 @@
     if (adminEvents.length > 0) {
       const firstEvent = adminEvents[0];
       try {
-        const response = await fetch('/workspaces/1/admin/action_runs/actionrun/rerun/', {
+        const response = await fetch('/workspaces/1/admin/flows/actionrun/rerun/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
