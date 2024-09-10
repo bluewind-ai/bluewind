@@ -6,11 +6,10 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ("admin_events", "0002_initial"),
+        ("action_runs", "0002_initial"),
         ("workspaces", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -44,8 +43,8 @@ class Migration(migrations.Migration):
                 blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                related_name="admin_events",
-                to="admin_events.recording",
+                related_name="action_runs",
+                to="action_runs.recording",
             ),
         ),
     ]

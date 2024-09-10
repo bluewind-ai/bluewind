@@ -1,11 +1,11 @@
 *
 !account
+!action_runs
 !actions
 !additional_dockerignore
 !admin
 !admin_autoregister
 !admin_autoregister.py
-!admin_events
 !allauth
 !allauth_ui
 !api_providers

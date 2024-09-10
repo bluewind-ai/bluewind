@@ -168,8 +168,8 @@ class Action(models.Model):
     action_type = models.CharField(max_length=20, choices=ActionType.choices)
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
     action_input = models.JSONField(default=dict, blank=True)
-    admin_event = models.ForeignKey(
-        "admin_events.AdminEvent",
+    action_run = models.ForeignKey(
+        "action_runs.ActionRun",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

@@ -27,7 +27,7 @@ class RecordingAdmin(admin.ModelAdmin):
         recording = self.get_object(request, object_id)
         if recording is None:
             return HttpResponse("Recording not found", status=404)
-        admin_events = AdminEvent.objects.filter(recording=recording).order_by(
+        action_runs = ActionRun.objects.filter(recording=recording).order_by(
             "timestamp"
         )
 
@@ -41,7 +41,7 @@ class RecordingAdmin(admin.ModelAdmin):
         ]
         edges = []
 
-        for i, event in enumerate(admin_events):
+        for i, event in enumerate(action_runs):
             node_id = f"event_{i}"
             nodes.append(
                 {
@@ -67,7 +67,7 @@ class RecordingAdmin(admin.ModelAdmin):
                     }
                 )
 
-        admin_events_data = [
+        action_runs_data = [
             {
                 "id": event.id,
                 "action": event.action,
@@ -76,7 +76,7 @@ class RecordingAdmin(admin.ModelAdmin):
                 "user": str(event.user),
                 "data": event.data,
             }
-            for event in admin_events
+            for event in action_runs
         ]
 
         context = {
@@ -84,11 +84,11 @@ class RecordingAdmin(admin.ModelAdmin):
             "opts": self.model._meta,
             "app_label": self.model._meta.app_label,
             "graph_data": json.dumps({"nodes": nodes, "edges": edges}),
-            "admin_events": json.dumps(admin_events_data, cls=DjangoJSONEncoder),
+            "action_runs": json.dumps(action_runs_data, cls=DjangoJSONEncoder),
         }
 
         return TemplateResponse(
-            request, "admin/admin_events/recording/recording_change_form.html", context
+            request, "admin/action_runs/recording/recording_change_form.html", context
         )
 
 
@@ -102,11 +102,11 @@ class Recording(WorkspaceRelated):
         return self.name
 
 
-class AdminEvent(WorkspaceRelated):
+class ActionRun(WorkspaceRelated):
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     action = models.ForeignKey(
-        "flows.Action", on_delete=models.CASCADE, related_name="admin_events"
+        "flows.Action", on_delete=models.CASCADE, related_name="action_runs"
     )
     model_name = models.CharField(max_length=100)
     object_id = models.IntegerField(null=True, blank=True)
@@ -116,13 +116,13 @@ class AdminEvent(WorkspaceRelated):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="admin_events",
+        related_name="action_runs",
     )
 
     action = models.ForeignKey(
         "flows.Action",
         on_delete=models.CASCADE,
-        related_name="admin_events",
+        related_name="action_runs",
     )
 
     def __str__(self):
@@ -143,7 +143,7 @@ class AdminEvent(WorkspaceRelated):
         return None
 
 
-class AdminEventAdmin(admin.ModelAdmin):
+class ActionRunAdmin(admin.ModelAdmin):
     list_display = [
         "__str__",
         "data",

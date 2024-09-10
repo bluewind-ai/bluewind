@@ -4,7 +4,7 @@ from asyncio.log import logger
 
 from django_json_widget.widgets import JSONEditorWidget
 
-from admin_events.models import AdminEvent
+from action_runs.models import ActionRun
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
@@ -89,7 +89,7 @@ class InWorkspace(admin.ModelAdmin):
         event_data = {"input": input_data, "output": output_data}
 
         # Record the event (assuming AdminEvent is imported and RECORDING_ID is defined)
-        AdminEvent.objects.create(
+        ActionRun.objects.create(
             user=request.user,
             action=action,
             model_name=obj._meta.model_name,
@@ -161,7 +161,7 @@ class InWorkspace(admin.ModelAdmin):
         event_data = {"input": input_data, "output": output_data}
 
         # Record the event
-        AdminEvent.objects.create(
+        ActionRun.objects.create(
             user=request.user,
             action=action_instance,  # Use the Action instance here
             model_name=obj._meta.model_name,
@@ -217,7 +217,7 @@ class InWorkspace(admin.ModelAdmin):
             event_data = {"input": input_data}
 
             # Record the event
-            AdminEvent.objects.create(
+            ActionRun.objects.create(
                 user=request.user,
                 action=action_name,
                 model_name=model_name,
@@ -280,7 +280,7 @@ class InWorkspace(admin.ModelAdmin):
 
         # Get the most recent AdminEvent for this list view
         admin_event = (
-            AdminEvent.objects.filter(
+            ActionRun.objects.filter(
                 model_name=self.model._meta.model_name,
                 action=list_view_action,  # Use the Action instance here
                 workspace_id=request.environ.get("WORKSPACE_ID"),
@@ -363,7 +363,7 @@ class InWorkspace(admin.ModelAdmin):
         )
 
         # Record the event
-        AdminEvent.objects.create(
+        ActionRun.objects.create(
             user=request.user,
             action=list_view_action,
             model_name=model_name,

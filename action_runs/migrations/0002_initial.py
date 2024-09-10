@@ -5,11 +5,10 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ("admin_events", "0001_initial"),
+        ("action_runs", "0001_initial"),
         ("flows", "0001_initial"),
     ]
 
@@ -19,7 +18,7 @@ class Migration(migrations.Migration):
             name="action",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name="admin_events",
+                related_name="action_runs",
                 to="flows.action",
             ),
         ),
