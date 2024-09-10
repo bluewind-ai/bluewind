@@ -1,13 +1,10 @@
 from django.apps import apps
-from flows.models import Action, Flow, Model
+from flows.models import Action, Model
 from workspaces.models import Workspace
 
 
 def register_actions():
     default_workspace = Workspace.objects.first()
-    default_flow, _ = Flow.objects.get_or_create(
-        name="Default Flow", workspace=default_workspace
-    )
 
     action_types = [
         Action.ActionType.CREATE,
@@ -29,7 +26,6 @@ def register_actions():
         for action_type in action_types:
             if (action_type, model_instance.id) not in registered_actions:
                 Action.objects.create(
-                    flow=default_flow,
                     workspace=default_workspace,
                     action_type=action_type,
                     model=model_instance,

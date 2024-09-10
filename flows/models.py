@@ -1,4 +1,5 @@
 import logging
+from datetime import timezone
 
 from credentials.models import Credentials
 from django.apps import apps
@@ -257,3 +258,19 @@ class ActionRun(WorkspaceRelated):
         # ... (implement other action types as needed)
 
         logger.info(f"Action result: {self.data}")
+
+
+class StepRun(WorkspaceRelated):
+    step = models.ForeignKey(Step, on_delete=models.CASCADE, related_name="step_runs")
+    action_run = models.OneToOneField(
+        ActionRun, on_delete=models.CASCADE, related_name="step_run"
+    )
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"StepRun for {self.step} (Started: {self.start_date})"
+
+    def complete(self):
+        self.end_date = timezone.now()
+        self.save(update_fields=["end_date"])

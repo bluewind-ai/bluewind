@@ -14,18 +14,18 @@ from django.views.decorators.http import require_POST
 from .models import Action, ActionRun, Flow, FlowRun, Recording, Step
 
 
-class FlowAdmin(admin.ModelAdmin):
+class FlowAdmin(InWorkspace):
     list_display = ["name", "created_at", "updated_at"]
     search_fields = ["name", "description"]
 
 
-class FlowRunAdmin(admin.ModelAdmin):
+class FlowRunAdmin(InWorkspace):
     list_display = ["id", "flow", "workspace", "created_at", "updated_at", "status"]
     fields = ["flow", "workspace", "status", "created_at", "updated_at"]
     readonly_fields = ["created_at", "updated_at"]
 
 
-class ActionAdmin(admin.ModelAdmin):
+class ActionAdmin(InWorkspace):
     list_display = [
         "action_type",
         "model",
@@ -107,7 +107,7 @@ class RecordingAdmin(InWorkspace):
         )
 
 
-class StepAdmin(admin.ModelAdmin):
+class StepAdmin(InWorkspace):
     list_display = [
         "flow",
         "parent_step",
@@ -117,7 +117,7 @@ class StepAdmin(admin.ModelAdmin):
     search_fields = ["flow__name", "action__action_type"]
 
 
-class ActionRunAdmin(admin.ModelAdmin):
+class ActionRunAdmin(InWorkspace):
     list_display = [
         "__str__",
         "data",
