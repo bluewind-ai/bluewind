@@ -1,7 +1,5 @@
 import logging
 
-from django_json_widget.widgets import JSONEditorWidget
-
 from django.apps import apps
 from django.contrib import admin
 
@@ -153,140 +151,9 @@ class ActionAdmin(admin.ModelAdmin):
     list_display = ["action_type", "model", "flow"]
     list_filter = ["action_type", "model", "flow"]
     search_fields = ["model__name", "flow__name"]
-    formfield_overrides = {
-        models.JSONField: {"widget": JSONEditorWidget},
-    }
 
 
 admin.site.register(Action, ActionAdmin)
-
-
-class FlowStep(WorkspaceRelated):
-    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="steps")
-    action_type = models.CharField(
-        max_length=10,
-        choices=Action.ActionType.choices,
-        default=Action.ActionType.ACTION,
-    )
-    model = models.ForeignKey("Model", on_delete=models.CASCADE)
-    default_values = models.JSONField(default=dict, blank=True)
-
-    # New field
-    action = models.ForeignKey(
-        "Action", on_delete=models.SET_NULL, null=True, blank=True
-    )
-
-    def __str__(self):
-        if self.action:
-            return f"{self.flow.name} - {self.action}"
-        return (
-            f"{self.flow.name} - {self.get_action_type_display()} on {self.model.name}"
-        )
-
-
-class FlowStepInline(admin.TabularInline):
-    model = FlowStep
-    fk_name = "parent"
-    extra = 1
-
-
-class FlowStepAdmin(admin.ModelAdmin):
-    list_display = ["flow", "get_action_type", "get_model", "action"]
-    list_filter = ["flow", "action_type", "model"]
-    search_fields = ["flow__name", "model__name"]
-    formfield_overrides = {
-        models.JSONField: {"widget": JSONEditorWidget},
-    }
-
-    def get_action_type(self, obj):
-        return (
-            obj.action.get_action_type_display()
-            if obj.action
-            else obj.get_action_type_display()
-        )
-
-    get_action_type.short_description = "Action Type"
-
-    def get_model(self, obj):
-        return obj.action.model if obj.action else obj.model
-
-    get_model.short_description = "Model"
-
-    def render_associated_form(self, model_admin, form, obj):
-        from django.contrib.admin.helpers import AdminForm
-
-        # Get fieldsets, readonly fields, and prepopulated fields from the model admin
-        fieldsets = model_admin.get_fieldsets(self.request)
-        readonly_fields = model_admin.get_readonly_fields(self.request)
-        prepopulated_fields = model_admin.get_prepopulated_fields(self.request)
-
-        admin_form = AdminForm(
-            form,
-            fieldsets,
-            prepopulated_fields,
-            readonly_fields,
-            model_admin=model_admin,
-        )
-
-        # Get inline formsets
-        inline_instances = model_admin.get_inline_instances(self.request, obj)
-        inline_admin_formsets = []
-        for inline in inline_instances:
-            InlineFormSet = inline.get_formset(self.request, obj)
-            formset = InlineFormSet(
-                instance=obj,
-                prefix=inline.get_formset_kwargs(self.request, obj).get("prefix", None),
-            )
-            inline_admin_formset = model_admin.get_admin_formset_helper(
-                self.request, inline, formset
-            )
-            inline_admin_formsets.append(inline_admin_formset)
-
-        # Check if there are any editable inline formsets
-        has_editable_inline_admin_formsets = any(
-            not inline_admin_formset.opts.readonly
-            for inline_admin_formset in inline_admin_formsets
-        )
-
-        # Render the form using the change_form template
-        context = {
-            "adminform": admin_form,
-            "form": form,
-            "inline_admin_formsets": inline_admin_formsets,
-            "is_popup": False,
-            "add": True,
-            "change": False,
-            "has_view_permission": model_admin.has_view_permission(self.request, obj),
-            "has_add_permission": model_admin.has_add_permission(self.request),
-            "has_change_permission": model_admin.has_change_permission(
-                self.request, obj
-            ),
-            "has_delete_permission": model_admin.has_delete_permission(
-                self.request, obj
-            ),
-            "has_editable_inline_admin_formsets": has_editable_inline_admin_formsets,
-            "has_absolute_url": False,
-            "opts": model_admin.model._meta,
-            "original": obj,
-            "save_as": False,
-            "show_save": False,
-        }
-
-        # Render to string instead of HttpResponse
-        from django.template.loader import render_to_string
-
-        return render_to_string(
-            model_admin.change_form_template or "admin/change_form.html",
-            context,
-            request=self.request,
-        )
-
-    def get_form(self, request, obj=None, **kwargs):
-        self.request = request
-        return super().get_form(request, obj, **kwargs)
-
-
-admin.site.register(FlowStep, FlowStepAdmin)
 
 
 import json
@@ -391,14 +258,49 @@ class Recording(WorkspaceRelated):
         return self.name
 
 
+class Step(WorkspaceRelated):
+    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="steps")
+    parent_step = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="child_steps",
+    )
+    action = models.ForeignKey(Action, on_delete=models.CASCADE, related_name="steps")
+
+    def __str__(self):
+        return f"Step of {self.flow.name}"
+
+
+class StepAdmin(admin.ModelAdmin):
+    list_display = [
+        "flow",
+        "parent_step",
+        "action",
+    ]
+    list_filter = ["flow", "action"]
+    search_fields = ["flow__name", "action__action_type"]
+
+
+admin.site.register(Step, StepAdmin)
+
+
 class ActionRun(WorkspaceRelated):
     flow_run = models.ForeignKey(
         FlowRun, on_delete=models.CASCADE, related_name="action_runs"
     )
+    step = models.ForeignKey(
+        Step,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="action_runs",
+    )
+
     action = models.ForeignKey(
         Action, on_delete=models.CASCADE, related_name="action_runs"
     )
-    action_input = models.JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     model_name = models.CharField(max_length=100)
@@ -421,6 +323,7 @@ class ActionRun(WorkspaceRelated):
         ],
         default="PENDING",
     )
+    action_input = models.JSONField(default=dict, blank=True)  # Added this line
 
     def __str__(self):
         return f"{self.action} on {self.model_name} {self.object_id} by {self.user}"
@@ -460,22 +363,30 @@ class ActionRun(WorkspaceRelated):
             f"Performing action: {action_type} on model: {model_class.__name__}"
         )
 
-        if action_type == Action.ActionType.CREATE:
-            default_values = self.action_input.copy()  # Use action_input from ActionRun
+        if (
+            action_type == Action.ActionType.CREATE
+            and model_class.__name__ == "Channel"
+        ):
+            # Hardcoded logic for creating a Channel
+            default_values = self.action_input.copy()
             default_values["workspace"] = self.flow_run.workspace
+            default_values["user"] = self.user
+
+            # Fetch the default Gmail credentials
+            default_credentials = Credentials.objects.get(
+                workspace=self.flow_run.workspace, key="DEFAULT_GMAIL_CREDENTIALS"
+            )
+            default_values["gmail_credentials"] = default_credentials
+
             new_instance = model_class.objects.create(**default_values)
+
             self.data["result"] = {
                 "action": "CREATE",
-                "model": model_class.__name__,
+                "model": "Channel",
                 "id": new_instance.id,
             }
-            self.flow_run.state[f"created_{model_class.__name__.lower()}_id"] = (
-                new_instance.id
-            )
-            if hasattr(new_instance, "email"):
-                self.flow_run.state[f"created_{model_class.__name__.lower()}_email"] = (
-                    new_instance.email
-                )
+            self.flow_run.state["created_channel_id"] = new_instance.id
+            self.flow_run.state["created_channel_email"] = new_instance.email
             self.flow_run.save(update_fields=["state"])
 
         # ... (implement other action types as needed)
@@ -493,7 +404,8 @@ class ActionRunAdmin(admin.ModelAdmin):
         "model_name",
         "object_id",
         "recording",
-        "action_input",  # Add this line
+        "action_input",
+        "step",  # Add this line
     ]
 
     def change_view(self, request, object_id, form_url="", extra_context=None):

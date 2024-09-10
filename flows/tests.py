@@ -1,19 +1,18 @@
+import json
 import uuid
 
 from channels.models import Channel
 from credentials.models import Credentials as CredentialsModel
 from django.test import TestCase
 from django.utils import timezone
+from flows.models import Action, ActionRun, Flow, FlowRun, Model, Step
 from users.models import User
 from workspaces.models import Workspace
-
-from .models import Flow, FlowRun, FlowStep, Model, StepRun
 
 
 class SimpleFlowTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # This method is called once for the whole test case
         cls.workspace = Workspace.objects.create(name="Test Workspace")
 
         unique_username = f"testuser_{timezone.now().timestamp()}"
@@ -29,10 +28,16 @@ class SimpleFlowTestCase(TestCase):
             name="Channel", app_label="channels", defaults={"workspace": cls.workspace}
         )
 
-        cls.flow_step = FlowStep.objects.create(
+        cls.action = Action.objects.create(
             flow=cls.flow,
-            action_type=FlowStep.ActionType.CREATE,
+            workspace=cls.workspace,
+            action_type=Action.ActionType.CREATE,
             model=cls.channel_model,
+        )
+
+        cls.flow_step = Step.objects.create(
+            flow=cls.flow,
+            action=cls.action,
             workspace=cls.workspace,
         )
 
@@ -41,10 +46,6 @@ class SimpleFlowTestCase(TestCase):
             key="DEFAULT_GMAIL_CREDENTIALS",
             value='{"dummy": "credentials"}',
         )
-
-    def setUp(self):
-        # This method is called before each test
-        pass
 
     def test_create_channel_flow(self):
         unique_email = f"newchannel_{uuid.uuid4().hex[:8]}@example.com"
@@ -57,13 +58,21 @@ class SimpleFlowTestCase(TestCase):
             },
         )
 
-        step_run = StepRun.objects.create(
-            flow_run=flow_run, flow_step=self.flow_step, workspace=self.workspace
+        action_input = {"email": unique_email}
+        action_run = ActionRun.objects.create(
+            flow_run=flow_run,
+            action=self.action,
+            step=self.flow_step,
+            workspace=self.workspace,
+            user=self.user,
+            model_name="Channel",
+            action_input=action_input,
+            data=json.dumps({"input": action_input}),  # Add this line
         )
 
-        step_run.process_step_run()
+        action_run.process_action_run()
 
-        step_run.refresh_from_db()
+        action_run.refresh_from_db()
         flow_run.refresh_from_db()
 
         created_channel_email = flow_run.state.get("created_channel_email")
@@ -81,4 +90,4 @@ class SimpleFlowTestCase(TestCase):
         if created_channel:
             self.assertEqual(flow_run.state["created_channel_id"], created_channel.id)
 
-        self.assertEqual(step_run.status, "COMPLETED")
+        self.assertEqual(action_run.status, "COMPLETED")
