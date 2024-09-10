@@ -311,31 +311,24 @@ class StepRun(WorkspaceRelated):
         return f"StepRun for {self.step} (Started: {self.start_date})"
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # Only for new instances
-            # Find the next step to run
-            flow_steps = self.flow_run.flow.steps.all()
-            completed_step_ids = self.flow_run.step_runs.filter(
-                end_date__isnull=False
-            ).values_list("step_id", flat=True)
+        is_new = not self.pk  # Determine if this is a new instance
 
-            for step in flow_steps:
-                if (
-                    step.parent_step_id is None
-                    or step.parent_step_id in completed_step_ids
-                ) and step.id not in completed_step_ids:
-                    self.step = step
-                    break
+        if is_new:
+            # Only for new instances, find the next step to run
+            self.find_next_step()
 
-            if self.step and not self.action_run:
-                from .models import ActionRun
+        # If the step is assigned and no action_run exists, create it
+        if self.step and not self.action_run:
+            from .models import ActionRun
 
-                self.action_run = ActionRun.objects.create(
-                    workspace=self.workspace,
-                    action=self.step.action,
-                    step_run=self,
-                    user=self.flow_run.user,
-                )
+            self.action_run = ActionRun.objects.create(
+                workspace=self.workspace,
+                action=self.step.action,
+                step_run=self,
+                user=self.flow_run.user,
+            )
 
+        # Set end_date if not set and both step and action_run exist
         if not self.end_date and self.step and self.action_run:
             self.end_date = timezone.now()
 
@@ -346,3 +339,18 @@ class StepRun(WorkspaceRelated):
             raise ValidationError(
                 "Step and ActionRun must be set before completing the StepRun"
             )
+
+    def find_next_step(self):
+        flow_steps = self.flow_run.flow.steps.all()
+        completed_step_ids = self.flow_run.step_runs.filter(
+            end_date__isnull=False
+        ).values_list("step_id", flat=True)
+
+        for step in flow_steps:
+            if (
+                step.parent_step_id is None or step.parent_step_id in completed_step_ids
+            ) and step.id not in completed_step_ids:
+                self.step = step
+                return
+
+        self.step = None
