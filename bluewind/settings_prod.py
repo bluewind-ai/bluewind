@@ -1,5 +1,4 @@
 import os
-import sys
 from pathlib import Path
 
 import environ
@@ -243,7 +242,7 @@ DEFAULT_FROM_EMAIL = "wayne@bluewind.ai"
 # Miscellaneous
 SALT_KEY = os.environ["SALT_KEY"]
 ALLAUTH_UI_THEME = "light"
-# TEST_RUNNER = "bluewind.test_runner.NoDbTestRunner"
+TEST_RUNNER = "bluewind.test_runner.KeepDatabaseTestRunner"
 GRAPH_MODELS = {
     "all_applications": True,
     "group_models": True,
@@ -255,10 +254,10 @@ if os.environ["ENVIRONMENT"] == "prod":
 else:
     SITE_URL = "https://green.bluewind.ai"
 
-if "test" in sys.argv:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": ":memory:",
-        }
-    }
+# if "test" in sys.argv:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": ":memory:",
+#         }
+#     }
