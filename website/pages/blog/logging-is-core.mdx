@@ -1,0 +1,25 @@
+---
+title: Logging is core, careful with third party tools
+---
+
+# Logging is core, careful with third party tools
+
+When you build an AI agent logging can't be an afterthought.
+
+Be careful using third party tools for your logs. The actions of your agent means something to YOU.
+
+Tying logs to your business logic can be essential. For example if you have 57 actions (or commands), such as "search google", "enrich email", etc, etc...
+
+You might want try to make requests to see how many times a certain command ran, or how much it costs on average. And you will be able to do it with a good third party tool.
+
+The problem is that now you need to query 2 machines to get stuff done. If you use an ORM for your core stuff, it means mixing SQL and api calls together in order to have what you want. Which is feasible, but might make your system more complex to debug.
+
+On top of that, these tools most of the time give you eventual consistency. This is usually an OK trade off, because they're meant to be used for monitoring. But when you need analytical queries to inform the behavior of your agent NOW, you might not want eventual consistency.
+
+Overall, you might be wasting a lot of time using a third party tool and integrating it, paradoxically. They're built to scale, but you don't need their scale. They have 100s of customer. You're alone. You can afford to write your logs to your DB for a while and benefit from your ORM + the strong consistency of your DB + the fact that transactions are easy one one single system (it's a pain when you have 2 systems)
+
+I personally think it's more useful to slowly build your logs, steps by steps. Start with a middleware that logs the input and output of methods you care about, using your favorite ORM. This goes a long way. You will see that as your needs evolve, you will start developing an institutional knowledge of your logs. Which is essential in my opinion. Particularly when building AI applications.
+
+I also think everything is linked to logs. Your caching layer, unified LLM API, budgeting, evals, etc, etc...
+
+It's great for these 3rd party APIs because they are a critical piece. At the same time. It's so critical that having it as a third party can make you lose control and understanding of your app.

@@ -34,11 +34,17 @@ def register_actions_and_models(workspace):
 
             for action_type in action_types:
                 if (action_type, model_instance.id) not in registered_actions:
+                    # Set is_recorded to False for ActionRun LIST action
+                    is_recorded = not (
+                        model._meta.model_name == "actionrun"
+                        and action_type == Action.ActionType.LIST
+                    )
                     actions_to_create.append(
                         Action(
                             workspace=workspace,
                             action_type=action_type,
                             model=model_instance,
+                            is_recorded=is_recorded,
                         )
                     )
 

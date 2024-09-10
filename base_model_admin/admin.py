@@ -213,27 +213,40 @@ class InWorkspace(admin.ModelAdmin):
         return cl
 
     def changelist_view(self, request, extra_context=None):
-        self._log_get_request(request)
+        workspace_id = request.environ.get("WORKSPACE_ID")
+        model_name = self.model._meta.model_name
+
+        # Only log if the action should be recorded
+        try:
+            action = Action.objects.get(
+                model__name=model_name,
+                action_type=Action.ActionType.LIST,
+                workspace_id=workspace_id,
+            )
+            if action.is_recorded:
+                self._log_get_request(request)
+        except Action.DoesNotExist:
+            self._log_get_request(request)  # If action doesn't exist, log by default
 
         qs = self.get_queryset(request)
 
         model = Model.objects.get(
             name=self.model._meta.model_name,
             app_label=self.model._meta.app_label,
-            workspace_id=request.environ.get("WORKSPACE_ID"),
+            workspace_id=workspace_id,
         )
 
         list_view_action = Action.objects.get(
             action_type=Action.ActionType.LIST,
             model=model,
-            workspace_id=request.environ.get("WORKSPACE_ID"),
+            workspace_id=workspace_id,
         )
 
         admin_event = (
             ActionRun.objects.filter(
                 model_name=self.model._meta.model_name,
                 action=list_view_action,
-                workspace_id=request.environ.get("WORKSPACE_ID"),
+                workspace_id=workspace_id,
             )
             .order_by("-timestamp")
             .first()
@@ -253,7 +266,7 @@ class InWorkspace(admin.ModelAdmin):
 
         cl = self.get_changelist_instance(request)
 
-        qs = cl.get_queryset(request)
+        cl.queryset = qs
 
         context = {
             "cl": cl,
@@ -278,6 +291,18 @@ class InWorkspace(admin.ModelAdmin):
         workspace_id = request.environ.get("WORKSPACE_ID")
         model_name = self.model._meta.model_name
 
+        # Check if this list action should be recorded
+        try:
+            action = Action.objects.get(
+                model__name=model_name,
+                action_type=Action.ActionType.LIST,
+                workspace_id=workspace_id,
+            )
+            if not action.is_recorded:
+                return  # Exit the method early without logging
+        except Action.DoesNotExist:
+            pass  # If the action doesn't exist, we'll proceed with logging
+
         input_data = dict(request.GET.items())
 
         queryset = self.get_queryset(request)
@@ -287,7 +312,7 @@ class InWorkspace(admin.ModelAdmin):
         )
 
         model_instance = Model.objects.get(
-            name=self.model._meta.model_name,
+            name=model_name,
             app_label=self.model._meta.app_label,
             workspace_id=workspace_id,
         )
@@ -298,7 +323,11 @@ class InWorkspace(admin.ModelAdmin):
             workspace_id=workspace_id,
         )
 
-        latest_recording = get_latest_recording(workspace_id)
+        latest_recording = (
+            Recording.objects.filter(workspace_id=workspace_id)
+            .order_by("-start_time")
+            .first()
+        )
 
         ActionRun.objects.create(
             user=request.user,

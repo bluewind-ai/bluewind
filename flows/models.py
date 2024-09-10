@@ -91,10 +91,14 @@ class Action(WorkspaceRelated):
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     action_type = models.CharField(max_length=20, choices=ActionType.choices)
-    model = models.ForeignKey(Model, on_delete=models.CASCADE)
+    model = models.ForeignKey("Model", on_delete=models.CASCADE)
+    is_recorded = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.model.name} {self.get_action_type_display()}"
+
+    class Meta:
+        unique_together = ("workspace", "action_type", "model")
 
 
 class Recording(WorkspaceRelated):
