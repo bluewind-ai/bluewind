@@ -169,19 +169,26 @@ class ActionRun(WorkspaceRelated):
         return f"{self.action} by {self.user}"
 
     def save(self, *args, **kwargs):
-        is_new = self.pk is None
+        is_new = self._state.adding
+        update_fields = kwargs.get("update_fields")
 
-        if is_new:
-            try:
-                with transaction.atomic():
+        try:
+            with transaction.atomic():
+                if is_new:
                     super().save(*args, **kwargs)
                     self._execute_action()
-            except ValidationError as e:
-                self.status = "ERROR"
-                self.action_input["error"] = str(e)
-                super().save(update_fields=["status", "action_input"])
-        else:
-            super().save(*args, **kwargs)
+                elif update_fields:
+                    # For updates with specific fields, use update() method
+                    type(self).objects.filter(pk=self.pk).update(
+                        **{field: getattr(self, field) for field in update_fields}
+                    )
+                else:
+                    super().save(*args, **kwargs)
+        except ValidationError as e:
+            self.status = "ERROR"
+            self.action_input["error"] = str(e)
+            # Save without update_fields to ensure the error is recorded
+            super().save(update_fields=["status", "action_input"])
 
     def _execute_action(self):
         self.status = "IN_PROGRESS"

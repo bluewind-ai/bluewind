@@ -32,16 +32,15 @@ class Workspace(models.Model):
     admin_url_link.short_description = "Admin URL"
 
     def save(self, *args, **kwargs):
-        from admin_autoregister.autoregister_models import insert_all_models
-        from admin_autoregister.register_actions import register_actions
+        from admin_autoregister.register_actions import register_actions_and_models
         from flows.models import Recording  # Import the Recording model
 
         is_new = self.pk is None
         super().save(*args, **kwargs)
 
         if is_new:
-            register_actions(self)
-            insert_all_models(self)
+            register_actions_and_models(self)
+            # insert_all_models(self)
 
             # Create a new Recording for this workspace
             Recording.objects.create(
