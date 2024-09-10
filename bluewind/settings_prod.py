@@ -242,7 +242,7 @@ DEFAULT_FROM_EMAIL = "wayne@bluewind.ai"
 # Miscellaneous
 SALT_KEY = os.environ["SALT_KEY"]
 ALLAUTH_UI_THEME = "light"
-TEST_RUNNER = "bluewind.test_runner.KeepDatabaseTestRunner"
+TEST_RUNNER = "bluewind.test_runner.NoDbTestRunner"
 GRAPH_MODELS = {
     "all_applications": True,
     "group_models": True,
@@ -253,11 +253,3 @@ if os.environ["ENVIRONMENT"] == "prod":
     SITE_URL = os.environ["SITE_URL"]
 else:
     SITE_URL = "https://green.bluewind.ai"
-
-# if "test" in sys.argv:
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.sqlite3",
-#             "NAME": ":memory:",
-#         }
-#     }

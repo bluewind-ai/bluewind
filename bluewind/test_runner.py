@@ -1,22 +1,35 @@
-# bluewind/test_runner.py
-
+import django.test
 from django.test.runner import DiscoverRunner
 
 
-class KeepDatabaseTestRunner(DiscoverRunner):
-    # Skip database creation
+class NoDbTestRunner(DiscoverRunner):
+    """A test runner that does nothing with the database and checks for test case types."""
+
     def setup_databases(self, **kwargs):
-        print("KeepDatabaseTestRunner: Skipping database setup.")
+        print("NoDbTestRunner: Skipping database setup.")
         return None
 
-    # Skip database teardown
     def teardown_databases(self, old_config, **kwargs):
-        print("KeepDatabaseTestRunner: Skipping database teardown.")
+        print("NoDbTestRunner: Skipping database teardown.")
 
-    # Skip test environment setup to prevent flushing
     def setup_test_environment(self, **kwargs):
-        print("KeepDatabaseTestRunner: Skipping test environment setup.")
+        print("NoDbTestRunner: Skipping test environment setup.")
+        self.check_test_cases()
 
-    # Skip test environment teardown
     def teardown_test_environment(self, **kwargs):
-        print("KeepDatabaseTestRunner: Skipping test environment teardown.")
+        print("NoDbTestRunner: Skipping test environment teardown.")
+
+    def check_test_cases(self):
+        """
+        Check if any test cases use django.test.TestCase or TransactionTestCase.
+        Raise an error if found.
+        """
+        suite = self.build_suite(test_labels=None)  # This gets all the test cases
+        for test in suite:
+            if isinstance(
+                test, (django.test.TestCase, django.test.TransactionTestCase)
+            ):
+                raise RuntimeError(
+                    f"Error: Test '{test}' uses {type(test).__name__}. "
+                    f"Please use unittest.TestCase instead otherwise you will the database will be wiped out."
+                )
