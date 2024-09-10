@@ -122,16 +122,14 @@ class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
 logger = logging.getLogger(__name__)
 
 
+class WorkspaceRelatedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("workspace")
+
+
 class WorkspaceRelated(BaseModel):
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
+    objects = WorkspaceRelatedManager()
 
     class Meta:
         abstract = True
-
-    # def get_queryset(self, request):
-    #     qs = super().get_queryset(request)
-    #     workspace_id = request.environ.get("WORKSPACE_ID")
-    #     logger.debug(f"get_queryset: workspace_id = {workspace_id}")
-    #     if self.model == Workspace:
-    #         return qs.filter(id=workspace_id)
-    #     return qs.filter(workspace_id=workspace_id).select_related("workspace")

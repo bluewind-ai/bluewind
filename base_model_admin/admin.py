@@ -4,6 +4,7 @@ from asyncio.log import logger
 
 from django_json_widget.widgets import JSONEditorWidget
 
+from bluewind.utils import get_queryset
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
@@ -120,12 +121,7 @@ class InWorkspace(admin.ModelAdmin):
         return super().response_add(request, obj, post_url_continue)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        workspace_id = request.environ.get("WORKSPACE_ID")
-        logger.debug(f"get_queryset: workspace_id = {workspace_id}")
-        if self.model == Workspace:
-            return qs.filter(id=workspace_id)
-        return qs.filter(workspace_id=workspace_id).select_related("workspace")
+        return get_queryset(self, request)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         workspace_id = request.environ.get("WORKSPACE_ID")
