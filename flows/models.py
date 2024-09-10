@@ -312,34 +312,34 @@ class StepRun(WorkspaceRelated):
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Only for new instances
-            self.find_step_and_create_action_run()
+            # Find the next step to run
+            flow_steps = self.flow_run.flow.steps.all()
+            completed_step_ids = self.flow_run.step_runs.filter(
+                end_date__isnull=False
+            ).values_list("step_id", flat=True)
+
+            for step in flow_steps:
+                if (
+                    step.parent_step_id is None
+                    or step.parent_step_id in completed_step_ids
+                ) and step.id not in completed_step_ids:
+                    self.step = step
+                    break
+
+            if self.step and not self.action_run:
+                from .models import ActionRun
+
+                self.action_run = ActionRun.objects.create(
+                    workspace=self.workspace,
+                    action=self.step.action,
+                    step_run=self,
+                    user=self.flow_run.user,
+                )
 
         if not self.end_date and self.step and self.action_run:
             self.end_date = timezone.now()
 
-        self.clean()  # Run validation before saving
         super().save(*args, **kwargs)
-
-    def find_step_and_create_action_run(self):
-        if not self.step:
-            # Find the current step based on the flow run
-            self.step = self.flow_run.flow.steps.filter(
-                order=self.flow_run.current_step_order
-            ).first()
-
-            if not self.step:
-                raise ValidationError("No matching step found for this StepRun")
-
-        if not self.action_run:
-            # Create the ActionRun
-            from .models import ActionRun  # Import here to avoid circular imports
-
-            self.action_run = ActionRun.objects.create(
-                workspace=self.workspace,
-                action=self.step.action,
-                step_run=self,
-                user=self.flow_run.user,  # Assuming FlowRun has a user field
-            )
 
     def clean(self):
         if self.end_date and (not self.step or not self.action_run):
