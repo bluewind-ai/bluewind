@@ -1,4 +1,6 @@
-from credentials.models import Credentials as CredentialsModel
+from channels.models import Channel
+from credentials.models import Credentials
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 from flows.models import Action, ActionRun, Flow, FlowRun, Model, Step, StepRun
@@ -7,70 +9,115 @@ from workspaces.models import Workspace
 
 
 class SimpleFlowTestCase(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.workspace = Workspace.objects.create(name="Test Workspace")
+    def setUp(self):
+        # Create Workspace
+        self.workspace = Workspace.objects.create(name="Test Workspace")
 
-        unique_username = f"testuser_{timezone.now().timestamp()}"
-        cls.user = User.objects.create_user(
-            username=unique_username, email="test@example.com"
+        # Create User
+        self.user = User.objects.create_user(
+            username=f"testuser_{timezone.now().timestamp()}",
+            email="test@example.com",
+            password="testpassword",
         )
 
-        cls.flow = Flow.objects.create(
-            name="Create Channel Flow", workspace=cls.workspace
+        # Create Flow
+        self.flow = Flow.objects.create(
+            name="Create Channel Flow", workspace=self.workspace
         )
 
-        cls.channel_model, _ = Model.objects.get_or_create(
-            name="Channel", app_label="channels", defaults={"workspace": cls.workspace}
+        # Create Model
+        self.channel_model, _ = Model.objects.get_or_create(
+            name="Channel", app_label="channels", defaults={"workspace": self.workspace}
         )
 
-        cls.action = Action.objects.create(
-            workspace=cls.workspace,
+        # Create Action
+        self.action = Action.objects.create(
+            workspace=self.workspace,
             action_type=Action.ActionType.CREATE,
-            model=cls.channel_model,
+            model=self.channel_model,
         )
 
-        cls.flow_step = Step.objects.create(
-            flow=cls.flow,
-            action=cls.action,
-            workspace=cls.workspace,
+        # Create Step
+        self.flow_step = Step.objects.create(
+            flow=self.flow,
+            action=self.action,
+            workspace=self.workspace,
         )
 
-        cls.default_credentials = CredentialsModel.objects.create(
-            workspace=cls.workspace,
+        # Create Default Credentials
+        Credentials.objects.create(
+            workspace=self.workspace,
             key="DEFAULT_GMAIL_CREDENTIALS",
             value='{"dummy": "credentials"}',
         )
 
-    def test_create_channel_flow(self):
-        flow_run = FlowRun.objects.create(flow=self.flow, workspace=self.workspace)
+        # Create FlowRun
+        self.flow_run = FlowRun.objects.create(flow=self.flow, workspace=self.workspace)
 
-        # First, create StepRun
-        step_run = StepRun.objects.create(
-            step=self.flow_step, workspace=self.workspace, flow_run=flow_run
+        # Create StepRun
+        self.step_run = StepRun.objects.create(
+            step=self.flow_step, workspace=self.workspace, flow_run=self.flow_run
         )
 
-        # Now create ActionRun with the StepRun
-        action_run = ActionRun.objects.create(
+    def test_create_channel_flow_with_invalid_input(self):
+        # Try to create an ActionRun with invalid input
+        with self.assertRaises(ValidationError):
+            ActionRun.objects.create(
+                action=self.action,
+                step_run=self.step_run,
+                workspace=self.workspace,
+                user=self.user,
+                model_name="Channel",
+                data={},
+                action_input={"name": "Test Channel", "description": "A test channel"},
+            )
+
+        # Verify that no Channel was created
+        self.assertEqual(Channel.objects.count(), 0)
+
+        # Verify that the ActionRun was created but has ERROR status
+        action_run = ActionRun.objects.latest("id")
+        self.assertEqual(action_run.status, "ERROR")
+        self.assertIn("error", action_run.action_input)
+
+    def test_create_channel_flow_with_valid_input(self):
+        # Create ActionRun with valid input
+        ActionRun.objects.create(
             action=self.action,
-            step_run=step_run,
+            step_run=self.step_run,
             workspace=self.workspace,
             user=self.user,
             model_name="Channel",
             data={},
-            action_input={"name": "Test Channel", "description": "A test channel"},
+            action_input={"email": "test@example.com"},
         )
 
-        # Update StepRun with the created ActionRun
-        step_run.action_run = action_run
-        step_run.save()
+        # Verify that a Channel was created
+        self.assertEqual(Channel.objects.count(), 1)
+        created_channel = Channel.objects.first()
+        self.assertEqual(created_channel.email, "test@example.com")
 
-        self.assertEqual(action_run.action, self.action)
-        self.assertEqual(action_run.step_run, step_run)
-        self.assertEqual(step_run.action_run, action_run)
-        self.assertEqual(step_run.flow_run, flow_run)
-        self.assertEqual(action_run.workspace, self.workspace)
-        self.assertEqual(action_run.user, self.user)
-        self.assertEqual(action_run.model_name, "Channel")
-        self.assertEqual(action_run.action_input["name"], "Test Channel")
-        self.assertEqual(action_run.action_input["description"], "A test channel")
+        # Verify that the ActionRun was created and has COMPLETED status
+        action_run = ActionRun.objects.latest("id")
+        self.assertEqual(action_run.status, "COMPLETED")
+
+    def test_create_channel_flow_without_required_fields(self):
+        # Try to create an ActionRun without required fields
+        with self.assertRaises(ValidationError):
+            ActionRun.objects.create(
+                action=self.action,
+                step_run=self.step_run,
+                workspace=self.workspace,
+                user=self.user,
+                model_name="Channel",
+                data={},
+                action_input={},  # Empty input, missing required fields
+            )
+
+        # Verify that no Channel was created
+        self.assertEqual(Channel.objects.count(), 0)
+
+        # Verify that the ActionRun was created but has ERROR status
+        action_run = ActionRun.objects.latest("id")
+        self.assertEqual(action_run.status, "ERROR")
+        self.assertIn("error", action_run.action_input)

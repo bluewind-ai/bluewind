@@ -113,7 +113,7 @@ class Model(WorkspaceRelated):
             return 0
 
 
-class Action(models.Model):
+class Action(WorkspaceRelated):
     class ActionType(models.TextChoices):
         CREATE = "CREATE", "Create"
         SAVE = "SAVE", "Save"
@@ -201,6 +201,75 @@ class ActionRun(WorkspaceRelated):
     def __str__(self):
         return f"{self.action} by {self.user}"
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+
+        if is_new:
+            try:
+                with transaction.atomic():
+                    super().save(*args, **kwargs)
+                    self._execute_action()
+            except ValidationError as e:
+                self.status = "ERROR"
+                self.action_input["error"] = str(e)
+                super().save(update_fields=["status", "action_input"])
+                raise  # Re-raise the ValidationError
+        else:
+            super().save(*args, **kwargs)
+
+    def _execute_action(self):
+        self.status = "IN_PROGRESS"
+        super().save(update_fields=["status"])
+
+        try:
+            action_type = self.action.action_type
+            model_class = self.get_model_class()
+
+            if (
+                action_type == Action.ActionType.CREATE
+                and model_class.__name__ == "Channel"
+            ):
+                new_instance = model_class(
+                    workspace=self.step_run.flow_run.workspace,
+                    user=self.user,
+                    **{
+                        k: v
+                        for k, v in self.action_input.items()
+                        if k in [f.name for f in model_class._meta.fields]
+                    },
+                )
+
+                default_credentials = Credentials.objects.get(
+                    workspace=self.step_run.flow_run.workspace,
+                    key="DEFAULT_GMAIL_CREDENTIALS",
+                )
+                new_instance.gmail_credentials = default_credentials
+
+                new_instance.full_clean()  # This will raise ValidationError if the data is invalid
+                new_instance.save()
+
+                self.action_input["result"] = {
+                    "action": "CREATE",
+                    "model": "Channel",
+                    "id": new_instance.id,
+                }
+                self.step_run.flow_run.state["created_channel_id"] = new_instance.id
+                self.step_run.flow_run.state["created_channel_email"] = (
+                    new_instance.email
+                )
+                self.step_run.flow_run.save(update_fields=["state"])
+
+            self.status = "COMPLETED"
+            super().save(update_fields=["status"])
+
+        except ValidationError:
+            raise  # Re-raise ValidationError to be caught in the save method
+        except Exception as e:
+            raise ValidationError(f"Error in action execution: {str(e)}")
+
+        self.data = self.action_input.get("result", {})
+        super().save(update_fields=["data"])
+
     def get_model_class(self):
         parts = self.model_name.split(".")
         if len(parts) == 2:
@@ -212,58 +281,6 @@ class ActionRun(WorkspaceRelated):
                 except LookupError:
                     continue
         return None
-
-    def process_action_run(self):
-        try:
-            self.status = "IN_PROGRESS"
-            self.save(update_fields=["status"])
-
-            self.perform_action()
-
-            self.status = "COMPLETED"
-            self.save(update_fields=["status"])
-        except Exception as e:
-            logger.exception(f"Error processing action run: {str(e)}")
-            self.status = "ERROR"
-            self.action_input["error"] = str(e)  # Store the error in action_input
-            self.save(update_fields=["status", "action_input"])
-
-    def perform_action(self):
-        action_type = self.action.action_type
-        model_class = self.get_model_class()
-
-        logger.info(
-            f"Performing action: {action_type} on model: {model_class.__name__}"
-        )
-
-        if (
-            action_type == Action.ActionType.CREATE
-            and model_class.__name__ == "Channel"
-        ):
-            default_values = self.action_input.copy()
-            default_values["workspace"] = self.flow_run.workspace
-            default_values["user"] = self.user
-
-            # Fetch the default Gmail credentials
-            default_credentials = Credentials.objects.get(
-                workspace=self.flow_run.workspace, key="DEFAULT_GMAIL_CREDENTIALS"
-            )
-            default_values["gmail_credentials"] = default_credentials
-
-            new_instance = model_class.objects.create(**default_values)
-
-            self.action_input["result"] = {
-                "action": "CREATE",
-                "model": "Channel",
-                "id": new_instance.id,
-            }
-            self.flow_run.state["created_channel_id"] = new_instance.id
-            self.flow_run.state["created_channel_email"] = new_instance.email
-            self.flow_run.save(update_fields=["state"])
-
-        # ... (implement other action types as needed)
-
-        logger.info(f"Action result: {self.data}")
 
 
 class StepRun(WorkspaceRelated):
