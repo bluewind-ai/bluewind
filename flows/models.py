@@ -293,7 +293,6 @@ import json
 import logging
 
 from django.contrib import admin
-from django.contrib.admin import helpers
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -399,6 +398,7 @@ class ActionRun(WorkspaceRelated):
     action = models.ForeignKey(
         Action, on_delete=models.CASCADE, related_name="action_runs"
     )
+    action_input = models.JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     model_name = models.CharField(max_length=100)
@@ -461,7 +461,7 @@ class ActionRun(WorkspaceRelated):
         )
 
         if action_type == Action.ActionType.CREATE:
-            default_values = self.action.action_input.copy()
+            default_values = self.action_input.copy()  # Use action_input from ActionRun
             default_values["workspace"] = self.flow_run.workspace
             new_instance = model_class.objects.create(**default_values)
             self.data["result"] = {
@@ -493,6 +493,7 @@ class ActionRunAdmin(admin.ModelAdmin):
         "model_name",
         "object_id",
         "recording",
+        "action_input",  # Add this line
     ]
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
@@ -573,7 +574,9 @@ class ActionRunAdmin(admin.ModelAdmin):
 
                         return model_admin.changelist_view(request, context)
                     elif admin_event.action in ["create", "update"]:
-                        initial_data = admin_event.data.get("input", {})
+                        initial_data = (
+                            admin_event.action_input
+                        )  # Use action_input instead of data.get("input", {})
 
                         if admin_event.action == "create":
                             ModelForm = model_admin.get_form(request)
@@ -586,60 +589,6 @@ class ActionRunAdmin(admin.ModelAdmin):
                             form = ModelForm(initial=initial_data, instance=obj)
                             form.data = form.initial.copy()
                             add = False
-
-                        # Prepare inline formsets
-                        inline_instances = model_admin.get_inline_instances(
-                            request, obj
-                        )
-                        inline_admin_formsets = []
-                        for inline in inline_instances:
-                            InlineFormSet = inline.get_formset(request, obj)
-                            inline_admin_formset = helpers.InlineAdminFormSet(
-                                inline, form, InlineFormSet, request=request
-                            )
-                            inline_admin_formsets.append(inline_admin_formset)
-
-                        adminForm = helpers.AdminForm(
-                            form,
-                            model_admin.get_fieldsets(request, obj),
-                            model_admin.get_prepopulated_fields(request, obj),
-                            model_admin.get_readonly_fields(request, obj),
-                            model_admin=model_admin,
-                        )
-
-                        context = {
-                            "adminform": adminForm,
-                            "form": form,
-                            "object_id": object_id,
-                            "original": obj,
-                            "is_popup": False,
-                            "save_as": model_admin.save_as,
-                            "has_delete_permission": model_admin.has_delete_permission(
-                                request, obj
-                            ),
-                            "has_add_permission": model_admin.has_add_permission(
-                                request
-                            ),
-                            "has_change_permission": model_admin.has_change_permission(
-                                request, obj
-                            ),
-                            "opts": model_class._meta,
-                            "app_label": model_class._meta.app_label,
-                            "inline_admin_formsets": inline_admin_formsets,
-                            "errors": helpers.AdminErrorList(
-                                form, inline_admin_formsets
-                            ),
-                            "preserved_filters": model_admin.get_preserved_filters(
-                                request
-                            ),
-                            "add": add,
-                            "change": not add,
-                            "has_editable_inline_admin_formsets": False,
-                        }
-
-                        return model_admin.render_change_form(
-                            request, context, add=add, change=not add, obj=obj
-                        )
 
         return super().change_view(request, object_id, form_url, extra_context)
 
