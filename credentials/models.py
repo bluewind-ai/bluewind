@@ -1,8 +1,6 @@
 from encrypted_fields.fields import EncryptedCharField
 
-from base_model_admin.admin import InWorkspace
 from django import forms
-from django.contrib import admin
 from django.db import models
 from workspaces.models import WorkspaceRelated
 
@@ -28,11 +26,3 @@ class CredentialsForm(forms.ModelForm):
     class Meta:
         model = Credentials
         fields = ["workspace", "key", "value"]
-
-
-@admin.register(Credentials)
-class CredentialsAdmin(InWorkspace):
-    form = CredentialsForm
-
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)

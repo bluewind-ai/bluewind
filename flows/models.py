@@ -1,5 +1,6 @@
 import logging
 
+from credentials.models import Credentials
 from django.apps import apps
 from django.contrib import admin
 
@@ -323,7 +324,7 @@ class ActionRun(WorkspaceRelated):
         ],
         default="PENDING",
     )
-    action_input = models.JSONField(default=dict, blank=True)  # Added this line
+    action_input = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
         return f"{self.action} on {self.model_name} {self.object_id} by {self.user}"
@@ -352,8 +353,8 @@ class ActionRun(WorkspaceRelated):
         except Exception as e:
             logger.exception(f"Error processing action run: {str(e)}")
             self.status = "ERROR"
-            self.data["error"] = str(e)
-            self.save(update_fields=["status", "data"])
+            self.action_input["error"] = str(e)  # Store the error in action_input
+            self.save(update_fields=["status", "action_input"])
 
     def perform_action(self):
         action_type = self.action.action_type
@@ -367,7 +368,6 @@ class ActionRun(WorkspaceRelated):
             action_type == Action.ActionType.CREATE
             and model_class.__name__ == "Channel"
         ):
-            # Hardcoded logic for creating a Channel
             default_values = self.action_input.copy()
             default_values["workspace"] = self.flow_run.workspace
             default_values["user"] = self.user
@@ -380,7 +380,7 @@ class ActionRun(WorkspaceRelated):
 
             new_instance = model_class.objects.create(**default_values)
 
-            self.data["result"] = {
+            self.action_input["result"] = {
                 "action": "CREATE",
                 "model": "Channel",
                 "id": new_instance.id,
