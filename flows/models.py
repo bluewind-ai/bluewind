@@ -45,29 +45,19 @@ class FlowRun(WorkspaceRelated):
         return f"Run of {self.flow.name} at {self.created_at}"
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # If this is a new FlowRun
+        if not self.pk:
             self.state = {
                 "channel_name": f"Channel for Flow {self.flow.name}",
                 "channel_description": f"Automatically created channel for Flow {self.flow.name}",
             }
         super().save(*args, **kwargs)
 
-    def get_status(self):
-        total_steps = self.flow.steps.count()
-        completed_steps = self.step_runs.count()
-        if completed_steps == 0:
-            return self.Status.NOT_STARTED
-        elif completed_steps == total_steps:
-            return self.Status.COMPLETED
-        else:
-            return self.Status.IN_PROGRESS
-
     def update_status(self):
-        total_steps = self.flow.steps.count()
-        completed_steps = self.step_runs.count()
-        if completed_steps == 0:
+        total_actions = self.flow.actions.count()
+        completed_actions = self.action_runs.filter(status="COMPLETED").count()
+        if completed_actions == 0:
             new_status = self.Status.NOT_STARTED
-        elif completed_steps == total_steps:
+        elif completed_actions == total_actions:
             new_status = self.Status.COMPLETED
         else:
             new_status = self.Status.IN_PROGRESS
@@ -79,23 +69,8 @@ class FlowRun(WorkspaceRelated):
 
 class FlowRunAdmin(admin.ModelAdmin):
     list_display = ["id", "flow", "workspace", "created_at", "updated_at", "status"]
-    fields = [
-        "flow",
-        "workspace",
-        "status",
-        "created_at",
-        "updated_at",
-    ]
+    fields = ["flow", "workspace", "status", "created_at", "updated_at"]
     readonly_fields = ["created_at", "updated_at"]
-
-    def has_add_permission(self, request):
-        return True
-
-    def has_change_permission(self, request, obj=None):
-        return True
-
-    def has_delete_permission(self, request, obj=None):
-        return True
 
 
 class Model(WorkspaceRelated):
@@ -164,26 +139,20 @@ class Action(models.Model):
         SELECT = "SELECT", "Select"
         LIST_VIEW = "LIST_VIEW", "List View"
 
+    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="actions")
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     action_type = models.CharField(max_length=20, choices=ActionType.choices)
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
     action_input = models.JSONField(default=dict, blank=True)
-    action_run = models.ForeignKey(
-        "flows.ActionRun",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="actions",
-    )
 
     def __str__(self):
         return f"{self.get_action_type_display()} on {self.model.name}"
 
 
 class ActionAdmin(admin.ModelAdmin):
-    list_display = ["action_type", "model"]
-    list_filter = ["action_type", "model"]
-    search_fields = ["model__name"]
+    list_display = ["action_type", "model", "flow"]
+    list_filter = ["action_type", "model", "flow"]
+    search_fields = ["model__name", "flow__name"]
     formfield_overrides = {
         models.JSONField: {"widget": JSONEditorWidget},
     }
@@ -219,198 +188,6 @@ class FlowStepInline(admin.TabularInline):
     model = FlowStep
     fk_name = "parent"
     extra = 1
-
-
-from django.db import models
-
-
-class StepRun(WorkspaceRelated):
-    flow_run = models.ForeignKey(
-        FlowRun, on_delete=models.CASCADE, related_name="step_runs"
-    )
-    flow_step = models.ForeignKey(
-        FlowStep,
-        on_delete=models.CASCADE,
-        related_name="step_runs",
-        null=True,
-        blank=True,
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    input_data = models.JSONField(default=dict, blank=True)
-    result = models.JSONField(default=dict, blank=True)
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ("PENDING", "Pending"),
-            ("IN_PROGRESS", "In Progress"),
-            ("COMPLETED", "Completed"),
-            ("ERROR", "Error"),
-        ],
-        default="PENDING",
-    )
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
-            self.process_step_run()
-
-    def process_step_run(self):
-        try:
-            self.status = "IN_PROGRESS"
-            self.save(update_fields=["status"])
-
-            # Determine the next step to run
-            next_step = self.determine_next_step()
-            if next_step:
-                self.flow_step = next_step
-                self.save(update_fields=["flow_step"])
-
-                self.perform_action()
-
-                self.status = "COMPLETED"
-            else:
-                self.status = "ERROR"
-                self.result = {"error": "No next step found"}
-
-            self.save(update_fields=["status", "result"])
-        except Exception as e:
-            logger.exception(f"Error processing step run: {str(e)}")
-            self.status = "ERROR"
-            self.result = {"error": str(e)}
-            self.save(update_fields=["status", "result"])
-
-    def perform_action(self):
-        if not self.flow_step:
-            raise ValueError("No flow step associated with this StepRun")
-
-        action_type = self.flow_step.action_type
-        model_class = apps.get_model(
-            self.flow_step.model.app_label, self.flow_step.model.name
-        )
-
-        logger.info(
-            f"Performing action: {action_type} on model: {model_class.__name__}"
-        )
-
-        if action_type == FlowStep.ActionType.CREATE:
-            # Get default values from the FlowStep
-            default_values = self.flow_step.default_values.copy()
-
-            # Add any runtime values or override existing ones
-            default_values["workspace"] = self.flow_run.workspace
-
-            # Create the instance
-            new_instance = model_class.objects.create(**default_values)
-
-            self.result = {
-                "action": "CREATE",
-                "model": model_class.__name__,
-                "id": new_instance.id,
-            }
-
-            # Update flow_run state
-            self.flow_run.state[f"created_{model_class.__name__.lower()}_id"] = (
-                new_instance.id
-            )
-            if hasattr(new_instance, "email"):
-                self.flow_run.state[f"created_{model_class.__name__.lower()}_email"] = (
-                    new_instance.email
-                )
-            self.flow_run.save(update_fields=["state"])
-
-        elif action_type == FlowStep.ActionType.SAVE:
-            # Implement save logic
-            self.result = {
-                "action": "SAVE",
-                "model": model_class.__name__,
-                "message": "Not implemented yet",
-            }
-
-        elif action_type == FlowStep.ActionType.DELETE:
-            # Implement delete logic
-            self.result = {
-                "action": "DELETE",
-                "model": model_class.__name__,
-                "message": "Not implemented yet",
-            }
-
-        elif action_type == FlowStep.ActionType.ACTION:
-            # Implement custom action logic
-            self.result = {
-                "action": "ACTION",
-                "model": model_class.__name__,
-                "message": "Not implemented yet",
-            }
-
-        elif action_type == FlowStep.ActionType.SELECT:
-            # Implement select logic
-            self.result = {
-                "action": "SELECT",
-                "model": model_class.__name__,
-                "message": "Not implemented yet",
-            }
-
-        else:
-            self.result = {
-                "action": action_type,
-                "model": model_class.__name__,
-                "message": "Action not implemented",
-            }
-
-        logger.info(f"Action result: {self.result}")
-
-    def determine_next_step(self):
-        # Logic to determine the next step based on the flow and previous steps
-        completed_steps = self.flow_run.step_runs.exclude(id=self.id).values_list(
-            "flow_step", flat=True
-        )
-        next_step = self.flow_run.flow.steps.exclude(id__in=completed_steps).first()
-        return next_step
-
-    def __str__(self):
-        return f"Step Run {self.id} of {self.flow_run}"
-
-
-from django.contrib import admin
-
-
-class StepRunAdmin(admin.ModelAdmin):
-    list_display = ["id", "flow_run", "status", "created_at"]
-    readonly_fields = [
-        "created_at",
-        "get_input_data",
-        "get_result",
-        "status",
-        "flow_step",
-    ]
-
-    def get_input_data(self, obj):
-        return obj.input_data
-
-    get_input_data.short_description = "Input Data"
-
-    def get_result(self, obj):
-        return obj.result
-
-    get_result.short_description = "Result"
-
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        extra_context = extra_context or {}
-        step_run = self.get_object(request, object_id)
-        if step_run:
-            extra_context["step_run_info"] = {
-                "id": step_run.id,
-                "flow_run": str(step_run.flow_run),
-                "flow_step": str(step_run.flow_step)
-                if step_run.flow_step
-                else "Not determined yet",
-                "status": step_run.get_status_display(),
-                "created_at": step_run.created_at,
-                "input_data": step_run.input_data,
-                "result": step_run.result,
-            }
-        return super().change_view(request, object_id, form_url, extra_context)
 
 
 class FlowStepAdmin(admin.ModelAdmin):
@@ -616,11 +393,14 @@ class Recording(WorkspaceRelated):
 
 
 class ActionRun(WorkspaceRelated):
+    flow_run = models.ForeignKey(
+        FlowRun, on_delete=models.CASCADE, related_name="action_runs"
+    )
+    action = models.ForeignKey(
+        Action, on_delete=models.CASCADE, related_name="action_runs"
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
-    action = models.ForeignKey(
-        "flows.Action", on_delete=models.CASCADE, related_name="action_runs"
-    )
     model_name = models.CharField(max_length=100)
     object_id = models.IntegerField(null=True, blank=True)
     data = models.JSONField(encoder=DjangoJSONEncoder)
@@ -631,29 +411,76 @@ class ActionRun(WorkspaceRelated):
         blank=True,
         related_name="action_runs",
     )
-
-    action = models.ForeignKey(
-        "flows.Action",
-        on_delete=models.CASCADE,
-        related_name="action_runs",
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ("PENDING", "Pending"),
+            ("IN_PROGRESS", "In Progress"),
+            ("COMPLETED", "Completed"),
+            ("ERROR", "Error"),
+        ],
+        default="PENDING",
     )
 
     def __str__(self):
         return f"{self.action} on {self.model_name} {self.object_id} by {self.user}"
 
     def get_model_class(self):
-        # Split the model_name if it contains a dot
         parts = self.model_name.split(".")
         if len(parts) == 2:
             return apps.get_model(parts[0], parts[1])
         else:
-            # If model_name doesn't contain app_label, we need to search for it
             for app_config in apps.get_app_configs():
                 try:
                     return app_config.get_model(self.model_name)
                 except LookupError:
                     continue
         return None
+
+    def process_action_run(self):
+        try:
+            self.status = "IN_PROGRESS"
+            self.save(update_fields=["status"])
+
+            self.perform_action()
+
+            self.status = "COMPLETED"
+            self.save(update_fields=["status"])
+        except Exception as e:
+            logger.exception(f"Error processing action run: {str(e)}")
+            self.status = "ERROR"
+            self.data["error"] = str(e)
+            self.save(update_fields=["status", "data"])
+
+    def perform_action(self):
+        action_type = self.action.action_type
+        model_class = self.get_model_class()
+
+        logger.info(
+            f"Performing action: {action_type} on model: {model_class.__name__}"
+        )
+
+        if action_type == Action.ActionType.CREATE:
+            default_values = self.action.action_input.copy()
+            default_values["workspace"] = self.flow_run.workspace
+            new_instance = model_class.objects.create(**default_values)
+            self.data["result"] = {
+                "action": "CREATE",
+                "model": model_class.__name__,
+                "id": new_instance.id,
+            }
+            self.flow_run.state[f"created_{model_class.__name__.lower()}_id"] = (
+                new_instance.id
+            )
+            if hasattr(new_instance, "email"):
+                self.flow_run.state[f"created_{model_class.__name__.lower()}_email"] = (
+                    new_instance.email
+                )
+            self.flow_run.save(update_fields=["state"])
+
+        # ... (implement other action types as needed)
+
+        logger.info(f"Action result: {self.data}")
 
 
 class ActionRunAdmin(admin.ModelAdmin):
