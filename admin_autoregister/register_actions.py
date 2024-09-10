@@ -24,6 +24,7 @@ def register_actions(workspace):
             name=model.__name__,
             app_label=model._meta.app_label,
             workspace=workspace,
+            defaults={"name": model.__name__, "app_label": model._meta.app_label},
         )
 
         for action_type in action_types:

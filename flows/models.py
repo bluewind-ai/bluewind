@@ -69,7 +69,7 @@ class Model(WorkspaceRelated):
     )
 
     class Meta:
-        unique_together = ("app_label", "name")
+        unique_together = ("name", "app_label", "workspace")
         ordering = ["app_label", "name"]
 
     def __str__(self):
