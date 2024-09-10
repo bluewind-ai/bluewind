@@ -124,17 +124,24 @@ class InWorkspace(admin.ModelAdmin):
         input_data = {}
         for field_name, field_value in form.cleaned_data.items():
             if isinstance(field_value, models.Model):
-                # For foreign key relationships, store the primary key
                 input_data[field_name] = field_value.pk
             elif isinstance(field_value, (str, int, float, bool, type(None))):
-                # For simple types, store as is
                 input_data[field_name] = field_value
             else:
-                # For other complex types, use string representation
                 input_data[field_name] = str(field_value)
 
         # Determine if this is a create or update action
-        action = "update" if change else "create"
+        action_type = Action.ActionType.UPDATE if change else Action.ActionType.CREATE
+
+        # Get or create the Model instance for this model
+        model_instance, _ = Model.objects.get_or_create(
+            name=obj._meta.model_name, app_label=obj._meta.app_label
+        )
+
+        # Get or create the Action instance
+        action_instance, _ = Action.objects.get_or_create(
+            action_type=action_type, model=model_instance, workspace_id=obj.workspace_id
+        )
 
         # Call the original save_model method
         super().save_model(request, obj, form, change)
@@ -153,18 +160,15 @@ class InWorkspace(admin.ModelAdmin):
         # Combine input and output data
         event_data = {"input": input_data, "output": output_data}
 
-        # Get the actual model name
-        model_name = obj._meta.model_name
-
         # Record the event
         AdminEvent.objects.create(
             user=request.user,
-            action=action,
-            model_name=model_name,
+            action=action_instance,  # Use the Action instance here
+            model_name=obj._meta.model_name,
             object_id=obj.id,
             data=event_data,
             workspace_id=obj.workspace_id,
-            recording_id=RECORDING_ID,  # Always use Recording with ID 1
+            recording_id=RECORDING_ID,
         )
 
     def get_queryset(self, request):

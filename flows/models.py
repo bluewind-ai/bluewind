@@ -52,41 +52,6 @@ class FlowRun(WorkspaceRelated):
             }
         super().save(*args, **kwargs)
 
-    @property
-    def general_info(self):
-        try:
-            step_runs = (
-                self.step_runs.all()
-                .order_by("id")
-                .select_related("flow_step", "flow_step__model")
-            )
-
-            step_runs_info = [
-                {
-                    "id": step_run.id,
-                    "action_type": step_run.flow_step.get_action_type_display(),
-                    "model": step_run.flow_step.model.name,
-                    "is_completed": True,
-                    "created_at": step_run.created_at.isoformat(),
-                }
-                for step_run in step_runs
-            ]
-
-            return {
-                "id": self.id,
-                "flow_name": self.flow.name,
-                "flow_id": self.flow.id,
-                "workspace_id": self.workspace_id,
-                "created_at": self.created_at.isoformat(),
-                "updated_at": self.updated_at.isoformat(),
-                "total_steps": self.flow.steps.count(),
-                "completed_steps": step_runs.count(),
-                "status": self.get_status_display(),
-                "step_runs": step_runs_info,
-            }
-        except Exception as e:
-            return {"error": str(e)}
-
     def get_status(self):
         total_steps = self.flow.steps.count()
         completed_steps = self.step_runs.count()
@@ -405,17 +370,6 @@ class StepRun(WorkspaceRelated):
 
     def __str__(self):
         return f"Step Run {self.id} of {self.flow_run}"
-
-    @property
-    def general_info(self):
-        # Define what general_info should return for a StepRun
-        return {
-            "id": self.id,
-            "flow_run": self.flow_run.id,
-            "flow_step": self.flow_step.id,
-            "created_at": self.created_at.isoformat(),
-            # Add other relevant information
-        }
 
 
 from django.contrib import admin
