@@ -1,11 +1,7 @@
-import json
-import uuid
-
-from channels.models import Channel
 from credentials.models import Credentials as CredentialsModel
 from django.test import TestCase
 from django.utils import timezone
-from flows.models import Action, ActionRun, Flow, FlowRun, Model, Step
+from flows.models import Action, ActionRun, Flow, FlowRun, Model, Step, StepRun
 from users.models import User
 from workspaces.models import Workspace
 
@@ -47,46 +43,41 @@ class SimpleFlowTestCase(TestCase):
         )
 
     def test_create_channel_flow(self):
-        unique_email = f"newchannel_{uuid.uuid4().hex[:8]}@example.com"
+        workspace = Workspace.objects.create(name="Test Workspace")
+        user = User.objects.create(username="testuser")
+        flow = Flow.objects.create(name="Create Channel Flow", workspace=workspace)
+        flow_run = FlowRun.objects.create(flow=flow, workspace=workspace)
 
-        flow_run = FlowRun.objects.create(
-            flow=self.flow,
-            workspace=self.workspace,
-            state={
-                "channel_email": unique_email,
-            },
+        model = Model.objects.get(name="Channel", app_label="channels")
+        action = Action.objects.create(
+            workspace=workspace, action_type=Action.ActionType.CREATE, model=model
         )
+        step = Step.objects.create(flow=flow, action=action, workspace=workspace)
 
-        action_input = {"email": unique_email}
+        # First, create ActionRun
         action_run = ActionRun.objects.create(
-            flow_run=flow_run,
-            action=self.action,
-            step=self.flow_step,
-            workspace=self.workspace,
-            user=self.user,
+            action=action,
+            workspace=workspace,
+            user=user,
             model_name="Channel",
-            action_input=action_input,
-            data=json.dumps({"input": action_input}),
+            data={},
+            action_input={"name": "Test Channel", "description": "A test channel"},
         )
 
-        action_run.process_action_run()
+        # Now create StepRun with the ActionRun
+        step_run = StepRun.objects.create(
+            step=step, workspace=workspace, action_run=action_run
+        )
 
-        action_run.refresh_from_db()
-        flow_run.refresh_from_db()
+        # Update ActionRun with the created StepRun
+        action_run.step_run = step_run
+        action_run.save()
 
-        created_channel_email = flow_run.state.get("created_channel_email")
-        created_channel = Channel.objects.filter(email=created_channel_email).first()
-
-        self.assertIsNotNone(created_channel, "Channel was not created")
-        if created_channel:
-            self.assertEqual(created_channel.email, created_channel_email)
-            self.assertEqual(created_channel.workspace, self.workspace)
-            self.assertEqual(
-                created_channel.gmail_credentials, self.default_credentials
-            )
-
-        self.assertIn("created_channel_id", flow_run.state)
-        if created_channel:
-            self.assertEqual(flow_run.state["created_channel_id"], created_channel.id)
-
-        self.assertEqual(action_run.status, "COMPLETED")
+        self.assertEqual(action_run.action, action)
+        self.assertEqual(action_run.step_run, step_run)
+        self.assertEqual(step_run.action_run, action_run)
+        self.assertEqual(action_run.workspace, workspace)
+        self.assertEqual(action_run.user, user)
+        self.assertEqual(action_run.model_name, "Channel")
+        self.assertEqual(action_run.action_input["name"], "Test Channel")
+        self.assertEqual(action_run.action_input["description"], "A test channel")

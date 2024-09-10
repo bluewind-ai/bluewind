@@ -36,21 +36,6 @@ class InWorkspace(admin.ModelAdmin):
 
     actions = ["custom_action"]
 
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        extra_context = extra_context or {}
-        obj = self.get_object(request, object_id)
-        if obj:
-            # Assuming 'general_info' is the field you want to edit as JSON
-            extra_context["initial_json"] = json.dumps(obj.general_info)
-        else:
-            # Provide default JSON for new objects
-            extra_context["initial_json"] = json.dumps(
-                {"key": "value", "array": [1, 2, 3], "nested": {"a": 1, "b": 2}}
-            )
-        return super().change_view(
-            request, object_id, form_url, extra_context=extra_context
-        )
-
     def save_model(self, request, obj, form, change):
         # Capture the input data
         input_data = {}
@@ -158,6 +143,18 @@ class InWorkspace(admin.ModelAdmin):
         workspace_id = request.environ.get("WORKSPACE_ID")
         model_name = queryset.model._meta.model_name
 
+        # Get or create the Model instance for this model
+        model_instance, _ = Model.objects.get_or_create(
+            name=model_name, app_label=queryset.model._meta.app_label
+        )
+
+        # Get or create the Action instance for this action
+        action_instance, _ = Action.objects.get_or_create(
+            action_type=Action.ActionType.CUSTOM,  # You might want to use a more specific action type
+            model=model_instance,
+            workspace_id=workspace_id,
+        )
+
         for obj in queryset:
             input_data = model_to_dict(obj)
 
@@ -171,7 +168,7 @@ class InWorkspace(admin.ModelAdmin):
             # Record the event
             ActionRun.objects.create(
                 user=request.user,
-                action=action_name,
+                action=action_instance,  # Use the Action instance here
                 model_name=model_name,
                 object_id=obj.id,
                 data=event_data,

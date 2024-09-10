@@ -118,19 +118,6 @@ class StepAdmin(InWorkspace):
 
 
 class ActionRunAdmin(InWorkspace):
-    list_display = [
-        "__str__",
-        "data",
-        "timestamp",
-        "user",
-        "action",
-        "model_name",
-        "object_id",
-        "recording",
-        "action_input",
-        "step",
-    ]
-
     def change_view(self, request, object_id, form_url="", extra_context=None):
         admin_event = self.get_object(request, object_id)
         if admin_event:

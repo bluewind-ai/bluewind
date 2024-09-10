@@ -5,6 +5,7 @@ from credentials.models import Credentials
 from django.apps import apps
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, transaction
+from django.forms import ValidationError
 from workspaces.models import Workspace, WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -126,7 +127,7 @@ class Action(models.Model):
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.model.name} on {self.get_action_type_display()}"
+        return f"{self.model.name} {self.get_action_type_display()}"
 
 
 class Recording(WorkspaceRelated):
@@ -154,19 +155,24 @@ class Step(WorkspaceRelated):
         return f"Step of {self.flow.name}"
 
 
+import logging
+
+from django.db import models
+from workspaces.models import WorkspaceRelated
+
+logger = logging.getLogger(__name__)
+
+
 class ActionRun(WorkspaceRelated):
-    flow_run = models.ForeignKey(
-        FlowRun, on_delete=models.CASCADE, null=True, blank=True
+    action = models.ForeignKey(
+        Action, on_delete=models.CASCADE, related_name="action_runs"
     )
-    step = models.ForeignKey(
-        Step,
+    step_run = models.OneToOneField(
+        "StepRun",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="action_runs",
-    )
-    action = models.ForeignKey(
-        Action, on_delete=models.CASCADE, related_name="action_runs"
+        related_name="associated_action_run",  # Change this
     )
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
@@ -193,7 +199,7 @@ class ActionRun(WorkspaceRelated):
     action_input = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
-        return f"{self.action} on {self.model_name} {self.object_id} by {self.user}"
+        return f"{self.action} by {self.user}"
 
     def get_model_class(self):
         parts = self.model_name.split(".")
@@ -261,12 +267,33 @@ class ActionRun(WorkspaceRelated):
 
 
 class StepRun(WorkspaceRelated):
-    step = models.ForeignKey(Step, on_delete=models.CASCADE, related_name="step_runs")
+    step = models.ForeignKey(
+        Step, on_delete=models.CASCADE, related_name="step_runs", null=True, blank=True
+    )
     action_run = models.OneToOneField(
-        ActionRun, on_delete=models.CASCADE, related_name="step_run"
+        ActionRun,
+        on_delete=models.CASCADE,
+        related_name="associated_step_run",
+        null=True,
+        blank=True,
+    )
+    flow_run = models.ForeignKey(
+        FlowRun,
+        on_delete=models.CASCADE,
+        related_name="step_runs",
     )
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(null=True, blank=True)
+
+    def clean(self):
+        if self.end_date and (not self.step or not self.action_run):
+            raise ValidationError(
+                "Step and ActionRun must be set before completing the StepRun"
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"StepRun for {self.step} (Started: {self.start_date})"
