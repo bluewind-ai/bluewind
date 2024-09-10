@@ -1,11 +1,11 @@
 import logging
-from datetime import timezone
 
 from credentials.models import Credentials
 from django.apps import apps
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, transaction
 from django.forms import ValidationError
+from django.utils import timezone
 from workspaces.models import Workspace, WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -307,15 +307,42 @@ class StepRun(WorkspaceRelated):
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return f"StepRun for {self.step} (Started: {self.start_date})"
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Only for new instances
+            self.find_step_and_create_action_run()
+
+        if not self.end_date and self.step and self.action_run:
+            self.end_date = timezone.now()
+
+        self.clean()  # Run validation before saving
+        super().save(*args, **kwargs)
+
+    def find_step_and_create_action_run(self):
+        if not self.step:
+            # Find the current step based on the flow run
+            self.step = self.flow_run.flow.steps.filter(
+                order=self.flow_run.current_step_order
+            ).first()
+
+            if not self.step:
+                raise ValidationError("No matching step found for this StepRun")
+
+        if not self.action_run:
+            # Create the ActionRun
+            from .models import ActionRun  # Import here to avoid circular imports
+
+            self.action_run = ActionRun.objects.create(
+                workspace=self.workspace,
+                action=self.step.action,
+                step_run=self,
+                user=self.flow_run.user,  # Assuming FlowRun has a user field
+            )
+
     def clean(self):
         if self.end_date and (not self.step or not self.action_run):
             raise ValidationError(
                 "Step and ActionRun must be set before completing the StepRun"
             )
-
-    def __str__(self):
-        return f"StepRun for {self.step} (Started: {self.start_date})"
-
-    def complete(self):
-        self.end_date = timezone.now()
-        self.save(update_fields=["end_date"])

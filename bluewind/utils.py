@@ -1,4 +1,6 @@
+import sys
 import uuid
+from pprint import pprint
 
 
 class UUID(uuid.UUID):
@@ -57,20 +59,24 @@ def uuid7():
     return UUID(int=uuid_int, version=7)
 
 
-from django.db.models import QuerySet
-
-
 def get_queryset(cls, request):
     from workspaces.models import Workspace
 
-    # Get the original queryset without calling get_queryset again
-    if hasattr(cls, "get_queryset"):
-        original_method = cls.__class__.get_queryset
-        qs = original_method(cls, request)
-    else:
-        qs = QuerySet(cls.model)
+    # Get the base queryset without filtering
+    qs = cls.model.objects.all()
 
     workspace_id = request.environ.get("WORKSPACE_ID")
     if cls.model == Workspace:
         return qs.filter(id=workspace_id)
-    return qs.filter(workspace_id=workspace_id).select_related("workspace")
+
+    # Check if the model has a workspace field
+    if hasattr(cls.model, "workspace"):
+        return qs.filter(workspace_id=workspace_id).select_related("workspace")
+
+    return qs
+
+
+def dd(*args):
+    for arg in args:
+        pprint(arg)
+    sys.exit(1)
