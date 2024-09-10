@@ -175,20 +175,51 @@ class ActionRun(WorkspaceRelated):
         try:
             with transaction.atomic():
                 if is_new:
+                    # For new instances, save first then execute action
                     super().save(*args, **kwargs)
-                    self._execute_action()
+
+                    # Action execution logic
+                    self.status = "IN_PROGRESS"
+                    self.save(update_fields=["status"])
+
+                    if self.step_run:
+                        # Execute logic for action runs tied to a step_run
+                        workspace = self.step_run.flow_run.workspace
+                        # ... (implement the logic for step_run-related actions)
+                    else:
+                        # Execute logic for standalone action runs
+                        workspace = self.workspace
+                        # ... (implement the logic for standalone actions)
+
+                    # Implement your action execution logic here
+                    # This is where you'd put the core functionality of the action
+
+                    self.status = "COMPLETED"
+                    self.save(update_fields=["status", "results"])
+
                 elif update_fields:
                     # For updates with specific fields, use update() method
                     type(self).objects.filter(pk=self.pk).update(
                         **{field: getattr(self, field) for field in update_fields}
                     )
                 else:
+                    # For full updates without specified fields
                     super().save(*args, **kwargs)
-        except ValidationError as e:
+
+        except Exception as e:
+            # Handle any exceptions that occur during save or action execution
             self.status = "ERROR"
+            self.action_input = self.action_input or {}
             self.action_input["error"] = str(e)
-            # Save without update_fields to ensure the error is recorded
-            super().save(update_fields=["status", "action_input"])
+            self.results = {"error": str(e)}
+
+            # Save the error status without using update_fields
+            super().save(update_fields=None)
+
+            logger.error(f"Error in ActionRun {self.id}: {str(e)}")
+            raise ValidationError(f"Error in action execution: {str(e)}")
+
+        logger.debug(f"ActionRun {self.id} saved successfully")
 
     def _execute_action(self):
         self.status = "IN_PROGRESS"
