@@ -56,6 +56,8 @@ click = "^8.1.7"
 django-formtools = "^2.5.1"
 django-json-widget = "^2.0.1"
 django-reverse-admin = "^2.9.6"
+djangorestframework = "^3.15.2"
+drf-spectacular = "^0.27.2"
 
 [tool.poetry.extras]
 argon2 = [ "argon2-cffi",]

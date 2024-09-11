@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     "flows",
     "entity",
     "workspace_snapshots",
+    "rest_framework",
+    "drf_spectacular",
     "admin_autoregister",
 ]
 
@@ -254,3 +256,15 @@ if os.environ["ENVIRONMENT"] == "prod":
     SITE_URL = os.environ["SITE_URL"]
 else:
     SITE_URL = "https://green.bluewind.ai"
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Your API",
+    "DESCRIPTION": "Your project description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}

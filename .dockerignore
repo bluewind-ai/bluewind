@@ -29,6 +29,7 @@
 !django_json_widget
 !django_object_actions
 !draft_messages
+!drf_spectacular
 !entity
 !features
 !flows
@@ -48,6 +49,7 @@
 !poetry.lock
 !pyproject.toml
 !requirements.txt
+!rest_framework
 !sessions
 !sites
 !slippers
