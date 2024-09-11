@@ -6,6 +6,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, transaction
 from django.forms import ValidationError
 from django.utils import timezone
+from flows.flows.flow_runner import flow_runner
 from workspaces.models import Workspace, WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -13,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 class Flow(WorkspaceRelated):
     name = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -38,9 +38,19 @@ class FlowRun(WorkspaceRelated):
     )
     state = models.JSONField(default=dict, blank=True)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
+    diff_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"Run of {self.flow.name} at {self.created_at}"
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+
+        if is_new:
+            result = flow_runner(self)
+            self.state["flow_result"] = result
+            self.save(update_fields=["state"])
 
     def update_status(self):
         total_actions = self.flow.actions.count()
@@ -312,14 +322,13 @@ class StepRun(WorkspaceRelated):
     end_date = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        is_new = not self.pk
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
 
         if is_new:
-            with transaction.atomic():
-                super().save(*args, **kwargs)  # Save first to get a pk
-                self.find_and_run_next_step()
-        else:
-            super().save(*args, **kwargs)
+            result = flow_runner(self)
+            self.state["flow_result"] = result
+            self.save(update_fields=["state"])
 
     def find_and_run_next_step(self):
         self.find_next_step()

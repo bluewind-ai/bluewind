@@ -2,6 +2,8 @@ import logging
 
 from django_object_actions import DjangoObjectActions, action
 
+from admin_autoregister.register_flows import load_flows
+
 # Assuming these are defined elsewhere
 from django.apps import apps
 from django.contrib import admin, messages
@@ -40,7 +42,7 @@ class Workspace(models.Model):
 
         if is_new:
             register_actions_and_models(self)
-            # insert_all_models(self)
+            load_flows(self)
 
             # Create a new Recording for this workspace
             Recording.objects.create(

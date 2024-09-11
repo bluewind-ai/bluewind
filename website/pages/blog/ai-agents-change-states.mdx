@@ -1,0 +1,23 @@
+---
+title: AI agents change states
+---
+
+# AI agents change states
+
+This is what differentiates them fundamentally from chatbots. AI agents are chats that do things.
+
+Building an AI agent framework is the same as building a state management framework. It's all about state A -> action -> state B.
+
+What differentiates AI agents from chatbots IS their black box nature: when a chat responds to you, you're going to care about what it says.
+
+When an AI agent does work for you, you're only going to care about the state it changed.
+
+And yet, most AI agents frameworks out there don't rest on the shoulders of giants when it comes to state management.
+
+YES, they do allow to connect to DBs, but the data model is not opinionated. If we're not opinionated about the types of states we want, we can't do black box programming.
+
+YES, it's nice to have a flow diagram and BUILD your agent. You know what's nicer? Define the state you start with, the state you want, and let the agent build the transformation
+
+Here is some nuance though: black box alone is not enough because the LLM can put itself in a messy codebase which you need to course correct. Which is why the combinations of a fast code generator and an experience engineer is deadly.
+
+And which is also why the manual mode of an autonomous agent is the most valuable one. Running things in autopilot is a waste of time when the thing you run has not run manually for a while, with an expert in the loop.
