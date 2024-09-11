@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "forms",
     "draft_messages",
     "flows",
+    "entity",
 ]
 
 # Middleware Configuration
@@ -178,7 +179,7 @@ LOGIN_REDIRECT_URL = "/admin"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 # Social Account Providers
 SOCIALACCOUNT_PROVIDERS = {

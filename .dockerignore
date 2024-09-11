@@ -29,6 +29,7 @@
 !django_json_widget
 !django_object_actions
 !draft_messages
+!entity
 !features
 !flows
 !forms

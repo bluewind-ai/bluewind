@@ -3,7 +3,7 @@ import logging
 from django_object_actions import DjangoObjectActions, action
 
 # Assuming these are defined elsewhere
-from base_model.models import BaseModel
+from django.apps import apps
 from django.contrib import admin, messages
 from django.contrib.auth.models import User
 from django.db import models
@@ -32,11 +32,11 @@ class Workspace(models.Model):
     admin_url_link.short_description = "Admin URL"
 
     def save(self, *args, **kwargs):
-        from admin_autoregister.register_actions import register_actions_and_models
         from flows.models import Recording  # Import the Recording model
 
         is_new = self.pk is None
         super().save(*args, **kwargs)
+        from admin_autoregister.register_actions import register_actions_and_models
 
         if is_new:
             register_actions_and_models(self)
@@ -127,9 +127,43 @@ class WorkspaceRelatedManager(models.Manager):
         return super().get_queryset().select_related("workspace")
 
 
-class WorkspaceRelated(BaseModel):
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
+from django.db import models
+
+
+class WorkspaceRelated(models.Model):
+    workspace = models.ForeignKey("workspaces.Workspace", on_delete=models.CASCADE)
     objects = WorkspaceRelatedManager()
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.update_entity()
+
+    def update_entity(self):
+        # Skip update_entity for Entity model
+        if self._meta.model_name == "entity":
+            return
+
+        Entity = apps.get_model("entity", "Entity")
+        model = self.get_model_instance()
+        name = str(self)[:255]  # Truncate to 255 characters
+
+        Entity.objects.update_or_create(
+            workspace=self.workspace,
+            model=model,
+            defaults={
+                "name": name,
+                "updated_at": models.functions.Now(),
+            },
+        )
+
+    def get_model_instance(self):
+        Model = apps.get_model("flows", "Model")
+        model, _ = Model.objects.get_or_create(
+            name=self._meta.model_name,
+            app_label=self._meta.app_label,
+            workspace=self.workspace,
+        )
+        return model
