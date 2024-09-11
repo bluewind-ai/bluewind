@@ -12,7 +12,7 @@ class WorkspaceSnapshot(WorkspaceRelated):
     data = models.JSONField(null=True, blank=True)
 
     def __str__(self):
-        return f"Dump for {self.workspace} at {self.created_at}"
+        return f"Dump for {self.workspace} at {self.created_at} id {self.id}"
 
     def save(self, *args, **kwargs):
         all_data = {}
@@ -62,7 +62,7 @@ class WorkspaceDiff(WorkspaceRelated):
     diff_data = models.JSONField(null=True, blank=True)
 
     def __str__(self):
-        return f"Diff for {self.workspace} from {self.snapshot_before.created_at} to {self.snapshot_after.created_at}"
+        return f"Diff for {self.workspace} id {self.workspace.id} from {self.snapshot_before.created_at} to {self.snapshot_after.created_at}"
 
     def save(self, *args, **kwargs):
         if not self.diff_data:
