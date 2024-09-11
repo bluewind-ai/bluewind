@@ -21,5 +21,5 @@ def load_flows(workspace):
 
             # Check if the module has a function with the same name
             if hasattr(module, flow_name):
-                # Create the Flow in the database using the original flow_name
-                Flow.objects.create(workspace=workspace, name=flow_name)
+                # Create the Flow in the database as a 'python' type flow
+                Flow.objects.create(workspace=workspace, name=flow_name, type="python")

@@ -16,6 +16,11 @@ class Flow(WorkspaceRelated):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    type = models.CharField(
+        max_length=10,
+        choices=[("no-code", "No Code"), ("python", "Python")],
+        default="no-code",
+    )
 
     def __str__(self):
         return self.name
@@ -47,7 +52,7 @@ class FlowRun(WorkspaceRelated):
         is_new = self._state.adding
         super().save(*args, **kwargs)
 
-        if is_new:
+        if is_new and self.flow.type == "python":
             result = flow_runner(self)
             self.state["flow_result"] = result
             self.save(update_fields=["state"])

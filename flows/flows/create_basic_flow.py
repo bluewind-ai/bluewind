@@ -20,6 +20,7 @@ def create_basic_flow(flow_run):
     setup_flow = Flow.objects.create(
         workspace_id=workspace.id,
         name="Setup Test Environment",
+        type="no-code",  # Set this to 'no-code' to prevent recursion
     )
 
     # Create and start the flow run
