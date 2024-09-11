@@ -129,6 +129,7 @@ class WorkspaceRelatedManager(models.Manager):
         return super().get_queryset().select_related("workspace")
 
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
@@ -152,12 +153,13 @@ class WorkspaceRelated(models.Model):
             return
 
         Entity = apps.get_model("entity", "Entity")
-        model = self.get_model_instance()
+        content_type = self.get_model_instance()
         name = str(self)[:255]  # Truncate to 255 characters
 
         Entity.objects.update_or_create(
             workspace=self.workspace,
-            model=model,
+            content_type=content_type,
+            # object_id=self.pk,
             defaults={
                 "name": name,
                 "updated_at": models.functions.Now(),
@@ -165,10 +167,8 @@ class WorkspaceRelated(models.Model):
         )
 
     def get_model_instance(self):
-        Model = apps.get_model("flows", "Model")
-        model, _ = Model.objects.get_or_create(
-            name=self._meta.model_name,
-            app_label=self._meta.app_label,
-            workspace=self.workspace,
-        )
-        return model
+        return ContentType.objects.get_for_model(self.__class__)
+
+    @classmethod
+    def get_content_type(cls):
+        return ContentType.objects.get_for_model(cls)

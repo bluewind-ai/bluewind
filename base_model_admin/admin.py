@@ -7,13 +7,14 @@ from django_json_widget.widgets import JSONEditorWidget
 from bluewind.utils import get_queryset
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
+from django.contrib.contenttypes.models import ContentType
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models import JSONField
 from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
-from flows.models import Action, ActionRun, Model, Recording
+from flows.models import Action, ActionRun, Recording
 from workspaces.models import Workspace
 
 logger = logging.getLogger(__name__)
@@ -54,18 +55,13 @@ class InWorkspace(admin.ModelAdmin):
 
         action_type = Action.ActionType.SAVE if change else Action.ActionType.CREATE
 
-        model_instance, _ = Model.objects.get_or_create(
-            name=obj._meta.model_name,
-            app_label=obj._meta.app_label,
-            workspace_id=request.environ.get("WORKSPACE_ID"),
-            defaults={"name": obj._meta.model_name, "app_label": obj._meta.app_label},
-        )
+        content_type = ContentType.objects.get_for_model(obj)
 
         action_instance, _ = Action.objects.get_or_create(
             action_type=action_type,
-            model=model_instance,
+            content_type=content_type,
             workspace_id=obj.workspace_id,
-            defaults={"action_type": action_type, "model": model_instance},
+            defaults={"action_type": action_type, "content_type": content_type},
         )
 
         logger.debug(
@@ -89,7 +85,7 @@ class InWorkspace(admin.ModelAdmin):
             user=request.user,
             action=action_instance,
             model_name=obj._meta.model_name,
-            object_id=obj.id,
+            # object_id=obj.id,
             action_input=input_data,
             results=output_data,
             workspace_id=obj.workspace_id,
@@ -143,15 +139,11 @@ class InWorkspace(admin.ModelAdmin):
 
     def _log_admin_action(self, request, action, queryset, action_name):
         workspace_id = request.environ.get("WORKSPACE_ID")
-        model_name = queryset.model._meta.model_name
-
-        model_instance = Model.objects.get(
-            name=model_name, app_label=queryset.model._meta.app_label
-        )
+        content_type = ContentType.objects.get_for_model(queryset.model)
 
         action_instance = Action.objects.get(
             action_type=Action.ActionType.CUSTOM,
-            model=model_instance,
+            content_type=content_type,
             workspace_id=workspace_id,
         )
 
@@ -167,8 +159,8 @@ class InWorkspace(admin.ModelAdmin):
             ActionRun.objects.create(
                 user=request.user,
                 action=action_instance,
-                model_name=model_name,
-                object_id=obj.id,
+                model_name=content_type.model,
+                # object_id=obj.id,
                 action_input=input_data,
                 results={},
                 workspace_id=workspace_id,
@@ -208,89 +200,14 @@ class InWorkspace(admin.ModelAdmin):
             cl.formset = None
         return cl
 
-    # def changelist_view(self, request, extra_context=None):
-    #     workspace_id = request.environ.get("WORKSPACE_ID")
-    #     model_name = self.model._meta.model_name
-
-    #     # Only log if the action should be recorded
-    #     try:
-    #         action = Action.objects.get(
-    #             model__name=model_name,
-    #             action_type=Action.ActionType.LIST,
-    #             workspace_id=workspace_id,
-    #         )
-    #         if action.is_recorded:
-    #             self._log_get_request(request)
-    #     except Action.DoesNotExist:
-    #         self._log_get_request(request)  # If action doesn't exist, log by default
-
-    #     qs = self.get_queryset(request)
-
-    #     model = Model.objects.get(
-    #         name=self.model._meta.model_name,
-    #         app_label=self.model._meta.app_label,
-    #         workspace_id=workspace_id,
-    #     )
-
-    #     list_view_action = Action.objects.get(
-    #         action_type=Action.ActionType.LIST,
-    #         model=model,
-    #         workspace_id=workspace_id,
-    #     )
-
-    #     admin_event = (
-    #         ActionRun.objects.filter(
-    #             model_name=self.model._meta.model_name,
-    #             action=list_view_action,
-    #             workspace_id=workspace_id,
-    #         )
-    #         .order_by("-timestamp")
-    #         .first()
-    #     )
-
-    #     if admin_event and isinstance(admin_event.results, list):
-    #         object_list = admin_event.results
-    #         id_list = [
-    #             obj.get("id")
-    #             for obj in object_list
-    #             if isinstance(obj, dict) and obj.get("id") is not None
-    #         ]
-    #         if id_list:
-    #             qs = self.model.objects.filter(id__in=id_list)
-    #         else:
-    #             qs = self.model.objects.none()
-
-    #     cl = self.get_changelist_instance(request)
-
-    #     cl.queryset = qs
-
-    #     context = {
-    #         "cl": cl,
-    #         "title": cl.title,
-    #         "is_popup": cl.is_popup,
-    #         "to_field": cl.to_field,
-    #         "opts": cl.model._meta,
-    #         "app_label": cl.model._meta.app_label,
-    #         "actions_on_top": self.actions_on_top,
-    #         "actions_on_bottom": self.actions_on_bottom,
-    #         "actions_selection_counter": self.actions_selection_counter,
-    #         "preserved_filters": self.get_preserved_filters(request),
-    #     }
-
-    #     context.update(extra_context or {})
-
-    #     self.change_list_template = "admin/change_list.html"
-
-    #     return super().changelist_view(request, context)
-
     def _log_get_request(self, request):
         workspace_id = request.environ.get("WORKSPACE_ID")
-        model_name = self.model._meta.model_name
+        content_type = ContentType.objects.get_for_model(self.model)
 
         # Check if this list action should be recorded
         try:
             action = Action.objects.get(
-                model__name=model_name,
+                content_type=content_type,
                 action_type=Action.ActionType.LIST,
                 workspace_id=workspace_id,
             )
@@ -307,15 +224,9 @@ class InWorkspace(admin.ModelAdmin):
             json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
         )
 
-        model_instance = Model.objects.get(
-            name=model_name,
-            app_label=self.model._meta.app_label,
-            workspace_id=workspace_id,
-        )
-
         list_view_action = Action.objects.get(
             action_type=Action.ActionType.LIST,
-            model=model_instance,
+            content_type=content_type,
             workspace_id=workspace_id,
         )
 
@@ -328,8 +239,8 @@ class InWorkspace(admin.ModelAdmin):
         ActionRun.objects.create(
             user=request.user,
             action=list_view_action,
-            model_name=model_name,
-            object_id=None,
+            model_name=content_type.model,
+            # object_id=None,
             action_input=input_data,
             results=output_data,
             workspace_id=workspace_id,

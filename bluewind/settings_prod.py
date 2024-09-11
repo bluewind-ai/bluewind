@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     "base64_utils",
     # This should be last
     "channel_wizzard",
-    "forms",
     "draft_messages",
     "flows",
     "entity",

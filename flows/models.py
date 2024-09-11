@@ -1,7 +1,7 @@
 import logging
 
 from credentials.models import Credentials
-from django.apps import apps
+from django.contrib.contenttypes.models import ContentType
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, transaction
 from django.forms import ValidationError
@@ -80,25 +80,6 @@ class FlowRun(WorkspaceRelated):
             self.save(update_fields=["status"])
 
 
-class Model(WorkspaceRelated):
-    name = models.CharField(max_length=100)
-    app_label = models.CharField(max_length=100)
-    workspace = models.ForeignKey(
-        "workspaces.Workspace", on_delete=models.CASCADE, null=True
-    )
-
-    class Meta:
-        unique_together = ("name", "app_label", "workspace")
-        ordering = ["app_label", "name"]
-
-    def __str__(self):
-        return self.name
-
-    @property
-    def full_name(self):
-        return f"{self.app_label}.{self.name}"
-
-
 class Action(WorkspaceRelated):
     class ActionType(models.TextChoices):
         CREATE = "CREATE", "Create"
@@ -110,14 +91,14 @@ class Action(WorkspaceRelated):
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     action_type = models.CharField(max_length=20, choices=ActionType.choices)
-    model = models.ForeignKey("Model", on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     is_recorded = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.model.name} {self.get_action_type_display()}"
+        return f"{self.content_type.model} {self.get_action_type_display()}"
 
     class Meta:
-        unique_together = ("workspace", "action_type", "model")
+        unique_together = ("workspace", "action_type", "content_type")
 
 
 class Recording(WorkspaceRelated):
@@ -145,14 +126,6 @@ class Step(WorkspaceRelated):
         return f"Step of {self.flow.name}"
 
 
-import logging
-
-from django.db import models
-from workspaces.models import WorkspaceRelated
-
-logger = logging.getLogger(__name__)
-
-
 class ActionRun(WorkspaceRelated):
     action = models.ForeignKey(
         Action, on_delete=models.CASCADE, related_name="action_runs"
@@ -162,7 +135,7 @@ class ActionRun(WorkspaceRelated):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="associated_action_run",  # Change this
+        related_name="associated_action_run",
     )
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
@@ -198,47 +171,31 @@ class ActionRun(WorkspaceRelated):
         try:
             with transaction.atomic():
                 if is_new:
-                    # For new instances, save first then execute action
                     super().save(*args, **kwargs)
-
-                    # Action execution logic
                     self.status = "IN_PROGRESS"
                     self.save(update_fields=["status"])
 
                     if self.step_run:
-                        # Execute logic for action runs tied to a step_run
                         workspace = self.step_run.flow_run.workspace
-                        # ... (implement the logic for step_run-related actions)
                     else:
-                        # Execute logic for standalone action runs
                         workspace = self.workspace
-                        # ... (implement the logic for standalone actions)
-
-                    # Implement your action execution logic here
-                    # This is where you'd put the core functionality of the action
 
                     self.status = "COMPLETED"
                     self.save(update_fields=["status", "results"])
 
                 elif update_fields:
-                    # For updates with specific fields, use update() method
                     type(self).objects.filter(pk=self.pk).update(
                         **{field: getattr(self, field) for field in update_fields}
                     )
                 else:
-                    # For full updates without specified fields
                     super().save(*args, **kwargs)
 
         except Exception as e:
-            # Handle any exceptions that occur during save or action execution
             self.status = "ERROR"
             self.action_input = self.action_input or {}
             self.action_input["error"] = str(e)
             self.results = {"error": str(e)}
-
-            # Save the error status without using update_fields
             super().save(update_fields=None)
-
             logger.error(f"Error in ActionRun {self.id}: {str(e)}")
             raise ValidationError(f"Error in action execution: {str(e)}")
 
@@ -295,20 +252,7 @@ class ActionRun(WorkspaceRelated):
             raise ValidationError(f"Error in action execution: {str(e)}")
 
     def get_model_class(self):
-        parts = self.model_name.split(".")
-        if len(parts) == 2:
-            return apps.get_model(parts[0], parts[1])
-        else:
-            for app_config in apps.get_app_configs():
-                try:
-                    return app_config.get_model(self.model_name)
-                except LookupError:
-                    continue
-        return None
-
-
-from django.db import models
-from workspaces.models import WorkspaceRelated
+        return self.action.content_type.model_class()
 
 
 class StepRun(WorkspaceRelated):
@@ -369,7 +313,6 @@ class StepRun(WorkspaceRelated):
     def run_action(self):
         from .models import ActionRun  # Import here to avoid circular import
 
-        # Get the action_input from the flow_run's state
         action_input = self.flow_run.state.get("action_input", {})
 
         with transaction.atomic():
@@ -378,17 +321,14 @@ class StepRun(WorkspaceRelated):
                 action=self.step.action,
                 step_run=self,
                 user=self.flow_run.user,
-                model_name=self.step.action.model.full_name,
-                action_input=action_input,  # Use the action_input from flow_run state
+                model_name=self.step.action.content_type.model,
+                action_input=action_input,
             )
             self.end_date = timezone.now()
             self.save(update_fields=["action_run", "end_date"])
 
-        # This will trigger the action execution in ActionRun's save method
         self.action_run.save()
 
-        # After action execution, you might want to update the flow_run state
-        # based on the action results
         self.flow_run.state["last_action_result"] = self.action_run.results
         self.flow_run.save(update_fields=["state"])
 

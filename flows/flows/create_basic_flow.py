@@ -1,7 +1,8 @@
 from credentials.models import Credentials
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
-from flows.models import Action, ActionRun, Flow, FlowRun, Model, Step, StepRun
+from flows.models import Action, ActionRun, Flow, FlowRun, Step, StepRun
 
 
 def create_basic_flow(workspace):
@@ -32,11 +33,11 @@ def create_basic_flow(workspace):
     )
 
     # Get the action
-    model = Model.objects.get(workspace=workspace, name="credentials")
+    content_type = ContentType.objects.get(app_label="credentials", model="credentials")
     action = Action.objects.get(
         workspace=workspace,
         action_type=Action.ActionType.CREATE,
-        model=model,
+        content_type=content_type,
     )
 
     # Create step
@@ -51,7 +52,7 @@ def create_basic_flow(workspace):
         action=action,
         step_run=step_run,
         user=user,
-        model_name=action.model.full_name,
+        model_name=f"{content_type.app_label}.{content_type.model}",
         status="COMPLETED",
     )
 
