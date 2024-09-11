@@ -59,11 +59,12 @@ INSTALLED_APPS = [
     "base64_utils",
     # This should be last
     "channel_wizzard",
-    "admin_autoregister",
     "forms",
     "draft_messages",
     "flows",
     "entity",
+    "workspace_snapshots",
+    "admin_autoregister",
 ]
 
 # Middleware Configuration

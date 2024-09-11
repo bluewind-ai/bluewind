@@ -143,7 +143,10 @@ class WorkspaceRelated(models.Model):
 
     def update_entity(self):
         # Skip update_entity for Entity model
-        if self._meta.model_name == "entity":
+        if (
+            self._meta.model_name == "entity"
+            # or self._meta.model_name == "workspaceexport"
+        ):
             return
 
         Entity = apps.get_model("entity", "Entity")
