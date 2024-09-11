@@ -51,6 +51,7 @@ class FlowRun(WorkspaceRelated):
         blank=True,
         related_name="flow_runs",
     )
+    create_new_workspace = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Run of {self.flow.name} at {self.created_at}"

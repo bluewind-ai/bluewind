@@ -52,5 +52,3 @@ def create_basic_flow(workspace):
     }
     new_flow_run.status = FlowRun.Status.COMPLETED
     new_flow_run.save()
-
-    # The function doesn't return anything
