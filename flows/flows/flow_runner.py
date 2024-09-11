@@ -1,10 +1,13 @@
 import importlib
+import logging
 
 from workspace_snapshots.models import WorkspaceDiff, WorkspaceSnapshot
 
+logger = logging.getLogger(__name__)
+
 
 def flow_runner(flow_run):
-    print("Executing dummy method before the flow")
+    logger.info("Executing dummy method before the flow")
 
     # Take snapshot before
     snapshot_before = WorkspaceSnapshot.objects.create(workspace=flow_run.workspace)
@@ -14,9 +17,10 @@ def flow_runner(flow_run):
     flow_module = importlib.import_module(module_path)
     flow_function = getattr(flow_module, flow_run.flow.name)
 
-    result = flow_function(flow_run)
+    # Run the flow function, passing only the workspace
+    flow_function(flow_run.workspace)
 
-    print("Executing dummy method after the flow")
+    logger.info("Executing dummy method after the flow")
 
     # Take snapshot after
     snapshot_after = WorkspaceSnapshot.objects.create(workspace=flow_run.workspace)
@@ -28,14 +32,21 @@ def flow_runner(flow_run):
         snapshot_after=snapshot_after,
     )
 
+    # Log the diff
+    logger.info(f"Workspace Diff: Diff ID: {diff.id}")
+    if diff.diff_data:
+        for model_name, changes in diff.diff_data.items():
+            logger.info(f"Model: {model_name}")
+            logger.info(f"Added: {len(changes.get('added', []))} objects")
+            logger.info(f"Modified: {len(changes.get('modified', []))} objects")
+            logger.info(f"Deleted: {len(changes.get('deleted', []))} objects")
+    else:
+        logger.info("No changes detected in the diff_data")
+
+    logger.debug(f"Raw diff_data: {diff.diff_data}")
+
     # Attach diff to flow_run
     flow_run.diff = diff
     flow_run.save(update_fields=["diff"])
 
-    # Ensure the result is serializable
-    if callable(result):
-        result = str(result)  # Convert function to string representation
-    elif not isinstance(result, (dict, list, str, int, float, bool, type(None))):
-        result = str(result)  # Convert non-serializable objects to string
-
-    return {"status": "completed", "result": result, "diff_id": diff.id}
+    return {"status": "completed", "diff_id": diff.id}

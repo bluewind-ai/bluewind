@@ -2,15 +2,9 @@ from credentials.models import Credentials
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from flows.models import Action, Flow, FlowRun, Step
-from workspaces.models import Workspace
 
 
-def create_basic_flow(flow_run):
-    # Create workspace
-    workspace = Workspace.objects.create(
-        name=f"Test Workspace {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    )
-
+def create_basic_flow(workspace):
     # Create user
     user = get_user_model().objects.create_user(
         username=f"testuser_{timezone.now().timestamp()}", password="testpassword"
@@ -18,53 +12,45 @@ def create_basic_flow(flow_run):
 
     # Create the setup flow
     setup_flow = Flow.objects.create(
-        workspace_id=workspace.id,
+        workspace=workspace,
         name="Setup Test Environment",
         type="no-code",  # Set this to 'no-code' to prevent recursion
     )
 
     # Create and start the flow run
-    flow_run = FlowRun.objects.create(
+    new_flow_run = FlowRun.objects.create(
         flow=setup_flow,
-        workspace_id=workspace.id,
+        workspace=workspace,
         status=FlowRun.Status.IN_PROGRESS,
-        user_id=user.id,
+        user=user,
         state={},
     )
 
     # Create credential
     credential = Credentials.objects.create(
-        workspace_id=workspace.id, key="TEST_CREDENTIAL", value="test_value"
+        workspace=workspace, key="TEST_CREDENTIAL", value="test_value"
     )
 
     # Get or create the action
     action, _ = Action.objects.get_or_create(
-        workspace_id=workspace.id,
+        workspace=workspace,
         action_type=Action.ActionType.CREATE,
         model__name="credentials",
     )
 
     # Create test flow
-    test_flow = Flow.objects.create(workspace_id=workspace.id, name="Test Flow")
+    test_flow = Flow.objects.create(workspace=workspace, name="Test Flow")
 
     # Create step
-    step = Step.objects.create(workspace_id=workspace.id, flow=test_flow, action=action)
+    step = Step.objects.create(workspace=workspace, flow=test_flow, action=action)
 
     # Update flow run state and status
-    FlowRun.objects.filter(id=flow_run.id).update(
-        state={
-            "created_credential_id": credential.id,
-            "created_flow_id": test_flow.id,
-            "created_step_id": step.id,
-        },
-        status=FlowRun.Status.COMPLETED,
-    )
-
-    return {
-        "flow_run_id": flow_run.id,
-        "workspace_id": workspace.id,
-        "user_id": user.id,
-        "credential_id": credential.id,
-        "test_flow_id": test_flow.id,
-        "step_id": step.id,
+    new_flow_run.state = {
+        "created_credential_id": credential.id,
+        "created_flow_id": test_flow.id,
+        "created_step_id": step.id,
     }
+    new_flow_run.status = FlowRun.Status.COMPLETED
+    new_flow_run.save()
+
+    # The function doesn't return anything
