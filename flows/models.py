@@ -42,14 +42,6 @@ class FlowRun(WorkspaceRelated):
     def __str__(self):
         return f"Run of {self.flow.name} at {self.created_at}"
 
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.state = {
-                "channel_name": f"Channel for Flow {self.flow.name}",
-                "channel_description": f"Automatically created channel for Flow {self.flow.name}",
-            }
-        super().save(*args, **kwargs)
-
     def update_status(self):
         total_actions = self.flow.actions.count()
         completed_actions = self.action_runs.filter(status="COMPLETED").count()

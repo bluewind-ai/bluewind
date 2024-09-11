@@ -89,9 +89,12 @@ class FlowStepRunTestCase(unittest.TestCase):
         # Create a step
         step = Step.objects.create(workspace=workspace, flow=flow, action=action)
 
-        # Create a test user
+        # Create a test user with a unique username
         User = get_user_model()
-        user = User.objects.create_user(username="testuser", password="testpassword")
+        unique_username = f"testuser_{timezone.now().timestamp()}"
+        user = User.objects.create_user(
+            username=unique_username, password="testpassword"
+        )
 
         # Create a flow run
         flow_run = FlowRun.objects.create(
@@ -99,10 +102,7 @@ class FlowStepRunTestCase(unittest.TestCase):
             flow=flow,
             status=FlowRun.Status.IN_PROGRESS,
             user=user,
-            state={
-                "channel_name": f"Channel for Flow {flow.name}",
-                "channel_description": f"Automatically created channel for Flow {flow.name}",
-            },
+            state={},
         )
 
         return flow, flow_run, action, step
