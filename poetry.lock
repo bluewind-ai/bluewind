@@ -861,6 +861,28 @@ offline = ["drf-spectacular-sidecar"]
 sidecar = ["drf-spectacular-sidecar"]
 
 [[package]]
+name = "drf-standardized-errors"
+version = "0.14.1"
+description = "Standardize your API error responses."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "drf_standardized_errors-0.14.1-py3-none-any.whl", hash = "sha256:4941e0f81be94eb0904549999cf221988a5b0f524041c3877530e24f70328ed8"},
+    {file = "drf_standardized_errors-0.14.1.tar.gz", hash = "sha256:0610dcd0096b75365102d276022a22e59a1f8db8825bb0bff05e1b7194ba145d"},
+]
+
+[package.dependencies]
+django = ">=3.2"
+djangorestframework = ">=3.12"
+
+[package.extras]
+dev = ["pre-commit"]
+doc = ["myst-parser", "sphinx (!=5.2.0.post0)", "sphinx-autobuild", "sphinx-rtd-theme (>=1.1.0)"]
+openapi = ["drf-spectacular (>=0.27.0)", "inflection"]
+release = ["flit", "keyring", "tbump"]
+test = ["tox", "tox-gh-actions"]
+
+[[package]]
 name = "factory-boy"
 version = "3.3.1"
 description = "A versatile test fixtures replacement based on thoughtbot's factory_bot for Ruby."
@@ -2312,4 +2334,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "223982e4903e0e613833c53d410434b2258e40736cad13b6644f3655826f5234"
+content-hash = "39a9f4d75de99832b626075911d40bd988f072c754065be1b137336f277f0c2b"

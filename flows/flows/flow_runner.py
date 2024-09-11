@@ -22,8 +22,8 @@ def flow_runner(flow_run):
     flow_module = importlib.import_module(module_path)
     flow_function = getattr(flow_module, flow_run.flow.name)
 
-    # Run the flow function
-    flow_function(workspace)
+    # Run the flow function and capture its result
+    flow_result = flow_function(workspace)
 
     # Take snapshot after
     snapshot_after = WorkspaceSnapshot.objects.create(workspace=workspace)
@@ -39,4 +39,9 @@ def flow_runner(flow_run):
     flow_run.diff = diff
     flow_run.save(update_fields=["diff"])
 
-    return {"status": "completed", "diff_id": diff.id, "workspace_id": workspace.id}
+    return {
+        "status": "completed",
+        "diff_id": diff.id,
+        "workspace_id": workspace.id,
+        "flow_result": flow_result,
+    }

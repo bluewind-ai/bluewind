@@ -5,23 +5,25 @@ from django.apps import apps
 
 
 def create_model_serializer(model):
-    def serializer_factory():
-        class AutoSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = model
-                fields = "__all__"
-
-        return AutoSerializer
-
-    return serializer_factory()
+    meta_attrs = {"model": model, "fields": "__all__"}
+    serializer_class = type(
+        f"{model.__name__}Serializer",
+        (serializers.ModelSerializer,),
+        {"Meta": type("Meta", (), meta_attrs)},
+    )
+    return serializer_class
 
 
 def create_model_viewset(model, serializer_class):
-    class AutoViewSet(viewsets.ModelViewSet):
-        queryset = model.objects.all()
-        serializer_class = serializer_class
-
-    return AutoViewSet
+    viewset_class = type(
+        f"{model.__name__}ViewSet",
+        (viewsets.ModelViewSet,),
+        {
+            "queryset": model.objects.all(),
+            "serializer_class": serializer_class,
+        },
+    )
+    return viewset_class
 
 
 def auto_generate_apis():

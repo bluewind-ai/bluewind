@@ -62,7 +62,7 @@ class FlowRun(WorkspaceRelated):
 
         if is_new and self.flow.type == "python":
             result = flow_runner(self)
-            self.state["flow_result"] = result
+            self.state = result
             self.save(update_fields=["state", "diff"])
 
     def update_status(self):

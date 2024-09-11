@@ -65,6 +65,8 @@ INSTALLED_APPS = [
     "workspace_snapshots",
     "rest_framework",
     "drf_spectacular",
+    "api_calls",
+    "drf_standardized_errors",
     "admin_autoregister",
 ]
 
@@ -259,8 +261,11 @@ else:
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # ... other settings ...
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
 }
+DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
+
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Your API",

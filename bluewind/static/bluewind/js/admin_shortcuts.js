@@ -1,71 +1,42 @@
-console.log("Admin Shortcuts JS Loaded!");
-
 (function () {
-  const actions = [
-    { name: "Accounts - Email Addresses", url: "/admin/account/emailaddress/" },
-    {
-      name: "Accounts - Email Confirmations",
-      url: "/admin/account/emailconfirmation/",
-    },
-    { name: "Administration - Log Entries", url: "/admin/admin/logentry/" },
-    { name: "Api Providers - Api Keys", url: "/admin/api_providers/apikey/" },
-    {
-      name: "Api Providers - Api Providers",
-      url: "/admin/api_providers/apiprovider/",
-    },
-    {
-      name: "Apollo People Search",
-      url: "/admin/apollo_people_search/apollopeoplesearch/",
-    },
-    { name: "Authentication - Groups", url: "/admin/auth/group/" },
-    { name: "Authentication - Permissions", url: "/admin/auth/permission/" },
-    {
-      name: "Base64 Utils - Conversions",
-      url: "/admin/base64_utils/base64conversion/",
-    },
-    { name: "Channels", url: "/admin/channels/channel/" },
-    { name: "Chat Messages", url: "/admin/chat_messages/message/" },
-    { name: "Content Types", url: "/admin/contenttypes/contenttype/" },
-    { name: "Credentials", url: "/admin/credentials/credentials/" },
-    { name: "Draft Messages", url: "/admin/draft_messages/draftmessage/" },
-    { name: "Forms", url: "/admin/forms/form/" },
-    { name: "Forms - Wizard Steps", url: "/admin/forms/wizardstep/" },
-    { name: "Forms - Wizards", url: "/admin/forms/wizard/" },
-    { name: "Gmail Events", url: "/admin/gmail_events/gmailevent/" },
-    {
-      name: "Gmail Subscriptions",
-      url: "/admin/gmail_subscriptions/gmailsubscription/",
-    },
-    {
-      name: "Gmail Subscriptions - Pub Sub Topics",
-      url: "/admin/gmail_subscriptions/pubsubtopic/",
-    },
-    { name: "Migrations", url: "/admin/migrations/migration/" },
-    { name: "People - Persons", url: "/admin/people/person/" },
-    { name: "Sessions", url: "/admin/sessions/session/" },
-    { name: "Sites", url: "/admin/sites/site/" },
-    { name: "Social Accounts", url: "/admin/socialaccount/socialaccount/" },
-    {
-      name: "Social Accounts - Application Tokens",
-      url: "/admin/socialaccount/socialtoken/",
-    },
-    {
-      name: "Social Accounts - Applications",
-      url: "/admin/socialaccount/socialapp/",
-    },
-    { name: "Users", url: "/admin/users/user/" },
-    {
-      name: "Webhook Tester - Incoming Webhooks",
-      url: "/admin/webhook_tester/incomingwebhook/",
-    },
-    {
-      name: "Workspaces - Workspace Users",
-      url: "/admin/workspaces/workspaceuser/",
-    },
-    { name: "Workspaces", url: "/admin/workspaces/workspace/" },
-  ];
+  // We'll fetch the actions from the API
+  let actions = [];
   let selectedIndex = 0;
   let filteredActions = [];
+
+  // Function to fetch actions from the API
+  function fetchActions() {
+    fetch("/api/flowrun/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer YOUR_ACCESS_TOKEN", // Replace with actual token or authentication method
+      },
+      body: JSON.stringify({
+        flow: 6,
+        workspace: 2,
+        user: 1,
+        create_new_workspace: false,
+        state: {},
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.state && data.state.flow_result) {
+          actions = data.state.flow_result.map((item) => ({
+            name: item.name,
+            url: item.url,
+          }));
+          console.log("Actions loaded:", actions);
+        } else {
+          console.error("Unexpected response structure:", data);
+        }
+      })
+      .catch((error) => console.error("Error fetching actions:", error));
+  }
+
+  // Call fetchActions when the script loads
+  fetchActions();
 
   function createCommandPalette() {
     const palette = document.createElement("div");

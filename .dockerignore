@@ -7,6 +7,7 @@
 !admin_autoregister.py
 !allauth
 !allauth_ui
+!api_calls
 !api_providers
 !apollo_people_search
 !auth
@@ -30,6 +31,7 @@
 !django_object_actions
 !draft_messages
 !drf_spectacular
+!drf_standardized_errors
 !entity
 !features
 !flows
