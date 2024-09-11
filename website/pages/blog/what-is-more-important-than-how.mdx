@@ -1,0 +1,28 @@
+---
+title: "What" is more important than "How"
+---
+
+# "What" is more important than "How"
+
+This is my belief after building software for a while.
+
+Once you have a system where you can focus on WHAT it did, over how it did it, you can reach peak feature velocity.
+
+The best black box programmers know it. "Recording driven development" allows that. It works like this:
+
+Any time you want to add code. You create a flow that does this:
+
+- it creates stuff in a workspace and leaves the workspace in state A
+- it performs an ATOMIC action (the smallest transformation possible) and leaves the workspace in state B
+
+You over obsess about A and B and you don't care about the atomic action. You only focus on WHAT you want, not HOW you want it to be done.
+
+What this allows you to do is to involve business folks. Because they don't care about your code.
+
+But frankly, this also allows you to involve other devs. Because they also tend to NOT care about your code.
+
+The ability for a framework to allows you to easily record behaviors through a change between 2 states is what 10x developer productivity.
+
+And LLMs are extremely good at black box programming.
+
+Couple this with a few linters to avoid common pitfalls the LLM does (or things you don't allow in your environment) and you have the perfect recipe to "build a software engineer". A software engineer is probably the most valuable anyone could build right now. Because that thing can create other things like no one else.
