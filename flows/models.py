@@ -97,6 +97,34 @@ class Action(WorkspaceRelated):
         unique_together = ("workspace", "action_type", "model")
 
 
+class ActionInput(models.Model):
+    action = models.ForeignKey(
+        "Action", on_delete=models.CASCADE, related_name="inputs"
+    )
+    name = models.CharField(max_length=255)
+    type = models.CharField(
+        max_length=50,
+        choices=[
+            ("string", "String"),
+            ("integer", "Integer"),
+            ("float", "Float"),
+            ("boolean", "Boolean"),
+            ("json", "JSON"),
+            # Add more types as needed
+        ],
+    )
+    required = models.BooleanField(default=True)
+    default = models.JSONField(null=True, blank=True)
+    choices = models.JSONField(null=True, blank=True)  # For enumerated types
+    description = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = ("action", "name")
+
+    def __str__(self):
+        return f"{self.action} - {self.name}"
+
+
 class Recording(WorkspaceRelated):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -139,7 +167,7 @@ class ActionRun(WorkspaceRelated):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="associated_action_run",  # Change this
+        related_name="associated_action_run",
     )
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
@@ -163,7 +191,6 @@ class ActionRun(WorkspaceRelated):
         ],
         default="PENDING",
     )
-    action_input = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
         return f"{self.action} by {self.user}"
@@ -175,45 +202,32 @@ class ActionRun(WorkspaceRelated):
         try:
             with transaction.atomic():
                 if is_new:
-                    # For new instances, save first then execute action
                     super().save(*args, **kwargs)
 
-                    # Action execution logic
                     self.status = "IN_PROGRESS"
                     self.save(update_fields=["status"])
 
                     if self.step_run:
-                        # Execute logic for action runs tied to a step_run
                         workspace = self.step_run.flow_run.workspace
-                        # ... (implement the logic for step_run-related actions)
                     else:
-                        # Execute logic for standalone action runs
                         workspace = self.workspace
-                        # ... (implement the logic for standalone actions)
 
-                    # Implement your action execution logic here
-                    # This is where you'd put the core functionality of the action
+                    self._execute_action(workspace)
 
                     self.status = "COMPLETED"
                     self.save(update_fields=["status", "results"])
 
                 elif update_fields:
-                    # For updates with specific fields, use update() method
                     type(self).objects.filter(pk=self.pk).update(
                         **{field: getattr(self, field) for field in update_fields}
                     )
                 else:
-                    # For full updates without specified fields
                     super().save(*args, **kwargs)
 
         except Exception as e:
-            # Handle any exceptions that occur during save or action execution
             self.status = "ERROR"
-            self.action_input = self.action_input or {}
-            self.action_input["error"] = str(e)
             self.results = {"error": str(e)}
 
-            # Save the error status without using update_fields
             super().save(update_fields=None)
 
             logger.error(f"Error in ActionRun {self.id}: {str(e)}")
@@ -221,55 +235,51 @@ class ActionRun(WorkspaceRelated):
 
         logger.debug(f"ActionRun {self.id} saved successfully")
 
-    def _execute_action(self):
-        self.status = "IN_PROGRESS"
-        super().save(update_fields=["status"])
+    def _execute_action(self, workspace):
+        action_type = self.action.action_type
+        model_class = self.get_model_class()
 
-        try:
-            action_type = self.action.action_type
-            model_class = self.get_model_class()
+        if (
+            action_type == Action.ActionType.CREATE
+            and model_class.__name__ == "Channel"
+        ):
+            action_inputs = self.action.inputs.all()
+            input_data = {}
+            for input_field in action_inputs:
+                if input_field.name in self.step_run.flow_run.state:
+                    input_data[input_field.name] = self.step_run.flow_run.state[
+                        input_field.name
+                    ]
+                elif input_field.required:
+                    raise ValidationError(
+                        f"Required input {input_field.name} is missing"
+                    )
+                elif input_field.default is not None:
+                    input_data[input_field.name] = input_field.default
 
-            if (
-                action_type == Action.ActionType.CREATE
-                and model_class.__name__ == "Channel"
-            ):
-                new_instance = model_class(
-                    workspace=self.step_run.flow_run.workspace,
-                    user=self.user,
-                    **self.action_input,
-                )
+            new_instance = model_class(
+                workspace=workspace,
+                user=self.user,
+                **input_data,
+            )
 
-                default_credentials = Credentials.objects.get(
-                    workspace=self.step_run.flow_run.workspace,
-                    key="DEFAULT_GMAIL_CREDENTIALS",
-                )
-                new_instance.gmail_credentials = default_credentials
+            default_credentials = Credentials.objects.get(
+                workspace=workspace,
+                key="DEFAULT_GMAIL_CREDENTIALS",
+            )
+            new_instance.gmail_credentials = default_credentials
 
-                new_instance.full_clean()
-                new_instance.save()
+            new_instance.full_clean()
+            new_instance.save()
 
-                self.results = {
-                    "action": "CREATE",
-                    "model": "Channel",
-                    "id": new_instance.id,
-                }
-                self.step_run.flow_run.state["created_channel_id"] = new_instance.id
-                self.step_run.flow_run.state["created_channel_email"] = (
-                    new_instance.email
-                )
-                self.step_run.flow_run.save(update_fields=["state"])
-
-            self.status = "COMPLETED"
-            super().save(update_fields=["status", "results"])
-
-        except ValidationError as e:
-            self.status = "ERROR"
-            self.action_input["error"] = str(e)
-            raise
-        except Exception as e:
-            self.status = "ERROR"
-            self.action_input["error"] = f"Unexpected error: {str(e)}"
-            raise ValidationError(f"Error in action execution: {str(e)}")
+            self.results = {
+                "action": "CREATE",
+                "model": "Channel",
+                "id": new_instance.id,
+            }
+            self.step_run.flow_run.state["created_channel_id"] = new_instance.id
+            self.step_run.flow_run.state["created_channel_email"] = new_instance.email
+            self.step_run.flow_run.save(update_fields=["state"])
 
     def get_model_class(self):
         parts = self.model_name.split(".")
@@ -316,7 +326,7 @@ class StepRun(WorkspaceRelated):
 
         if is_new:
             with transaction.atomic():
-                super().save(*args, **kwargs)  # Save first to get a pk
+                super().save(*args, **kwargs)
                 self.find_and_run_next_step()
         else:
             super().save(*args, **kwargs)
@@ -345,10 +355,7 @@ class StepRun(WorkspaceRelated):
                     return
 
     def run_action(self):
-        from .models import ActionRun  # Import here to avoid circular import
-
-        # Get the action_input from the flow_run's state
-        action_input = self.flow_run.state.get("action_input", {})
+        from .models import ActionRun
 
         with transaction.atomic():
             self.action_run = ActionRun.objects.create(
@@ -357,16 +364,12 @@ class StepRun(WorkspaceRelated):
                 step_run=self,
                 user=self.flow_run.user,
                 model_name=self.step.action.model.full_name,
-                action_input=action_input,  # Use the action_input from flow_run state
             )
             self.end_date = timezone.now()
             self.save(update_fields=["action_run", "end_date"])
 
-        # This will trigger the action execution in ActionRun's save method
         self.action_run.save()
 
-        # After action execution, you might want to update the flow_run state
-        # based on the action results
         self.flow_run.state["last_action_result"] = self.action_run.results
         self.flow_run.save(update_fields=["state"])
 
