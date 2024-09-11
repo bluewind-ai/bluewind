@@ -782,6 +782,16 @@ files = [
 ]
 
 [[package]]
+name = "django-reverse-admin"
+version = "2.9.6"
+description = ""
+optional = false
+python-versions = ">=3"
+files = [
+    {file = "django_reverse_admin-2.9.6.zip", hash = "sha256:3c26d7a93181e8f11b1c81f83251f238c566bc7ebea2873520269c949116f0d9"},
+]
+
+[[package]]
 name = "django-ses"
 version = "4.1.1"
 description = "A Django email backend for Amazon's Simple Email Service (SES)"
@@ -2092,4 +2102,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "71a8bd18403d666c01f45b82db9908fdab463fb7b6c475714a5b8d3c64bf0e43"
+content-hash = "c15189d351f3f6e2d5494372896d025d17c50c578e70ad5293cef0a5606a2d97"

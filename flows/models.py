@@ -7,6 +7,7 @@ from django.db import models, transaction
 from django.forms import ValidationError
 from django.utils import timezone
 from flows.flows.flow_runner import flow_runner
+from workspace_snapshots.models import WorkspaceDiff
 from workspaces.models import Workspace, WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -43,7 +44,13 @@ class FlowRun(WorkspaceRelated):
     )
     state = models.JSONField(default=dict, blank=True)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
-    diff_id = models.IntegerField(null=True, blank=True)
+    diff = models.ForeignKey(
+        WorkspaceDiff,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="flow_runs",
+    )
 
     def __str__(self):
         return f"Run of {self.flow.name} at {self.created_at}"
@@ -55,7 +62,7 @@ class FlowRun(WorkspaceRelated):
         if is_new and self.flow.type == "python":
             result = flow_runner(self)
             self.state["flow_result"] = result
-            self.save(update_fields=["state"])
+            self.save(update_fields=["state", "diff"])
 
     def update_status(self):
         total_actions = self.flow.actions.count()
