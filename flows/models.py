@@ -288,69 +288,82 @@ class ActionRun(WorkspaceRelated):
         return None
 
 
+from django.db import models
+from workspaces.models import WorkspaceRelated
+
+
 class StepRun(WorkspaceRelated):
     step = models.ForeignKey(
-        Step, on_delete=models.CASCADE, related_name="step_runs", null=True, blank=True
+        "Step",
+        on_delete=models.CASCADE,
+        related_name="step_runs",
+        null=True,
+        blank=True,
     )
     action_run = models.OneToOneField(
-        ActionRun,
+        "ActionRun",
         on_delete=models.CASCADE,
         related_name="associated_step_run",
         null=True,
         blank=True,
     )
     flow_run = models.ForeignKey(
-        FlowRun,
+        "FlowRun",
         on_delete=models.CASCADE,
         related_name="step_runs",
     )
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
-        return f"StepRun for {self.step} (Started: {self.start_date})"
-
     def save(self, *args, **kwargs):
-        is_new = not self.pk  # Determine if this is a new instance
+        is_new = not self.pk
 
         if is_new:
-            # Only for new instances, find the next step to run
-            self.find_next_step()
+            with transaction.atomic():
+                super().save(*args, **kwargs)  # Save first to get a pk
+                self.find_and_run_next_step()
+        else:
+            super().save(*args, **kwargs)
 
-        # If the step is assigned and no action_run exists, create it
-        if self.step and not self.action_run:
-            from .models import ActionRun
+    def find_and_run_next_step(self):
+        self.find_next_step()
+        if self.step:
+            self.run_action()
 
+    def find_next_step(self):
+        flow_steps = self.flow_run.flow.steps.all().order_by("id")
+        completed_step_ids = set(
+            self.flow_run.step_runs.exclude(id=self.id).values_list(
+                "step_id", flat=True
+            )
+        )
+
+        for step in flow_steps:
+            if step.id not in completed_step_ids:
+                if (
+                    step.parent_step_id is None
+                    or step.parent_step_id in completed_step_ids
+                ):
+                    self.step = step
+                    self.save(update_fields=["step"])
+                    return
+
+    def run_action(self):
+        from .models import ActionRun  # Import here to avoid circular import
+
+        with transaction.atomic():
             self.action_run = ActionRun.objects.create(
                 workspace=self.workspace,
                 action=self.step.action,
                 step_run=self,
                 user=self.flow_run.user,
+                model_name=self.step.action.model.full_name,
             )
-
-        # Set end_date if not set and both step and action_run exist
-        if not self.end_date and self.step and self.action_run:
             self.end_date = timezone.now()
+            self.save(update_fields=["action_run", "end_date"])
 
-        super().save(*args, **kwargs)
+        # This will trigger the action execution in ActionRun's save method
+        self.action_run.save()
 
-    def clean(self):
-        if self.end_date and (not self.step or not self.action_run):
-            raise ValidationError(
-                "Step and ActionRun must be set before completing the StepRun"
-            )
-
-    def find_next_step(self):
-        flow_steps = self.flow_run.flow.steps.all()
-        completed_step_ids = self.flow_run.step_runs.filter(
-            end_date__isnull=False
-        ).values_list("step_id", flat=True)
-
-        for step in flow_steps:
-            if (
-                step.parent_step_id is None or step.parent_step_id in completed_step_ids
-            ) and step.id not in completed_step_ids:
-                self.step = step
-                return
-
-        self.step = None
+    def __str__(self):
+        return f"StepRun for {self.step} (Started: {self.start_date})"
