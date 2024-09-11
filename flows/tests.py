@@ -1,8 +1,9 @@
 import json
 import unittest
 
+from django.contrib.auth import get_user_model
 from django.utils import timezone
-from flows.models import Action, Credentials, Flow, FlowRun, StepRun
+from flows.models import Action, Credentials, Flow, FlowRun, Step, StepRun
 from workspace_snapshots.models import (
     DiffRelatedEntities,
     WorkspaceDiff,
@@ -25,7 +26,19 @@ class FlowStepRunTestCase(unittest.TestCase):
         )
 
         # Create flow components
-        flow, flow_run, action = self.create_flow_with_one_step(workspace)
+        flow, flow_run, action, step = self.create_flow_with_one_step(workspace)
+
+        # Set action_input in the flow_run's state
+        flow_run.state["action_input"] = {
+            "key": "TEST_ACTION_INPUT",
+            "value": "test_action_value",
+        }
+        flow_run.save(update_fields=["state"])
+
+        # Add debug prints
+        print(f"\nFlow steps: {list(flow.steps.all())}")
+        print(f"Completed step runs: {list(flow_run.step_runs.all())}")
+        print(f"Flow run state: {flow_run.state}")
 
         # Create a snapshot before creating the step run
         snapshot_before = WorkspaceSnapshot.objects.create(workspace=workspace)
@@ -73,9 +86,23 @@ class FlowStepRunTestCase(unittest.TestCase):
             workspace=workspace, name="Test Flow", description="A test flow"
         )
 
+        # Create a step
+        step = Step.objects.create(workspace=workspace, flow=flow, action=action)
+
+        # Create a test user
+        User = get_user_model()
+        user = User.objects.create_user(username="testuser", password="testpassword")
+
         # Create a flow run
         flow_run = FlowRun.objects.create(
-            workspace=workspace, flow=flow, status=FlowRun.Status.IN_PROGRESS
+            workspace=workspace,
+            flow=flow,
+            status=FlowRun.Status.IN_PROGRESS,
+            user=user,
+            state={
+                "channel_name": f"Channel for Flow {flow.name}",
+                "channel_description": f"Automatically created channel for Flow {flow.name}",
+            },
         )
 
-        return flow, flow_run, action
+        return flow, flow_run, action, step

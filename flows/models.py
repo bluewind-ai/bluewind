@@ -21,6 +21,9 @@ class Flow(WorkspaceRelated):
         return self.name
 
 
+from django.contrib.auth import get_user_model
+
+
 class FlowRun(WorkspaceRelated):
     class Status(models.TextChoices):
         NOT_STARTED = "NOT_STARTED", "Not Started"
@@ -34,6 +37,7 @@ class FlowRun(WorkspaceRelated):
         max_length=20, choices=Status.choices, default=Status.NOT_STARTED
     )
     state = models.JSONField(default=dict, blank=True)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"Run of {self.flow.name} at {self.created_at}"
@@ -351,6 +355,9 @@ class StepRun(WorkspaceRelated):
     def run_action(self):
         from .models import ActionRun  # Import here to avoid circular import
 
+        # Get the action_input from the flow_run's state
+        action_input = self.flow_run.state.get("action_input", {})
+
         with transaction.atomic():
             self.action_run = ActionRun.objects.create(
                 workspace=self.workspace,
@@ -358,12 +365,18 @@ class StepRun(WorkspaceRelated):
                 step_run=self,
                 user=self.flow_run.user,
                 model_name=self.step.action.model.full_name,
+                action_input=action_input,  # Use the action_input from flow_run state
             )
             self.end_date = timezone.now()
             self.save(update_fields=["action_run", "end_date"])
 
         # This will trigger the action execution in ActionRun's save method
         self.action_run.save()
+
+        # After action execution, you might want to update the flow_run state
+        # based on the action results
+        self.flow_run.state["last_action_result"] = self.action_run.results
+        self.flow_run.save(update_fields=["state"])
 
     def __str__(self):
         return f"StepRun for {self.step} (Started: {self.start_date})"
