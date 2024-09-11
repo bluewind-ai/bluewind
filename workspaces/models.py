@@ -159,7 +159,7 @@ class WorkspaceRelated(models.Model):
         Entity.objects.update_or_create(
             workspace=self.workspace,
             content_type=content_type,
-            # object_id=self.pk,
+            object_id=self.pk,
             defaults={
                 "name": name,
                 "updated_at": models.functions.Now(),
