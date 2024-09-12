@@ -41,10 +41,6 @@ def clean_dockerignore():
     with open(dockerignore_path, "w") as f:
         f.write(first_line)  # Write the first line (wildcard) unchanged
         f.writelines(unique_sorted_lines)  # Write the rest of the sorted, unique lines
-
-    print(
-        "Dockerignore file has been cleaned and sorted (keeping the first line intact)."
-    )
     # remove the last
 
 
