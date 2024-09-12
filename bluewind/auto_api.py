@@ -15,14 +15,15 @@ def create_model_serializer(model):
 
 
 def create_model_viewset(model, serializer_class):
-    viewset_class = type(
-        f"{model.__name__}ViewSet",
-        (viewsets.ModelViewSet,),
-        {
-            "queryset": model.objects.all(),
-            "serializer_class": serializer_class,
-        },
-    )
+    attrs = {
+        "queryset": model.objects.all(),
+        "serializer_class": serializer_class,
+    }
+
+    if model.__name__ == "FlowRun":
+        attrs["lookup_field"] = "flow__name"
+
+    viewset_class = type(f"{model.__name__}ViewSet", (viewsets.ModelViewSet,), attrs)
     return viewset_class
 
 

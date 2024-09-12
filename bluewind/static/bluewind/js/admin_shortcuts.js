@@ -12,8 +12,8 @@
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        flow: 6,
-        workspace: 2,
+        flow: "command_palette_get_commands",
+        workspace: 1,
         user: 1,
         create_new_workspace: false,
         state: {},

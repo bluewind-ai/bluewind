@@ -7,12 +7,12 @@ from admin_autoregister.register_flows import load_flows
 # Assuming these are defined elsewhere
 from django.apps import apps
 from django.contrib import admin, messages
-from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
+from users.models import User
 
 
 class Workspace(models.Model):
