@@ -15,6 +15,7 @@ from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
 from flows.models import Action, ActionRun, Recording
+from users.models import User
 from workspaces.models import Workspace
 
 logger = logging.getLogger(__name__)

@@ -133,9 +133,6 @@ from django.db import models
 
 class WorkspaceRelatedMeta(models.base.ModelBase):
     def __new__(mcs, name, bases, attrs):
-        print(f"WorkspaceRelatedMeta.__new__ called for {name}")
-        print(f"Attributes: {list(attrs.keys())}")
-
         for base in bases:
             if issubclass(base, models.Model) and base != models.Model:
                 for field in base._meta.fields:
@@ -161,9 +158,6 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
     @classmethod
     def check(cls, **kwargs):
         errors = super().check(**kwargs)
-        print(f"WorkspaceRelated.check called for {cls.__name__}")
-        print(f"Class dict: {list(cls.__dict__.keys())}")
-
         for base in cls.__bases__:
             if issubclass(base, models.Model) and base != models.Model:
                 for field in base._meta.fields:

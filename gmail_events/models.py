@@ -2,12 +2,12 @@ import base64
 import json
 import logging
 
-from base_model.models import BaseModel
 from channels.models import Channel, fetch_messages_from_gmail
 from django.db import models
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from webhook_tester.models import log_incoming_webhook
+from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ def gmail_webhook(request):
     return HttpResponse(f"Processed {created_count} messages", status=200)
 
 
-class GmailEvent(BaseModel):
+class GmailEvent(WorkspaceRelated):
     timestamp = models.DateTimeField(auto_now_add=True)
     event_data = models.JSONField()
 

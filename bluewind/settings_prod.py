@@ -199,27 +199,35 @@ SOCIALACCOUNT_PROVIDERS = {
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "filters": {"hide_staticfiles": {"()": "bluewind.log_filters.SkipStaticFilter"}},
+    "filters": {
+        "hide_staticfiles": {"()": "bluewind.log_filters.SkipStaticFilter"},
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "formatters": {
+        "simple": {"format": "%(levelname)s %(message)s"},
+    },
     "handlers": {
         "console": {
             "class": "rich.logging.RichHandler",
-            "rich_tracebacks": True,
-            "tracebacks_show_locals": True,
+            "formatter": "simple",
+            "rich_tracebacks": False,
+            "tracebacks_show_locals": False,
+            "tracebacks_extra_lines": 0,
+            "tracebacks_theme": None,
+            "show_time": False,
+            "show_path": False,
         },
     },
     "loggers": {
         "": {
-            "level": "DEBUG",
+            "level": "WARNING",
             "handlers": ["console"],
         },
-        # "django.db.backends": {
-        #     "level": "DEBUG",
-        #     "handlers": ["console"],
-        #     "propagate": False,
-        # },
         "django.server": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "WARNING",
             "filters": ["hide_staticfiles"],
             "propagate": False,
         },
@@ -231,7 +239,7 @@ INTERNAL_IPS = ["127.0.0.1"]
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TEMPLATE_CONTEXT": True,
     "ENABLE_STACKTRACES": True,
-    "STACKTRACE_DEPTH": 10000,
+    "STACKTRACE_DEPTH": 20,  # Reduced from 10000
     "SHOW_TOOLBAR_CALLBACK": "bluewind.toolbar.show_toolbar",
 }
 

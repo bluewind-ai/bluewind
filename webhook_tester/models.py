@@ -4,7 +4,6 @@ from functools import wraps
 
 import requests
 
-from base_model.models import BaseModel
 from base_model_admin.admin import InWorkspace
 from django import forms
 from django.contrib import messages
@@ -13,6 +12,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
+from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ def log_incoming_webhook(func):
 
 
 # Model definitions
-class WebhookTest(InWorkspace):
+class WebhookTest(WorkspaceRelated):
     timestamp = models.DateTimeField(auto_now_add=True)
     webhook_url = models.URLField()
     payload = models.JSONField()
@@ -46,7 +46,7 @@ class WebhookTest(InWorkspace):
         app_label = "webhook_tester"
 
 
-class IncomingWebhook(BaseModel):
+class IncomingWebhook(WorkspaceRelated):
     timestamp = models.DateTimeField(auto_now_add=True)
     headers = models.JSONField()
     payload = models.JSONField()
