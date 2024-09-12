@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Core Django Settings
 SECRET_KEY = os.environ["SECRET_KEY"]
-DEBUG = os.environ["DEBUG"]
+DEBUG = False
 ALLOWED_HOSTS = environ.Env().list("ALLOWED_HOSTS")
 ROOT_URLCONF = "bluewind.urls"
 WSGI_APPLICATION = "bluewind.wsgi.application"
