@@ -52,39 +52,82 @@ class NonStaticHandler(logging.StreamHandler):
             super().emit(record)
 
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "simple": {"format": "%(levelname)s %(message)s"},
-    },
-    "handlers": {
-        "console": {
-            "class": "bluewind.logging_config.NonStaticHandler",
-            "formatter": "simple",
-            "level": "DEBUG",
-            "stream": sys.stdout,
+class DatabaseLogHandler(logging.Handler):
+    def emit(self, record):
+        if record.name == "django.db.backends":
+            try:
+                sql = record.sql.strip()
+                params = str(record.params)
+                execution_time = getattr(record, "duration", None)
+                database_alias = getattr(record, "alias", "default")
+
+                # QueryLog.objects.create(
+                #     timestamp=timezone.now(),
+                #     logger_name=record.name,
+                #     level=record.levelname,
+                #     sql=sql,
+                #     params=params,
+                #     execution_time=execution_time,
+                #     database_alias=database_alias,
+                # )
+            except Exception as e:
+                print(f"Error saving query log: {e}")
+
+
+def get_logging_config(base_dir):
+    # Ensure the log directory exists
+    LOG_DIR = os.path.join(base_dir, "logs")
+    os.makedirs(LOG_DIR, exist_ok=True)
+
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "simple": {"format": "%(levelname)s %(message)s"},
+            "verbose": {"format": "%(asctime)s %(name)s [%(levelname)s] %(message)s"},
         },
-    },
-    "loggers": {
-        "django": {
+        "handlers": {
+            "console": {
+                "class": "bluewind.logging_config.NonStaticHandler",
+                "formatter": "simple",
+                "level": "DEBUG",
+                "stream": sys.stdout,
+            },
+            "db_file": {
+                "class": "logging.FileHandler",
+                "filename": os.path.join(LOG_DIR, "db_queries.log"),
+                "formatter": "verbose",
+                "level": "DEBUG",
+            },
+            "db_model": {
+                "class": "bluewind.logging_config.DatabaseLogHandler",
+                "level": "DEBUG",
+            },
+        },
+        "loggers": {
+            "django": {
+                "handlers": ["console"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            "django.server": {
+                "handlers": ["console"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            "django.db.backends": {
+                "handlers": ["db_file", "db_model"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+            "bluewind": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+        },
+        "root": {
             "handlers": ["console"],
             "level": "INFO",
-            "propagate": False,
         },
-        "django.server": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "bluewind": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
-    },
-}
+    }
