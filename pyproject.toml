@@ -59,6 +59,7 @@ django-reverse-admin = "^2.9.6"
 djangorestframework = "^3.15.2"
 drf-spectacular = "^0.27.2"
 drf-standardized-errors = "^0.14.1"
+pylint = "^3.2.7"
 
 [tool.poetry.extras]
 argon2 = [ "argon2-cffi",]
@@ -89,3 +90,24 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.pylint.main]
+ignore-patterns = ["^\\.#"]
+
+[tool.pylint.messages_control]
+disable = [
+    "C0111",  # missing-docstring
+    "C0103",  # invalid-name
+    "C0330",  # bad-continuation
+    "C0326",  # bad-whitespace
+    "W0611",  # unused-import
+    "W0703",  # broad-except
+    "R0903",  # too-few-public-methods
+    "R0913",  # too-many-arguments
+]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.design]
+max-parents = 15

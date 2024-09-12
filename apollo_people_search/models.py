@@ -58,6 +58,9 @@ class ApolloPeopleSearch(WorkspaceRelated):
         default=10, help_text="Number of results per page (1-100)"
     )
 
+    class Meta:
+        unique_together = ["name", "workspace"]
+
     def __str__(self):
         return self.name
 

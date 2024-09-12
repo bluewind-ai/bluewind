@@ -121,7 +121,6 @@ logger = logging.getLogger(__name__)
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core import checks
 from django.db import models
 
 
@@ -160,13 +159,9 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
                     not cls._meta.unique_together
                     or ["name", "workspace"] not in cls._meta.unique_together
                 ):
-                    errors.append(
-                        checks.Error(
-                            f"Model {cls.__name__} has a 'name' field but doesn't have "
-                            "['name', 'workspace'] in its unique_together constraint.",
-                            obj=cls,
-                            id="workspaces.E001",
-                        )
+                    raise ValidationError(
+                        f"Model {cls.__name__} has a 'name' field but doesn't have "
+                        "['name', 'workspace'] in its unique_together constraint."
                     )
 
         return errors

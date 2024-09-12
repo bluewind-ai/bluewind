@@ -1,5 +1,6 @@
 import logging
 
+from admin_autoregister.whitelist import MODEL_WHITELIST
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 
@@ -24,24 +25,6 @@ def check_model_inheritance():
         raise ImproperlyConfigured(
             "WorkspaceRelated class not found in any installed app."
         )
-
-    MODEL_WHITELIST = {
-        "EmailAddress",
-        "SocialApp",
-        "SocialToken",
-        "SocialAccount",
-        "Group",
-        "Site",
-        "LogEntry",
-        "Permission",
-        "ContentType",
-        "Session",
-        "Workspace",
-        "WorkspaceUser",
-        "EmailConfirmation",
-        "User",
-        "Migration",
-    }
 
     issues = []
 
