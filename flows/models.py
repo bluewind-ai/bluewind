@@ -24,6 +24,9 @@ class Flow(WorkspaceRelated):
         default="no-code",
     )
 
+    class Meta:
+        unique_together = ["name", "workspace"]
+
     def __str__(self):
         return self.name
 
@@ -106,6 +109,9 @@ class Recording(WorkspaceRelated):
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = ["name", "workspace"]
+
 
 class Step(WorkspaceRelated):
     flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="steps")
@@ -170,11 +176,6 @@ class ActionRun(WorkspaceRelated):
                     self.status = "IN_PROGRESS"
                     self.save(update_fields=["status"])
 
-                    if self.step_run:
-                        workspace = self.step_run.flow_run.workspace
-                    else:
-                        workspace = self.workspace
-
                     self.status = "COMPLETED"
                     self.save(update_fields=["status", "results"])
 
@@ -195,6 +196,13 @@ class ActionRun(WorkspaceRelated):
             raise ValidationError(f"Error in action execution: {str(e)}")
 
         logger.debug(f"ActionRun {self.id} saved successfully")
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+
+        if is_new:
+            self._execute_action()
 
     def _execute_action(self):
         self.status = "IN_PROGRESS"

@@ -2,15 +2,14 @@ import logging
 
 # Assuming these are defined elsewhere
 from django.apps import apps
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.forms import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
-from django_object_actions import DjangoObjectActions, action
+from django_object_actions import DjangoObjectActions
 
 from admin_autoregister.register_flows import load_flows
 from users.models import User
@@ -66,55 +65,6 @@ class WorkspaceUser(models.Model):
 class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
     actions = ["clone_workspace_action"]
     readonly_fields = ("admin_url_link",)
-    changelist_actions = ("delete_current_workspace",)
-
-    @action(
-        label="Delete Current Workspace",
-        description="Permanently delete the current workspace",
-        attrs={"style": "color: red;"},
-    )
-    def delete_current_workspace(self, request, queryset):
-        current_workspace_id = request.environ.get("WORKSPACE_ID")
-        if current_workspace_id:
-            try:
-                workspace = Workspace.objects.get(id=current_workspace_id)
-                url = reverse("admin:workspaces_workspace_delete", args=[workspace.id])
-                return HttpResponseRedirect(url)
-            except Workspace.DoesNotExist:
-                self.message_user(
-                    request, "Current workspace not found.", level=messages.ERROR
-                )
-        else:
-            self.message_user(
-                request, "No current workspace identified.", level=messages.ERROR
-            )
-
-        return HttpResponseRedirect(request.get_full_path())
-
-    def clone_workspace_action(self, request, queryset):
-        if queryset.count() != 1:
-            self.message_user(
-                request,
-                "Please select only one workspace to clone.",
-                level=messages.WARNING,
-            )
-            return
-
-        workspace = queryset.first()
-        new_workspace = clone_workspace(workspace, request)
-
-        self.message_user(
-            request,
-            f"Workspace '{workspace.name}' has been cloned successfully.",
-            level=messages.SUCCESS,
-        )
-
-        # Redirect to the change page of the new workspace
-        return HttpResponseRedirect(
-            reverse("customadmin:workspaces_workspace_change", args=[new_workspace.id])
-        )
-
-    clone_workspace_action.short_description = "Clone selected workspace"
 
 
 logger = logging.getLogger(__name__)

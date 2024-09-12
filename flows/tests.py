@@ -58,7 +58,7 @@ class FlowTestCase(unittest.TestCase):
         flow_run.save(update_fields=["state"])
 
         snapshot_before = WorkspaceSnapshot.objects.create(workspace=workspace)
-        step_run = StepRun.objects.create(
+        StepRun.objects.create(
             workspace=workspace, flow_run=flow_run, start_date=timezone.now()
         )
         snapshot_after = WorkspaceSnapshot.objects.create(workspace=workspace)

@@ -9,6 +9,9 @@ class ApiProvider(WorkspaceRelated):
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = ["name", "workspace"]
+
 
 class ApiKey(WorkspaceRelated):
     content = models.TextField()

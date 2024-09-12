@@ -1,5 +1,4 @@
 import json
-import logging
 from asyncio.log import logger
 
 from django.contrib import admin
@@ -17,8 +16,6 @@ from bluewind.utils import get_queryset
 from flows.models import Action, ActionRun, Recording
 from users.models import User
 from workspaces.models import Workspace
-
-logger = logging.getLogger(__name__)
 
 
 def get_latest_recording(workspace_id):

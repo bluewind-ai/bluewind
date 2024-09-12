@@ -140,11 +140,11 @@ class PersonAdmin(DjangoObjectActions, InWorkspace):
                 reverse("admin:people_person_change", args=[obj.id])
             )
 
-        draft_content = f"Dear {
+        f"Dear {
             obj.first_name},\n\nI hope this email finds you well. I came across your profile and thought you might be interested in our services...\n\nBest regards,\nYour Name"
 
         try:
-            draft_message = DraftMessage.objects.create(
+            DraftMessage.objects.create(
                 workspace=obj.workspace,
                 channel=channel,
                 recipient=obj,

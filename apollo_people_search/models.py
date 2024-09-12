@@ -59,12 +59,10 @@ class ApolloPeopleSearch(WorkspaceRelated):
         default=10, help_text="Number of results per page (1-100)"
     )
 
-    class Meta:
-        unique_together = ["name", "workspace"]
-
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = "Apollo People Search"
         verbose_name_plural = "Apollo People Searches"
+        unique_together = ["name", "workspace"]
