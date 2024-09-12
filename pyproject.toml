@@ -60,6 +60,7 @@ djangorestframework = "^3.15.2"
 drf-spectacular = "^0.27.2"
 drf-standardized-errors = "^0.14.1"
 pylint = "^3.2.7"
+autopep8 = "^2.3.1"
 
 [tool.poetry.extras]
 argon2 = [ "argon2-cffi",]
@@ -116,3 +117,9 @@ max-line-length = 120
 
 [tool.pylint.design]
 max-parents = 15
+
+[tool.autopep8]
+max_line_length = 120
+in-place = true
+recursive = true
+aggressive = 3
