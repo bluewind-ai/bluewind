@@ -83,7 +83,8 @@ select = ["E", "F", "I"]
 ignore = ["E501"]  # Add this line to ignore line length errors
 
 [tool.ruff.lint.isort]
-known-first-party = ["django"]
+known-first-party = ["bluewind"]
+known-third-party = ["django"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -104,6 +105,10 @@ disable = [
     "W0703",  # broad-except
     "R0903",  # too-few-public-methods
     "R0913",  # too-many-arguments
+    "C0411",  # wrong-import-order
+    "W0511",  # fixme
+    "W1203", # logging-fstring-interpolation
+    "E1101", # no-member
 ]
 
 [tool.pylint.format]
