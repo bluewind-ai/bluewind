@@ -1,0 +1,83 @@
+{% load static %}
+
+<style>
+    #jsoneditor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1000;
+        display: none;
+    }
+    #jsoneditor-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1001;
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.js"></script>
+
+<div id="jsoneditor">
+    <button id="jsoneditor-close" onclick="toggleJsonEditor()">Close</button>
+</div>
+
+<script>
+    let editor = null;
+    let pageJsonData = JSON.parse('{{ json_data|escapejs }}');
+
+    function toggleJsonEditor() {
+        var editorContainer = document.getElementById('jsoneditor');
+        var contentMain = document.getElementById('content');
+        var currentUrl = new URL(window.location.href);
+
+        if (currentUrl.searchParams.get('json_view') !== 'true') {
+            currentUrl.searchParams.set('json_view', 'true');
+            showJsonEditor();
+        } else {
+            currentUrl.searchParams.delete('json_view');
+            hideJsonEditor();
+        }
+
+        window.history.pushState({jsonView: currentUrl.searchParams.get('json_view') === 'true'}, '', currentUrl);
+    }
+
+    function showJsonEditor() {
+        var editorContainer = document.getElementById('jsoneditor');
+        var contentMain = document.getElementById('content');
+
+        editorContainer.style.display = 'block';
+        contentMain.style.display = 'none';
+        if (!editor) {
+            editor = new JSONEditor(editorContainer, {});
+        }
+        editor.set(pageJsonData);
+    }
+
+    function hideJsonEditor() {
+        var editorContainer = document.getElementById('jsoneditor');
+        var contentMain = document.getElementById('content');
+
+        editorContainer.style.display = 'none';
+        contentMain.style.display = 'block';
+    }
+
+    function updateViewFromUrl() {
+        var url = new URL(window.location.href);
+        if (url.searchParams.get('json_view') === 'true') {
+            showJsonEditor();
+        } else {
+            hideJsonEditor();
+        }
+    }
+
+    // Check URL on page load
+    window.addEventListener('load', updateViewFromUrl);
+
+    // Listen for popstate events (back/forward browser buttons)
+    window.addEventListener('popstate', function(event) {
+        updateViewFromUrl();
+    });
+</script>

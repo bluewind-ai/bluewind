@@ -7,23 +7,6 @@
 {% block extrastyle %}
 {{ block.super }}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.css" rel="stylesheet" type="text/css">
-<style>
-    #jsoneditor {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: 1000;
-        display: none;
-    }
-    #jsoneditor-close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        z-index: 1001;
-    }
-</style>
 {% endblock %}
 
 {% block branding %}
@@ -37,66 +20,30 @@
 
 {% block footer %}
     {{ block.super }}
-    <script src="{% static 'bluewind/js/admin_shortcuts.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.js"></script>
-    <div id="jsoneditor">
-        <button id="jsoneditor-close" onclick="toggleJsonEditor()">Close</button>
-    </div>
+    {% include 'json_editor.html' %}
+    
+    <!-- Embed data for JavaScript -->
+    {% if flows_data %}
+        {{ flows_data|json_script:"initial-data" }}
+        <script>console.log('Raw flows_data:', {{ flows_data|safe }});</script>
+    {% else %}
+        <script>console.log('flows_data is not available in the context');</script>
+    {% endif %}
+    
     <script>
-        let editor = null;
-        let pageJsonData = JSON.parse('{{ json_data|escapejs }}');
-        
-        function toggleJsonEditor() {
-            var editorContainer = document.getElementById('jsoneditor');
-            var contentMain = document.getElementById('content');
-            var currentUrl = new URL(window.location.href);
-            
-            if (currentUrl.searchParams.get('json_view') !== 'true') {
-                currentUrl.searchParams.set('json_view', 'true');
-                showJsonEditor();
-            } else {
-                currentUrl.searchParams.delete('json_view');
-                hideJsonEditor();
-            }
-            
-            window.history.pushState({jsonView: currentUrl.searchParams.get('json_view') === 'true'}, '', currentUrl);
+        const initialDataElement = document.getElementById('initial-data');
+        console.log('Raw JSON content:', initialDataElement ? initialDataElement.textContent : 'Element not found');
+        try {
+            const initialData = JSON.parse(initialDataElement ? initialDataElement.textContent : '{}');
+            window.initialData = {
+                flows: initialData.flows || []
+            };
+            console.log('Parsed initialData:', window.initialData);
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+            window.initialData = { flows: [] };
         }
-
-        function showJsonEditor() {
-            var editorContainer = document.getElementById('jsoneditor');
-            var contentMain = document.getElementById('content');
-            
-            editorContainer.style.display = 'block';
-            contentMain.style.display = 'none';
-            if (!editor) {
-                editor = new JSONEditor(editorContainer, {});
-            }
-            editor.set(pageJsonData);
-        }
-
-        function hideJsonEditor() {
-            var editorContainer = document.getElementById('jsoneditor');
-            var contentMain = document.getElementById('content');
-            
-            editorContainer.style.display = 'none';
-            contentMain.style.display = 'block';
-        }
-
-        function updateViewFromUrl() {
-            var url = new URL(window.location.href);
-            if (url.searchParams.get('json_view') === 'true') {
-                showJsonEditor();
-            } else {
-                hideJsonEditor();
-            }
-        }
-
-        // Check URL on page load
-        window.addEventListener('load', updateViewFromUrl);
-
-        // Listen for popstate events (back/forward browser buttons)
-        window.addEventListener('popstate', function(event) {
-            updateViewFromUrl();
-        });
     </script>
+    
+    <script src="{% static 'bluewind/js/admin_shortcuts.js' %}"></script>
 {% endblock %}

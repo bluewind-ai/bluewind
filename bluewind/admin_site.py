@@ -75,6 +75,12 @@ class CustomAdminSite(AdminSite):
         else:
             logger.debug(f"each_context: Using workspace {workspace_id}")
 
+        context["flows_data"] = {
+            "flows": [
+                {"name": "Action 1", "url": "/action1/"},
+                {"name": "Action 2", "url": "/action2/"},
+            ]
+        }
         return context
 
     def admin_view(self, view, cacheable=False):

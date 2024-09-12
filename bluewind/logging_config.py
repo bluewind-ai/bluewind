@@ -45,40 +45,42 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "clean": {
-            "()": "bluewind.logging_config.CleanTracebackFormatter",  # Updated path
-            "format": "%(levelname)s: %(message)s",
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
         },
-        "default": {
-            "format": "%(levelname)s: %(message)s",
-        },
+        "simple": {"format": "%(levelname)s %(message)s"},
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
-            "formatter": "clean",
-            "level": "ERROR",
+            "formatter": "verbose",
+            "level": "DEBUG",
+        },
+        "file": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+            "level": "DEBUG",
         },
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": False,
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
         },
         "django.request": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": False,
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": True,
         },
         "bluewind": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": False,
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": True,
         },
     },
     "root": {
-        "handlers": ["console"],
-        "level": "ERROR",
+        "handlers": ["console", "file"],
+        "level": "INFO",
     },
 }

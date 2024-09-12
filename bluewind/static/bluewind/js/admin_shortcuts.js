@@ -1,41 +1,10 @@
 (function () {
-  // We'll fetch the actions from the API
-  let actions = [];
+  // We'll fetch the actions from the data provided in the template
+  let actions = window.initialData ? window.initialData.flows : [];
   let selectedIndex = 0;
   let filteredActions = [];
 
-  // Function to fetch actions from the API
-  function fetchActions() {
-    fetch("/api/workspaces/1/flowrun/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        flow: "command_palette_get_commands",
-        workspace: 1,
-        user: 1,
-        create_new_workspace: false,
-        state: {},
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.state && data.state.flow_result) {
-          actions = data.state.flow_result;
-          console.log("Actions loaded:", actions);
-        } else {
-          console.error("Unexpected response structure:", data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching actions:", error);
-      });
-  }
-
-  // Call fetchActions when the script loads
-  fetchActions();
-
+  // Function to create the command palette
   function createCommandPalette() {
     const palette = document.createElement("div");
     palette.id = "command-palette";
@@ -122,11 +91,7 @@
   function updateSelectedItem() {
     const items = resultsList.querySelectorAll("li");
     items.forEach((item, index) => {
-      if (index === selectedIndex) {
-        item.style.backgroundColor = "#f0f0f0";
-      } else {
-        item.style.backgroundColor = "";
-      }
+      item.style.backgroundColor = index === selectedIndex ? "#f0f0f0" : "";
     });
   }
 
