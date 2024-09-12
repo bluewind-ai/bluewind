@@ -6,7 +6,7 @@
 
   // Function to fetch actions from the API
   function fetchActions() {
-    fetch("/api/flowrun/", {
+    fetch("/api/workspaces/1/flowrun/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

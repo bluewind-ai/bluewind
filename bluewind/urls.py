@@ -7,7 +7,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
 from bluewind.admin_site import custom_admin_site
-from bluewind.auto_api import auto_generate_apis
+from bluewind.auto_api import generate_auto_api
 from channels.models import oauth2callback
 from health_check.views import health_check
 
@@ -35,7 +35,7 @@ urlpatterns = [
     path("oauth2callback/", oauth2callback, name="oauth2callback"),
     path("accounts/", include("allauth.urls")),
     # DRF and DRF Spectacular paths
-    path("api/", include(auto_generate_apis())),
+    path("api/", include(generate_auto_api())),  # Dynamically include all API paths
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/schema/swagger-ui/",
