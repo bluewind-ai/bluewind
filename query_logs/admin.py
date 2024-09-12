@@ -1,3 +1,12 @@
-from django.contrib import admin
+from base_model_admin.admin import InWorkspace
 
-# Register your models here.
+
+class QueryLogAdmin(InWorkspace):
+    list_display = (
+        "timestamp",
+        "app_label",
+        "level",
+        "execution_time",
+        "user",
+        "workspace",
+    )

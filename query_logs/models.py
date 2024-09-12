@@ -3,7 +3,6 @@
 from django.conf import settings
 from django.db import models
 
-from base_model_admin.admin import InWorkspace
 from workspaces.models import WorkspaceRelated
 
 
@@ -28,14 +27,3 @@ class QueryLog(WorkspaceRelated):
 
     def __str__(self):
         return f"{self.timestamp} - {self.logger_name} - {self.level}"
-
-
-class QueryLogAdmin(InWorkspace):
-    list_display = (
-        "timestamp",
-        "app_label",
-        "level",
-        "execution_time",
-        "user",
-        "workspace",
-    )

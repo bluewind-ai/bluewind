@@ -5,6 +5,7 @@ from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
+from query_logs.models import QueryLog
 from workspaces.models import WorkspaceRelated
 
 
@@ -15,16 +16,25 @@ class WorkspaceSnapshot(WorkspaceRelated):
     def __str__(self):
         return f"Dump for {self.workspace} at {self.created_at} id {self.id}"
 
+    @staticmethod
+    def get_snapshot_blacklist():
+        return [
+            WorkspaceSnapshot,
+            WorkspaceDiff,
+            DiffRelatedEntities,
+            QueryLog,
+        ]
+
     def save(self, *args, **kwargs):
         all_data = {}
+        blacklist = self.get_snapshot_blacklist()
 
         # Get all models in the project
         for model in apps.get_models():
-            # Check if the model is related to WorkspaceRelated and is not
-            # WorkspaceSnapshot or entity.entity
+            # Check if the model is related to WorkspaceRelated and is not blacklisted
             if (
                 issubclass(model, WorkspaceRelated)
-                and model != WorkspaceSnapshot
+                and model not in blacklist
                 and not (
                     model._meta.app_label == "entity"
                     and model._meta.model_name == "entity"
@@ -51,13 +61,11 @@ class WorkspaceSnapshot(WorkspaceRelated):
 
 class WorkspaceDiff(WorkspaceRelated):
     snapshot_before = models.ForeignKey(
-        "WorkspaceSnapshot",
-        on_delete=models.CASCADE,
-        related_name="diffs_as_before")
+        "WorkspaceSnapshot", on_delete=models.CASCADE, related_name="diffs_as_before"
+    )
     snapshot_after = models.ForeignKey(
-        "WorkspaceSnapshot",
-        on_delete=models.CASCADE,
-        related_name="diffs_as_after")
+        "WorkspaceSnapshot", on_delete=models.CASCADE, related_name="diffs_as_after"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     diff_data = models.JSONField(null=True, blank=True)
 
@@ -81,12 +89,8 @@ class WorkspaceDiff(WorkspaceRelated):
         for model_name in set(before_data.keys()) | set(after_data.keys()):
             model_diff = {"added": [], "modified": [], "deleted": []}
 
-            before_objects = {
-                obj["pk"]: obj for obj in before_data.get(
-                    model_name, [])}
-            after_objects = {
-                obj["pk"]: obj for obj in after_data.get(
-                    model_name, [])}
+            before_objects = {obj["pk"]: obj for obj in before_data.get(model_name, [])}
+            after_objects = {obj["pk"]: obj for obj in after_data.get(model_name, [])}
 
             for pk in set(before_objects.keys()) | set(after_objects.keys()):
                 if pk not in before_objects:
@@ -106,9 +110,8 @@ class WorkspaceDiff(WorkspaceRelated):
 
 class DiffRelatedEntities(WorkspaceRelated):
     diff = models.OneToOneField(
-        "WorkspaceDiff",
-        on_delete=models.CASCADE,
-        related_name="related_entities")
+        "WorkspaceDiff", on_delete=models.CASCADE, related_name="related_entities"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     data = models.JSONField(null=True, blank=True)
 
@@ -135,8 +138,7 @@ class DiffRelatedEntities(WorkspaceRelated):
             if model.__name__ not in all_data:
                 all_data[model.__name__] = []
 
-            serialized_data = json.loads(
-                serializers.serialize("json", [obj]))[0]
+            serialized_data = json.loads(serializers.serialize("json", [obj]))[0]
             all_data[model.__name__].append(serialized_data)
 
         return all_data
