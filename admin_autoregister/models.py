@@ -1,15 +1,16 @@
 import os
 import sys
 
+from django.apps import apps
+from django.contrib import admin
+from django.contrib.admin.sites import AlreadyRegistered
+from django.db.migrations.recorder import MigrationRecorder
+
 from admin_autoregister.admin_inheritance import check_admin_inheritance
 from admin_autoregister.check_unique_together import check_unique_together_constraint
 from admin_autoregister.forbid_imports import check_forbidden_imports
 from base_model_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
-from django.apps import apps
-from django.contrib import admin
-from django.contrib.admin.sites import AlreadyRegistered
-from django.db.migrations.recorder import MigrationRecorder
 from workspaces.models import WorkspaceRelated  # Adjust this import as needed
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -2,9 +2,6 @@ import json
 import logging
 from asyncio.log import logger
 
-from django_json_widget.widgets import JSONEditorWidget
-
-from bluewind.utils import get_queryset
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
 from django.contrib.contenttypes.models import ContentType
@@ -14,6 +11,9 @@ from django.db.models import JSONField
 from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
+from django_json_widget.widgets import JSONEditorWidget
+
+from bluewind.utils import get_queryset
 from flows.models import Action, ActionRun, Recording
 from users.models import User
 from workspaces.models import Workspace

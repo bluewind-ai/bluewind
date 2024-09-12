@@ -6,6 +6,7 @@ from django.conf import settings
 
 def load_flows(workspace):
     from django.contrib.auth import get_user_model
+
     from flows.models import Flow
 
     User = get_user_model()

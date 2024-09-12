@@ -1,7 +1,7 @@
-from encrypted_fields.fields import EncryptedCharField
-
 from django import forms
 from django.db import models
+from encrypted_fields.fields import EncryptedCharField
+
 from workspaces.models import WorkspaceRelated
 
 

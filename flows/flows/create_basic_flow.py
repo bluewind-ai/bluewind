@@ -1,7 +1,8 @@
-from credentials.models import Credentials
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
+
+from credentials.models import Credentials
 from flows.models import Action, ActionRun, Flow, FlowRun, Step, StepRun
 
 

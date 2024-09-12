@@ -1,8 +1,9 @@
 import logging
 
-from base_model_admin.admin import InWorkspace
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
+
+from base_model_admin.admin import InWorkspace
 from gmail_events.models import gmail_webhook
 
 logger = logging.getLogger(__name__)

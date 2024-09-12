@@ -3,6 +3,12 @@ import json
 import os
 import secrets
 
+from django import forms
+from django.contrib import admin, messages
+from django.db import models
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import redirect
+from django.utils import timezone
 from encrypted_fields.fields import EncryptedCharField
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -13,12 +19,6 @@ from googleapiclient.errors import HttpError
 from base_model_admin.admin import InWorkspace
 from bluewind import logger
 from credentials.models import Credentials as CredentialsModel
-from django import forms
-from django.contrib import admin, messages
-from django.db import models
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
-from django.shortcuts import redirect
-from django.utils import timezone
 from gmail_subscriptions.models import GmailSubscription
 
 # from people.models import Person

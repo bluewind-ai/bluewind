@@ -2,8 +2,8 @@ import logging
 import os
 
 import requests
-
 from django.db import models
+
 from users.models import User
 from workspaces.models import WorkspaceRelated
 

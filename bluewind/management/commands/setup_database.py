@@ -1,9 +1,8 @@
 import subprocess
 
 import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-
 from django.core.management.base import BaseCommand
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 
 class Command(BaseCommand):

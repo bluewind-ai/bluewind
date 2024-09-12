@@ -1,12 +1,11 @@
 # models.py
 import logging
 
-from django_json_widget.widgets import JSONEditorWidget
-from model_clone import CloneMixin
-
 from django import forms
 from django.db import models
 from django.db.models import JSONField
+from django_json_widget.widgets import JSONEditorWidget
+from model_clone import CloneMixin
 
 logger = logging.getLogger(__name__)
 

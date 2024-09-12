@@ -10,6 +10,7 @@ from django.http.response import HttpResponseRedirectBase
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.html import escapejs
+
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger(__name__)

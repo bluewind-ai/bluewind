@@ -1,8 +1,9 @@
 import logging
 
-from admin_autoregister.whitelist import MODEL_WHITELIST
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
+
+from admin_autoregister.whitelist import MODEL_WHITELIST
 
 logger = logging.getLogger(__name__)
 CUSTOM_WHITELIST = {"Entity"}

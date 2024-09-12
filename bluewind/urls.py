@@ -1,14 +1,14 @@
+from django.conf import settings
+from django.conf.urls.static import static
+from django.shortcuts import redirect
+from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
 from bluewind.admin_site import custom_admin_site
 from bluewind.auto_api import auto_generate_apis
 from channels.models import oauth2callback
-from django.conf import settings
-from django.conf.urls.static import static
-from django.shortcuts import redirect
-from django.urls import include, path, re_path
-from django.views.generic.base import RedirectView
 from health_check.views import health_check
 
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)

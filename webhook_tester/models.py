@@ -3,8 +3,6 @@ import logging
 from functools import wraps
 
 import requests
-
-from base_model_admin.admin import InWorkspace
 from django import forms
 from django.contrib import messages
 from django.db import models
@@ -12,6 +10,8 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
+
+from base_model_admin.admin import InWorkspace
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)

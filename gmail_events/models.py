@@ -2,10 +2,11 @@ import base64
 import json
 import logging
 
-from channels.models import Channel, fetch_messages_from_gmail
 from django.db import models
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+
+from channels.models import Channel, fetch_messages_from_gmail
 from webhook_tester.models import log_incoming_webhook
 from workspaces.models import WorkspaceRelated
 

@@ -1,7 +1,6 @@
+from django.apps import apps
 from rest_framework import serializers, viewsets
 from rest_framework.routers import DefaultRouter
-
-from django.apps import apps
 
 
 def create_model_serializer(model):

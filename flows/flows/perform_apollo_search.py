@@ -2,10 +2,10 @@ import json
 import os
 
 import requests
-
-from bluewind import logger
 from django.contrib import messages
 from django.db import transaction
+
+from bluewind import logger
 from people.models import Person
 from workspaces.models import Workspace
 

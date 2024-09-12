@@ -1,6 +1,7 @@
 import logging
 
 from django.db import models
+
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)

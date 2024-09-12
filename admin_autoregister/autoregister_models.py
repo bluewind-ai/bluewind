@@ -1,4 +1,5 @@
 from django.apps import apps
+
 from flows.models import Model
 
 

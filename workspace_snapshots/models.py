@@ -4,6 +4,7 @@ from django.apps import apps
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+
 from workspaces.models import WorkspaceRelated
 
 
@@ -48,6 +49,7 @@ class WorkspaceSnapshot(WorkspaceRelated):
 
 
 from django.db import models
+
 from workspaces.models import WorkspaceRelated
 
 
@@ -97,6 +99,7 @@ class WorkspaceDiff(WorkspaceRelated):
 
 
 from django.db import models
+
 from workspaces.models import WorkspaceRelated
 
 
