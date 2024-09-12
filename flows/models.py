@@ -8,7 +8,7 @@ from django.forms import ValidationError
 from django.utils import timezone
 from flows.flows.flow_runner import flow_runner
 from workspace_snapshots.models import WorkspaceDiff
-from workspaces.models import Workspace, WorkspaceRelated
+from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +27,6 @@ class Flow(WorkspaceRelated):
         return self.name
 
 
-from django.contrib.auth import get_user_model
-
-
 class FlowRun(WorkspaceRelated):
     class Status(models.TextChoices):
         NOT_STARTED = "NOT_STARTED", "Not Started"
@@ -43,7 +40,6 @@ class FlowRun(WorkspaceRelated):
         max_length=20, choices=Status.choices, default=Status.NOT_STARTED
     )
     state = models.JSONField(default=dict, blank=True)
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
     diff = models.ForeignKey(
         WorkspaceDiff,
         on_delete=models.SET_NULL,
@@ -89,7 +85,6 @@ class Action(WorkspaceRelated):
         LIST = "LIST", "List"
         SHOW = "SHOW", "Show"
 
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     action_type = models.CharField(max_length=20, choices=ActionType.choices)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     is_recorded = models.BooleanField(default=True)
@@ -138,7 +133,6 @@ class ActionRun(WorkspaceRelated):
         related_name="associated_action_run",
     )
     timestamp = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     model_name = models.CharField(max_length=100)
     object_id = models.IntegerField(null=True, blank=True)
     results = models.JSONField(encoder=DjangoJSONEncoder, default=dict, blank=True)

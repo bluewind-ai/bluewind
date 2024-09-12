@@ -4,10 +4,8 @@ import logging
 
 from base_model.models import BaseModel
 from channels.models import Channel, fetch_messages_from_gmail
-from django.contrib import admin
 from django.db import models
 from django.http import HttpResponse
-from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from webhook_tester.models import log_incoming_webhook
 
@@ -45,21 +43,3 @@ class GmailEvent(BaseModel):
 
     class Meta:
         app_label = "gmail_events"
-
-
-class GmailEventAdmin(admin.ModelAdmin):
-    list_display = ("timestamp",)
-
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path(
-                "gmail-webhook/",
-                csrf_exempt(gmail_webhook),
-                name="gmail_webhook",
-            ),
-        ]
-        return custom_urls + urls
-
-
-# custom_admin_site.register(GmailEvent, GmailEventAdmin)

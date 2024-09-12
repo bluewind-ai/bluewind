@@ -23,14 +23,12 @@ from gmail_subscriptions.models import GmailSubscription
 
 # from people.models import Person
 from people.models import Person
-from users.models import User
 from workspaces.models import WorkspaceRelated
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 
 class Channel(WorkspaceRelated):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     email = models.EmailField(null=True, blank=True)
     access_token = EncryptedCharField(max_length=1000, null=True, blank=True)
     refresh_token = EncryptedCharField(max_length=1000, null=True, blank=True)
