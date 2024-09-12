@@ -122,6 +122,7 @@ def autoregister():
     check_forbidden_imports()
     check_unique_together_constraint()
     run_ruff()
+    # create_superuser_workspace()
     # register_forms()
     # register_actions()  # Add this line
 
