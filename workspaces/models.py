@@ -129,27 +129,69 @@ class WorkspaceRelatedManager(models.Manager):
         return super().get_queryset().select_related("workspace")
 
 
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
+from django.core import checks
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
-class WorkspaceRelated(models.Model):
+class WorkspaceRelatedMeta(models.base.ModelBase):
+    def __new__(mcs, name, bases, attrs):
+        print(f"WorkspaceRelatedMeta.__new__ called for {name}")
+        print(f"Attributes: {list(attrs.keys())}")
+
+        for base in bases:
+            if issubclass(base, models.Model) and base != models.Model:
+                for field in base._meta.fields:
+                    if field.name in attrs and isinstance(
+                        attrs[field.name], models.Field
+                    ):
+                        raise ValidationError(
+                            f"The '{field.name}' field is already defined in the base class {base.__name__}. "
+                            f"It should not be redefined in {name}."
+                        )
+
+        return super().__new__(mcs, name, bases, attrs)
+
+
+class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
     workspace = models.ForeignKey("workspaces.Workspace", on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     objects = WorkspaceRelatedManager()
 
     class Meta:
         abstract = True
+
+    @classmethod
+    def check(cls, **kwargs):
+        errors = super().check(**kwargs)
+        print(f"WorkspaceRelated.check called for {cls.__name__}")
+        print(f"Class dict: {list(cls.__dict__.keys())}")
+
+        for base in cls.__bases__:
+            if issubclass(base, models.Model) and base != models.Model:
+                for field in base._meta.fields:
+                    if field.name in cls.__dict__ and isinstance(
+                        cls.__dict__[field.name], models.Field
+                    ):
+                        errors.append(
+                            checks.Error(
+                                f"The '{field.name}' field is already defined in the base class {base.__name__}. "
+                                f"It should not be redefined in {cls.__name__}.",
+                                obj=cls,
+                                id=f"{cls.__name__}.E001",
+                            )
+                        )
+
+        return errors
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.update_entity()
 
     def update_entity(self):
-        # Skip update_entity for Entity model
-        if (
-            self._meta.model_name == "entity"
-            # or self._meta.model_name == "workspaceexport"
-        ):
+        if self._meta.model_name == "entity":
             return
 
         Entity = apps.get_model("entity", "Entity")
@@ -163,6 +205,7 @@ class WorkspaceRelated(models.Model):
             defaults={
                 "name": name,
                 "updated_at": models.functions.Now(),
+                "user": self.user,
             },
         )
 

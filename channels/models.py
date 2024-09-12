@@ -44,7 +44,6 @@ class Channel(WorkspaceRelated):
     gmail_subscription = models.ForeignKey(
         GmailSubscription, on_delete=models.CASCADE, null=True, blank=True
     )
-
     gmail_credentials = models.ForeignKey(CredentialsModel, on_delete=models.CASCADE)
 
     def __str__(self):
