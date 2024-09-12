@@ -10,7 +10,6 @@
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer YOUR_ACCESS_TOKEN", // Replace with actual token or authentication method
       },
       body: JSON.stringify({
         flow: 6,
@@ -23,16 +22,15 @@
       .then((response) => response.json())
       .then((data) => {
         if (data && data.state && data.state.flow_result) {
-          actions = data.state.flow_result.map((item) => ({
-            name: item.name,
-            url: item.url,
-          }));
+          actions = data.state.flow_result;
           console.log("Actions loaded:", actions);
         } else {
           console.error("Unexpected response structure:", data);
         }
       })
-      .catch((error) => console.error("Error fetching actions:", error));
+      .catch((error) => {
+        console.error("Error fetching actions:", error);
+      });
   }
 
   // Call fetchActions when the script loads
