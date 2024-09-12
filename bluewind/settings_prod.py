@@ -3,10 +3,11 @@ from pathlib import Path
 
 import environ
 
-from bluewind.logging_config import LOGGING  # noqa
+from bluewind.logging_config import get_logging_config
 
 # Base Directory
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOGGING = get_logging_config(BASE_DIR)
 
 # Core Django Settings
 SECRET_KEY = os.environ["SECRET_KEY"]
@@ -69,6 +70,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "api_calls",
     "drf_standardized_errors",
+    "query_logs",
     "admin_autoregister",
 ]
 
@@ -124,6 +126,7 @@ APP_TYPE = {
     "api_calls": "custom",
     "drf_standardized_errors": "third_party",
     "admin_autoregister": "custom",
+    "query_logs": "custom",
 }
 
 for app in INSTALLED_APPS:
@@ -178,7 +181,7 @@ DB_NAME = os.environ["DB_NAME"]
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "bluewind.custom_db_backend",
         "NAME": DB_NAME,
         "USER": DB_USERNAME,
         "PASSWORD": DB_PASSWORD,
@@ -190,6 +193,9 @@ DATABASES = {
         },
     }
 }
+
+NO_LOG_TABLES = ["query_logs_querylog"]
+
 
 # Authentication and Authorization
 AUTH_USER_MODEL = "users.User"
