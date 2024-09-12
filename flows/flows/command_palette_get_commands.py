@@ -5,7 +5,7 @@ from django.urls import reverse
 def command_palette_get_commands(workspace):
     admin_links = {}
 
-    for perm in Permission.objects.all():
+    for perm in Permission.objects.select_related("content_type").all():
         app_label = perm.content_type.app_label.replace("_", " ").title()
         model_name = perm.content_type.model.replace("_", " ").title()
 
