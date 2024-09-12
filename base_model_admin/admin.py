@@ -129,6 +129,9 @@ class InWorkspace(admin.ModelAdmin):
             logger.debug(f"Found workspace: {workspace}")
             kwargs["queryset"] = Workspace.objects.filter(id=workspace_id)
             kwargs["initial"] = workspace
+        elif db_field.name == "user":  # Add this condition
+            kwargs["initial"] = request.user
+            kwargs["queryset"] = User.objects.filter(id=request.user.id)
         elif hasattr(db_field.related_model, "workspace"):
             logger.debug(f"Handling related field: {db_field.name}")
             kwargs["queryset"] = db_field.related_model.objects.filter(

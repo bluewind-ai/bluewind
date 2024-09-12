@@ -62,11 +62,6 @@ class WorkspaceUser(models.Model):
         unique_together = ("user", "workspace")
 
 
-class WorkspaceUserAdmin(admin.ModelAdmin):
-    def get_list_display(self, request):
-        return [field.name for field in self.model._meta.fields]
-
-
 class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
     actions = ["clone_workspace_action"]
     readonly_fields = ("admin_url_link",)
