@@ -2,8 +2,7 @@ import os
 import sys
 
 from admin_autoregister.admin_inheritance import check_admin_inheritance
-from admin_autoregister.forbid_imports import ForbiddenImportFinder
-from admin_autoregister.model_inheritance import check_model_inheritance
+from admin_autoregister.forbid_imports import check_forbidden_imports
 from base_model_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
 from django.apps import apps
@@ -121,8 +120,8 @@ def autoregister():
     append_to_dockerignore(app_configs)
     clean_dockerignore()
     check_admin_inheritance()
-    check_model_inheritance()
-    sys.meta_path.insert(0, ForbiddenImportFinder())
+    check_forbidden_imports()
+
     # register_forms()
     # register_actions()  # Add this line
 

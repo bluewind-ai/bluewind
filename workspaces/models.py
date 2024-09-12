@@ -13,7 +13,6 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
-from users.models import User
 
 
 class Workspace(models.Model):

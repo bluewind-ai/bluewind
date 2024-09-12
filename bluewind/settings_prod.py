@@ -70,6 +70,69 @@ INSTALLED_APPS = [
     "admin_autoregister",
 ]
 
+APP_TYPE = {
+    # Django core apps
+    "django.contrib.admin": "django",
+    "django.contrib.auth": "django",
+    "django.contrib.contenttypes": "django",
+    "django.contrib.sessions": "django",
+    "django.contrib.messages": "django",
+    "django.contrib.staticfiles": "django",
+    "django.contrib.sites": "django",
+    "django.db.migrations": "django",
+    "bluewind": "custom",
+    # Third-party apps
+    "allauth_ui": "third_party",
+    "allauth": "third_party",
+    "allauth.account": "third_party",
+    "allauth.socialaccount": "third_party",
+    "allauth.socialaccount.providers.google": "third_party",
+    "behave_django": "third_party",
+    "channels": "third_party",
+    "debug_toolbar": "third_party",
+    "django_extensions": "third_party",
+    "django_object_actions": "third_party",
+    "model_clone": "third_party",
+    "slippers": "third_party",
+    "widget_tweaks": "third_party",
+    "django_json_widget": "third_party",
+    # Local apps
+    "users": "custom",
+    "api_providers": "custom",
+    "workspaces": "custom",
+    "base_model_admin": "custom",
+    "auto_tests": "custom",
+    "people": "custom",
+    "chat_messages": "custom",
+    "db_graph": "custom",
+    "apollo_people_search": "custom",
+    "gmail_subscriptions": "custom",
+    "base_model.apps.BaseModelConfig": "custom",
+    "gmail_events": "custom",
+    "webhook_tester": "custom",
+    "credentials": "custom",
+    "base64_utils": "custom",
+    "channel_wizzard": "custom",
+    "draft_messages": "custom",
+    "flows": "custom",
+    "entity": "custom",
+    "workspace_snapshots": "custom",
+    "rest_framework": "third_party",
+    "drf_spectacular": "third_party",
+    "api_calls": "custom",
+    "drf_standardized_errors": "third_party",
+    "admin_autoregister": "custom",
+}
+
+for app in INSTALLED_APPS:
+    assert app in APP_TYPE, f"App '{app}' is in INSTALLED_APPS but not in APP_TYPE"
+
+# Assert that all APP_TYPE entries correspond to an app in INSTALLED_APPS
+for app in APP_TYPE:
+    assert (
+        app in INSTALLED_APPS
+    ), f"App '{app}' is in APP_TYPE but not in INSTALLED_APPS"
+
 # Middleware Configuration
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
