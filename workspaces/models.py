@@ -1,10 +1,10 @@
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth import get_user_model
 import logging
 
 # Assuming these are defined elsewhere
 from django.apps import apps
 from django.contrib import admin, messages
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse

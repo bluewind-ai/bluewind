@@ -1,8 +1,7 @@
-from django.utils.safestring import mark_safe
-from django import template
 import json
 import logging
 
+from django import template
 from django.contrib.admin import AdminSite
 from django.contrib.admin.helpers import ActionForm, AdminForm
 from django.contrib.admin.views.main import ChangeList
@@ -12,6 +11,7 @@ from django.http.response import HttpResponseRedirectBase
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.html import escapejs
+from django.utils.safestring import mark_safe
 
 from workspaces.models import Workspace, WorkspaceUser
 
