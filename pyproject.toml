@@ -79,8 +79,8 @@ pygraphviz = "^1.13"
 [tool.ruff]
 
 [tool.ruff.lint]
-select = ["E", "F", "I"]
-ignore = ["E501"]  # Add this line to ignore line length errors
+select = ["E", "F", "I", "F811"]  # Added F811 here
+ignore = ["E501"]  # Ignore line length errors
 
 [tool.ruff.lint.isort]
 known-first-party = ["bluewind"]
