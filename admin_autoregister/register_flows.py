@@ -5,7 +5,11 @@ from django.conf import settings
 
 
 def load_flows(workspace):
+    from django.contrib.auth import get_user_model
     from flows.models import Flow
+
+    User = get_user_model()
+    default_user = User.objects.get(id=1)
 
     flows_dir = os.path.join(settings.BASE_DIR, "flows", "flows")
 
@@ -22,4 +26,9 @@ def load_flows(workspace):
             # Check if the module has a function with the same name
             if hasattr(module, flow_name):
                 # Create the Flow in the database as a 'python' type flow
-                Flow.objects.create(workspace=workspace, name=flow_name, type="python")
+                Flow.objects.create(
+                    workspace=workspace,
+                    name=flow_name,
+                    type="python",
+                    user=default_user,
+                )

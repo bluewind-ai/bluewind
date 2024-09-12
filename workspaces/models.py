@@ -50,6 +50,7 @@ class Workspace(models.Model):
                 description=f"Automatically created recording for workspace {self.name}",
                 start_time=timezone.now(),
                 workspace=self,
+                user_id=1,  # Add the user here
             )
 
 

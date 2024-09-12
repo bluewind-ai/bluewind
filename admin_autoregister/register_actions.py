@@ -33,7 +33,6 @@ def register_actions_and_models(workspace):
 
             for action_type in action_types:
                 if (action_type, content_type.id) not in registered_actions:
-                    # Set is_recorded to False for ActionRun LIST action
                     is_recorded = not (
                         model._meta.model_name == "actionrun"
                         and action_type == Action.ActionType.LIST
@@ -44,6 +43,7 @@ def register_actions_and_models(workspace):
                             action_type=action_type,
                             content_type=content_type,
                             is_recorded=is_recorded,
+                            user_id=1,  # Use the provided user
                         )
                     )
 

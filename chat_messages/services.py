@@ -8,7 +8,7 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-from django.contrib.auth.models import User
+from users.models import User
 
 # Load environment variables
 
