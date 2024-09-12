@@ -50,6 +50,7 @@
 !people
 !poetry.lock
 !pyproject.toml
+!query_logs
 !requirements.txt
 !rest_framework
 !sessions
