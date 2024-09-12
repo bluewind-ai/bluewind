@@ -2,6 +2,7 @@
 
 import logging
 import os
+import sys
 import traceback
 
 from django.conf import settings
@@ -17,18 +18,15 @@ class CleanTracebackFormatter(logging.Formatter):
         type, value, tb = exc_info
         clean_tb = []
         for frame in traceback.extract_tb(tb):
-            # Only modify the path if it's within the project directory
             if (
                 self.project_root in frame.filename
                 and "site-packages" not in frame.filename
             ):
-                # Get the path relative to the project root
                 relative_filename = os.path.relpath(frame.filename, self.project_root)
-                # Ensure it starts with '/bluewind'
                 clean_path = f"/bluewind/{relative_filename}"
                 clean_tb.append(
                     traceback.FrameSummary(
-                        filename=clean_path,  # Use the cleaned path
+                        filename=clean_path,
                         lineno=frame.lineno,
                         name=frame.name,
                         line=frame.line,
@@ -41,46 +39,52 @@ class CleanTracebackFormatter(logging.Formatter):
         return "".join(lines)
 
 
+class NonStaticHandler(logging.StreamHandler):
+    def emit(self, record):
+        if hasattr(record, "msg") and isinstance(record.msg, str):
+            formatted_message = self.format(record)
+            if not (
+                '"GET /static/' in formatted_message
+                or '"GET /favicon.ico' in formatted_message
+            ):
+                super().emit(record)
+        else:
+            super().emit(record)
+
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {
-            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
-        },
         "simple": {"format": "%(levelname)s %(message)s"},
     },
     "handlers": {
         "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
+            "class": "bluewind.logging_config.NonStaticHandler",
+            "formatter": "simple",
             "level": "DEBUG",
-        },
-        "file": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-            "level": "DEBUG",
+            "stream": sys.stdout,
         },
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file"],
+            "handlers": ["console"],
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
         },
-        "django.request": {
-            "handlers": ["console", "file"],
-            "level": "DEBUG",
-            "propagate": True,
+        "django.server": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
         },
         "bluewind": {
-            "handlers": ["console", "file"],
+            "handlers": ["console"],
             "level": "DEBUG",
-            "propagate": True,
+            "propagate": False,
         },
     },
     "root": {
-        "handlers": ["console", "file"],
+        "handlers": ["console"],
         "level": "INFO",
     },
 }
