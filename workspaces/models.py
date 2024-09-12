@@ -7,6 +7,7 @@ from admin_autoregister.register_flows import load_flows
 # Assuming these are defined elsewhere
 from django.apps import apps
 from django.contrib import admin, messages
+from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
