@@ -3,11 +3,10 @@ from pathlib import Path
 
 import environ
 
-from bluewind.logging_config import get_logging_config
+from bluewind.logging_config import LOGGING  # noqa
 
 # Base Directory
 BASE_DIR = Path(__file__).resolve().parent.parent
-LOGGING = get_logging_config(BASE_DIR)
 
 # Core Django Settings
 SECRET_KEY = os.environ["SECRET_KEY"]
@@ -70,7 +69,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "api_calls",
     "drf_standardized_errors",
-    "query_logs",
     "admin_autoregister",
 ]
 
@@ -126,7 +124,6 @@ APP_TYPE = {
     "api_calls": "custom",
     "drf_standardized_errors": "third_party",
     "admin_autoregister": "custom",
-    "query_logs": "custom",
 }
 
 for app in INSTALLED_APPS:
