@@ -13,6 +13,7 @@ from django.template.response import TemplateResponse
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 
+from flows.models import Flow, FlowRun
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger(__name__)
@@ -75,12 +76,15 @@ class CustomAdminSite(AdminSite):
         else:
             logger.debug(f"each_context: Using workspace {workspace_id}")
 
-        context["flows_data"] = {
-            "flows": [
-                {"name": "Action 1", "url": "/action1/"},
-                {"name": "Action 2", "url": "/action2/"},
-            ]
-        }
+        flow = Flow.objects.get(
+            name="command_palette_get_commands", workspace_id=workspace_id
+        )
+        flow_run = FlowRun.objects.create(
+            flow=flow,
+            workspace_id=workspace_id,
+            user=request.user,
+        )
+        context["flows_data"] = flow_run.state["flow_result"]
         return context
 
     def admin_view(self, view, cacheable=False):

@@ -36,7 +36,7 @@
         try {
             const initialData = JSON.parse(initialDataElement ? initialDataElement.textContent : '{}');
             window.initialData = {
-                flows: initialData.flows || []
+                flows: initialData || []
             };
             console.log('Parsed initialData:', window.initialData);
         } catch (error) {
