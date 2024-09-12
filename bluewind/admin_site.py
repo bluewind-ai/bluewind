@@ -76,15 +76,22 @@ class CustomAdminSite(AdminSite):
         else:
             logger.debug(f"each_context: Using workspace {workspace_id}")
 
-        flow = Flow.objects.get(
-            name="command_palette_get_commands", workspace_id=workspace_id
-        )
-        flow_run = FlowRun.objects.create(
-            flow=flow,
-            workspace_id=workspace_id,
-            user=request.user,
-        )
-        context["flows_data"] = flow_run.state["flow_result"]
+        try:
+            flow = Flow.objects.get(
+                name="command_palette_get_commands", workspace_id=workspace_id
+            )
+            flow_run = FlowRun.objects.create(
+                flow=flow,
+                workspace_id=workspace_id,
+                user=request.user,
+            )
+            context["flows_data"] = flow_run.state["flow_result"]
+        except Flow.DoesNotExist:
+            logger.warning(
+                f"Flow 'command_palette_get_commands' not found for workspace {workspace_id}"
+            )
+            context["flows_data"] = None  # or some default value
+
         return context
 
     def admin_view(self, view, cacheable=False):
