@@ -2463,4 +2463,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "2509ec75a5be55aa736b9efca0c06538c5039b6fe3cbd00895e2e9ded6fd9bc7"
+content-hash = "bcd00151ba326b132cf160b47e44897907f30f4572ef82d3af03310e36f3c7e0"

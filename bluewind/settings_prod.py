@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_object_actions",
     "model_clone",
+    "slippers",
     "widget_tweaks",
     "django_json_widget",
     # Local apps
@@ -95,6 +96,7 @@ APP_TYPE = {
     "django_object_actions": "third_party",
     "model_clone": "third_party",
     "widget_tweaks": "third_party",
+    "slippers": "third_party",
     "django_json_widget": "third_party",
     # Local apps
     "users": "custom",

@@ -54,6 +54,7 @@
 !rest_framework
 !sessions
 !sites
+!slippers
 !socialaccount
 !static
 !staticfiles
