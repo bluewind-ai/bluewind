@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 import os
 import secrets
 
@@ -17,7 +18,6 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 from base_model_admin.admin import InWorkspace
-from bluewind import logger
 from credentials.models import Credentials as CredentialsModel
 from gmail_subscriptions.models import GmailSubscription
 
@@ -26,6 +26,8 @@ from people.models import Person
 from workspaces.models import WorkspaceRelated
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+
+logger = logging.getLogger(__name__)
 
 
 class Channel(WorkspaceRelated):

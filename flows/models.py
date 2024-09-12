@@ -197,13 +197,6 @@ class ActionRun(WorkspaceRelated):
 
         logger.debug(f"ActionRun {self.id} saved successfully")
 
-    def save(self, *args, **kwargs):
-        is_new = self._state.adding
-        super().save(*args, **kwargs)
-
-        if is_new:
-            self._execute_action()
-
     def _execute_action(self):
         self.status = "IN_PROGRESS"
         super().save(update_fields=["status"])

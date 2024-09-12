@@ -3,6 +3,8 @@ from pathlib import Path
 
 import environ
 
+from bluewind.logging_config import LOGGING  # noqa
+
 # Base Directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -258,44 +260,6 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "filters": {
-        "hide_staticfiles": {"()": "bluewind.log_filters.SkipStaticFilter"},
-        "require_debug_true": {
-            "()": "django.utils.log.RequireDebugTrue",
-        },
-    },
-    "formatters": {
-        "simple": {"format": "%(levelname)s %(message)s"},
-    },
-    "handlers": {
-        "console": {
-            "class": "rich.logging.RichHandler",
-            "formatter": "simple",
-            "rich_tracebacks": False,
-            "tracebacks_show_locals": False,
-            "tracebacks_extra_lines": 0,
-            "tracebacks_theme": None,
-            "show_time": False,
-            "show_path": False,
-        },
-    },
-    "loggers": {
-        "": {
-            "level": "WARNING",
-            "handlers": ["console"],
-        },
-        "django.server": {
-            "handlers": ["console"],
-            "level": "WARNING",
-            "filters": ["hide_staticfiles"],
-            "propagate": False,
-        },
-    },
-}
 
 # Debug Toolbar Settings
 INTERNAL_IPS = ["127.0.0.1"]

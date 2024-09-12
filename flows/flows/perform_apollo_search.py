@@ -1,13 +1,15 @@
 import json
+import logging
 import os
 
 import requests
 from django.contrib import messages
 from django.db import transaction
 
-from bluewind import logger
 from people.models import Person
 from workspaces.models import Workspace
+
+logger = logging.getLogger(__name__)
 
 
 def perform_apollo_search(self, request, queryset):
