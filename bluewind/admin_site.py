@@ -1,3 +1,5 @@
+from django.utils.safestring import mark_safe
+from django import template
 import json
 import logging
 
@@ -15,8 +17,6 @@ from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger(__name__)
 
-from django import template
-from django.utils.safestring import mark_safe
 
 register = template.Library()
 

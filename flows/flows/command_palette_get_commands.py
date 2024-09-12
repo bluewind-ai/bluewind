@@ -18,7 +18,7 @@ def command_palette_get_commands(workspace):
                     "name": f"{app_label} - {model_name}s",
                     "url": url,
                 }
-            except:
+            except BaseException:
                 pass  # If the URL can't be reversed, skip this admin link
 
     # Convert dictionary to list and sort

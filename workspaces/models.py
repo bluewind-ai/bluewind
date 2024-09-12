@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
 import logging
 
 # Assuming these are defined elsewhere
@@ -116,11 +118,6 @@ class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
 
 
 logger = logging.getLogger(__name__)
-
-
-from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
-from django.db import models
 
 
 class WorkspaceRelatedManager(models.Manager):

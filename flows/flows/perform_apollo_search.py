@@ -91,7 +91,8 @@ def perform_apollo_search(self, request, queryset):
 
                 self.message_user(
                     request,
-                    f"Attempted to create {len(created_objects)} people. Actually created: {actual_created} (duplicates were ignored)",
+                    f"Attempted to create {
+                        len(created_objects)} people. Actually created: {actual_created} (duplicates were ignored)",
                     messages.SUCCESS,
                 )
             else:

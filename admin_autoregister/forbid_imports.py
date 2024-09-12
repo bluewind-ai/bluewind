@@ -27,8 +27,7 @@ def check_forbidden_imports():
                                         f"Forbidden import found in {file_path}"
                                     )
                                     raise ImportError(
-                                        f"Forbidden import 'from django.contrib.auth.models import User' found in {file_path}"
-                                    )
+                                        f"Forbidden import 'from django.contrib.auth.models import User' found in {file_path}")
 
     logger.info("No forbidden imports found.")
 

@@ -1,3 +1,7 @@
+from rest_framework.views import exception_handler
+from rest_framework.response import Response
+from rest_framework import status
+from django.http import Http404
 import sys
 import uuid
 from pprint import pprint
@@ -80,12 +84,6 @@ def dd(*args):
     for arg in args:
         pprint(arg)
     sys.exit(1)
-
-
-from django.http import Http404
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import exception_handler
 
 
 def custom_exception_handler(exc, context):

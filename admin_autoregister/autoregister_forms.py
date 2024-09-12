@@ -76,5 +76,5 @@ def register_forms():
             try:
                 model_form_class = forms.modelform_factory(model, fields=[])
                 register_form(f"{model.__name__}ModelForm", model_form_class)
-            except:
+            except BaseException:
                 print(f"Could not create ModelForm for {model.__name__}")

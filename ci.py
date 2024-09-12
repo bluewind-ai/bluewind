@@ -172,9 +172,9 @@ async def async_cli(command, log_dir, verbose, additional_args):
         for cmd, data in results.items():
             status = "Success" if data["success"] else "Failure"
             status_color = "green" if data["success"] else "red"
-            click.echo(
-                f"{cmd}: {click.style(status, fg=status_color)} - logs here -> {os.path.join(log_dir, f'{cmd}_tests.log')} (Time: {data['duration']:.2f} seconds)"
-            )
+            click.echo(f"{cmd}: {click.style(status,
+                                             fg=status_color)} - logs here -> {os.path.join(log_dir,
+                                                                                            f'{cmd}_tests.log')} (Time: {data['duration']:.2f} seconds)")
         click.echo(f"\nTotal time: {total_duration:.2f} seconds")
         success = overall_success
     else:
@@ -211,9 +211,8 @@ async def async_cli(command, log_dir, verbose, additional_args):
 
         status = "Success" if success else "Failure"
         status_color = "green" if success else "red"
-        click.echo(
-            f"{command}: {click.style(status, fg=status_color)} - logs here -> {log_file} (Time: {duration:.2f} seconds)"
-        )
+        click.echo(f"{command}: {click.style(status,
+                                             fg=status_color)} - logs here -> {log_file} (Time: {duration:.2f} seconds)")
 
     exit(0 if success else 1)
 

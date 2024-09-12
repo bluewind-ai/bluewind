@@ -33,8 +33,8 @@ def check_unique_together_constraint():
                     or ("name", "workspace") not in model._meta.unique_together
                 ):
                     logger.warning(
-                        f"Model {model.__name__} has a 'name' field but doesn't have the correct unique_together constraint"
-                    )
+                        f"Model {
+                            model.__name__} has a 'name' field but doesn't have the correct unique_together constraint")
                     module = model.__module__
                     issues.append(
                         f"Model {model.__name__} has a 'name' field but doesn't have "

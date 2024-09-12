@@ -42,9 +42,12 @@ async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
     if new_image_id != previous_image_id:
         push_commands = [
             "set -e",
-            f"docker tag {new_image_id} {output_data['ecr_repository_url']['value']}:{new_image_id}",
-            f"aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin {output_data['ecr_repository_url']['value']}",
-            f"docker push {output_data['ecr_repository_url']['value']}:{new_image_id}",
+            f"docker tag {new_image_id} {
+                output_data['ecr_repository_url']['value']}:{new_image_id}",
+            f"aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin {
+                output_data['ecr_repository_url']['value']}",
+            f"docker push {
+                output_data['ecr_repository_url']['value']}:{new_image_id}",
         ]
         for command in push_commands:
             await run_command(command, log_file, env=env, verbose=verbose)
@@ -212,7 +215,9 @@ async def run_deploy(log_file, verbose=True):
             }
         ],
     )
-    task_definition = f"{task_definition_response['taskDefinition']['family']}:{task_definition_response['taskDefinition']['revision']}"
+    task_definition = f"{
+        task_definition_response['taskDefinition']['family']}:{
+        task_definition_response['taskDefinition']['revision']}"
     print(f"New task definition created: {task_definition}")
 
     print("Describing ECS service")
