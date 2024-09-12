@@ -5,11 +5,23 @@ from django.apps import apps
 
 
 def create_model_serializer(model):
-    meta_attrs = {"model": model, "fields": "__all__"}
+    attrs = {}
+
+    if model.__name__ == "FlowRun":
+        flow_field = model._meta.get_field("flow")
+        attrs["flow"] = serializers.SlugRelatedField(
+            slug_field="name", queryset=flow_field.related_model.objects.all()
+        )
+
+    class Meta:
+        pass
+
+    Meta.model = model
+    Meta.fields = "__all__"
+    attrs["Meta"] = Meta
+
     serializer_class = type(
-        f"{model.__name__}Serializer",
-        (serializers.ModelSerializer,),
-        {"Meta": type("Meta", (), meta_attrs)},
+        f"{model.__name__}Serializer", (serializers.ModelSerializer,), attrs
     )
     return serializer_class
 

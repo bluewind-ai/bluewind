@@ -15,7 +15,10 @@ def flow_runner(flow_run):
         workspace = flow_run.workspace
 
     # Take snapshot before
-    snapshot_before = WorkspaceSnapshot.objects.create(workspace=workspace)
+    snapshot_before = WorkspaceSnapshot.objects.create(
+        workspace=workspace,
+        user=flow_run.user,  # Add the user here
+    )
 
     # Dynamically import and run the flow
     module_path = f"flows.flows.{flow_run.flow.name}"
@@ -26,13 +29,17 @@ def flow_runner(flow_run):
     flow_result = flow_function(workspace)
 
     # Take snapshot after
-    snapshot_after = WorkspaceSnapshot.objects.create(workspace=workspace)
+    snapshot_after = WorkspaceSnapshot.objects.create(
+        workspace=workspace,
+        user=flow_run.user,  # Add the user here
+    )
 
     # Create diff
     diff = WorkspaceDiff.objects.create(
         workspace=workspace,
         snapshot_before=snapshot_before,
         snapshot_after=snapshot_after,
+        user=flow_run.user,  # Add the user here if WorkspaceDiff has a user field
     )
 
     # Attach diff to flow_run

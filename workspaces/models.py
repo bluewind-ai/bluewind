@@ -119,32 +119,25 @@ class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
 logger = logging.getLogger(__name__)
 
 
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
+from django.core import checks
+from django.db import models
+
+
 class WorkspaceRelatedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().select_related("workspace")
 
 
-from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
-from django.core import checks
-from django.core.exceptions import ValidationError
-from django.db import models
-
-
 class WorkspaceRelatedMeta(models.base.ModelBase):
     def __new__(mcs, name, bases, attrs):
-        for base in bases:
-            if issubclass(base, models.Model) and base != models.Model:
-                for field in base._meta.fields:
-                    if field.name in attrs and isinstance(
-                        attrs[field.name], models.Field
-                    ):
-                        raise ValidationError(
-                            f"The '{field.name}' field is already defined in the base class {base.__name__}. "
-                            f"It should not be redefined in {name}."
-                        )
+        new_class = super().__new__(mcs, name, bases, attrs)
 
-        return super().__new__(mcs, name, bases, attrs)
+        if not new_class._meta.abstract:
+            new_class._meta.unique_together_check = True
+
+        return new_class
 
 
 class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
@@ -158,20 +151,23 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
     @classmethod
     def check(cls, **kwargs):
         errors = super().check(**kwargs)
-        for base in cls.__bases__:
-            if issubclass(base, models.Model) and base != models.Model:
-                for field in base._meta.fields:
-                    if field.name in cls.__dict__ and isinstance(
-                        cls.__dict__[field.name], models.Field
-                    ):
-                        errors.append(
-                            checks.Error(
-                                f"The '{field.name}' field is already defined in the base class {base.__name__}. "
-                                f"It should not be redefined in {cls.__name__}.",
-                                obj=cls,
-                                id=f"{cls.__name__}.E001",
-                            )
+
+        if not cls._meta.abstract and getattr(
+            cls._meta, "unique_together_check", False
+        ):
+            if "name" in cls._meta.fields or "name" in cls._meta.local_fields:
+                if (
+                    not cls._meta.unique_together
+                    or ["name", "workspace"] not in cls._meta.unique_together
+                ):
+                    errors.append(
+                        checks.Error(
+                            f"Model {cls.__name__} has a 'name' field but doesn't have "
+                            "['name', 'workspace'] in its unique_together constraint.",
+                            obj=cls,
+                            id="workspaces.E001",
                         )
+                    )
 
         return errors
 

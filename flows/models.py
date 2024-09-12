@@ -49,9 +49,6 @@ class FlowRun(WorkspaceRelated):
     )
     create_new_workspace = models.BooleanField(default=False)
 
-    class Meta:
-        unique_together = ["name", "workspace"]
-
     def __str__(self):
         return f"Run of {self.flow.name} at {self.created_at}"
 
