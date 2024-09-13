@@ -18,16 +18,23 @@ user = User.objects.get(username='wayne@bluewind.ai');
 user.set_password('W5\$HZ?9iSnw7BDaasLBD');
 user.save()"
 
-# Create Workspace and WorkspaceUser
+# Create Workspace, WorkspaceUser, and Anonymous User
 python manage.py shell -c "
 from workspaces.models import Workspace, WorkspaceUser;
 from django.contrib.auth import get_user_model;
 User = get_user_model();
+
+# Superuser creation and workspace association
 superuser = User.objects.get(username='wayne@bluewind.ai');
 superuser_workspace = Workspace.objects.create(name='superuser');
 WorkspaceUser.objects.create(user=superuser, workspace=superuser_workspace, is_default=True);
-anonymous_workspace, created = Workspace.objects.get_or_create(name='Anonymous Workspace');
-WorkspaceUser.objects.get_or_create(user=superuser, workspace=anonymous_workspace, is_default=False)"
+
+# Anonymous user creation and workspace association
+anonymous_user = User.objects.create_user(username='anonymous_user', email='anonymous@example.com', password='AnonymousSecurePassword123!');
+
+anonymous_workspace = Workspace.objects.create(name='Anonymous Workspace');
+WorkspaceUser.objects.create(user=superuser, workspace=anonymous_workspace, is_default=False);
+WorkspaceUser.objects.create(user=anonymous_user, workspace=anonymous_workspace, is_default=True)"
 
 # Start the Django development server
 python manage.py runserver
