@@ -62,7 +62,7 @@ def get_logging_config(base_dir):
             },
             "django.server": {
                 "handlers": ["console"],
-                "level": "INFO",
+                "level": "ERROR",  # Changed from INFO to ERROR
                 "propagate": False,
             },
             "django.request": {
