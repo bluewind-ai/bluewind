@@ -10,28 +10,24 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("draft_messages", "0002_initial"),
+        ("api_calls", "0001_initial"),
         ("workspaces", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="draftmessage",
+            model_name="apicall",
             name="user",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
             ),
         ),
         migrations.AddField(
-            model_name="draftmessage",
+            model_name="apicall",
             name="workspace",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to="workspaces.workspace"
             ),
-        ),
-        migrations.AlterUniqueTogether(
-            name="draftmessage",
-            unique_together={("workspace", "gmail_draft_id")},
         ),
     ]
