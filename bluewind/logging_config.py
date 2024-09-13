@@ -113,5 +113,10 @@ def get_logging_config(base_dir):
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
+            "django.temp": {
+                "level": "DEBUG",  # Set to WARNING or ERROR to suppress DEBUG logs
+                "handlers": ["console", "file"],
+                "propagate": False,
+            },
         },
     }

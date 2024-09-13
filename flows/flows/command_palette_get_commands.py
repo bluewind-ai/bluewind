@@ -1,10 +1,14 @@
+import logging
+
 from django.contrib.auth.models import Permission
 from django.urls import reverse
+
+logger = logging.getLogger("django.temp")
 
 
 def command_palette_get_commands(workspace):
     admin_links = {}
-
+    logger.debug("Getting admin links")
     for perm in Permission.objects.select_related("content_type").all():
         app_label = perm.content_type.app_label.replace("_", " ").title()
         model_name = perm.content_type.model.replace("_", " ").title()
