@@ -43,6 +43,7 @@
 !google_backend_service_account.json
 !gunicorn_config.py
 !health_check
+!incoming_http_requests
 !manage.py
 !messages
 !migrations

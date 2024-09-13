@@ -71,8 +71,9 @@ INSTALLED_APPS = [
     "api_calls",
     "drf_standardized_errors",
     "query_logs",
-    "admin_autoregister",
+    "incoming_http_requests",
     "app_logs",
+    "admin_autoregister",
 ]
 
 APP_TYPE = {
@@ -128,6 +129,7 @@ APP_TYPE = {
     "drf_standardized_errors": "third_party",
     "admin_autoregister": "custom",
     "query_logs": "custom",
+    "incoming_http_requests": "custom",
     "app_logs": "custom",
 }
 
