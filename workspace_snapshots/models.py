@@ -5,7 +5,7 @@ from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
-from query_logs.models import QueryLog
+from bluewind.do_not_log import DO_NOT_LOG
 from workspaces.models import WorkspaceRelated
 
 
@@ -18,28 +18,20 @@ class WorkspaceSnapshot(WorkspaceRelated):
 
     @staticmethod
     def get_snapshot_blacklist():
-        return [
-            WorkspaceSnapshot,
-            WorkspaceDiff,
-            DiffRelatedEntities,
-            QueryLog,
-        ]
+        # Return the blacklist as strings in the format 'app_label.ModelName'
+        return DO_NOT_LOG
 
     def save(self, *args, **kwargs):
         all_data = {}
+
         blacklist = self.get_snapshot_blacklist()
 
         # Get all models in the project
         for model in apps.get_models():
             # Check if the model is related to WorkspaceRelated and is not blacklisted
-            if (
-                issubclass(model, WorkspaceRelated)
-                and model not in blacklist
-                and not (
-                    model._meta.app_label == "entity"
-                    and model._meta.model_name == "entity"
-                )
-            ):
+            model_str = f"{model._meta.app_label}.{model._meta.object_name}"
+
+            if issubclass(model, WorkspaceRelated) and model_str not in blacklist:
                 # Get all objects of this model related to this workspace
                 objects = model.objects.filter(workspace=self.workspace)
 

@@ -12,6 +12,7 @@ from django.utils.html import format_html
 from django_object_actions import DjangoObjectActions
 
 from admin_autoregister.register_flows import load_flows
+from bluewind.do_not_log import DO_NOT_LOG
 from users.models import User
 
 
@@ -117,7 +118,9 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         self.update_entity()
 
     def update_entity(self):
-        if self._meta.model_name == "entity" or self._meta.model_name == "querylog":
+        model_str = f"{self._meta.app_label}.{self._meta.object_name}"
+
+        if model_str in DO_NOT_LOG:
             return
 
         Entity = apps.get_model("entity", "Entity")

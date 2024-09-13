@@ -5,6 +5,8 @@ import traceback
 
 from django.conf import settings
 
+from bluewind.context_variables import log_records_var, request_id_var
+
 
 # Define a custom traceback formatter
 class CleanTracebackFormatter(logging.Formatter):
@@ -36,34 +38,13 @@ class CleanTracebackFormatter(logging.Formatter):
         return "".join(lines)
 
 
-from .request_id_middleware import log_records_var, request_id_var
-
-
-class ContextAwareRequestIDFormatter(logging.Formatter):
-    def format(self, record):
-        # Attach request ID from context
-        record.request_id = request_id_var.get() or "no_request_id"
-        formatted_record = super().format(record)
-        self.append_to_app_log(record)
-        return formatted_record
-
-    def append_to_app_log(self, record):
-        log_entry = {
-            "timestamp": self.formatTime(record, self.datefmt),
-            "level": record.levelname,
-            "request_id": record.request_id,
-            "logger": record.name,
-            "message": record.getMessage(),
-        }
-        log_records = log_records_var.get()
-        if log_records is not None:
-            log_records.append(log_entry)
-
-
-class CombinedFormatter(CleanTracebackFormatter, ContextAwareRequestIDFormatter):
+class CombinedFormatter(CleanTracebackFormatter):
     def format(self, record):
         # First, attach the request ID using ContextAwareRequestIDFormatter
-        record.request_id = request_id_var.get() or "no_request_id"
+        if request_id_var.get(None) is None:
+            record.request_id = "no_request_id"
+            return super().format(record)
+        record.request_id = request_id_var.get()
         formatted_record = super().format(record)
 
         # Apply the custom traceback formatting from CleanTracebackFormatter
@@ -72,14 +53,32 @@ class CombinedFormatter(CleanTracebackFormatter, ContextAwareRequestIDFormatter)
             # Ensure that the formatted traceback is added to the message
             formatted_record += f"\n{record.exc_text}"
 
-        self.append_to_app_log(record)
+        log_entry = {
+            "timestamp": self.formatTime(record, self.datefmt),
+            "level": record.levelname,
+            "request_id": record.request_id,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        log_records = log_records_var.get()
+        with open("logs/logging.log", "a") as f:
+            f.write(str(log_entry) + "/n")
+        log_records.append(log_entry)
+
+        # with open("logs/log_records_var.log", "a") as f:
+        #     f.write(str(log_records_var.get()) + "/n")
+
         return formatted_record
 
 
 def get_logging_config(base_dir):
+    log_file_path = os.path.join(
+        base_dir, "logs", "all_logs.log"
+    )  # Define the log file path
+
     return {
         "version": 1,
-        "disable_existing_loggers": False,
+        "disable_existing_loggers": True,
         "formatters": {
             "verbose": {
                 "()": CombinedFormatter,
@@ -90,42 +89,29 @@ def get_logging_config(base_dir):
             "console": {
                 "class": "logging.StreamHandler",
                 "formatter": "verbose",
-                "level": "DEBUG",
                 "stream": sys.stdout,
             },
-            "null": {  # Define the null handler
-                "class": "logging.NullHandler",
+            "file": {  # Define the file handler
+                "class": "logging.FileHandler",
+                "formatter": "verbose",
+                "filename": log_file_path,  # Path to the log file
             },
         },
         "loggers": {
             "django": {
-                "handlers": ["console"],
-                "level": "INFO",
-                "propagate": False,
-            },
-            "django.request": {
-                "handlers": ["console"],
-                "level": "ERROR",
-                "propagate": False,
-            },
-            "django.db.backends": {
+                "handlers": ["console", "file"],
                 "level": "DEBUG",
+                "propagate": True,
+            },
+            "django.utils.autoreload": {
+                "level": "WARNING",  # Set to WARNING or ERROR to suppress DEBUG logs
+                "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "bluewind": {
-                "handlers": ["console"],
-                "level": "DEBUG",
+            "django.db.backend": {
+                "level": "WARNING",  # Set to WARNING or ERROR to suppress DEBUG logs
+                "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "django.server": {
-                "handlers": ["null"],
-                "level": "CRITICAL",
-                "propagate": False,
-            },
-        },
-        "root": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
         },
     }

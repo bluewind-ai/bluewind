@@ -142,6 +142,7 @@ for app in APP_TYPE:
 
 # Middleware Configuration
 MIDDLEWARE = [
+    "bluewind.request_id_middleware.RequestIDMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -153,7 +154,6 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "bluewind.admin_site.admin_login_middleware",
-    "bluewind.request_id_middleware.RequestIDMiddleware",
 ]
 
 # Templates Configuration
@@ -184,7 +184,7 @@ DB_NAME = os.environ["DB_NAME"]
 
 DATABASES = {
     "default": {
-        "ENGINE": "bluewind.custom_db_backend",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": DB_NAME,
         "USER": DB_USERNAME,
         "PASSWORD": DB_PASSWORD,

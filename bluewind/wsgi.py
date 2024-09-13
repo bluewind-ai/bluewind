@@ -7,6 +7,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
 
 def workspace_wsgi_middleware(django_app):
     def wrapper(environ, start_response):
+        from bluewind.context_variables import log_records_var, request_id_var
+
+        request_id_var.set("no_request_id")
+        log_records_var.set([])
         path_info = environ.get("PATH_INFO", "")
         parts = path_info.split("/")
         if path_info.startswith("/static"):
