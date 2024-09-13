@@ -1,10 +1,18 @@
 import logging
+import sys
 
 from django.conf import settings
 from django.db.backends.postgresql import base
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
+
+
+def should_not_log():
+    return any(
+        command in sys.argv
+        for command in ["createsuperuser", "migrate", "makemigrations", "shell"]
+    )
 
 
 class FilteringCursorWrapper(base.CursorDebugWrapper):
@@ -23,6 +31,10 @@ class FilteringCursorWrapper(base.CursorDebugWrapper):
             self.log_query(sql, param_list, start_time)
 
     def log_query(self, sql, params, start_time):
+        # Check if migrations are running
+        if should_not_log():
+            return  # Skip logging during migrations
+
         # Check if the query is related to QueryLog
         if "query_logs_querylog" in sql.lower():
             return  # Skip logging for QueryLog-related queries
