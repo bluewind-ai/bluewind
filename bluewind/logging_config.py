@@ -37,9 +37,6 @@ class CleanTracebackFormatter(logging.Formatter):
 
 
 def get_logging_config(base_dir):
-    LOG_DIR = os.path.join(base_dir, "logs")
-    os.makedirs(LOG_DIR, exist_ok=True)
-
     return {
         "version": 1,
         "disable_existing_loggers": False,
@@ -56,44 +53,35 @@ def get_logging_config(base_dir):
                 "level": "DEBUG",
                 "stream": sys.stdout,
             },
-            "file": {
-                "level": "DEBUG",
-                "class": "logging.handlers.RotatingFileHandler",
-                "filename": os.path.join(LOG_DIR, "django.log"),
-                "maxBytes": 1024 * 1024 * 5,  # 5 MB
-                "backupCount": 5,
-                "formatter": "verbose",
-            },
         },
         "loggers": {
             "django": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "INFO",
                 "propagate": False,
             },
             "django.server": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "INFO",
                 "propagate": False,
             },
             "django.request": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "ERROR",
                 "propagate": False,
             },
             "django.db.backends": {
-                "handlers": ["file"],
                 "level": "DEBUG",
                 "propagate": False,
             },
             "bluewind": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "DEBUG",
                 "propagate": False,
             },
         },
         "root": {
-            "handlers": ["console", "file"],
+            "handlers": ["console"],
             "level": "INFO",
         },
     }
