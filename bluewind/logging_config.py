@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import traceback
 
 from django.conf import settings
@@ -47,18 +48,18 @@ def get_logging_config(base_dir):
                 "()": CleanTracebackFormatter,
                 "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
             },
-            "simple": {"format": "%(levelname)s %(message)s"},
         },
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
                 "formatter": "verbose",
                 "level": "DEBUG",
+                "stream": sys.stdout,
             },
             "file": {
                 "level": "DEBUG",
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": os.path.join(LOG_DIR, "db_queries.log"),
+                "filename": os.path.join(LOG_DIR, "django.log"),
                 "maxBytes": 1024 * 1024 * 5,  # 5 MB
                 "backupCount": 5,
                 "formatter": "verbose",
@@ -68,20 +69,25 @@ def get_logging_config(base_dir):
             "django": {
                 "handlers": ["console", "file"],
                 "level": "INFO",
-                "propagate": True,
+                "propagate": False,
+            },
+            "django.server": {
+                "handlers": ["console", "file"],
+                "level": "INFO",
+                "propagate": False,
             },
             "django.request": {
                 "handlers": ["console", "file"],
-                "level": "DEBUG",
-                "propagate": True,
-            },
-            "bluewind": {
-                "handlers": ["console", "file"],
-                "level": "DEBUG",
-                "propagate": True,
+                "level": "ERROR",
+                "propagate": False,
             },
             "django.db.backends": {
                 "handlers": ["file"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+            "bluewind": {
+                "handlers": ["console", "file"],
                 "level": "DEBUG",
                 "propagate": False,
             },
