@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "drf_standardized_errors",
     "query_logs",
     "admin_autoregister",
+    "app_logs",
 ]
 
 APP_TYPE = {
@@ -127,6 +128,7 @@ APP_TYPE = {
     "drf_standardized_errors": "third_party",
     "admin_autoregister": "custom",
     "query_logs": "custom",
+    "app_logs": "custom",
 }
 
 for app in INSTALLED_APPS:
@@ -151,6 +153,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "bluewind.admin_site.admin_login_middleware",
+    "bluewind.request_id_middleware.RequestIDMiddleware",
 ]
 
 # Templates Configuration

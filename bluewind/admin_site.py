@@ -58,9 +58,6 @@ class CustomAdminSite(AdminSite):
         workspace_id = request.environ.get("WORKSPACE_ID")
 
         if not workspace_id:
-            logger.debug(
-                "each_context: No workspace_id, redirecting to default workspace"
-            )
             workspace = Workspace.objects.filter(
                 workspaceuser__user=request.user, workspaceuser__is_default=True
             ).first()
@@ -73,8 +70,6 @@ class CustomAdminSite(AdminSite):
 
             redirect_url = f"/workspaces/{workspace.id}{request.path}"
             context["redirect_url"] = redirect_url
-        else:
-            logger.debug(f"each_context: Using workspace {workspace_id}")
 
         try:
             flow = Flow.objects.get(
