@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 from base_model_admin.admin import InWorkspace
+from incoming_http_requests.models import IncomingHTTPRequest
 from workspaces.models import WorkspaceRelated
 
 
@@ -11,7 +12,9 @@ class AppLog(WorkspaceRelated):
 
     timestamp = models.DateTimeField()
     level = models.CharField(max_length=10)
-    request_id = models.UUIDField()
+    incoming_http_request = models.ForeignKey(  # Changed field name
+        IncomingHTTPRequest, on_delete=models.CASCADE
+    )
     logger = models.CharField(max_length=100)
     message = models.TextField()
     traceback = models.TextField(null=True, blank=True)
@@ -19,7 +22,7 @@ class AppLog(WorkspaceRelated):
 
     class Meta:
         indexes = [
-            models.Index(fields=["request_id"]),
+            models.Index(fields=["incoming_http_request"]),  # Updated index
             models.Index(fields=["timestamp"]),
         ]
 
@@ -36,7 +39,7 @@ class AppLogAdmin(InWorkspace):
         "message",
         "timestamp",
         "level",
-        "request_id",
+        "incoming_http_request",  # Updated field name
         "logger",
         "created_at",
     )

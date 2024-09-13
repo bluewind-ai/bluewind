@@ -54,7 +54,7 @@ class RequestIDMiddleware:
                 timestamp=record["timestamp"],
                 logger=record["logger"],
                 traceback=record.get("traceback", ""),
-                request_id=recorded_request_id,
+                incoming_http_request_id=recorded_request_id,
             )
             log_entry.save()
 
