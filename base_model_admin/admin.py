@@ -55,11 +55,10 @@ class InWorkspace(admin.ModelAdmin):
 
         content_type = ContentType.objects.get_for_model(obj)
 
-        action_instance, _ = Action.objects.get_or_create(
+        action_instance = Action.objects.get(
             action_type=action_type,
             content_type=content_type,
             workspace_id=obj.workspace_id,
-            defaults={"action_type": action_type, "content_type": content_type},
         )
 
         logger.debug(
