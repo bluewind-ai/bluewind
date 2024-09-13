@@ -1,5 +1,35 @@
 {
+  "python.analysis.extraPaths": ["${workspaceFolder}"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["tests"],
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  "ruff.organizeImports": true,
+  "ruff.fixAll": true,
+  "files.associations": {
+    "**/*.html": "html",
+    "**/templates/**/*.html": "django-html",
+    "**/templates/**/*": "django-txt",
+    "**/requirements{/**,*}.{txt,in}": "pip-requirements"
+  },
+  "emmet.includeLanguages": {
+    "django-html": "html"
+  },
+  "editor.formatOnSave": true,
+  "editor.rulers": [120],
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
   "files.exclude": {
+    "**/.git": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/node_modules": true,
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
@@ -11,5 +41,17 @@
     "**/.mvn": true,
     "**/.exchange_modules_tmp": true,
     ".mule": true
-  }
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/staticfiles": true,
+    "**/poetry.lock": true
+  },
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  "python.analysis.packageIndexDepths": [
+    { "name": "", "depth": 8, "includeAllSymbols": true }
+  ]
 }

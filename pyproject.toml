@@ -73,10 +73,6 @@ django-admin = "django.core.management:execute_from_command_line"
 version = "*"
 markers = "sys_platform == 'win32'"
 
-[tool.poetry.group.dev.dependencies]
-pygraphviz = "^1.13"
-
-
 [tool.ruff]
 
 [tool.ruff.lint]
