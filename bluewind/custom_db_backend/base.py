@@ -4,24 +4,60 @@ import logging
 
 from django.conf import settings
 from django.db.backends.postgresql import base
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
 
 class FilteringCursorWrapper(base.CursorDebugWrapper):
     def execute(self, sql, params=None):
-        logger.debug(f"FilteringCursorWrapper execute: {sql}")
-        if not any(table in sql.lower() for table in settings.NO_LOG_TABLES):
-            return self.cursor.execute(sql, params)
-        logger.debug(f"Filtered out SQL: {sql}")
-        return super().execute(sql, params)
+        start_time = timezone.now()
+        try:
+            return super().execute(sql, params)
+        finally:
+            self.log_query(sql, params, start_time)
 
     def executemany(self, sql, param_list):
-        logger.debug(f"FilteringCursorWrapper executemany: {sql}")
-        if not any(table in sql.lower() for table in settings.NO_LOG_TABLES):
-            return self.cursor.executemany(sql, param_list)
-        logger.debug(f"Filtered out SQL: {sql}")
-        return super().executemany(sql, param_list)
+        start_time = timezone.now()
+        try:
+            return super().executemany(sql, param_list)
+        finally:
+            self.log_query(sql, param_list, start_time)
+
+    def log_query(self, sql, params, start_time):
+        from query_logs.models import QueryLog  # noqa
+
+        if any(table in sql.lower() for table in settings.NO_LOG_TABLES):
+            logger.debug(f"Filtered out SQL: {sql}")
+            return
+
+        execution_time = (timezone.now() - start_time).total_seconds()
+
+        # Truncate sql and params if they're too long
+        sql = sql[:10000] if len(sql) > 10000 else sql
+        params_str = (
+            str(params)[:1000] if params and len(str(params)) > 1000 else str(params)
+        )
+
+        # Infer app_label from the SQL query (you may need to implement this method)
+        app_label = self.infer_app_label(sql)
+
+        QueryLog.objects.create(
+            timestamp=timezone.now(),
+            logger_name="django.db.backends",
+            level="DEBUG",
+            sql=sql,
+            params=params_str,
+            execution_time=execution_time,
+            workspace_id=1,  # You may need to adjust this
+            user_id=1,  # You may need to adjust this
+            app_label=app_label,
+        )
+
+    def infer_app_label(self, sql):
+        # Implement this method to infer the app_label from the SQL query
+        # You can use the same logic as in your original Command class
+        pass
 
 
 class DatabaseWrapper(base.DatabaseWrapper):
