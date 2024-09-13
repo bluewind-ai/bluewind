@@ -117,7 +117,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         self.update_entity()
 
     def update_entity(self):
-        if self._meta.model_name == "entity":
+        if self._meta.model_name == "entity" or self._meta.model_name == "querylog":
             return
 
         Entity = apps.get_model("entity", "Entity")

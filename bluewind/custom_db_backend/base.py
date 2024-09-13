@@ -1,5 +1,3 @@
-# bluewind/custom_db_backend.py
-
 import logging
 
 from django.conf import settings
@@ -25,7 +23,11 @@ class FilteringCursorWrapper(base.CursorDebugWrapper):
             self.log_query(sql, param_list, start_time)
 
     def log_query(self, sql, params, start_time):
-        from query_logs.models import QueryLog  # noqa
+        # Check if the query is related to QueryLog
+        if "query_logs_querylog" in sql.lower():
+            return  # Skip logging for QueryLog-related queries
+
+        from query_logs.models import QueryLog  # Import here to avoid circular import
 
         if any(table in sql.lower() for table in settings.NO_LOG_TABLES):
             logger.debug(f"Filtered out SQL: {sql}")
@@ -49,8 +51,8 @@ class FilteringCursorWrapper(base.CursorDebugWrapper):
             sql=sql,
             params=params_str,
             execution_time=execution_time,
-            workspace_id=1,  # You may need to adjust this
-            user_id=1,  # You may need to adjust this
+            workspace_id=1,
+            user_id=1,
             app_label=app_label,
         )
 

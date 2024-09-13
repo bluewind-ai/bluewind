@@ -5,8 +5,21 @@ import os
 import sys
 
 
+def load_env():
+    """Load environment variables from .env file."""
+    env_file = os.path.join(os.path.dirname(__file__), ".env")
+    if os.path.exists(env_file):
+        with open(env_file, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    key, value = line.split("=", 1)
+                    os.environ[key] = value.strip("'").strip('"')
+
+
 def main():
     """Run administrative tasks."""
+    load_env()  # Load environment variables before setting up Django
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
 
     try:
