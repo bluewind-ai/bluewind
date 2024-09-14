@@ -70,7 +70,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "api_calls",
     "drf_standardized_errors",
-    "query_logs",
     "incoming_http_requests",
     "app_logs",
     "admin_autoregister",
@@ -128,7 +127,6 @@ APP_TYPE = {
     "api_calls": "custom",
     "drf_standardized_errors": "third_party",
     "admin_autoregister": "custom",
-    "query_logs": "custom",
     "incoming_http_requests": "custom",
     "app_logs": "custom",
 }
@@ -200,7 +198,7 @@ DATABASES = {
     }
 }
 
-NO_LOG_TABLES = ["query_logs_querylog"]
+NO_LOG_TABLES = []
 
 
 # Authentication and Authorization
