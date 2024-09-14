@@ -1,10 +1,10 @@
+from django.db import transaction
 from django.shortcuts import redirect
 from django.utils import timezone
 
+from app_logs.models import AppLog
 from bluewind.context_variables import log_records_var, request_id_var
-from incoming_http_requests.models import (
-    IncomingHTTPRequest,  # Replace 'your_app' with the actual app name
-)
+from incoming_http_requests.models import IncomingHTTPRequest
 
 
 def custom_middleware(get_response):
@@ -25,12 +25,13 @@ def custom_middleware(get_response):
         if not request.user.is_authenticated:
             return redirect("/accounts/login/")
 
-        get_response(request)
+        response = get_response(request)
         log_records = log_records_var.get()
 
         with open("logs/request_id.log", "a") as f:
             f.write(str(log_records) + "\n")
 
+        log_entries = []
         for record in log_records:
             if record["logger"] == "django.db.backends":
                 continue
@@ -42,24 +43,29 @@ def custom_middleware(get_response):
                 if timezone.is_naive(record["timestamp"]):
                     record["timestamp"] = timezone.make_aware(record["timestamp"])
 
-            if record["request_id"] == "no_request_id":
-                recorded_request_id = None
-            else:
-                recorded_request_id = record["request_id"]
-
-            from app_logs.models import AppLog  # noqa DO NOT MOVE THIS IMPORT
-
-            log_entry = AppLog(
-                user_id=user_id,
-                workspace_id=workspace_id,
-                message=record["message"],
-                level=record["level"],
-                timestamp=record["timestamp"],
-                logger=record["logger"],
-                traceback=record.get("traceback", ""),
-                incoming_http_request_id=recorded_request_id,
+            recorded_request_id = (
+                None
+                if record["request_id"] == "no_request_id"
+                else record["request_id"]
             )
-            log_entry.save()
-        return get_response(request)
+
+            log_entries.append(
+                AppLog(
+                    user_id=user_id,
+                    workspace_id=workspace_id,
+                    message=record["message"],
+                    level=record["level"],
+                    timestamp=record["timestamp"],
+                    logger=record["logger"],
+                    traceback=record.get("traceback", ""),
+                    incoming_http_request_id=recorded_request_id,
+                )
+            )
+
+        # Bulk create log entries
+        with transaction.atomic():
+            AppLog.objects.bulk_create(log_entries)
+
+        return response
 
     return middleware

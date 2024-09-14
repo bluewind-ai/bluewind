@@ -145,6 +145,7 @@ for app in APP_TYPE:
 # Middleware Configuration
 MIDDLEWARE = [
     # CORE
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -156,7 +157,6 @@ MIDDLEWARE = [
     # DO NOT CHANGE THE ORDER OF THE MIDDLWARE BELOW
     "allauth.account.middleware.AccountMiddleware",
     "bluewind.middleware.custom_middleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 # Templates Configuration
