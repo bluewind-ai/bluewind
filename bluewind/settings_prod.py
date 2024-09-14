@@ -143,6 +143,7 @@ for app in APP_TYPE:
 # Middleware Configuration
 MIDDLEWARE = [
     # CORE
+    "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -155,7 +156,6 @@ MIDDLEWARE = [
     # DO NOT CHANGE THE ORDER OF THE MIDDLWARE BELOW
     "allauth.account.middleware.AccountMiddleware",
     "bluewind.middleware.custom_middleware",
-    "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
 ]
 
 # Templates Configuration
