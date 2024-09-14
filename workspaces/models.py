@@ -12,6 +12,7 @@ from django.utils.html import format_html
 from django_object_actions import DjangoObjectActions
 
 from admin_autoregister.register_flows import load_flows
+from bluewind.context_variables import get_startup_mode, get_workspace_id
 from bluewind.do_not_log import DO_NOT_LOG
 from users.models import User
 
@@ -71,9 +72,17 @@ class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
 logger = logging.getLogger(__name__)
 
 
+from django.core.exceptions import ValidationError
+from django.db import models
+
+
 class WorkspaceRelatedManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related("workspace")
+        queryset = super().get_queryset().select_related("workspace")
+
+        if not get_startup_mode():
+            return queryset.filter(workspace_id=get_workspace_id())
+        return queryset
 
 
 class WorkspaceRelatedMeta(models.base.ModelBase):

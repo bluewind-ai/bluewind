@@ -6,6 +6,7 @@ from bluewind.context_variables import (
     get_log_records,
     set_log_records,
     set_request_id,
+    set_startup_mode,
     set_workspace_id,
 )
 from bluewind.push_logs import push_logs_to_db
@@ -44,8 +45,12 @@ def workspace_wsgi_middleware(django_app):
     return wrapper
 
 
+set_startup_mode(True)
 # Get the default Django WSGI application
 django_application = get_wsgi_application()
+
+# Django has now fully started, so we can set startup mode to False
+set_startup_mode(False)
 
 # Apply our middleware
 application = workspace_wsgi_middleware(django_application)

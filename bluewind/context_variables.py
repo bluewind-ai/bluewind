@@ -3,6 +3,7 @@ from contextvars import ContextVar
 request_id_var = ContextVar("request_id")
 log_records_var = ContextVar("log_records")
 workspace_id_var = ContextVar("workspace_id")
+startup_mode_var = ContextVar("startup_mode")
 
 
 def get_request_id():
@@ -27,3 +28,11 @@ def get_workspace_id():
 
 def set_workspace_id(workspace_id):
     workspace_id_var.set(workspace_id)
+
+
+def get_startup_mode():
+    return startup_mode_var.get()
+
+
+def set_startup_mode(startup_mode):
+    startup_mode_var.set(startup_mode)
