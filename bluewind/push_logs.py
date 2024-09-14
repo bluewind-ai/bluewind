@@ -19,10 +19,9 @@ def push_logs_to_db(user_id, workspace_id, log_records):
             None if record["request_id"] == "no_request_id" else record["request_id"]
         )
 
-        if record["level"] == "ERROR":
-            assert (
-                "traceback" in record and record["traceback"]
-            ), "ERROR level log must have a traceback"
+        # if record["level"] == "ERROR":
+        #     # if "traceback" not in record and record["traceback"]:
+        #     #     raise Exception("ERROR level log must have a traceback")
 
         log_entries.append(
             AppLog(

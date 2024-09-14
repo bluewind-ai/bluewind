@@ -25,7 +25,6 @@ router = DefaultRouter()
 
 urlpatterns = [
     # Redirect root to admin
-    path("", redirect_to_admin, name="root_redirect"),
     # Use custom_admin_site for /admin
     path("admin/", custom_admin_site.urls),
     # Existing paths
