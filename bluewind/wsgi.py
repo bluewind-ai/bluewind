@@ -45,7 +45,6 @@ def workspace_wsgi_middleware(django_app):
     return wrapper
 
 
-set_startup_mode(True)
 # Get the default Django WSGI application
 django_application = get_wsgi_application()
 

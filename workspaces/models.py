@@ -78,7 +78,15 @@ from django.db import models
 
 class WorkspaceRelatedManager(models.Manager):
     def get_queryset(self):
-        queryset = super().get_queryset().select_related("workspace")
+        queryset = super().get_queryset()
+
+        # Get all foreign key field names
+        foreign_key_fields = [
+            f.name for f in self.model._meta.fields if isinstance(f, models.ForeignKey)
+        ]
+
+        # Apply select_related for all foreign key fields
+        queryset = queryset.select_related(*foreign_key_fields)
 
         if not get_startup_mode():
             return queryset.filter(workspace_id=get_workspace_id())
