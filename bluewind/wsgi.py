@@ -2,17 +2,16 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-from bluewind.context_variables import set_request_id
+from bluewind.context_variables import set_log_records, set_request_id
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
 
 
 def workspace_wsgi_middleware(django_app):
     def wrapper(environ, start_response):
-        from bluewind.context_variables import log_records_var
         from incoming_http_requests.models import IncomingHTTPRequest
 
-        log_records_var.set([])
+        set_log_records([])
         path_info = environ.get("PATH_INFO", "")
         parts = path_info.split("/")
         workspace_id = 2

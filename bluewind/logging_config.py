@@ -5,7 +5,11 @@ import traceback
 
 from django.conf import settings
 
-from bluewind.context_variables import get_request_id, log_records_var, request_id_var
+from bluewind.context_variables import (
+    get_log_records,
+    get_request_id,
+    request_id_var,
+)
 
 
 # Define a custom traceback formatter
@@ -60,13 +64,10 @@ class CombinedFormatter(CleanTracebackFormatter):
             "logger": record.name,
             "message": record.getMessage(),
         }
-        log_records = log_records_var.get()
+        log_records = get_log_records()
         with open("logs/logging.log", "a") as f:
             f.write(str(log_entry) + "/n")
         log_records.append(log_entry)
-
-        # with open("logs/log_records_var.log", "a") as f:
-        #     f.write(str(log_records_var.get()) + "/n")
 
         return formatted_record
 

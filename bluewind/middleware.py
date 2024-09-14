@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 
 from app_logs.models import AppLog
-from bluewind.context_variables import get_request_id, log_records_var
+from bluewind.context_variables import get_log_records, get_request_id
 from incoming_http_requests.models import IncomingHTTPRequest
 
 
@@ -24,7 +24,7 @@ def custom_middleware(get_response):
             return redirect("/accounts/login/")
 
         response = get_response(request)
-        log_records = log_records_var.get()
+        log_records = get_log_records()
 
         with open("logs/request_id.log", "a") as f:
             f.write(str(log_records) + "\n")
