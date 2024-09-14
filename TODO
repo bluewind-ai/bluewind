@@ -46,3 +46,4 @@ no db logs in console but it still needs to be pushed to DB
 don't allow /admin/ without workspaces and without making sure user is logged in
 PR campaigns: this french immigrant is building an app that does everything, maybe find something different than french immigrant, more memorable.
 add new rule: log a lot. but please use logger(django.temp)
+evolution of number of queries for the same basic action.
