@@ -72,9 +72,10 @@ class CombinedFormatter(CleanTracebackFormatter):
 
 
 def get_logging_config(base_dir):
-    log_file_path = os.path.join(
-        base_dir, "logs", "all_logs.log"
-    )  # Define the log file path
+    logs_dir = os.path.join(base_dir, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+
+    log_file_path = os.path.join(logs_dir, "all_logs.log")
 
     return {
         "version": 1,
