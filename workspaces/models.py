@@ -9,7 +9,6 @@ from django.db import models
 from django.forms import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
-from django_object_actions import DjangoObjectActions
 
 from admin_autoregister.register_flows import load_flows
 from bluewind.context_variables import get_startup_mode, get_workspace_id
@@ -20,7 +19,12 @@ from users.models import User
 class Workspace(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
-    users = models.ManyToManyField(User, through="WorkspaceUser")
+    users = models.ManyToManyField(
+        User, through="WorkspaceUser", related_name="workspaces"
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="owned_workspaces"
+    )
 
     def __str__(self):
         return self.name
@@ -51,8 +55,11 @@ class Workspace(models.Model):
                 description=f"Automatically created recording for workspace {self.name}",
                 start_time=timezone.now(),
                 workspace=self,
-                user_id=1,  # Add the user here
+                user=self.user,  # Use the user who created the workspace
             )
+
+            # Add the user who created the workspace to its users
+            WorkspaceUser.objects.create(workspace=self, user=self.user)
 
 
 class WorkspaceUser(models.Model):
@@ -64,9 +71,18 @@ class WorkspaceUser(models.Model):
         unique_together = ("user", "workspace")
 
 
-class WorkspaceAdmin(DjangoObjectActions, admin.ModelAdmin):
-    actions = ["clone_workspace_action"]
+class WorkspaceAdmin(admin.ModelAdmin):
     readonly_fields = ("admin_url_link",)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        workspace_id = get_workspace_id()
+        logger.debug(f"formfield_for_foreignkey: workspace_id = {workspace_id}")
+
+        if db_field.name == "user":  # Add this condition
+            kwargs["initial"] = request.user
+            kwargs["queryset"] = User.objects.filter(id=request.user.id)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 logger = logging.getLogger(__name__)

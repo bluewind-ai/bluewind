@@ -99,18 +99,18 @@ def get_logging_config(base_dir):
                 "propagate": False,
             },
             "django.db.backends": {
-                "level": "DEBUG",
+                "level": "ERROR",
                 "handlers": ["console"],
                 "propagate": False,
             },
             "django.db.backends.schema": {
-                "level": "DEBUG",
+                "level": "ERROR",
                 "handlers": ["console"],
                 "propagate": False,
             },
             "django.temp": {
                 "handlers": ["console"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
         },

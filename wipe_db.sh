@@ -26,14 +26,12 @@ User = get_user_model();
 
 # Superuser creation and workspace association
 superuser = User.objects.get(username='wayne@bluewind.ai');
-superuser_workspace = Workspace.objects.create(name='superuser');
-WorkspaceUser.objects.create(user=superuser, workspace=superuser_workspace, is_default=True);
+superuser_workspace = Workspace.objects.create(name='superuser', user=superuser);
 
 # Anonymous user creation and workspace association
 anonymous_user = User.objects.create_user(username='anonymous_user', email='anonymous@example.com', password='AnonymousSecurePassword123!');
 
-anonymous_workspace = Workspace.objects.create(name='Anonymous Workspace');
-WorkspaceUser.objects.create(user=superuser, workspace=anonymous_workspace, is_default=False);
+anonymous_workspace = Workspace.objects.create(name='Anonymous Workspace', user=superuser);
 WorkspaceUser.objects.create(user=anonymous_user, workspace=anonymous_workspace, is_default=True)"
 
 # Start the Django development server

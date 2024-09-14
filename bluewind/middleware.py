@@ -1,4 +1,5 @@
 from allauth.account.views import redirect
+from django.db import IntegrityError
 from django.http import HttpResponseNotFound
 
 from bluewind.context_variables import (
@@ -21,10 +22,26 @@ def custom_middleware(get_response):
         workspace_id = get_workspace_id()
         user_id = 2
         # Create IncomingHTTPRequest with minimal info and set request_id
-        incoming_request = IncomingHTTPRequest.objects.create(
-            workspace_id=workspace_id,
-            user_id=user_id,  # We'll update this later
-        )
+        try:
+            incoming_request = IncomingHTTPRequest.objects.create(
+                workspace_id=workspace_id,
+                user_id=user_id,
+            )
+        except IntegrityError as e:
+            error_message = str(e)
+            if (
+                "violates foreign key constraint" in error_message
+                and "incoming_http_reques_workspace_id" in error_message
+            ):
+                # This is the specific foreign key violation on workspace_id
+                incoming_request = IncomingHTTPRequest.objects.create(
+                    workspace_id=2,  # Placeholder workspace
+                    user_id=user_id,
+                )
+                return HttpResponseNotFound("Workspace not found")
+            else:
+                # Some other IntegrityError we're not handling specifically
+                raise e
         set_request_id(str(incoming_request.id))
         response = get_response(request)
         # Get user_id and request_id after the response
