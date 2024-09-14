@@ -21,10 +21,6 @@ def custom_middleware(get_response):
             return redirect("/accounts/login/")
 
         response = get_response(request)
-        # log_records = get_log_records()
-
-        # with open("logs/request_id.log", "a") as f:
-        #     f.write(str(log_records) + "\n")
 
         return response
 
