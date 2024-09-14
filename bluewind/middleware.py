@@ -1,9 +1,6 @@
-from django.db import transaction
 from django.shortcuts import redirect
-from django.utils import timezone
 
-from app_logs.models import AppLog
-from bluewind.context_variables import get_log_records, get_request_id, get_workspace_id
+from bluewind.context_variables import get_request_id, get_workspace_id
 from incoming_http_requests.models import IncomingHTTPRequest
 
 
@@ -24,46 +21,10 @@ def custom_middleware(get_response):
             return redirect("/accounts/login/")
 
         response = get_response(request)
-        log_records = get_log_records()
+        # log_records = get_log_records()
 
-        with open("logs/request_id.log", "a") as f:
-            f.write(str(log_records) + "\n")
-
-        log_entries = []
-        for record in log_records:
-            if record["logger"] == "django.db.backends":
-                if '"users_user"."id"' not in record["message"]:
-                    continue
-
-            if "timestamp" in record and isinstance(record["timestamp"], str):
-                record["timestamp"] = timezone.datetime.fromisoformat(
-                    record["timestamp"]
-                )
-                if timezone.is_naive(record["timestamp"]):
-                    record["timestamp"] = timezone.make_aware(record["timestamp"])
-
-            recorded_request_id = (
-                None
-                if record["request_id"] == "no_request_id"
-                else record["request_id"]
-            )
-
-            log_entries.append(
-                AppLog(
-                    user_id=user_id,
-                    workspace_id=workspace_id,
-                    message=record["message"],
-                    level=record["level"],
-                    timestamp=record["timestamp"],
-                    logger=record["logger"],
-                    traceback=record.get("traceback", ""),
-                    incoming_http_request_id=recorded_request_id,
-                )
-            )
-
-        # Bulk create log entries
-        with transaction.atomic():
-            AppLog.objects.bulk_create(log_entries)
+        # with open("logs/request_id.log", "a") as f:
+        #     f.write(str(log_records) + "\n")
 
         return response
 
