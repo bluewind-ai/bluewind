@@ -10,6 +10,7 @@ from django.db.models import JSONField
 from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django_json_widget.widgets import JSONEditorWidget
 
 from bluewind.context_variables import get_workspace_id
@@ -102,17 +103,21 @@ class InWorkspace(admin.ModelAdmin):
 
     custom_action.short_description = "Perform custom action"
 
-    def response_change(self, request, obj):
-        if "_custom_action" in request.POST:
-            self.message_user(request, "Custom action performed for this object")
-            return HttpResponseRedirect(".")
-        return super().response_change(request, obj)
-
     def response_add(self, request, obj, post_url_continue=None):
-        if "_custom_action" in request.POST:
-            self.message_user(request, "Custom action performed for new object")
-            return HttpResponseRedirect(".")
-        return super().response_add(request, obj, post_url_continue)
+        return self.response_post_save_change(request, obj)
+
+    def response_change(self, request, obj):
+        return self.response_post_save_change(request, obj)
+
+    def response_post_save_change(self, request, obj):
+        opts = self.model._meta
+        if "_addanother" in request.POST:
+            url = reverse(f"admin:{opts.app_label}_{opts.model_name}_add")
+        else:
+            url = reverse(
+                f"admin:{opts.app_label}_{opts.model_name}_change", args=[obj.pk]
+            )
+        return HttpResponseRedirect(url)
 
     def get_queryset(self, request):
         return get_queryset(self, request)
