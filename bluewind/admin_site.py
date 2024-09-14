@@ -119,15 +119,15 @@ custom_admin_site = CustomAdminSite(name="customadmin")
 
 def admin_login_middleware(get_response):
     def middleware(request):
-        if not request.user.is_authenticated and request.path not in [
-            "/accounts/login/",
-            "/",
-        ]:
-            return redirect("/accounts/login/")
-        # at this point the user is always authenticated
-        assert request.user.is_authenticated
+        if request.path == "/":
+            return get_response(request)
+        if request.path == "/accounts/login/":
+            return get_response(request)
+        if request.user.is_authenticated:
+            # raise Exception(str(request.user))
+            return get_response(request)
 
-        return get_response(request)
+        return redirect("/accounts/login/")
 
     return middleware
 

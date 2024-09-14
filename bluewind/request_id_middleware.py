@@ -13,15 +13,16 @@ class RequestIDMiddleware:
     def __call__(self, request):
         # Create a new IncomingHTTPRequest entry and use its ID as the request_id
         user_id = request.user.id if request.user.is_authenticated else 2
+        workspace_id = request.environ.get("WORKSPACE_ID", 2)
+
         incoming_request = IncomingHTTPRequest.objects.create(
-            workspace_id=2, user_id=user_id
+            workspace_id=workspace_id, user_id=user_id
         )
         request_id = str(incoming_request.id)
         request_id_var.set(request_id)
 
         response = self.get_response(request)
         log_records = log_records_var.get()
-        workspace_id = request.environ.get("WORKSPACE_ID", 2)
 
         with open("logs/request_id.log", "a") as f:
             f.write(str(log_records) + "\n")
