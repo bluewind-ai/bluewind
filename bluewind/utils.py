@@ -72,7 +72,7 @@ def get_queryset(cls, request):
     # Get the base queryset without filtering
     qs = cls.model.objects.all()
 
-    workspace_id = get_workspace_id(workspace_id)
+    workspace_id = get_workspace_id()
 
     if cls.model == Workspace:
         return qs.filter(id=workspace_id)
