@@ -1,0 +1,205 @@
+INFO 2024-09-12 20:05:55,030 check_unique_together 34543 8550730752 unique_together_check.py module loaded
+INFO 2024-09-12 20:05:55,038 forbid_imports 34543 8550730752 No forbidden imports found.
+INFO 2024-09-12 20:05:55,073 forbid_imports 34543 8550730752 No forbidden imports found.
+INFO 2024-09-12 20:05:55,073 check_unique_together 34543 8550730752 Starting check_unique_together_constraint
+INFO 2024-09-12 20:05:55,073 check_unique_together 34543 8550730752 All relevant models with 'name' field have correct unique_together constraint.
+INFO 2024-09-12 20:05:55,076 autoreload 34543 8550730752 Watching for file changes with StatReloader
+INFO 2024-09-12 20:05:55,076 autoreload 34543 8550730752 Watching for file changes with StatReloader
+DEBUG 2024-09-12 20:05:56,031 admin_site 34543 6129266688 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:56,031 admin_site 34543 6129266688 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:56,035 admin_site 34543 6129266688 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:56,035 admin_site 34543 6129266688 each_context: Using workspace 1
+INFO 2024-09-12 20:05:56,144 basehttp 34543 6129266688 "GET /workspaces/1/admin/ HTTP/1.1" 200 108836
+INFO 2024-09-12 20:05:56,144 basehttp 34543 6129266688 "GET /workspaces/1/admin/ HTTP/1.1" 200 108836
+INFO 2024-09-12 20:05:56,164 basehttp 34543 6129266688 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:56,164 basehttp 34543 6129266688 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:56,167 basehttp 34543 6146093056 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:56,167 basehttp 34543 6146093056 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:56,168 basehttp 34543 6129266688 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:56,168 basehttp 34543 6129266688 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:56,171 basehttp 34543 6179745792 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:56,171 basehttp 34543 6179745792 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:56,171 basehttp 34543 6146093056 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:56,171 basehttp 34543 6146093056 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:56,172 basehttp 34543 6129266688 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:56,172 basehttp 34543 6129266688 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:56,172 basehttp 34543 6162919424 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:56,172 basehttp 34543 6213398528 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:56,172 basehttp 34543 6162919424 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:56,172 basehttp 34543 6213398528 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:56,172 basehttp 34543 6196572160 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:56,172 basehttp 34543 6196572160 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:56,336 basehttp 34543 6196572160 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:56,336 basehttp 34543 6196572160 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:56,341 basehttp 34543 6129266688 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:56,342 basehttp 34543 6196572160 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:56,341 basehttp 34543 6129266688 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:56,342 basehttp 34543 6196572160 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:56,342 basehttp 34543 6162919424 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2024-09-12 20:05:56,342 basehttp 34543 6162919424 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2024-09-12 20:05:56,372 basehttp 34543 6162919424 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:56,372 basehttp 34543 6162919424 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:56,375 basehttp 34543 6162919424 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:56,375 basehttp 34543 6162919424 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:56,475 basehttp 34543 6162919424 "GET /favicon.ico HTTP/1.1" 301 0
+INFO 2024-09-12 20:05:56,475 basehttp 34543 6162919424 "GET /favicon.ico HTTP/1.1" 301 0
+INFO 2024-09-12 20:05:56,477 basehttp 34543 6162919424 "GET /static/favicon.ico HTTP/1.1" 200 91698
+INFO 2024-09-12 20:05:56,477 basehttp 34543 6162919424 "GET /static/favicon.ico HTTP/1.1" 200 91698
+DEBUG 2024-09-12 20:05:57,611 admin_site 34543 6162919424 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:57,611 admin_site 34543 6162919424 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:57,615 admin_site 34543 6162919424 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:57,615 admin_site 34543 6162919424 each_context: Using workspace 1
+INFO 2024-09-12 20:05:57,657 basehttp 34543 6162919424 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:57,657 basehttp 34543 6162919424 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:57,673 basehttp 34543 6162919424 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:57,673 basehttp 34543 6162919424 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:57,678 basehttp 34543 6196572160 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:57,678 basehttp 34543 6179745792 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:57,678 basehttp 34543 6196572160 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:57,678 basehttp 34543 6129266688 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:57,678 basehttp 34543 6162919424 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:57,678 basehttp 34543 6179745792 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:57,679 basehttp 34543 6213398528 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:57,678 basehttp 34543 6129266688 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:57,679 basehttp 34543 6146093056 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:57,678 basehttp 34543 6162919424 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:57,679 basehttp 34543 6213398528 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:57,679 basehttp 34543 6146093056 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:57,680 basehttp 34543 6129266688 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:57,680 basehttp 34543 6129266688 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:57,680 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:57,680 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:57,834 basehttp 34543 6196572160 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:57,834 basehttp 34543 6196572160 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:57,840 basehttp 34543 6146093056 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2024-09-12 20:05:57,840 basehttp 34543 6129266688 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:57,840 basehttp 34543 6146093056 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2024-09-12 20:05:57,840 basehttp 34543 6196572160 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:57,840 basehttp 34543 6129266688 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:57,840 basehttp 34543 6196572160 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:57,871 basehttp 34543 6196572160 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:57,871 basehttp 34543 6196572160 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:57,873 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:57,873 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:57,977 basehttp 34543 6196572160 "GET /favicon.ico HTTP/1.1" 301 0
+INFO 2024-09-12 20:05:57,977 basehttp 34543 6196572160 "GET /favicon.ico HTTP/1.1" 301 0
+INFO 2024-09-12 20:05:57,979 basehttp 34543 6196572160 "GET /static/favicon.ico HTTP/1.1" 200 91698
+INFO 2024-09-12 20:05:57,979 basehttp 34543 6196572160 "GET /static/favicon.ico HTTP/1.1" 200 91698
+DEBUG 2024-09-12 20:05:58,375 admin_site 34543 6196572160 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:58,375 admin_site 34543 6196572160 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:58,383 admin_site 34543 6196572160 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:58,383 admin_site 34543 6196572160 each_context: Using workspace 1
+INFO 2024-09-12 20:05:58,444 basehttp 34543 6196572160 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:58,444 basehttp 34543 6196572160 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:58,461 basehttp 34543 6196572160 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:58,461 basehttp 34543 6196572160 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:58,466 basehttp 34543 6196572160 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:58,466 basehttp 34543 6196572160 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:58,467 basehttp 34543 6146093056 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:58,467 basehttp 34543 6146093056 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:58,467 basehttp 34543 6129266688 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:58,468 basehttp 34543 6162919424 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:58,468 basehttp 34543 6179745792 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:58,468 basehttp 34543 6196572160 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:58,467 basehttp 34543 6129266688 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:58,468 basehttp 34543 6213398528 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:58,468 basehttp 34543 6162919424 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:58,468 basehttp 34543 6179745792 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:58,468 basehttp 34543 6196572160 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:58,468 basehttp 34543 6213398528 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:58,470 basehttp 34543 6146093056 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:58,470 basehttp 34543 6146093056 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:58,623 basehttp 34543 6146093056 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:58,623 basehttp 34543 6146093056 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:58,627 basehttp 34543 6196572160 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:58,627 basehttp 34543 6196572160 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:58,628 basehttp 34543 6146093056 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:58,628 basehttp 34543 6146093056 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:58,628 basehttp 34543 6162919424 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2024-09-12 20:05:58,628 basehttp 34543 6162919424 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+DEBUG 2024-09-12 20:05:58,827 admin_site 34543 6162919424 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:58,827 admin_site 34543 6162919424 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:58,831 admin_site 34543 6162919424 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:58,831 admin_site 34543 6162919424 each_context: Using workspace 1
+INFO 2024-09-12 20:05:58,832 basehttp 34543 6146093056 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:58,832 basehttp 34543 6146093056 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:58,833 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:58,833 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:58,872 basehttp 34543 6162919424 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:58,872 basehttp 34543 6162919424 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:58,899 basehttp 34543 6162919424 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:58,899 basehttp 34543 6162919424 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:58,904 basehttp 34543 6196572160 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:58,904 basehttp 34543 6196572160 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6213398528 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6146093056 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6129266688 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6162919424 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6213398528 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6146093056 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6179745792 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6129266688 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6162919424 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:58,905 basehttp 34543 6179745792 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:58,907 basehttp 34543 6196572160 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:58,907 basehttp 34543 6196572160 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:58,907 basehttp 34543 6213398528 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:58,907 basehttp 34543 6213398528 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:59,064 basehttp 34543 6196572160 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:59,064 basehttp 34543 6196572160 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:59,067 basehttp 34543 6213398528 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:59,067 basehttp 34543 6196572160 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:59,067 basehttp 34543 6213398528 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:59,067 basehttp 34543 6196572160 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:59,068 basehttp 34543 6179745792 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2024-09-12 20:05:59,068 basehttp 34543 6179745792 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2024-09-12 20:05:59,097 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:59,097 basehttp 34543 6179745792 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:59,097 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:59,097 basehttp 34543 6179745792 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:59,195 basehttp 34543 6196572160 "GET /favicon.ico HTTP/1.1" 301 0
+INFO 2024-09-12 20:05:59,195 basehttp 34543 6196572160 "GET /favicon.ico HTTP/1.1" 301 0
+INFO 2024-09-12 20:05:59,197 basehttp 34543 6196572160 "GET /static/favicon.ico HTTP/1.1" 200 91698
+INFO 2024-09-12 20:05:59,197 basehttp 34543 6196572160 "GET /static/favicon.ico HTTP/1.1" 200 91698
+DEBUG 2024-09-12 20:05:59,501 admin_site 34543 6196572160 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:59,501 admin_site 34543 6196572160 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:59,508 admin_site 34543 6196572160 each_context: Using workspace 1
+DEBUG 2024-09-12 20:05:59,508 admin_site 34543 6196572160 each_context: Using workspace 1
+INFO 2024-09-12 20:05:59,558 basehttp 34543 6196572160 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:59,558 basehttp 34543 6196572160 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:59,573 basehttp 34543 6196572160 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:59,573 basehttp 34543 6196572160 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
+INFO 2024-09-12 20:05:59,578 basehttp 34543 6196572160 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:59,578 basehttp 34543 6213398528 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:59,578 basehttp 34543 6146093056 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:59,578 basehttp 34543 6196572160 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
+INFO 2024-09-12 20:05:59,578 basehttp 34543 6213398528 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2024-09-12 20:05:59,579 basehttp 34543 6179745792 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:59,578 basehttp 34543 6146093056 "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2024-09-12 20:05:59,579 basehttp 34543 6129266688 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:59,579 basehttp 34543 6179745792 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2024-09-12 20:05:59,579 basehttp 34543 6129266688 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17972
+INFO 2024-09-12 20:05:59,580 basehttp 34543 6162919424 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:59,580 basehttp 34543 6162919424 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 16675
+INFO 2024-09-12 20:05:59,581 basehttp 34543 6196572160 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:59,581 basehttp 34543 6196572160 "GET /static/bluewind/js/admin_shortcuts.js HTTP/1.1" 200 3952
+INFO 2024-09-12 20:05:59,581 basehttp 34543 6146093056 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:59,581 basehttp 34543 6146093056 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 14601
+INFO 2024-09-12 20:05:59,735 basehttp 34543 6146093056 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:59,735 basehttp 34543 6146093056 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2024-09-12 20:05:59,740 basehttp 34543 6196572160 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:59,740 basehttp 34543 6146093056 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:59,740 basehttp 34543 6146093056 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2024-09-12 20:05:59,740 basehttp 34543 6196572160 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2024-09-12 20:05:59,741 basehttp 34543 6162919424 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2024-09-12 20:05:59,741 basehttp 34543 6162919424 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2024-09-12 20:05:59,772 basehttp 34543 6162919424 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:59,772 basehttp 34543 6162919424 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2024-09-12 20:05:59,774 basehttp 34543 6162919424 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:59,774 basehttp 34543 6162919424 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
+INFO 2024-09-12 20:05:59,874 basehttp 34543 6162919424 "GET /favicon.ico HTTP/1.1" 301 0
+INFO 2024-09-12 20:05:59,874 basehttp 34543 6162919424 "GET /favicon.ico HTTP/1.1" 301 0
+INFO 2024-09-12 20:05:59,876 basehttp 34543 6162919424 "GET /static/favicon.ico HTTP/1.1" 200 91698
+INFO 2024-09-12 20:05:59,876 basehttp 34543 6162919424 "GET /static/favicon.ico HTTP/1.1" 200 91698
+INFO 2024-09-12 20:06:40,041 autoreload 34543 8550730752 /Users/merwanehamadi/code/bluewind/bluewind/logging_config.py changed, reloading.
+INFO 2024-09-12 20:06:40,041 autoreload 34543 8550730752 /Users/merwanehamadi/code/bluewind/bluewind/logging_config.py changed, reloading.
