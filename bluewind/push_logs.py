@@ -6,9 +6,9 @@ def push_logs_to_db(user_id, workspace_id, log_records):
 
     log_entries = []
     for record in log_records:
-        if record["logger"] == "django.db.backends":
-            if '"users_user"."id"' not in record["message"]:
-                continue
+        # if record["logger"] == "django.db.backends":
+        #     if '"users_user"."id"' not in record["message"]:
+        #         continue
 
         if "timestamp" in record and isinstance(record["timestamp"], str):
             record["timestamp"] = timezone.datetime.fromisoformat(record["timestamp"])
@@ -18,6 +18,11 @@ def push_logs_to_db(user_id, workspace_id, log_records):
         recorded_request_id = (
             None if record["request_id"] == "no_request_id" else record["request_id"]
         )
+
+        if record["level"] == "ERROR":
+            assert (
+                "traceback" in record and record["traceback"]
+            ), "ERROR level log must have a traceback"
 
         log_entries.append(
             AppLog(

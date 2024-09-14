@@ -73,14 +73,9 @@ class CombinedFormatter(CleanTracebackFormatter):
 
 
 def get_logging_config(base_dir):
-    logs_dir = os.path.join(base_dir, "logs")
-    os.makedirs(logs_dir, exist_ok=True)
-
-    log_file_path = os.path.join(logs_dir, "all_logs.log")
-
     return {
         "version": 1,
-        "disable_existing_loggers": True,
+        "disable_existing_loggers": False,
         "formatters": {
             "verbose": {
                 "()": CombinedFormatter,
@@ -103,10 +98,15 @@ def get_logging_config(base_dir):
                 "level": "ERROR",
                 "propagate": False,
             },
-            "django.db.backend": {
+            "django.db.backends": {
                 "level": "DEBUG",
-                "propagate": False,
                 "handlers": ["console"],
+                "propagate": False,
+            },
+            "django.db.backends.schema": {
+                "level": "DEBUG",
+                "handlers": ["console"],
+                "propagate": False,
             },
             "django.temp": {
                 "handlers": ["console"],
