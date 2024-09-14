@@ -100,20 +100,21 @@ def get_logging_config(base_dir):
         },
         "loggers": {
             "django": {
-                "handlers": ["console", "file"],
-                "level": "ERROR",  # Set to WARNING or ERROR to suppress DEBUG logs                "propagate": True,
+                "handlers": ["console"],
+                "level": "DEBUG",  # Set to WARNING or ERROR to suppress DEBUG logs                "propagate": True,
             },
             "django.utils.autoreload": {
-                "level": "ERROR",  # Set to WARNING or ERROR to suppress DEBUG logs                "handlers": ["console", "file"],
+                "level": "DEBUG",  # Set to WARNING or ERROR to suppress DEBUG logs                "handlers": ["console", "file"],
                 "propagate": False,
             },
             "django.db.backend": {
-                "level": "ERROR",  # Set to WARNING or ERROR to suppress DEBUG logs                "handlers": ["console", "file"],
+                "level": "DEBUG",  # Set to WARNING or ERROR to suppress DEBUG logs                "handlers": ["console", "file"],
                 "propagate": False,
+                "handlers": ["console"],
             },
             "django.temp": {
-                "level": "ERROR",  # Set to WARNING or ERROR to suppress DEBUG logs
-                "handlers": ["console", "file"],
+                "level": "DEBUG",  # Set to WARNING or ERROR to suppress DEBUG logs
+                "handlers": ["console"],
                 "propagate": False,
             },
         },

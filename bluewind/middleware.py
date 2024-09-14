@@ -12,11 +12,9 @@ def custom_middleware(get_response):
         user_id = request.user.id if request.user.is_authenticated else 2
         workspace_id = request.environ.get("WORKSPACE_ID", 2)
 
-        incoming_request = IncomingHTTPRequest.objects.create(
-            workspace_id=workspace_id, user_id=user_id
-        )
-        request_id = str(incoming_request.id)
-        request_id_var.set(request_id)
+        request_id = request_id_var.get()
+
+        IncomingHTTPRequest.objects.filter(id=request_id).update(user_id=user_id)
 
         if request.path == "/":
             return get_response(request)
@@ -34,7 +32,8 @@ def custom_middleware(get_response):
         log_entries = []
         for record in log_records:
             if record["logger"] == "django.db.backends":
-                continue
+                if '"users_user"."id"' not in record["message"]:
+                    continue
 
             if "timestamp" in record and isinstance(record["timestamp"], str):
                 record["timestamp"] = timezone.datetime.fromisoformat(
