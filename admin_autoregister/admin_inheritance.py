@@ -3,6 +3,8 @@ import inspect
 from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
 
+from admin_autoregister.whitelist import MODEL_ADMIN_WHITELIST
+
 # Try to import InWorkspace, but don't raise an error if it's not found
 try:
     from base_model_admin.admin import InWorkspace
@@ -10,24 +12,6 @@ except ImportError:
     InWorkspace = None
 
 # Whitelist of model names whose admin can inherit directly from admin.ModelAdmin
-MODEL_ADMIN_WHITELIST = {
-    "EmailAddress",
-    "SocialApp",
-    "SocialToken",
-    "SocialAccount",
-    "Group",
-    "Site",
-    "LogEntry",
-    "Permission",
-    "ContentType",
-    "Session",
-    "Workspace",
-    "WorkspaceUser",
-    "EmailConfirmation",
-    "User",
-    "APICall",
-    "Migration",
-}
 
 
 def check_admin_inheritance():
