@@ -4,7 +4,7 @@ import re
 from django.conf import settings
 from django.http import HttpResponse
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.tecdscdsmp")
 
 
 class VSCodeLinkMiddleware:
