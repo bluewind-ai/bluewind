@@ -12,6 +12,7 @@ from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
 from django_json_widget.widgets import JSONEditorWidget
 
+from bluewind.context_variables import get_workspace_id
 from bluewind.utils import get_queryset
 from flows.models import Action, ActionRun, Recording
 from users.models import User
@@ -117,7 +118,7 @@ class InWorkspace(admin.ModelAdmin):
         return get_queryset(self, request)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        workspace_id = request.environ.get("WORKSPACE_ID")
+        workspace_id = get_workspace_id()
         logger.debug(f"formfield_for_foreignkey: workspace_id = {workspace_id}")
 
         if db_field.name == "workspace":
@@ -138,7 +139,7 @@ class InWorkspace(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def _log_admin_action(self, request, action, queryset, action_name):
-        workspace_id = request.environ.get("WORKSPACE_ID")
+        workspace_id = get_workspace_id()
         content_type = ContentType.objects.get_for_model(queryset.model)
 
         action_instance = Action.objects.get(
@@ -201,7 +202,7 @@ class InWorkspace(admin.ModelAdmin):
         return cl
 
     def _log_get_request(self, request):
-        workspace_id = request.environ.get("WORKSPACE_ID")
+        workspace_id = get_workspace_id()
         content_type = ContentType.objects.get_for_model(self.model)
 
         # Check if this list action should be recorded

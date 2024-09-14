@@ -13,6 +13,7 @@ from django.template.response import TemplateResponse
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 
+from bluewind.context_variables import get_workspace_id
 from flows.models import Flow, FlowRun
 from workspaces.models import Workspace, WorkspaceUser
 
@@ -55,7 +56,7 @@ class CustomAdminSite(AdminSite):
 
     def each_context(self, request):
         context = super().each_context(request)
-        workspace_id = request.environ.get("WORKSPACE_ID")
+        workspace_id = get_workspace_id()
 
         if not workspace_id:
             workspace = Workspace.objects.filter(

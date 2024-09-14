@@ -7,6 +7,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
+from bluewind.context_variables import get_workspace_id
+
 
 class UUID(uuid.UUID):
     def __init__(
@@ -70,7 +72,8 @@ def get_queryset(cls, request):
     # Get the base queryset without filtering
     qs = cls.model.objects.all()
 
-    workspace_id = request.environ.get("WORKSPACE_ID")
+    workspace_id = get_workspace_id(workspace_id)
+
     if cls.model == Workspace:
         return qs.filter(id=workspace_id)
 

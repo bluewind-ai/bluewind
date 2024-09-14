@@ -6,6 +6,7 @@ import requests
 from django.contrib import messages
 from django.db import transaction
 
+from bluewind.context_variables import get_workspace_id
 from people.models import Person
 from workspaces.models import Workspace
 
@@ -60,9 +61,7 @@ def perform_apollo_search(self, request, queryset):
                             first_name=person.get("first_name", ""),
                             last_name=person.get("last_name", ""),
                             linkedin_url=person.get("linkedin_url"),
-                            workspace=Workspace.objects.get(
-                                id=request.environ["WORKSPACE_ID"]
-                            ),
+                            workspace=Workspace.objects.get(id=get_workspace_id()),
                             company_domain_name=person.get("organization", {}).get(
                                 "primary_domain", ""
                             ),

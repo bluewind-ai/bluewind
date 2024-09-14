@@ -2,6 +2,7 @@ import importlib
 
 from django.utils import timezone
 
+from bluewind.context_variables import get_workspace_id
 from workspace_snapshots.models import WorkspaceDiff, WorkspaceSnapshot
 from workspaces.models import Workspace
 
@@ -50,6 +51,6 @@ def test_runner(flow_run):
     return {
         "status": "completed",
         "diff_id": diff.id,
-        "workspace_id": workspace.id,
+        "workspace_id": get_workspace_id(),
         "flow_result": flow_result,
     }
