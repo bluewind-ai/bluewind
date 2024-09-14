@@ -48,7 +48,6 @@
 !messages
 !migrations
 !model_clone
-!modify_admin
 !people
 !poetry.lock
 !pyproject.toml
