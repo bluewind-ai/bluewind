@@ -1,4 +1,5 @@
-from django.shortcuts import redirect
+from allauth.account.views import redirect
+from django.http import HttpResponseNotFound
 
 from bluewind.context_variables import (
     get_log_records,
@@ -8,6 +9,7 @@ from bluewind.context_variables import (
 )
 from bluewind.push_logs import push_logs_to_db
 from incoming_http_requests.models import IncomingHTTPRequest
+from workspaces.models import Workspace, WorkspaceUser
 
 
 def custom_middleware(get_response):
@@ -44,13 +46,29 @@ def custom_middleware(get_response):
 
 def admin_middleware(get_response):
     def middleware(request):
-        if request.path == "/accounts/login/":
+        if request.path == "/":
+            return redirect("/workspaces/2/accounts/login/")
+        if request.path == "/workspaces/2/accounts/login/":
             return get_response(request)
         if not request.user.is_authenticated:
-            return redirect("/accounts/login/")
-        if request.path == "/":
-            return redirect("admin:index")
+            return redirect("/workspaces/2/accounts/login/")
+        workspace_id = get_workspace_id()
+        if WorkspaceUser.objects.filter(
+            user_id=request.user.id, workspace_id=workspace_id
+        ):  # User asks for a workspace he has access to
+            if workspace_id == 2:
+                return redirect("/workspaces/1/admin/")
+            return get_response(request)
+        if (
+            WorkspaceUser.objects.filter(user_id=request.user.id).count() == 0
+        ):  # User has no workspace
+            workspace = Workspace.objects.create(name=request.user.username)
+            WorkspaceUser.objects.create(
+                user=request.user, workspace=workspace, is_default=True
+            )
+            redirect_url = f"/workspaces/{workspace.id}/admin/"
+            return redirect(redirect_url)
 
-        return get_response(request)
+        return HttpResponseNotFound("Page not found")
 
     return middleware

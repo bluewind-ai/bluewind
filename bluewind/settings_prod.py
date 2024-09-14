@@ -239,8 +239,8 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # AllAuth Settings
 SITE_ID = 1
-LOGIN_URL = "/accounts/login/"
-LOGIN_REDIRECT_URL = "/admin"
+LOGIN_URL = "/workspaces/2/accounts/login/"
+LOGIN_REDIRECT_URL = "/workspaces/2/admin"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"

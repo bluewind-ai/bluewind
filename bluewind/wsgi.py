@@ -21,7 +21,7 @@ def workspace_wsgi_middleware(django_app):
             environ["SCRIPT_NAME"] = f"/workspaces/{workspace_id}"
             environ["PATH_INFO"] = "/" + "/".join(parts[3:])
 
-        set_workspace_id(workspace_id)
+        set_workspace_id(int(workspace_id))
 
         return django_app(environ, start_response)
 

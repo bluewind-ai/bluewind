@@ -52,7 +52,7 @@ def custom_json_dumps(data):
 class CustomAdminSite(AdminSite):
     def logout(self, request, extra_context=None):
         super().logout(request, extra_context)
-        return redirect("account_logout")
+        return redirect("/workspaces/2/accounts/logout/")
 
     def each_context(self, request):
         context = super().each_context(request)
