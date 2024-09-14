@@ -13,7 +13,7 @@ from django_object_actions import DjangoObjectActions
 
 from admin_autoregister.register_flows import load_flows
 from bluewind.context_variables import get_startup_mode, get_workspace_id
-from bluewind.do_not_log import DO_NOT_LOG
+from bluewind.do_not_log import DO_NOT_CREATE_ENTITY
 from users.models import User
 
 
@@ -137,7 +137,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
     def update_entity(self):
         model_str = f"{self._meta.app_label}.{self._meta.object_name}"
 
-        if model_str in DO_NOT_LOG:
+        if model_str in DO_NOT_CREATE_ENTITY:
             return
 
         Entity = apps.get_model("entity", "Entity")
