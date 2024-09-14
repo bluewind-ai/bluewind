@@ -155,7 +155,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # DO NOT CHANGE THE ORDER OF THE MIDDLWARE BELOW
     "allauth.account.middleware.AccountMiddleware",
-    "bluewind.request_id_middleware.RequestIDMiddleware",
     "bluewind.admin_site.admin_login_middleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
