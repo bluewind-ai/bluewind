@@ -144,18 +144,20 @@ for app in APP_TYPE:
 
 # Middleware Configuration
 MIDDLEWARE = [
+    # CORE
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "bluewind.request_id_middleware.RequestIDMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # DO NOT CHANGE THE ORDER OF THE MIDDLWARE BELOW
+    "allauth.account.middleware.AccountMiddleware",
+    "bluewind.request_id_middleware.RequestIDMiddleware",
     "bluewind.admin_site.admin_login_middleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 # Templates Configuration
