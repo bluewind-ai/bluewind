@@ -5,7 +5,7 @@ import traceback
 
 from django.conf import settings
 
-from bluewind.context_variables import log_records_var, request_id_var
+from bluewind.context_variables import get_request_id, log_records_var, request_id_var
 
 
 # Define a custom traceback formatter
@@ -44,7 +44,7 @@ class CombinedFormatter(CleanTracebackFormatter):
         if request_id_var.get(None) is None:
             record.request_id = "no_request_id"
             return super().format(record)
-        record.request_id = request_id_var.get()
+        record.request_id = get_request_id()
         formatted_record = super().format(record)
 
         # Apply the custom traceback formatting from CleanTracebackFormatter

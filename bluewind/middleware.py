@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 
 from app_logs.models import AppLog
-from bluewind.context_variables import log_records_var, request_id_var
+from bluewind.context_variables import get_request_id, log_records_var
 from incoming_http_requests.models import IncomingHTTPRequest
 
 
@@ -12,7 +12,7 @@ def custom_middleware(get_response):
         user_id = request.user.id if request.user.is_authenticated else 2
         workspace_id = request.environ.get("WORKSPACE_ID", 2)
 
-        request_id = request_id_var.get()
+        request_id = get_request_id()
 
         IncomingHTTPRequest.objects.filter(id=request_id).update(user_id=user_id)
 
