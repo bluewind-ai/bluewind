@@ -65,8 +65,8 @@ class CombinedFormatter(CleanTracebackFormatter):
             "message": record.getMessage(),
         }
         log_records = get_log_records()
-        with open("logs/logging.log", "a") as f:
-            f.write(str(log_entry) + "/n")
+        # with open("logs/logging.log", "a") as f:
+        #     f.write(str(log_entry) + "/n")
         log_records.append(log_entry)
 
         return formatted_record
@@ -93,28 +93,23 @@ def get_logging_config(base_dir):
                 "formatter": "verbose",
                 "stream": sys.stdout,
             },
-            "file": {  # Define the file handler
-                "class": "logging.FileHandler",
-                "formatter": "verbose",
-                "filename": log_file_path,  # Path to the log file
-            },
         },
         "loggers": {
             "django": {
                 "handlers": ["console"],
-                "level": "ERROR",  # Set to WARNING or ERROR to suppress DEBUG logs                "propagate": True,
+                "level": "ERROR",
             },
             "django.utils.autoreload": {
-                "level": "ERROR",  # Set to WARNING or ERROR to suppress DEBUG logs                "handlers": ["console", "file"],
+                "level": "ERROR",
                 "propagate": False,
             },
             "django.db.backend": {
-                "level": "ERROR",  # Set to WARNING or ERROR to suppress DEBUG logs                "handlers": ["console", "file"],
+                "level": "DEBUG",
                 "propagate": False,
                 "handlers": ["console"],
             },
             "django.temp": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "DEBUG",
                 "propagate": False,
             },
