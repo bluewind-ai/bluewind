@@ -155,6 +155,7 @@ MIDDLEWARE = [
     # DO NOT CHANGE THE ORDER OF THE MIDDLWARE BELOW
     "allauth.account.middleware.AccountMiddleware",
     "bluewind.middleware.custom_middleware",
+    "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
 ]
 
 # Templates Configuration
@@ -309,3 +310,7 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+# DEFAULT_EXCEPTION_REPORTER_FILTER = (
+#     "bluewind.vscode_link_errors.VSCodeLinkExceptionReporterFilter"
+# )
