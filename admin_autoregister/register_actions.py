@@ -3,8 +3,7 @@
 import logging
 
 # Initialize the django.temp logger
-temp_logger = logging.getLogger("django.temp")
-
+temp_logger = logging.getLogger("django.not_used")
 
 # myapp/models.py
 
@@ -13,7 +12,7 @@ import logging
 from models.models import Model  # Import your specific models here
 
 # Initialize the django.temp logger
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.not_used")
 
 
 def register_actions_and_models(workspace):

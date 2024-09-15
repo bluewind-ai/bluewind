@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
 from django.contrib.contenttypes.models import ContentType
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db import models
 from django.db.models import JSONField
 from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
@@ -45,60 +44,60 @@ class InWorkspace(admin.ModelAdmin):
 
     actions = ["custom_action"]
 
-    def save_model(self, request, obj, form, change):
-        input_data = {}
-        for field_name, field_value in form.cleaned_data.items():
-            if isinstance(field_value, models.Model):
-                input_data[field_name] = field_value.pk
-            elif isinstance(field_value, (str, int, float, bool, type(None))):
-                input_data[field_name] = field_value
-            else:
-                input_data[field_name] = str(field_value)
+    # def save_model(self, request, obj, form, change):
+    #     input_data = {}
+    #     for field_name, field_value in form.cleaned_data.items():
+    #         if isinstance(field_value, models.Model):
+    #             input_data[field_name] = field_value.pk
+    #         elif isinstance(field_value, (str, int, float, bool, type(None))):
+    #             input_data[field_name] = field_value
+    #         else:
+    #             input_data[field_name] = str(field_value)
 
-        action_type = Action.ActionType.SAVE if change else Action.ActionType.CREATE
+    #     action_type = Action.ActionType.SAVE if change else Action.ActionType.CREATE
 
-        content_type = ContentType.objects.get_for_model(obj)
+    #     content_type = ContentType.objects.get_for_model(obj)
 
-        action_instance = Action.objects.get(
-            action_type=action_type,
-            content_type=content_type,
-            workspace_id=obj.workspace_id,
-        )
+    #     action_instance = Action.objects.get(
+    #         action_type=action_type,
+    #         content_type=content_type,
+    #         workspace_id=obj.workspace_id,
+    #     )
 
-        logger.debug(
-            f"Saving {obj._meta.model_name} with workspace_id: {obj.workspace_id}"
-        )
-        super().save_model(request, obj, form, change)
+    #     logger.debug(
+    #         f"Saving {obj._meta.model_name} with workspace_id: {obj.workspace_id}"
+    #     )
+    #     super().save_model(request, obj, form, change)
 
-        output_data = {}
-        for field in obj._meta.fields:
-            value = getattr(obj, field.name)
-            if isinstance(value, models.Model):
-                output_data[field.name] = value.pk
-            elif isinstance(value, (str, int, float, bool, type(None))):
-                output_data[field.name] = value
-            else:
-                output_data[field.name] = str(value)
+    #     output_data = {}
+    #     for field in obj._meta.fields:
+    #         value = getattr(obj, field.name)
+    #         if isinstance(value, models.Model):
+    #             output_data[field.name] = value.pk
+    #         elif isinstance(value, (str, int, float, bool, type(None))):
+    #             output_data[field.name] = value
+    #         else:
+    #             output_data[field.name] = str(value)
 
-        latest_recording = get_latest_recording(obj.workspace_id)
+    #     latest_recording = get_latest_recording(obj.workspace_id)
 
-        action_run = ActionRun(
-            user=request.user,
-            action=action_instance,
-            model_name=obj._meta.model_name,
-            object_id=obj.id,
-            action_input=input_data,
-            results=output_data,
-            workspace_id=obj.workspace_id,
-            recording=latest_recording,
-        )
-        try:
-            action_run.save()
-            logger.debug(f"ActionRun saved successfully: {action_run.id}")
-        except Exception as e:
-            logger.error(f"Error saving ActionRun: {str(e)}")
-            # Optionally, you might want to raise the exception or handle it differently
-            raise
+    #     action_run = ActionRun(
+    #         user=request.user,
+    #         action=action_instance,
+    #         model_name=obj._meta.model_name,
+    #         object_id=obj.id,
+    #         action_input=input_data,
+    #         results=output_data,
+    #         workspace_id=obj.workspace_id,
+    #         recording=latest_recording,
+    #     )
+    #     try:
+    #         action_run.save()
+    #         logger.debug(f"ActionRun saved successfully: {action_run.id}")
+    #     except Exception as e:
+    #         logger.error(f"Error saving ActionRun: {str(e)}")
+    #         # Optionally, you might want to raise the exception or handle it differently
+    #         raise
 
     def custom_action(self, request, queryset):
         self.message_user(request, "Custom action performed")

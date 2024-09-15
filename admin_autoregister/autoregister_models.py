@@ -9,7 +9,7 @@ from django.conf import settings
 from models.models import Model
 
 # Initialize the django.temp logger
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.not_used")
 
 
 def snake_case(s):
