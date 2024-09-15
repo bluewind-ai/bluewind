@@ -19,17 +19,53 @@ logger = logging.getLogger("django.temp")
 
 @admin.register(FlowRun)
 class FlowRunAdmin(InWorkspace):
-    change_form_template = "admin/flow_runs/flowrun/change_form.html"
+    # Specify a custom template for the add form
+    add_form_template = "admin/flow_runs/flowrun/add_form.html"
 
-    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
-        logger.debug("Entered changeform_view")
-        flow_run = self.get_object(request, object_id)
-        if not flow_run:
-            logger.debug("FlowRun object not found, using super().changeform_view")
-            return super().changeform_view(request, object_id, form_url, extra_context)
+    def has_change_permission(self, request, obj=None):
+        # Disable change permissions
+        return False
 
-        flow = flow_run.flow
-        logger.debug(f"FlowRun found: {flow_run}, associated flow: {flow}")
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        # Inform the user that change is not allowed and redirect to the changelist
+        self.message_user(
+            request, "FlowRun objects cannot be changed.", level=messages.ERROR
+        )
+        return redirect(
+            reverse(
+                f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+            )
+        )
+
+    def add_view(self, request, form_url="", extra_context=None):
+        logger.debug("Entered add_view")
+
+        # Retrieve the 'flow' query parameter
+        flow_id = request.GET.get("flow")
+        if not flow_id:
+            self.message_user(
+                request, "Missing 'flow' query parameter.", level=messages.ERROR
+            )
+            return redirect(
+                reverse(
+                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                )
+            )
+
+        try:
+            # Assuming 'flow_id' corresponds to a Flow object related to FlowRun
+            flow = FlowRun.objects.select_related("flow").get(pk=flow_id).flow
+        except FlowRun.DoesNotExist:
+            self.message_user(
+                request, f"Flow with ID {flow_id} does not exist.", level=messages.ERROR
+            )
+            return redirect(
+                reverse(
+                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                )
+            )
+
+        logger.debug(f"FlowRun flow: {flow}")
 
         # Dynamically import the flow definition module
         module_name = f"flows.flows.{flow.name}"
@@ -42,12 +78,13 @@ class FlowRunAdmin(InWorkspace):
             self.message_user(
                 request, f"Module {escape(module_name)} not found.", level="error"
             )
-            # Dynamic URL reversing
-            app_label = self.model._meta.app_label
-            model_name = self.model._meta.model_name
-            url_name = f"admin:{app_label}_{model_name}_changelist"
-            return redirect(reverse(url_name))
+            return redirect(
+                reverse(
+                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                )
+            )
 
+        # Convert snake_case to PascalCase for class names
         def snake_to_pascal(snake_str):
             return "".join(word.title() for word in snake_str.split("_"))
 
@@ -57,7 +94,7 @@ class FlowRunAdmin(InWorkspace):
             f"Function name: {function_name}, Form class name: {form_class_name}"
         )
 
-        # Get the form class and the function
+        # Retrieve the form class and the function to execute
         FormClass = getattr(flow_module, form_class_name, None)
         function_to_run = getattr(flow_module, function_name, None)
 
@@ -76,14 +113,14 @@ class FlowRunAdmin(InWorkspace):
         if not FormClass or not function_to_run:
             self.message_user(
                 request,
-                f"Function or Form not found for {escape(flow_run.flow.name)}",
+                f"Function or Form not found for {escape(flow.name)}",
                 level="error",
             )
-            # Dynamic URL reversing
-            app_label = self.model._meta.app_label
-            model_name = self.model._meta.model_name
-            url_name = f"admin:{app_label}_{model_name}_changelist"
-            return redirect(reverse(url_name))
+            return redirect(
+                reverse(
+                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                )
+            )
 
         if request.method == "POST":
             form = FormClass(request.POST)
@@ -115,42 +152,43 @@ class FlowRunAdmin(InWorkspace):
                         f"Serialized 'content_type' to natural key: {content_type.natural_key()}"
                     )
 
-                flow_run.input_data = input_data
-                flow_run.result = result
-                flow_run.executed_at = timezone.now()
+                # Create and save the FlowRun instance
+                flow_run = FlowRun(
+                    input_data=input_data,
+                    result=result,
+                    executed_at=timezone.now(),
+                    flow=flow,
+                )
                 flow_run.save()
                 logger.debug(f"FlowRun saved with input_data: {flow_run.input_data}")
 
-                # Display the result
+                # Display the result to the user
                 messages.info(request, f"Flow Result:\n{escape(result)}")
-                return redirect(request.path)
+                return redirect(
+                    reverse(
+                        f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                    )
+                )
             else:
                 logger.debug(f"Form is invalid: {form.errors}")
         else:
             form = FormClass()
             logger.debug("Created new form instance")
 
-        # Pass the form directly without AdminForm
+        # Prepare context for the add form template
         context = {
             **self.admin_site.each_context(request),
             "title": f"Run {flow.name}",
-            "form": form,  # Pass 'form' instead of 'adminform'
-            "object_id": object_id,
-            "original": flow_run,
+            "form": form,  # Pass 'form' directly
             "media": self.media + form.media,
             "opts": self.model._meta,
             "app_label": self.model._meta.app_label,
-            "add": False,  # Since we're changing an existing object
-            "change": True,  # We are in the change view
-            "is_popup": False,
-            "save_as": False,
-            "has_view_permission": self.has_view_permission(request, flow_run),
-            "has_change_permission": self.has_change_permission(request, flow_run),
+            "add": True,
+            "change": False,
+            "has_view_permission": self.has_view_permission(request),
             "has_add_permission": self.has_add_permission(request),
-            "has_delete_permission": self.has_delete_permission(request, flow_run),
-            "has_editable_inline_admin_formsets": False,
+            "has_change_permission": False,
+            "has_delete_permission": self.has_delete_permission(request),
         }
 
-        return TemplateResponse(
-            request, "admin/flow_runs/flowrun/change_form.html", context
-        )
+        return TemplateResponse(request, self.add_form_template, context)

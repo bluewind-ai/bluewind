@@ -1,9 +1,0 @@
-{% extends "admin/change_form.html" %}
-
-{% block content %}
-  <form method="post" novalidate>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="default">Run</button>
-  </form>
-{% endblock %}
