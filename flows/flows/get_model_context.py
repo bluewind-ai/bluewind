@@ -1,3 +1,4 @@
+# flows/flows/get_model_context.py
 import logging
 import os
 
@@ -8,12 +9,14 @@ from django.contrib.contenttypes.models import ContentType
 logger = logging.getLogger("django.temp")
 
 
-# Define the form
 class GetModelContextForm(forms.Form):
     content_type = forms.ModelChoiceField(queryset=ContentType.objects.all())
 
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop("instance", None)
+        super().__init__(*args, **kwargs)
 
-# Define the function
+
 def get_model_context(content_type):
     try:
         if not isinstance(content_type, ContentType):
@@ -21,6 +24,9 @@ def get_model_context(content_type):
 
         # Get the model class
         model_class = content_type.model_class()
+
+        if not model_class:
+            raise ValueError(f"No model found for ContentType: {content_type}")
 
         # Get the app label
         app_label = model_class._meta.app_label
