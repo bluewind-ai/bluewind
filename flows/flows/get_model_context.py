@@ -1,57 +1,46 @@
+# flows/flows/get_model_context.py
 import logging
+import os
 
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
+from django import forms
+from django.apps import apps
+from django.contrib.contenttypes.models import ContentType
 
-from file_changes.models import FileChange
-
-# Initialize loggers
-temp_logger = logging.getLogger("django.not_used")
 logger = logging.getLogger("django.not_used")
 
-# Maintain a global registry of observers
-observers_registry = {}
+
+class GetModelContextForm(forms.Form):
+    content_type = forms.ModelChoiceField(queryset=ContentType.objects.all())
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop("instance", None)
+        super().__init__(*args, **kwargs)
 
 
-class DynamicFileChangeHandler(FileSystemEventHandler):
-    """
-    Custom handler to respond to file system changes.
-    """
+def get_model_context(content_type):
+    try:
+        if not isinstance(content_type, ContentType):
+            raise ValueError("content_type must be a ContentType instance")
 
-    def __init__(self, file_watcher):
-        super().__init__()
-        self.file_watcher = file_watcher
+        # Get the model class
+        model_class = content_type.model_class()
 
-    def on_modified(self, event):
-        temp_logger.debug(f"Detected change in file: {event.src_path}")
-        # Log the file change in the database
-        try:
-            FileChange.objects.create(
-                file_watcher=self.file_watcher,
-                file_path=event.src_path,
-                change_type="modified",
-                user=self.file_watcher.user,  # Assuming the user is set in FileWatcher
-            )
-            temp_logger.debug(f"FileChange created for {event.src_path}")
-        except Exception as e:
-            temp_logger.error(f"Error creating FileChange: {e}")
+        if not model_class:
+            raise ValueError(f"No model found for ContentType: {content_type}")
 
+        # Get the app label
+        app_label = model_class._meta.app_label
 
-def file_watchers_after_save(file_watcher):
-    temp_logger.debug(f"Running file_watchers_after_save for: {file_watcher}")
-    if file_watcher.is_active and file_watcher.name not in observers_registry:
-        # Start watching this path
-        event_handler = DynamicFileChangeHandler(file_watcher)
-        observer = Observer()
-        observer.schedule(event_handler, path=file_watcher.path, recursive=True)
-        observer.start()
-        observers_registry[file_watcher.name] = observer
-        temp_logger.debug(f"Started watching: {file_watcher.path}")
-    elif not file_watcher.is_active and file_watcher.name in observers_registry:
-        # Stop watching this path
-        observer = observers_registry.pop(file_watcher.name)
-        observer.stop()
-        observer.join()
-        temp_logger.debug(f"Stopped watching: {file_watcher.path}")
-    else:
-        temp_logger.debug(f"No action taken for: {file_watcher}")
+        # Construct the path to the models.py file
+        app_config = apps.get_app_config(app_label)
+        models_path = os.path.join(app_config.path, "models.py")
+
+        # Read the content of the models.py file
+        with open(models_path, "r") as file:
+            result = file.read()
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error in get_model_context: {str(e)}")
+        return f"Error: {str(e)}"
