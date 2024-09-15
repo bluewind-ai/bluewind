@@ -187,3 +187,5 @@ maybe put the logger on ALL the files? Also allows me to log the methods inputs 
 replace flows by workflows
 
 linters based on the type: file_changes_on_ready has no type
+
+very disappointing errors don''t give tracebacks "2024-09-15 21:11:02,389 [ERROR] [no_request_id] django.temp: Error in file watchers operation: null value in column "workspace_id" of relation "file_watchers_filewatcher" violates not-null constraint"

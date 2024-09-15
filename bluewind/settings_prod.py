@@ -8,6 +8,7 @@ from bluewind.logging_config import get_logging_config
 
 # Base Directory
 BASE_DIR = Path(__file__).resolve().parent.parent
+os.environ["BASE_DIR"] = str(BASE_DIR)
 LOGGING = get_logging_config(BASE_DIR)
 
 # Core Django Settings

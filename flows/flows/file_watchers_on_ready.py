@@ -6,37 +6,31 @@ from django.contrib.auth import get_user_model
 from file_watchers.models import FileWatcher
 
 User = get_user_model()
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def file_watchers_on_ready():
     try:
-        # Fetch the first FileWatcher instance
-        file_watcher = FileWatcher.objects.first()
-        root_path = os.path.abspath(os.sep)
+        # Set the desired absolute pathcdscds
+        target_path = os.environ["BASE_DIR"]
+        # Fetch the first FileWatcher instance or create a new one if none exists
+        file_watcher, created = FileWatcher.objects.get_or_create(
+            name="Root File Watcher",  # Provide a unique name
+            defaults={
+                "path": target_path,
+                "user": User.objects.first(),
+                "workspace_id": 1,
+            },
+        )
 
-        if file_watcher:
-            logger.debug(f"FileWatcher instance already exists: {file_watcher}")
-            file_watcher.path = os.path.abspath(root_path)
-            file_watcher.save()
-            logger.info("Updated FileWatcher path.")
+        # Always update the file watcher path to the specified target path
+        file_watcher.path = target_path
+        file_watcher.save()
+
+        if created:
+            logger.info(f"Created a new FileWatcher: {file_watcher}")
         else:
-            # Get the absolute path to the root directory
+            logger.info("Updated existing FileWatcher path.")
 
-            # Fetch the first available user (or a specific user if preferred)
-            user = User.objects.first()
-
-            if not user:
-                logger.error("No user available to associate with FileWatcher.")
-                return
-
-            # Create a new FileWatcher instance if none exists
-            logger.info("No FileWatcher instances found. Creating a new one.")
-            file_watcher = FileWatcher.objects.create(
-                name="Root File Watcher",  # Provide a unique name
-                path=root_path,  # Set the path to the absolute root path
-                user=user,  # Associate with a valid user
-            )
-            logger.info(f"Successfully created a new FileWatcher: {file_watcher}")
     except Exception as e:
         logger.error(f"Error in file watchers operation: {e}")
