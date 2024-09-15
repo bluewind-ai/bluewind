@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "drf_standardized_errors",
     "incoming_http_requests",
     "app_logs",
+    "flow_runs",
     "admin_autoregister",
 ]
 
@@ -128,6 +129,7 @@ APP_TYPE = {
     "drf_standardized_errors": "third_party",
     "admin_autoregister": "custom",
     "incoming_http_requests": "custom",
+    "flow_runs": "flow_runs",
     "app_logs": "custom",
 }
 

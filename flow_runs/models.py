@@ -1,63 +1,71 @@
-import logging
-
-from django.contrib import admin
-from django.contrib.contenttypes.models import ContentType
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
 from django.forms import ValidationError
 
-from base_model_admin.admin import InWorkspace
-
-from .models import FlowRunArgument
-
-logger = logging.getLogger("django.temp")
-
-
-class FlowRunArgumentInline(admin.TabularInline):
-    model = FlowRunArgument
-    extra = 1
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "contenttype":
-            kwargs["queryset"] = ContentType.objects.all().order_by("model")
-        logger.debug(f"Formfield for {db_field.name} in FlowRunArgumentInline")
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            logger.debug(
-                f"Saving FlowRunArgument: {instance} with contenttype {instance.contenttype}"
-            )
-            instance.save()
-        formset.save_m2m()
+from flows.flows.flow_runner import flow_runner
+from flows.flows.flows import Flow
+from workspace_snapshots.models import WorkspaceDiff
+from workspaces.models import WorkspaceRelated
 
 
-class FlowRunAdmin(InWorkspace):
-    inlines = [FlowRunArgumentInline]
+class FlowRun(WorkspaceRelated):
+    class Status(models.TextChoices):
+        NOT_STARTED = "NOT_STARTED", "Not Started"
+        IN_PROGRESS = "IN_PROGRESS", "In Progress"
+        COMPLETED = "COMPLETED", "Completed"
 
-    def save_model(self, request, obj, form, change):
-        # Log before saving the main object
-        logger.debug(f"FlowRun object state before save: {obj.__dict__}")
-        super().save_model(request, obj, form, change)
-        # Log after saving the main object
-        logger.debug(f"FlowRun object state after save: {obj.__dict__}")
+    flow = models.ForeignKey(Flow, on_delete=models.CASCADE, related_name="runs")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.NOT_STARTED
+    )
+    state = models.JSONField(default=dict, blank=True)
+    diff = models.ForeignKey(
+        WorkspaceDiff,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="flow_runs",
+    )
+    create_new_workspace = models.BooleanField(default=False)
+    input_data = models.JSONField(default=dict, blank=True, encoder=DjangoJSONEncoder)
 
-    def save_related(self, request, form, formsets, change):
-        # Save the inlines
-        super().save_related(request, form, formsets, change)
-        obj = form.instance
+    def save(self, *args, **kwargs):
+        # Detect if the status has changed
+        status_changed = False
+        if self.pk:
+            old_status = FlowRun.objects.get(pk=self.pk).status
+            if old_status != self.status:
+                status_changed = True
+        else:
+            # New instance; status is set to default
+            status_changed = True  # To handle initial save
 
-        # Now the inlines are saved; you can access them
-        flow_run_arguments = obj.arguments.all()
-        logger.debug(f"FlowRun has {flow_run_arguments.count()} arguments.")
+        super().save(*args, **kwargs)
 
-        # Perform validation
-        if not any(arg.contenttype for arg in flow_run_arguments):
-            logger.error("ContentType is required for at least one FlowRunArgument.")
+        # If status changed to IN_PROGRESS, run the flow
+        try:
+            if status_changed and self.status == self.Status.IN_PROGRESS:
+                self.run_flow()
+        except ValidationError as e:
+            # Handle validation errors
+            raise e
+        except Exception as e:
+            # Log unexpected exceptions
+            logger.error(f"Unexpected error during flow execution: {e}")
+            raise e
+
+    def run_flow(self):
+        # Ensure that FlowRunArguments exist
+        if not self.arguments.exists():
             raise ValidationError(
-                "ContentType is required for at least one FlowRunArgument."
+                "At least one FlowRunArgument is required to run the flow."
             )
 
-        # Additional processing
-        logger.debug(f"FlowRun object after saving related objects: {obj.__dict__}")
-        for arg in flow_run_arguments:
-            logger.debug(f"FlowRunArgument: {arg} with ContentType: {arg.contenttype}")
+        # Run the flow
+        result = flow_runner(self)
+        self.state = result
+        self.status = self.Status.COMPLETED
+        # Save without triggering the flow again
+        super(FlowRun, self).save(update_fields=["state", "status"])
