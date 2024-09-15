@@ -1,4 +1,5 @@
 import os
+import warnings
 from pathlib import Path
 
 import environ
@@ -333,3 +334,10 @@ SPECTACULAR_SETTINGS = {
 # DEFAULT_EXCEPTION_REPORTER_FILTER = (
 #     "bluewind.vscode_link_errors.VSCodeLinkExceptionReporterFilter"
 # )
+
+# Suppress the RuntimeWarning about accessing the database during app initialization
+warnings.filterwarnings(
+    "ignore",
+    message=".*Accessing the database during app initialization is discouraged.*",
+    category=RuntimeWarning,
+)
