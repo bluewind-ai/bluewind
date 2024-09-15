@@ -4,11 +4,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, transaction
 from django.forms import ValidationError
-from django.utils import timezone
 
 from credentials.models import Credentials
-from flows.flows.flow_runner import flow_runner
-from workspace_snapshots.models import WorkspaceDiff
+from flows.step_runs import StepRun
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -16,72 +14,7 @@ logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
-# flows/models.py
-
-
-class FlowRun(WorkspaceRelated):
-    class Status(models.TextChoices):
-        NOT_STARTED = "NOT_STARTED", "Not Started"
-        IN_PROGRESS = "IN_PROGRESS", "In Progress"
-        COMPLETED = "COMPLETED", "Completed"
-
-    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="runs")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.NOT_STARTED
-    )
-    state = models.JSONField(default=dict, blank=True)
-    diff = models.ForeignKey(
-        WorkspaceDiff,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="flow_runs",
-    )
-    create_new_workspace = models.BooleanField(default=False)
-    input_data = models.JSONField(default=dict, blank=True, encoder=DjangoJSONEncoder)
-
-    def save(self, *args, **kwargs):
-        # Detect if the status has changed
-        status_changed = False
-        if self.pk:
-            old_status = FlowRun.objects.get(pk=self.pk).status
-            if old_status != self.status:
-                status_changed = True
-        else:
-            # New instance; status is set to default
-            status_changed = True  # To handle initial save
-
-        super().save(*args, **kwargs)
-
-        # If status changed to IN_PROGRESS, run the flow
-        try:
-            if status_changed and self.status == self.Status.IN_PROGRESS:
-                self.run_flow()
-        except ValidationError as e:
-            # Handle validation errors
-            raise e
-        except Exception as e:
-            # Log unexpected exceptions
-            logger.error(f"Unexpected error during flow execution: {e}")
-            raise e
-
-    def run_flow(self):
-        # Ensure that FlowRunArguments exist
-        if not self.arguments.exists():
-            raise ValidationError(
-                "At least one FlowRunArgument is required to run the flow."
-            )
-
-        # Run the flow
-        result = flow_runner(self)
-        self.state = result
-        self.status = self.Status.COMPLETED
-        # Save without triggering the flow again
-        super(FlowRun, self).save(update_fields=["state", "status"])
-
-
+# flows
 class Flow(WorkspaceRelated):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -152,7 +85,7 @@ class ActionRun(WorkspaceRelated):
         Action, on_delete=models.CASCADE, related_name="action_runs"
     )
     step_run = models.OneToOneField(
-        "StepRun",
+        StepRun,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -268,96 +201,3 @@ class ActionRun(WorkspaceRelated):
 
     def get_model_class(self):
         return self.action.content_type.model_class()
-
-
-class StepRun(WorkspaceRelated):
-    step = models.ForeignKey(
-        "Step",
-        on_delete=models.CASCADE,
-        related_name="step_runs",
-        null=True,
-        blank=True,
-    )
-    action_run = models.OneToOneField(
-        "ActionRun",
-        on_delete=models.CASCADE,
-        related_name="associated_step_run",
-        null=True,
-        blank=True,
-    )
-    flow_run = models.ForeignKey(
-        FlowRun,
-        on_delete=models.CASCADE,
-        related_name="step_runs",
-    )
-    start_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateTimeField(null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        is_new = self._state.adding
-        super().save(*args, **kwargs)
-
-        if is_new:
-            result = flow_runner(self)
-            self.state["flow_result"] = result
-            self.save(update_fields=["state"])
-
-    def find_and_run_next_step(self):
-        self.find_next_step()
-        if self.step:
-            self.run_action()
-
-    def find_next_step(self):
-        flow_steps = self.flow_run.flow.steps.all().order_by("id")
-        completed_step_ids = set(
-            self.flow_run.step_runs.exclude(id=self.id).values_list(
-                "step_id", flat=True
-            )
-        )
-
-        for step in flow_steps:
-            if step.id not in completed_step_ids:
-                if (
-                    step.parent_step_id is None
-                    or step.parent_step_id in completed_step_ids
-                ):
-                    self.step = step
-                    self.save(update_fields=["step"])
-                    return
-
-    def run_action(self):
-        from .models import ActionRun  # Import here to avoid circular import
-
-        action_input = self.flow_run.state.get("action_input", {})
-
-        with transaction.atomic():
-            self.action_run = ActionRun.objects.create(
-                workspace=self.workspace,
-                action=self.step.action,
-                step_run=self,
-                user=self.flow_run.user,
-                model_name=self.step.action.content_type.model,
-                action_input=action_input,
-            )
-            self.end_date = timezone.now()
-            self.save(update_fields=["action_run", "end_date"])
-
-        self.action_run.save()
-
-        self.flow_run.state["last_action_result"] = self.action_run.results
-        self.flow_run.save(update_fields=["state"])
-
-    def __str__(self):
-        return f"StepRun for {self.step} (Started: {self.start_date})"
-
-
-import logging
-
-from django.core.serializers.json import DjangoJSONEncoder
-from django.db import models
-
-from workspace_snapshots.models import WorkspaceDiff
-from workspaces.models import WorkspaceRelated
-
-logger = logging.getLogger(__name__)
-from django.contrib.contenttypes.models import ContentType
