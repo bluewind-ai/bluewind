@@ -6,9 +6,8 @@ from flows.flows.file_watchers_after_save import file_watchers_after_save
 from workspaces.models import WorkspaceRelated
 
 # Initialize the logger
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.not_used")
 
-# Maintain a global registry of observers
 observers_registry = {}
 
 

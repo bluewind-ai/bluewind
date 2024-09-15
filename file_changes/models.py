@@ -5,7 +5,7 @@ from django.db import models
 
 from workspaces.models import WorkspaceRelated
 
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.not_used")
 
 
 class FileChange(WorkspaceRelated):

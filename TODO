@@ -63,7 +63,7 @@ change_form_template = (
 these types of errors are very common
 very common error: writing template instead of templates
 make sure LLMS can't logger big stuff. create an error if they do.
-at end of feature, systematically replace logger = logging.getLogger("django.temp") with logger = logging.getLogger("django.not_used")
+at end of feature, systematically replace logger = logging.getLogger("django.not_used") with logger = logging.getLogger("django.not_used")
 no message on save objects automatically added
 hard code to make them use this logger
 always use lazy loa
@@ -90,7 +90,7 @@ from django.db import models
 
 from workspaces.models import WorkspaceRelated
 
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.not_used")
 
 class FileChange(WorkspaceRelated):
 """
@@ -179,3 +179,11 @@ the name of the file watcher is useless.
 I discovered file watchers can't be edited. This is ok but incorporated into the models or somewhere, so that django admin automatically knows.
 
 clicking outside of command panel should remove it
+
+I just realized it would be more appropriate if FileWatcher is a singleton, which means I need to be prompted "Can you create more than one". wizzard for model creation.
+
+maybe put the logger on ALL the files? Also allows me to log the methods inputs and outputs. But then would this be considered an AppLog? By the way I need to rename applog.
+
+replace flows by workflows
+
+linters based on the type: file_changes_on_ready has no type

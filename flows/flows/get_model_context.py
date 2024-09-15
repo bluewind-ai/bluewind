@@ -6,7 +6,7 @@ from watchdog.observers import Observer
 from file_changes.models import FileChange
 
 # Initialize loggers
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.not_used")
 logger = logging.getLogger("django.not_used")
 
 # Maintain a global registry of observers

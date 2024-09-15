@@ -5,7 +5,7 @@ from watchdog.observers import Observer
 
 from file_changes.models import FileChange
 
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.not_used")
 observers_registry = {}
 
 # flows/flows/get_model_context.py
@@ -15,7 +15,7 @@ logger = logging.getLogger("django.not_used")
 
 # Maintain a global registry of observers
 observers_registry = {}
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.not_used")
 
 
 class DynamicFileChangeHandler(FileSystemEventHandler):
