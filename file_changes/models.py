@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.db import models
 
+from flows.flows.file_changes_after_save import file_changes_after_save
 from workspaces.models import WorkspaceRelated
 
 temp_logger = logging.getLogger("django.not_used")
@@ -37,4 +38,5 @@ class FileChange(WorkspaceRelated):
     def save(self, *args, **kwargs):
         temp_logger.debug(f"Saving FileChange: {self}")
         super().save(*args, **kwargs)
+        file_changes_after_save(self)
         temp_logger.debug(f"FileChange saved: {self}")
