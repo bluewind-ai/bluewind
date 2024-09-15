@@ -14,23 +14,6 @@ from workspaces.models import WorkspaceRelated
 logger = logging.getLogger(__name__)
 
 
-class Flow(WorkspaceRelated):
-    name = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    type = models.CharField(
-        max_length=10,
-        choices=[("no-code", "No Code"), ("python", "Python")],
-        default="no-code",
-    )
-
-    class Meta:
-        unique_together = ["name", "workspace"]
-
-    def __str__(self):
-        return self.name
-
-
 class FlowRun(WorkspaceRelated):
     class Status(models.TextChoices):
         NOT_STARTED = "NOT_STARTED", "Not Started"
@@ -79,6 +62,23 @@ class FlowRun(WorkspaceRelated):
         if self.status != new_status:
             self.status = new_status
             self.save(update_fields=["status"])
+
+
+class Flow(WorkspaceRelated):
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    type = models.CharField(
+        max_length=10,
+        choices=[("no-code", "No Code"), ("python", "Python")],
+        default="no-code",
+    )
+
+    class Meta:
+        unique_together = ["name", "workspace"]
+
+    def __str__(self):
+        return self.name
 
 
 class Action(WorkspaceRelated):
@@ -268,7 +268,7 @@ class StepRun(WorkspaceRelated):
         blank=True,
     )
     flow_run = models.ForeignKey(
-        "FlowRun",
+        FlowRun,
         on_delete=models.CASCADE,
         related_name="step_runs",
     )
