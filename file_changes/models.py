@@ -6,6 +6,7 @@ from django.db import models
 from flows.flows.file_changes_after_save import file_changes_after_save
 from workspaces.models import WorkspaceRelated
 
+# Setup logger for debugging
 temp_logger = logging.getLogger("django.not_used")
 
 
@@ -36,7 +37,12 @@ class FileChange(WorkspaceRelated):
         return f"FileChanged(file_path={self.file_path}, change_type={self.change_type}, timestamp={self.timestamp})"
 
     def save(self, *args, **kwargs):
-        temp_logger.debug(f"Saving FileChange: {self}")
+        temp_logger.debug(f"Initiating save for FileChange: {self}")
         super().save(*args, **kwargs)
+        temp_logger.debug(f"FileChange saved successfully: {self}")
+        temp_logger.debug(f"Invoking file_changes_after_save for FileChange: {self}")
         file_changes_after_save(self)
-        temp_logger.debug(f"FileChange saved: {self}")
+        temp_logger.debug(f"Completed file_changes_after_save for FileChange: {self}")
+
+
+"this is a tescccdscdsdscmdskdsmktv fvfdvdf"

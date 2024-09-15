@@ -1,23 +1,22 @@
 import logging
 
+from models.models import Model  # Import the Model class
+
 logger = logging.getLogger("django.not_used")
 
 
 def file_changes_after_save(file_changes):
-    logger.debug(f"Checking file change for: {file_changes.file_path}")
+    logger.debug(f"Starting file_changes_after_save for: {file_changes.file_path}")
 
     if file_changes.file_path.endswith("models.py"):
         logger.debug(f"Detected change in models.py: {file_changes.file_path}")
-        logger.debug("Handling models.py change logic...")
 
-        # Example: Call a management command to make migrations
-        from django.core.management import call_command
+        # Read the content from the changed models.py file
+        with open(file_changes.file_path, "r") as file:
+            content = file.read()
 
-        try:
-            logger.debug("Running makemigrations command...")
-            call_command("makemigrations")
-            logger.debug("Running migrate command...")
-            call_command("migrate")
-            logger.info("Successfully handled models.py changes.")
-        except Exception as e:
-            logger.error(f"Error handling models.py changes: {e}")
+        # Update all Model instances with the new content
+        Model.objects.update(content=content)
+        logger.debug("All Model instances updated with the content of models.py.")
+    else:
+        logger.debug(f"No action needed for file: {file_changes.file_path}")
