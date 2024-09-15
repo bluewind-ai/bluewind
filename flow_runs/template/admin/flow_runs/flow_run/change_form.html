@@ -1,10 +1,10 @@
-{% extends "admin/change_form.html" %}
-cdscds
+{% extends "admin/base_site.html" %}
+
 {% block content %}
-  <h1>{{ title cdscds}}</h1>
+  <h1>{{ title }}</h1>
   <form method="post" novalidate>
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submicdscdst" class="default">Run</button>
+    <button type="submit" class="default">Run</button>
   </form>
 {% endblock %}
