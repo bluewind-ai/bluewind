@@ -11,8 +11,19 @@ from django.utils import timezone
 from django.utils.html import escape
 
 from base_model_admin.admin import InWorkspace
+from flows.models import (
+    Flow,  # Ensure this import is correct based on your project structure
+)
 
 from .models import FlowRun
+
+logger = logging.getLogger("django.temp")
+
+
+# flow_runs/admin.py
+import logging
+
+from workspaces.models import Workspace  # Import Workspace model
 
 logger = logging.getLogger("django.temp")
 
@@ -53,9 +64,10 @@ class FlowRunAdmin(InWorkspace):
             )
 
         try:
-            # Assuming 'flow_id' corresponds to a Flow object related to FlowRun
-            flow = FlowRun.objects.select_related("flow").get(pk=flow_id).flow
-        except FlowRun.DoesNotExist:
+            # Fetch the Flow instance based on flow_id
+            flow = Flow.objects.get(pk=flow_id)
+            logger.debug(f"Retrieved Flow: {flow}")
+        except Flow.DoesNotExist:
             self.message_user(
                 request, f"Flow with ID {flow_id} does not exist.", level=messages.ERROR
             )
@@ -64,8 +76,6 @@ class FlowRunAdmin(InWorkspace):
                     f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
                 )
             )
-
-        logger.debug(f"FlowRun flow: {flow}")
 
         # Dynamically import the flow definition module
         module_name = f"flows.flows.{flow.name}"
@@ -152,8 +162,39 @@ class FlowRunAdmin(InWorkspace):
                         f"Serialized 'content_type' to natural key: {content_type.natural_key()}"
                     )
 
-                # Create and save the FlowRun instance
+                # Retrieve the workspace from the URL or request
+                # Assuming your URL pattern includes 'workspaces/<workspace_id>/admin/...'
+                # Extract 'workspace_id' from the URL
+                workspace_id = self.get_workspace_id_from_request(request)
+                if not workspace_id:
+                    self.message_user(
+                        request, "Workspace not found in the URL.", level=messages.ERROR
+                    )
+                    return redirect(
+                        reverse(
+                            f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                        )
+                    )
+
+                try:
+                    workspace = Workspace.objects.get(pk=workspace_id)
+                    logger.debug(f"Retrieved Workspace: {workspace}")
+                except Workspace.DoesNotExist:
+                    self.message_user(
+                        request,
+                        f"Workspace with ID {workspace_id} does not exist.",
+                        level=messages.ERROR,
+                    )
+                    return redirect(
+                        reverse(
+                            f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                        )
+                    )
+
+                # Create and save the FlowRun instance with user and workspace
                 flow_run = FlowRun(
+                    user=request.user,  # Set the user to the current user
+                    workspace=workspace,  # Set the workspace
                     input_data=input_data,
                     result=result,
                     executed_at=timezone.now(),
@@ -192,3 +233,20 @@ class FlowRunAdmin(InWorkspace):
         }
 
         return TemplateResponse(request, self.add_form_template, context)
+
+    def get_workspace_id_from_request(self, request):
+        """
+        Extract the workspace ID from the URL.
+        Assuming the URL structure is /workspaces/<workspace_id>/admin/...
+        """
+        path = request.path
+        # Split the path and find the workspace ID
+        try:
+            parts = path.split("/")
+            workspace_index = parts.index("workspaces") + 1
+            workspace_id = parts[workspace_index]
+            logger.debug(f"Extracted workspace_id: {workspace_id}")
+            return workspace_id
+        except (ValueError, IndexError) as e:
+            logger.error(f"Error extracting workspace_id from URL: {e}")
+            return None
