@@ -110,7 +110,7 @@ def get_logging_config(base_dir):
             },
             "django.temp": {
                 "handlers": ["console"],
-                "level": "ERROR",
+                "level": "DEBUG",
                 "propagate": False,
             },
         },
