@@ -2,14 +2,15 @@ import logging
 
 from django.db import models
 
-from flows.actions import Action
+from actions.models import Action
+from flows.models import Flow
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
 
 class Step(WorkspaceRelated):
-    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="steps")
+    flow = models.ForeignKey(Flow, on_delete=models.CASCADE, related_name="steps")
     parent_step = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,

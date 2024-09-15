@@ -73,6 +73,11 @@ INSTALLED_APPS = [
     "incoming_http_requests",
     "app_logs",
     "flow_runs",
+    "action_runs",
+    "step_runs",
+    "steps",
+    "actions",
+    "recordings",
     "admin_autoregister",
 ]
 
@@ -129,7 +134,12 @@ APP_TYPE = {
     "drf_standardized_errors": "third_party",
     "admin_autoregister": "custom",
     "incoming_http_requests": "custom",
-    "flow_runs": "flow_runs",
+    "flow_runs": "custom",
+    "step_runs": "step_runs",
+    "steps": "flow_runs",
+    "actions": "flow_runs",
+    "action_runs": "flow_runs",
+    "recordings": "recordings",
     "app_logs": "custom",
 }
 

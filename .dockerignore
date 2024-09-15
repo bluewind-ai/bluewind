@@ -1,5 +1,6 @@
 *
 !account
+!action_runs
 !actions
 !additional_dockerignore
 !admin
@@ -52,6 +53,7 @@
 !people
 !poetry.lock
 !pyproject.toml
+!recordings
 !requirements.txt
 !rest_framework
 !sessions
@@ -61,6 +63,7 @@
 !static
 !staticfiles
 !step_runs
+!steps
 !unfold
 !users
 !webhook_tester

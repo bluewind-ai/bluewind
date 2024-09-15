@@ -1,9 +1,9 @@
 from django.db import models, transaction
 from django.utils import timezone
 
+from action_runs.models import ActionRun
 from flow_runs.models import FlowRun
-from flows.flows.flow_runner import flow_runner
-from flows.steps import Step
+from steps.models import Step
 from workspaces.models import WorkspaceRelated
 
 
@@ -16,7 +16,7 @@ class StepRun(WorkspaceRelated):
         blank=True,
     )
     action_run = models.OneToOneField(
-        "ActionRun",
+        ActionRun,
         on_delete=models.CASCADE,
         related_name="associated_step_run",
         null=True,

@@ -4,10 +4,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, transaction
 from django.forms import ValidationError
 
+from actions.models import Action
 from credentials.models import Credentials
-from flows.actions import Action
-from flows.recordings import Recording
-from flows.step_runs import StepRun
+from recordings.models import Recording
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -18,13 +17,6 @@ logger = logging.getLogger(__name__)
 class ActionRun(WorkspaceRelated):
     action = models.ForeignKey(
         Action, on_delete=models.CASCADE, related_name="action_runs"
-    )
-    step_run = models.OneToOneField(
-        StepRun,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="associated_action_run",
     )
     timestamp = models.DateTimeField(auto_now_add=True)
     model_name = models.CharField(max_length=100)
