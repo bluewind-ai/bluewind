@@ -5,7 +5,7 @@ import os
 import subprocess
 
 # Use the 'django.temp' logger for this utility
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.not_used")
 
 
 def is_ignored_by_git(file_path):
