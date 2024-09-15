@@ -1,7 +1,6 @@
 {% extends "admin/change_form.html" %}
 
 {% block content %}
-  <h1>{{ title }}</h1>
   <form method="post" novalidate>
     {% csrf_token %}
     {{ form.as_p }}
