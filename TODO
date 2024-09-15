@@ -56,3 +56,8 @@ remove actionrun
 learning: form inlines obviously can't be saved before their dependencies, which is why flow run argument couldn't be used. for inlines related things, use statuses.
 build something that removes logs, maybe a key is to remove the import and then delete out of import lines
 prevent LLMS from enforcing: models as strings "Flow"
+
+change_form_template = (
+"admin/change_form.html" -> "admin/flow_runs/flowrun/change_form.html" # Update this line
+)
+these types of errors are very common
