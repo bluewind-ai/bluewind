@@ -6,7 +6,7 @@ from django import forms
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 class GetModelContextForm(forms.Form):

@@ -16,7 +16,7 @@ from workspaces.models import Workspace  # Adjust import based on your project s
 
 from .models import FlowRun
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.no_used")
 
 
 @admin.register(FlowRun)

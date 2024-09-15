@@ -8,7 +8,7 @@ from django.db import models
 from users.models import User
 from workspaces.models import Workspace, WorkspaceRelated
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 class FlowRun(WorkspaceRelated):
