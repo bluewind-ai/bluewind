@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     "steps",
     "actions",
     "recordings",
+    "models",
     "admin_autoregister",
 ]
 
@@ -140,6 +141,7 @@ APP_TYPE = {
     "actions": "flow_runs",
     "action_runs": "flow_runs",
     "recordings": "recordings",
+    "models": "models",
     "app_logs": "custom",
 }
 

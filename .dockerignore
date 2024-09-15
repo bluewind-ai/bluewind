@@ -50,6 +50,7 @@
 !messages
 !migrations
 !model_clone
+!models
 !people
 !poetry.lock
 !pyproject.toml
