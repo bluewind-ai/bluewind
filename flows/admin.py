@@ -35,31 +35,29 @@ class FlowRunAdmin(InWorkspace):
     inlines = [FlowRunArgumentInline]
 
     def save_model(self, request, obj, form, change):
-        # Log whether the form submission is for a new or existing instance
-        logger.debug(
-            f"Saving FlowRun: {'Updating existing instance' if change else 'Creating new instance'}"
-        )
-
-        # Log the entire form data to understand what is being submitted
-        logger.debug(f"Form data submitted: {form.cleaned_data}")
-
-        # Log the state of the object before saving
+        # Log before saving the main object
         logger.debug(f"FlowRun object state before save: {obj.__dict__}")
+        super().save_model(request, obj, form, change)
+        # Log after saving the main object
+        logger.debug(f"FlowRun object state after save: {obj.__dict__}")
 
-        # Check if any related FlowRunArguments have a ContentType and log details
-        flow_run_arguments = obj.flowrunargument_set.all()
+    def save_related(self, request, form, formsets, change):
+        # Save the inlines
+        super().save_related(request, form, formsets, change)
+        obj = form.instance
+
+        # Now the inlines are saved; you can access them
+        flow_run_arguments = obj.arguments.all()
+        logger.debug(f"FlowRun has {flow_run_arguments.count()} arguments.")
+
+        # Perform validation
         if not any(arg.contenttype for arg in flow_run_arguments):
             logger.error("ContentType is required for at least one FlowRunArgument.")
             raise ValidationError(
                 "ContentType is required for at least one FlowRunArgument."
             )
 
-        # Log information about the related FlowRunArguments
+        # Additional processing
+        logger.debug(f"FlowRun object after saving related objects: {obj.__dict__}")
         for arg in flow_run_arguments:
             logger.debug(f"FlowRunArgument: {arg} with ContentType: {arg.contenttype}")
-
-        # Proceed to save the model
-        super().save_model(request, obj, form, change)
-
-        # Log the state of the object after saving
-        logger.debug(f"FlowRun object state after save: {obj.__dict__}")

@@ -1,4 +1,3 @@
-import json
 import logging
 
 from django.contrib.contenttypes.models import ContentType
@@ -18,6 +17,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 logger = logging.getLogger(__name__)
 
 
+# flows/models.py
+
+
 class FlowRun(WorkspaceRelated):
     class Status(models.TextChoices):
         NOT_STARTED = "NOT_STARTED", "Not Started"
@@ -32,7 +34,7 @@ class FlowRun(WorkspaceRelated):
     )
     state = models.JSONField(default=dict, blank=True)
     diff = models.ForeignKey(
-        WorkspaceDiff,  # Correct reference to the actual model
+        WorkspaceDiff,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -41,54 +43,44 @@ class FlowRun(WorkspaceRelated):
     create_new_workspace = models.BooleanField(default=False)
     input_data = models.JSONField(default=dict, blank=True, encoder=DjangoJSONEncoder)
 
-    def __str__(self):
-        return f"Run of {self.flow.name} at {self.created_at}"
-
     def save(self, *args, **kwargs):
-        is_new = self._state.adding
-
-        # Extract only the fields of the model to log
-        try:
-            # Create a dictionary with fields and handle non-serializable fields
-            flow_run_data = {}
-            for field in self._meta.fields:
-                value = getattr(self, field.name)
-                if isinstance(value, (models.Model, models.QuerySet)):
-                    # Convert model instances or querysets to a string representation
-                    flow_run_data[field.name] = str(value)
-                else:
-                    flow_run_data[field.name] = value
-
-            logger.debug(
-                f"Saving FlowRun object: {json.dumps(flow_run_data, cls=DjangoJSONEncoder)}"
-            )
-        except Exception as e:
-            logger.error(f"Error serializing FlowRun object: {e}")
+        # Detect if the status has changed
+        status_changed = False
+        if self.pk:
+            old_status = FlowRun.objects.get(pk=self.pk).status
+            if old_status != self.status:
+                status_changed = True
+        else:
+            # New instance; status is set to default
+            status_changed = True  # To handle initial save
 
         super().save(*args, **kwargs)
 
-        if is_new and self.flow.type == "python":
-            result = flow_runner(self)
-            self.state = result
-            # Ensure the state is updated and saved properly
-            self.save(update_fields=["state"])
+        # If status changed to IN_PROGRESS, run the flow
+        try:
+            if status_changed and self.status == self.Status.IN_PROGRESS:
+                self.run_flow()
+        except ValidationError as e:
+            # Handle validation errors
+            raise e
+        except Exception as e:
+            # Log unexpected exceptions
+            logger.error(f"Unexpected error during flow execution: {e}")
+            raise e
 
-        # Additional debugging info after save
-        logger.debug(f"FlowRun object saved: {self.pk} with state {self.state}")
+    def run_flow(self):
+        # Ensure that FlowRunArguments exist
+        if not self.arguments.exists():
+            raise ValidationError(
+                "At least one FlowRunArgument is required to run the flow."
+            )
 
-    def update_status(self):
-        total_actions = self.flow.actions.count()
-        completed_actions = self.action_runs.filter(status="COMPLETED").count()
-        if completed_actions == 0:
-            new_status = self.Status.NOT_STARTED
-        elif completed_actions == total_actions:
-            new_status = self.Status.COMPLETED
-        else:
-            new_status = self.Status.IN_PROGRESS
-
-        if self.status != new_status:
-            self.status = new_status
-            self.save(update_fields=["status"])
+        # Run the flow
+        result = flow_runner(self)
+        self.state = result
+        self.status = self.Status.COMPLETED
+        # Save without triggering the flow again
+        super(FlowRun, self).save(update_fields=["state", "status"])
 
 
 class FlowRunArgument(WorkspaceRelated):
