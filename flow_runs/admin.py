@@ -2,7 +2,7 @@
 import importlib
 import logging
 
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -14,8 +14,9 @@ from base_model_admin.admin import InWorkspace
 logger = logging.getLogger("django.temp")
 
 
+# flow_runs/admin.py
 class FlowRunAdmin(InWorkspace):
-    change_form_template = "admin/change_form.html"
+    change_form_template = "admin/flow_runs/flowrun/change_form.html"
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         logger.debug("Entered changeform_view")
@@ -103,17 +104,18 @@ class FlowRunAdmin(InWorkspace):
             form = FormClass()
             logger.debug("Created new form instance")
 
-        admin_form = admin.helpers.AdminForm(form, list([]), {})
-        logger.debug(f"Admin form created: {admin_form}")
+        # Remove admin_form creation
+        # admin_form = admin.helpers.AdminForm(form, list([]), {})
+        # logger.debug(f"Admin form created: {admin_form}")
 
         # Add the missing context variables
         context = {
             **self.admin_site.each_context(request),
             "title": f"Run {flow.name}",
-            "adminform": admin_form,
+            "form": form,  # Pass 'form' instead of 'adminform'
             "object_id": object_id,
             "original": flow_run,
-            "media": self.media + admin_form.media,
+            "media": self.media + form.media,
             "opts": self.model._meta,
             "app_label": self.model._meta.app_label,
             "add": False,  # Since we're changing an existing object
@@ -128,4 +130,6 @@ class FlowRunAdmin(InWorkspace):
         }
         logger.debug(f"Context prepared: {context}")
 
-        return TemplateResponse(request, "admin/change_form.html", context)
+        return TemplateResponse(
+            request, "admin/flow_runs/flowrun/change_form.html", context
+        )
