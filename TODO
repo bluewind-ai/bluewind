@@ -53,3 +53,5 @@ when clicking out of command palette -> leave the palette
 Learning: blacklist the word content_type. It should only be contenttype
 Learning: Systematically logger what's sent to the save function
 remove actionrun
+learning: form inlines obviously can't be saved before their dependencies, which is why flow run argument couldn't be used. for inlines related things, use statuses.
+build something that removes logs, maybe a key is to remove the import and then delete out of import lines
