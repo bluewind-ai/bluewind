@@ -11,42 +11,74 @@ from django.utils import timezone
 from django.utils.html import escape
 
 from base_model_admin.admin import InWorkspace
-from flows.models import (
-    Flow,  # Ensure this import is correct based on your project structure
-)
+from flows.models import Flow  # Adjust import based on your project structure
+from workspaces.models import Workspace  # Adjust import based on your project structure
 
 from .models import FlowRun
 
 logger = logging.getLogger("django.temp")
 
 
-# flow_runs/admin.py
-import logging
-
-from workspaces.models import Workspace  # Import Workspace model
-
-logger = logging.getLogger("django.temp")
-
-
 @admin.register(FlowRun)
 class FlowRunAdmin(InWorkspace):
-    # Specify a custom template for the add form
+    # Specify a custom template for the add form if needed
     add_form_template = "admin/flow_runs/flowrun/add_form.html"
 
+    # Use the standard change_form template
+    change_form_template = "admin/change_form.html"
+
     def has_change_permission(self, request, obj=None):
-        # Disable change permissions
-        return False
+        """
+        Allow access to the change form but prevent modifications by making fields read-only.
+        """
+        return True  # Allow access to the change form
+
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Make all fields read-only when viewing an existing FlowRun.
+        """
+        if obj:  # If editing an existing object
+            return [field.name for field in self.model._meta.fields]
+        return self.readonly_fields
+
+    def get_actions(self, request):
+        """
+        Disable all bulk actions on the changelist.
+        """
+        return []
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
-        # Inform the user that change is not allowed and redirect to the changelist
-        self.message_user(
-            request, "FlowRun objects cannot be changed.", level=messages.ERROR
-        )
-        return redirect(
-            reverse(
-                f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+        """
+        Handle the change view to make it read-only and prevent saving changes.
+        """
+        if request.method == "POST":
+            # Prevent any POST requests from modifying the object
+            self.message_user(
+                request,
+                "Changes to FlowRun objects are not allowed.",
+                level=messages.ERROR,
             )
-        )
+            return redirect(
+                reverse(
+                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                )
+            )
+
+        return super().change_view(request, object_id, form_url, extra_context)
+
+    def save_model(self, request, obj, form, change):
+        """
+        Override save_model to prevent saving changes.
+        """
+        if change:
+            # Do not save changes to existing objects
+            self.message_user(
+                request,
+                "Saving changes to FlowRun objects is not permitted.",
+                level=messages.ERROR,
+            )
+            return
+        super().save_model(request, obj, form, change)
 
     def add_view(self, request, form_url="", extra_context=None):
         logger.debug("Entered add_view")
