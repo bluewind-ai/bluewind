@@ -2,6 +2,7 @@ import logging
 
 from django.db import models
 
+from flows.actions import Action
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)

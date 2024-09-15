@@ -3,12 +3,13 @@ from django.utils import timezone
 
 from flows.flow_runs import FlowRun
 from flows.flows.flow_runner import flow_runner
+from flows.steps import Step
 from workspaces.models import WorkspaceRelated
 
 
 class StepRun(WorkspaceRelated):
     step = models.ForeignKey(
-        "Step",
+        Step,
         on_delete=models.CASCADE,
         related_name="step_runs",
         null=True,

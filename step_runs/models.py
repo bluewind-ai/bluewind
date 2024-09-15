@@ -4,6 +4,7 @@ from django.db import models, transaction
 from django.utils import timezone
 
 from flows.flows.flow_runner import flow_runner
+from steps.models import Step
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class StepRun(WorkspaceRelated):
     step = models.ForeignKey(
-        "Step",
+        Step,
         on_delete=models.CASCADE,
         related_name="step_runs",
         null=True,
