@@ -65,3 +65,95 @@ very common error: writing template instead of templates
 make sure LLMS can't logger big stuff. create an error if they do.
 at end of feature, systematically replace logger = logging.getLogger("django.temp") with logger = logging.getLogger("django.not_used")
 no message on save objects automatically added
+hard code to make them use this logger
+always use lazy loa
+foreign key relationships always lazily loaded and always like that "file_watchers.FileWatcher"
+all the empty files given by startapp should be removed
+incident:
+corrective actions: take actions and implement processes to fix incident
+preventive actions: take actions and implement processes to prevent incident
+monitoring actions: take actions and implement processes to detect incidents of this type
+default logging between common functions: CREATE SAVE DELETE (maybe list?) and maybe after_save and flows with a buffer size if stuff too big
+never see or have to fill workspace_id, same for user, same for created_at update_at
+created_at update_at by default on all models
+
+ACCOUNT FOR THIS:
+
+look, after a file is changed,
+if this file is in a models.py and this model is in the DB (look up the Model object),
+I want to be able to save the content of the models.py. Oh, I think I need the app_label in the models.py
+
+import logging
+
+from django.conf import settings
+from django.db import models
+
+from workspaces.models import WorkspaceRelated
+
+temp_logger = logging.getLogger("django.temp")
+
+class FileChange(WorkspaceRelated):
+"""
+Model to represent a detected file change.
+"""
+
+    file_watcher = models.ForeignKey(
+        "file_watchers.FileWatcher",
+        on_delete=models.CASCADE,
+        related_name="file_changes",
+        help_text="The file watcher that detected this change.",
+    )
+    file_path = models.CharField(
+        max_length=1024, help_text="The path of the file that was changed."
+    )
+    change_type = models.CharField(
+        max_length=50,
+        help_text="Type of change detected (e.g., modified, created, deleted).",
+    )
+    timestamp = models.DateTimeField(
+        auto_now_add=True, help_text="Timestamp of when the change was detected."
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        help_text="The user responsible for the file change, if known.",
+    )
+
+    def __str__(self):
+        return f"FileChanged(file_path={self.file_path}, change_type={self.change_type}, timestamp={self.timestamp})"
+
+    def save(self, *args, **kwargs):
+        temp_logger.debug(f"Saving FileChange: {self}")
+        super().save(*args, **kwargs)
+        temp_logger.debug(f"FileChange saved: {self}")
+
+class Model(WorkspaceRelated):
+"""
+Example Django model named 'Model' inheriting from WorkspaceRelated.
+This model now includes a 'content' field to store file content.
+"""
+
+    name = models.CharField(max_length=100)
+    content = models.TextField(blank=True, null=True)  # Field to store file content
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        unique_together = ("workspace", "name")
+
+As you can see I discovered a task while working on one. In this case I should save the current task and not run it.
+
+regression: when I added the watchdog feature my hot reload broke
+oh actually it's fine, somehow the files in admin_autoregister are not being watched. weird.
+
+idea: find the people who need help on the web and the people who provide a service who could help them
+
+I forgot to commit my code before working on a new task. I need to create corrective, preventive and monitor actions for this.
+
+edit of previous message:
+I forgot to commit my code before working on a new task. I need to create preventive and monitor actions for this.
+
+Because there is no point creating corrective actions. Corrective actions inspire preventive and monitoring ones, but they''re not really part of the improvement process ( in fact they should be avoided )
+
+Things are getting very meta with the logs as you can see above. Talking about the logs in the logs. I have done a lot of meta things recently.
