@@ -3,6 +3,7 @@ from django.db import models
 from django.forms import ValidationError
 
 from flows.flows.flow_runner import flow_runner
+from flows.flows.flows import Flow
 from workspace_snapshots.models import WorkspaceDiff
 from workspaces.models import WorkspaceRelated
 
@@ -13,7 +14,7 @@ class FlowRun(WorkspaceRelated):
         IN_PROGRESS = "IN_PROGRESS", "In Progress"
         COMPLETED = "COMPLETED", "Completed"
 
-    flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="runs")
+    flow = models.ForeignKey(Flow, on_delete=models.CASCADE, related_name="runs")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(
