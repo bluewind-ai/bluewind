@@ -59,6 +59,7 @@
 !socialaccount
 !static
 !staticfiles
+!step_runs
 !unfold
 !users
 !webhook_tester
