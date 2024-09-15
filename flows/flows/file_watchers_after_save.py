@@ -1,21 +1,14 @@
 import logging
 
+# Import the utility function
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 from file_changes.models import FileChange
+from flows.flows.is_ignored_by_git import is_ignored_by_git
 
 temp_logger = logging.getLogger("django.not_used")
 observers_registry = {}
-
-# flows/flows/get_model_context.py
-
-
-logger = logging.getLogger("django.not_used")
-
-# Maintain a global registry of observers
-observers_registry = {}
-temp_logger = logging.getLogger("django.not_used")
 
 
 class DynamicFileChangeHandler(FileSystemEventHandler):
@@ -29,6 +22,14 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         temp_logger.debug(f"Detected change in file: {event.src_path}")
+
+        # Check if the file is gitignored
+        if is_ignored_by_git(event.src_path):
+            temp_logger.debug(
+                f"File {event.src_path} is .gitignored, skipping logging."
+            )
+            return
+
         # Log the file change in the database
         try:
             FileChange.objects.create(
