@@ -1,24 +1,29 @@
 import logging
 import os
 
+from django import forms
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
 
 logger = logging.getLogger("django.temp")
 
 
-def get_model_context(workspace, contenttype):
+# Define the form
+class GetModelContextForm(forms.Form):
+    content_type = forms.ModelChoiceField(queryset=ContentType.objects.all())
+
+
+# Define the function
+def get_model_context(content_type):
     try:
-        # Ensure we have a ContentType object
-        if not isinstance(contenttype, ContentType):
+        if not isinstance(content_type, ContentType):
             raise ValueError("content_type must be a ContentType instance")
 
         # Get the model class
-        model_class = contenttype.model_class()
+        model_class = content_type.model_class()
 
-        # Get the app label and model name
+        # Get the app label
         app_label = model_class._meta.app_label
-        model_name = model_class._meta.model_name
 
         # Construct the path to the models.py file
         app_config = apps.get_app_config(app_label)
@@ -30,12 +35,6 @@ def get_model_context(workspace, contenttype):
 
         return result
 
-    except ValueError as e:
-        logger.error(str(e))
-        return None
-    except FileNotFoundError:
-        logger.error(f"models.py file not found for app {app_label}")
-        return None
     except Exception as e:
         logger.error(f"Error in get_model_context: {str(e)}")
-        return None
+        return f"Error: {str(e)}"
