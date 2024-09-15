@@ -61,8 +61,19 @@ class FlowRunAdmin(InWorkspace):
         FormClass = getattr(flow_module, form_class_name, None)
         function_to_run = getattr(flow_module, function_name, None)
 
+        if FormClass:
+            logger.debug(f"Form class {FormClass} found")
+        else:
+            logger.error(
+                f"Form class {form_class_name} not found in module {module_name}"
+            )
+
+        if function_to_run:
+            logger.debug(f"Function {function_to_run} found")
+        else:
+            logger.error(f"Function {function_name} not found in module {module_name}")
+
         if not FormClass or not function_to_run:
-            logger.error(f"Form or function not found in module {module_name}")
             self.message_user(
                 request,
                 f"Function or Form not found for {escape(flow_run.flow.name)}",
@@ -75,109 +86,62 @@ class FlowRunAdmin(InWorkspace):
             return redirect(reverse(url_name))
 
         if request.method == "POST":
-            if "run" in request.POST:
-                # Handle Run button
-                form = FormClass(request.POST)
-                logger.debug(f"POST request with data: {request.POST}")
-                if form.is_valid():
-                    logger.debug("Form is valid")
-                    # Log cleaned data with types
-                    for field, value in form.cleaned_data.items():
-                        logger.debug(
-                            f"Form field '{field}': {value} (Type: {type(value)})"
-                        )
+            form = FormClass(request.POST)
+            logger.debug(f"POST request with data: {request.POST}")
+            if form.is_valid():
+                logger.debug("Form is valid")
+                # Log cleaned data with types
+                for field, value in form.cleaned_data.items():
+                    logger.debug(f"Form field '{field}': {value} (Type: {type(value)})")
 
-                    # Extract the ContentType instance
-                    content_type = form.cleaned_data.get("content_type")
+                # Extract the ContentType instance
+                content_type = form.cleaned_data.get("content_type")
 
-                    # Execute the function with form data
-                    try:
-                        result = function_to_run(content_type=content_type)
-                        logger.debug(f"Function executed, result: {result}")
-                    except Exception as e:
-                        logger.error(f"Error in {function_name}: {e}")
-                        result = f"Error: {str(e)}"
+                # Execute the function with form data
+                try:
+                    result = function_to_run(content_type=content_type)
+                    logger.debug(f"Function executed, result: {result}")
+                except Exception as e:
+                    logger.error(f"Error in {function_name}: {e}")
+                    result = f"Error: {str(e)}"
 
-                    # Prepare input_data with serializable data
-                    input_data = form.cleaned_data.copy()
-                    if isinstance(content_type, ContentType):
-                        input_data["content_type"] = (
-                            content_type.natural_key()
-                        )  # Serialize to tuple
-                        logger.debug(
-                            f"Serialized 'content_type' to natural key: {content_type.natural_key()}"
-                        )
-
-                    flow_run.input_data = input_data
-                    flow_run.result = result
-                    flow_run.executed_at = timezone.now()
-                    flow_run.save()
+                # Prepare input_data with serializable data
+                input_data = form.cleaned_data.copy()
+                if isinstance(content_type, ContentType):
+                    input_data["content_type"] = (
+                        content_type.natural_key()
+                    )  # Serialize to tuple
                     logger.debug(
-                        f"FlowRun saved with input_data: {flow_run.input_data}"
+                        f"Serialized 'content_type' to natural key: {content_type.natural_key()}"
                     )
 
-                    # Display the result
-                    messages.info(request, f"Flow Result:\n{escape(result)}")
-                    return redirect(request.path)
-                else:
-                    logger.debug(f"Form is invalid: {form.errors}")
+                flow_run.input_data = input_data
+                flow_run.result = result
+                flow_run.executed_at = timezone.now()
+                flow_run.save()
+                logger.debug(f"FlowRun saved with input_data: {flow_run.input_data}")
+
+                # Display the result
+                messages.info(request, f"Flow Result:\n{escape(result)}")
+                return redirect(request.path)
             else:
-                # Handle default admin save actions
-                return super().changeform_view(
-                    request, object_id, form_url, extra_context
-                )
+                logger.debug(f"Form is invalid: {form.errors}")
         else:
-            # Initialize form with initial data, converting 'content_type' or 'content_type_id' to ContentType instance
-            initial_data = flow_run.input_data.copy()
-            logger.debug(f"Initial input_data before deserialization: {initial_data}")
-            if "content_type" in initial_data:
-                natural_key = initial_data["content_type"]
-                try:
-                    content_type = ContentType.objects.get_by_natural_key(*natural_key)
-                    initial_data["content_type"] = content_type
-                    logger.debug("Deserialized 'content_type' from natural key")
-                except ContentType.DoesNotExist:
-                    initial_data["content_type"] = None
-                    logger.error(
-                        f"ContentType with natural key {natural_key} does not exist."
-                    )
-            elif "content_type_id" in initial_data:
-                try:
-                    content_type = ContentType.objects.get(
-                        id=initial_data["content_type_id"]
-                    )
-                    initial_data["content_type"] = content_type
-                    logger.debug("Deserialized 'content_type' from content_type_id")
-                except ContentType.DoesNotExist:
-                    initial_data["content_type"] = None
-                    logger.error(
-                        f"ContentType with ID {initial_data['content_type_id']} does not exist."
-                    )
-            else:
-                logger.debug(
-                    "No 'content_type' or 'content_type_id' found in input_data"
-                )
+            form = FormClass()
+            logger.debug("Created new form instance")
 
-            form = FormClass(initial=initial_data)
-            logger.debug("Created new form instance with initial data")
-
-            # Log form fields for debugging
-            for field in form.fields:
-                logger.debug(
-                    f"Form field '{field}': {form[field].value()} (Type: {type(form[field].value())})"
-                )
-
+        # Pass the form directly without AdminForm
         context = {
             **self.admin_site.each_context(request),
             "title": f"Run {flow.name}",
-            "form": form,
+            "form": form,  # Pass 'form' instead of 'adminform'
             "object_id": object_id,
             "original": flow_run,
             "media": self.media + form.media,
             "opts": self.model._meta,
             "app_label": self.model._meta.app_label,
-            "add": False,
-            "change": True,
+            "add": False,  # Since we're changing an existing object
+            "change": True,  # We are in the change view
             "is_popup": False,
             "save_as": False,
             "has_view_permission": self.has_view_permission(request, flow_run),

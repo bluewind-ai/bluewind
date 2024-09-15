@@ -26,7 +26,9 @@ class FlowRun(models.Model):
                 self.input_data["content_type_id"] = (
                     content_type.id
                 )  # Use ID for JSONField
-                # Retain 'content_type' for form initialization
+                del self.input_data[
+                    "content_type"
+                ]  # Remove the tuple to avoid serialization issues
                 logger.debug(
                     f"Converted 'content_type' natural key {natural_key} to ID: {content_type.id}"
                 )
