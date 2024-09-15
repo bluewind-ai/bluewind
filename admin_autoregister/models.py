@@ -7,7 +7,7 @@ from django.contrib.admin.sites import AlreadyRegistered
 from django.db.migrations.recorder import MigrationRecorder
 
 from admin_autoregister.admin_inheritance import check_admin_inheritance
-from admin_autoregister.check_unique_together import check_unique_together_constraint
+from admin_autoregister.check_unique_together import check_unique_constraints
 from admin_autoregister.forbid_imports import check_forbidden_imports
 from admin_autoregister.ruff_deal_breakers import run_ruff
 from base_model_admin.admin import InWorkspace
@@ -120,7 +120,7 @@ def autoregister():
     clean_dockerignore()
     check_admin_inheritance()
     check_forbidden_imports()
-    check_unique_together_constraint()
+    check_unique_constraints()
     run_ruff()
     # create_superuser_workspace()
     # register_forms()
