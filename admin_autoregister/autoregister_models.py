@@ -1,7 +1,5 @@
 from django.apps import apps
 
-from flows.models import Model
-
 
 def insert_all_models(workspace):
     models_to_create = []

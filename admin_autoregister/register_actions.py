@@ -1,7 +1,7 @@
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
 
-from flows.models import Action
+from actions.models import Action
 
 
 def register_actions_and_models(workspace):

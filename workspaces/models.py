@@ -39,7 +39,7 @@ class Workspace(models.Model):
     admin_url_link.short_description = "Admin URL"
 
     def save(self, *args, **kwargs):
-        from flows.models import Recording  # Import the Recording model
+        from recordings.models import Recording
 
         is_new = self.pk is None
         super().save(*args, **kwargs)
