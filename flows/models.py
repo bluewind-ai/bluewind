@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.contrib.contenttypes.models import ContentType
@@ -10,6 +11,9 @@ from credentials.models import Credentials
 from flows.flows.flow_runner import flow_runner
 from workspace_snapshots.models import WorkspaceDiff
 from workspaces.models import WorkspaceRelated
+
+logger = logging.getLogger(__name__)
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +32,7 @@ class FlowRun(WorkspaceRelated):
     )
     state = models.JSONField(default=dict, blank=True)
     diff = models.ForeignKey(
-        WorkspaceDiff,
+        WorkspaceDiff,  # Correct reference to the actual model
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -42,12 +46,35 @@ class FlowRun(WorkspaceRelated):
 
     def save(self, *args, **kwargs):
         is_new = self._state.adding
+
+        # Extract only the fields of the model to log
+        try:
+            # Create a dictionary with fields and handle non-serializable fields
+            flow_run_data = {}
+            for field in self._meta.fields:
+                value = getattr(self, field.name)
+                if isinstance(value, (models.Model, models.QuerySet)):
+                    # Convert model instances or querysets to a string representation
+                    flow_run_data[field.name] = str(value)
+                else:
+                    flow_run_data[field.name] = value
+
+            logger.debug(
+                f"Saving FlowRun object: {json.dumps(flow_run_data, cls=DjangoJSONEncoder)}"
+            )
+        except Exception as e:
+            logger.error(f"Error serializing FlowRun object: {e}")
+
         super().save(*args, **kwargs)
 
         if is_new and self.flow.type == "python":
             result = flow_runner(self)
             self.state = result
-            self.save(update_fields=["state", "diff"])
+            # Ensure the state is updated and saved properly
+            self.save(update_fields=["state"])
+
+        # Additional debugging info after save
+        logger.debug(f"FlowRun object saved: {self.pk} with state {self.state}")
 
     def update_status(self):
         total_actions = self.flow.actions.count()
@@ -62,6 +89,22 @@ class FlowRun(WorkspaceRelated):
         if self.status != new_status:
             self.status = new_status
             self.save(update_fields=["status"])
+
+
+class FlowRunArgument(WorkspaceRelated):
+    flow_run = models.ForeignKey(
+        "FlowRun", on_delete=models.CASCADE, related_name="arguments"
+    )
+    # Renaming `content_type` to `contenttype`
+    contenttype = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("contenttype", "object_id")
+
+    class Meta:
+        unique_together = ("flow_run", "contenttype", "object_id")
+
+    def __str__(self):
+        return f"Argument for {self.flow_run}: {self.content_object}"
 
 
 class Flow(WorkspaceRelated):
@@ -331,3 +374,15 @@ class StepRun(WorkspaceRelated):
 
     def __str__(self):
         return f"StepRun for {self.step} (Started: {self.start_date})"
+
+
+import logging
+
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
+
+from workspace_snapshots.models import WorkspaceDiff
+from workspaces.models import WorkspaceRelated
+
+logger = logging.getLogger(__name__)
+from django.contrib.contenttypes.models import ContentType

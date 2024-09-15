@@ -1,34 +1,65 @@
-from django import forms
+import logging
+
 from django.contrib import admin
-from django_json_widget.widgets import JSONEditorWidget
-from django_reverse_admin import ReverseModelAdmin
+from django.contrib.contenttypes.models import ContentType
+from django.forms import ValidationError
 
 from base_model_admin.admin import InWorkspace
-from flows.models import FlowRun
-from workspace_snapshots.models import WorkspaceDiff
+
+from .models import FlowRunArgument
+
+logger = logging.getLogger("django.temp")
 
 
-class WorkspaceDiffForm(forms.ModelForm):
-    class Meta:
-        model = WorkspaceDiff
-        fields = "__all__"
-        widgets = {"diff_data": JSONEditorWidget()}
+class FlowRunArgumentInline(admin.TabularInline):
+    model = FlowRunArgument
+    extra = 1
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "contenttype":
+            kwargs["queryset"] = ContentType.objects.all().order_by("model")
+        logger.debug(f"Formfield for {db_field.name} in FlowRunArgumentInline")
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            logger.debug(
+                f"Saving FlowRunArgument: {instance} with contenttype {instance.contenttype}"
+            )
+            instance.save()
+        formset.save_m2m()
 
 
-class WorkspaceDiffInline(admin.StackedInline):
-    model = WorkspaceDiff
-    form = WorkspaceDiffForm
-    fk_name = "flow_runs"  # Adjust this if the related_name is different
+class FlowRunAdmin(InWorkspace):
+    inlines = [FlowRunArgumentInline]
 
+    def save_model(self, request, obj, form, change):
+        # Log whether the form submission is for a new or existing instance
+        logger.debug(
+            f"Saving FlowRun: {'Updating existing instance' if change else 'Creating new instance'}"
+        )
 
-class FlowRunAdmin(ReverseModelAdmin, InWorkspace):
-    inline_type = "stacked"
-    inline_reverse = [
-        (
-            "diff",
-            {"form": WorkspaceDiffForm, "admin_class": WorkspaceDiffInline},
-        ),
-    ]
+        # Log the entire form data to understand what is being submitted
+        logger.debug(f"Form data submitted: {form.cleaned_data}")
 
+        # Log the state of the object before saving
+        logger.debug(f"FlowRun object state before save: {obj.__dict__}")
 
-admin.site.register(FlowRun, FlowRunAdmin)
+        # Check if any related FlowRunArguments have a ContentType and log details
+        flow_run_arguments = obj.flowrunargument_set.all()
+        if not any(arg.contenttype for arg in flow_run_arguments):
+            logger.error("ContentType is required for at least one FlowRunArgument.")
+            raise ValidationError(
+                "ContentType is required for at least one FlowRunArgument."
+            )
+
+        # Log information about the related FlowRunArguments
+        for arg in flow_run_arguments:
+            logger.debug(f"FlowRunArgument: {arg} with ContentType: {arg.contenttype}")
+
+        # Proceed to save the model
+        super().save_model(request, obj, form, change)
+
+        # Log the state of the object after saving
+        logger.debug(f"FlowRun object state after save: {obj.__dict__}")

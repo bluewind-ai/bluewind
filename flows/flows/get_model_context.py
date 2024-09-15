@@ -7,13 +7,14 @@ from django.contrib.contenttypes.models import ContentType
 logger = logging.getLogger("django.temp")
 
 
-def get_model_context(workspace, content_type_id):
+def get_model_context(workspace, contenttype):
     try:
-        # Get the ContentType object
-        content_type = ContentType.objects.get(id=content_type_id)
+        # Ensure we have a ContentType object
+        if not isinstance(contenttype, ContentType):
+            raise ValueError("content_type must be a ContentType instance")
 
         # Get the model class
-        model_class = content_type.model_class()
+        model_class = contenttype.model_class()
 
         # Get the app label and model name
         app_label = model_class._meta.app_label
@@ -29,8 +30,8 @@ def get_model_context(workspace, content_type_id):
 
         return result
 
-    except ContentType.DoesNotExist:
-        logger.error(f"ContentType with id {content_type_id} does not exist")
+    except ValueError as e:
+        logger.error(str(e))
         return None
     except FileNotFoundError:
         logger.error(f"models.py file not found for app {app_label}")

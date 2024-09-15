@@ -14,7 +14,6 @@ from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 
 from bluewind.context_variables import get_workspace_id
-from flows.models import Flow, FlowRun
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger(__name__)
@@ -72,21 +71,21 @@ class CustomAdminSite(AdminSite):
             redirect_url = f"/workspaces/{workspace.id}{request.path}"
             context["redirect_url"] = redirect_url
 
-        try:
-            flow = Flow.objects.get(
-                name="command_palette_get_commands", workspace_id=workspace_id
-            )
-            flow_run = FlowRun.objects.create(
-                flow=flow,
-                workspace_id=workspace_id,
-                user=request.user,
-            )
-            context["flows_data"] = flow_run.state["flow_result"]
-        except Flow.DoesNotExist:
-            logger.warning(
-                f"Flow 'command_palette_get_commands' not found for workspace {workspace_id}"
-            )
-            context["flows_data"] = None  # or some default value
+        # try:
+        #     flow = Flow.objects.get(
+        #         name="command_palette_get_commands", workspace_id=workspace_id
+        #     )
+        #     flow_run = FlowRun.objects.create(
+        #         flow=flow,
+        #         workspace_id=workspace_id,
+        #         user=request.user,
+        #     )
+        #     context["flows_data"] = flow_run.state["flow_result"]
+        # except Flow.DoesNotExist:
+        #     logger.warning(
+        #         f"Flow 'command_palette_get_commands' not found for workspace {workspace_id}"
+        #     )
+        #     context["flows_data"] = None  # or some default value
 
         return context
 
