@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     "models",
     "file_watchers",
     "file_changes",
+    "files",
     "admin_autoregister",
 ]
 
@@ -148,6 +149,7 @@ APP_TYPE = {
     "models": "custom",
     "file_watchers": "custom",
     "file_changes": "custom",
+    "files": "custom",
     "app_logs": "custom",
 }
 
