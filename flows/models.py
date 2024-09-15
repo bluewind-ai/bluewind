@@ -52,6 +52,7 @@ class FlowRun(WorkspaceRelated):
         related_name="flow_runs",
     )
     create_new_workspace = models.BooleanField(default=False)
+    input_data = models.JSONField(default=dict, blank=True, encoder=DjangoJSONEncoder)
 
     def __str__(self):
         return f"Run of {self.flow.name} at {self.created_at}"
