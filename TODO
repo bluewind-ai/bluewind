@@ -157,3 +157,25 @@ I forgot to commit my code before working on a new task. I need to create preven
 Because there is no point creating corrective actions. Corrective actions inspire preventive and monitoring ones, but they''re not really part of the improvement process ( in fact they should be avoided )
 
 Things are getting very meta with the logs as you can see above. Talking about the logs in the logs. I have done a lot of meta things recently.
+Should I push the todos/logs in DB only? DB + file system?
+
+
+How do I make sure the file watcher is created on startup? You see I have a bunch of things that are needed to just get the project working. I put them in the DB which makes my life easier, but it''s also harder now because when I wipe db I need to rebuild these objects. I am thinking maybe a wizard or something. Or maybe I just don''t wipe the db.
+
+Incident: I just prompted chatgpt with a lot of context:
+FileWatcher, FileChange, Model, and after_save_file_watchers. The thing is that now I can just listen to the filechange object.
+-> How do I make sure that my context is always lean? Because it''s possible sometimes I add more, like this example.
+
+and then I realized it wasn''t needed.
+
+I think I should forbid creating entities in the before_save() and only favor after_save()
+
+right now I shipped the file watcher feature and I am discovering later that there are regressions. What could be very powerful is if tests were automagically created for this.
+And the most powerful tests in my opinion are the ones that come after a regression is discovered. Because they''re very relevant. Since the bug happened. The problem with a lot of tests is they never break, which defeats the purpose.
+
+def file_changes_after_save(file_changes): -> should not be plural, it should always be singular
+
+the name of the file watcher is useless.
+I discovered file watchers can't be edited. This is ok but incorporated into the models or somewhere, so that django admin automatically knows.
+
+clicking outside of command panel should remove it

@@ -1,12 +1,8 @@
-import logging
-
 from django.db import models
 
 from actions.models import Action
 from flows.models import Flow
 from workspaces.models import WorkspaceRelated
-
-logger = logging.getLogger(__name__)
 
 
 class Step(WorkspaceRelated):

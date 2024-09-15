@@ -13,6 +13,7 @@ class Model(WorkspaceRelated):
 
     name = models.CharField(max_length=100)
     content = models.TextField(blank=True, null=True)  # Field to store file content
+    app_label = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
