@@ -61,6 +61,7 @@ drf-standardized-errors = "^0.14.1"
 pylint = "^3.2.7"
 autopep8 = "^2.3.1"
 slippers = "^0.6.2"
+watchdog = "^5.0.2"
 
 [tool.poetry.extras]
 argon2 = [ "argon2-cffi",]

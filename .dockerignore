@@ -36,6 +36,8 @@
 !drf_standardized_errors
 !entity
 !features
+!file_changes
+!file_watchers
 !flow_runs
 !flows
 !forms

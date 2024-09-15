@@ -36,7 +36,5 @@ def push_logs_to_db(user_id, workspace_id, log_records):
             )
         )
 
-    with open("logs/request_id.log", "a") as f:
-        f.write(str(log_records) + "\n")
     with transaction.atomic():
         AppLog.objects.bulk_create(log_entries)

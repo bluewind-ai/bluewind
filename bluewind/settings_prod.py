@@ -79,6 +79,8 @@ INSTALLED_APPS = [
     "actions",
     "recordings",
     "models",
+    "file_watchers",
+    "file_changes",
     "admin_autoregister",
 ]
 
@@ -137,11 +139,13 @@ APP_TYPE = {
     "incoming_http_requests": "custom",
     "flow_runs": "custom",
     "step_runs": "step_runs",
-    "steps": "flow_runs",
-    "actions": "flow_runs",
-    "action_runs": "flow_runs",
-    "recordings": "recordings",
-    "models": "models",
+    "steps": "custom",
+    "actions": "custom",
+    "action_runs": "custom",
+    "recordings": "custom",
+    "models": "custom",
+    "file_watchers": "custom",
+    "file_changes": "custom",
     "app_logs": "custom",
 }
 

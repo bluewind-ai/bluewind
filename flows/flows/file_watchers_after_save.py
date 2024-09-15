@@ -5,12 +5,17 @@ from watchdog.observers import Observer
 
 from file_changes.models import FileChange
 
-# Initialize loggers
 temp_logger = logging.getLogger("django.temp")
+observers_registry = {}
+
+# flows/flows/get_model_context.py
+
+
 logger = logging.getLogger("django.not_used")
 
 # Maintain a global registry of observers
 observers_registry = {}
+temp_logger = logging.getLogger("django.temp")
 
 
 class DynamicFileChangeHandler(FileSystemEventHandler):
@@ -31,6 +36,7 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
                 file_path=event.src_path,
                 change_type="modified",
                 user=self.file_watcher.user,  # Assuming the user is set in FileWatcher
+                workspace=self.file_watcher.workspace,  # Set workspace from the FileWatcher
             )
             temp_logger.debug(f"FileChange created for {event.src_path}")
         except Exception as e:
@@ -38,7 +44,6 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
 
 
 def file_watchers_after_save(file_watcher):
-    temp_logger.debug(f"Running file_watchers_after_save for: {file_watcher}")
     if file_watcher.is_active and file_watcher.name not in observers_registry:
         # Start watching this path
         event_handler = DynamicFileChangeHandler(file_watcher)
@@ -53,5 +58,3 @@ def file_watchers_after_save(file_watcher):
         observer.stop()
         observer.join()
         temp_logger.debug(f"Stopped watching: {file_watcher.path}")
-    else:
-        temp_logger.debug(f"No action taken for: {file_watcher}")
