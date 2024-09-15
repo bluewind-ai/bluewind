@@ -1,5 +1,3 @@
-# myapp/models.py
-
 import logging
 import os
 
@@ -39,7 +37,7 @@ def register_all_models(workspace):
         temp_logger.debug(f"Processing AppConfig: {app_config.name}")
         for model in app_config.get_models():
             model_name = model.__name__
-            app_label = app_config.label
+            app_label = app_config.label  # Extract the app label
             snake_case_name = snake_case(model_name)
 
             # Check if model is already registered
@@ -60,11 +58,12 @@ def register_all_models(workspace):
                 else:
                     temp_logger.warning(f"File {file_path} does not exist.")
 
-                # Prepare the Model instance
+                # Prepare the Model instance with app_label information
                 model_instance = Model(
                     workspace=workspace,
                     name=model_name,
                     content=content,  # Store the file content
+                    app_label=app_label,  # Include the app label
                     user_id=1,  # Consider using a dynamic user or parameter
                 )
                 models_to_create.append(model_instance)
