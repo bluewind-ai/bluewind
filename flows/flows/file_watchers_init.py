@@ -9,7 +9,7 @@ User = get_user_model()
 logger = logging.getLogger("django.not_used")
 
 
-def file_watchers_on_ready():
+def file_watchers_init():
     try:
         # Set the desired absolute pathcdscds
         target_path = os.environ["BASE_DIR"]

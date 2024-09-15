@@ -6,6 +6,5 @@ class FilesConfig(AppConfig):
     name = "files"
 
     def ready(self):
-        from flows.flows.files_on_ready import files_on_ready
-
-        files_on_ready()
+        pass
+        # from flows.flows.files_on_ready import files_on_ready
