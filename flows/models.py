@@ -12,7 +12,6 @@ from workspace_snapshots.models import WorkspaceDiff
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
-from django.contrib.contenttypes.fields import GenericForeignKey
 
 logger = logging.getLogger(__name__)
 
@@ -81,22 +80,6 @@ class FlowRun(WorkspaceRelated):
         self.status = self.Status.COMPLETED
         # Save without triggering the flow again
         super(FlowRun, self).save(update_fields=["state", "status"])
-
-
-class FlowRunArgument(WorkspaceRelated):
-    flow_run = models.ForeignKey(
-        "FlowRun", on_delete=models.CASCADE, related_name="arguments"
-    )
-    # Renaming `content_type` to `contenttype`
-    contenttype = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey("contenttype", "object_id")
-
-    class Meta:
-        unique_together = ("flow_run", "contenttype", "object_id")
-
-    def __str__(self):
-        return f"Argument for {self.flow_run}: {self.content_object}"
 
 
 class Flow(WorkspaceRelated):
