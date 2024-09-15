@@ -5,14 +5,10 @@ from django.db import models
 
 from workspaces.models import WorkspaceRelated
 
-temp_logger = logging.getLogger("django.not_used")
+temp_logger = logging.getLogger("django.temp")
 
 
 class FileChange(WorkspaceRelated):
-    """
-    Model to represent a detected file change.
-    """
-
     file_watcher = models.ForeignKey(
         "file_watchers.FileWatcher",
         on_delete=models.CASCADE,
