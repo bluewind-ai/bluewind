@@ -1,13 +1,22 @@
 # myapp/models.py
 
 import logging
+import os
 
 from django.apps import apps
+from django.conf import settings
 
-from models.models import Model  # Ensure your actual model import path
+from models.models import Model
 
 # Initialize the django.temp logger
 temp_logger = logging.getLogger("django.temp")
+
+
+def snake_case(s):
+    """
+    Helper function to convert CamelCase to snake_case.
+    """
+    return "".join(["_" + c.lower() if c.isupper() else c for c in s]).lstrip("_")
 
 
 def register_all_models(workspace):
@@ -30,6 +39,8 @@ def register_all_models(workspace):
         temp_logger.debug(f"Processing AppConfig: {app_config.name}")
         for model in app_config.get_models():
             model_name = model.__name__
+            app_label = app_config.label
+            snake_case_name = snake_case(model_name)
 
             # Check if model is already registered
             if model_name not in registered_models:
@@ -37,10 +48,23 @@ def register_all_models(workspace):
                     f"Model {model_name} is not registered, registering..."
                 )
 
+                # Construct the file path for the content
+                file_path = os.path.join(settings.BASE_DIR, app_label, "models.py")
+                content = ""
+
+                # Read the content of the models.py file
+                if os.path.exists(file_path):
+                    with open(file_path, "r") as file:
+                        content = file.read()
+                    temp_logger.debug(f"Read content from {file_path}")
+                else:
+                    temp_logger.warning(f"File {file_path} does not exist.")
+
                 # Prepare the Model instance
                 model_instance = Model(
                     workspace=workspace,
                     name=model_name,
+                    content=content,  # Store the file content
                     user_id=1,  # Consider using a dynamic user or parameter
                 )
                 models_to_create.append(model_instance)
