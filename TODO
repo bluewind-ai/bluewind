@@ -62,3 +62,4 @@ change_form_template = (
 )
 these types of errors are very common
 very common error: writing template instead of templates
+make sure LLMS can't logger big stuff. create an error if they do.
