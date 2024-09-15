@@ -5,6 +5,9 @@ from django.db import models, transaction
 from django.forms import ValidationError
 
 from credentials.models import Credentials
+from flows.actions import Action
+from flows.recordings import Recording
+from flows.step_runs import StepRun
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -12,13 +15,12 @@ logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
-# Create your models here.
 class ActionRun(WorkspaceRelated):
     action = models.ForeignKey(
         Action, on_delete=models.CASCADE, related_name="action_runs"
     )
     step_run = models.OneToOneField(
-        "StepRun",
+        StepRun,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

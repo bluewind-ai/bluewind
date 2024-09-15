@@ -2,8 +2,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.forms import ValidationError
 
-from flows.flows.flow_runner import flow_runner
-from flows.flows.flows import Flow
+from flows.flows import Flow
 from workspace_snapshots.models import WorkspaceDiff
 from workspaces.models import WorkspaceRelated
 

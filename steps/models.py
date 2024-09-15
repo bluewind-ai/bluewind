@@ -7,10 +7,7 @@ from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
 
-
-# Create your models here.
 class Step(WorkspaceRelated):
     flow = models.ForeignKey("Flow", on_delete=models.CASCADE, related_name="steps")
     parent_step = models.ForeignKey(

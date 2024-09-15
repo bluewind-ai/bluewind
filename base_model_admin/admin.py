@@ -15,7 +15,6 @@ from django_json_widget.widgets import JSONEditorWidget
 
 from bluewind.context_variables import get_workspace_id
 from bluewind.utils import get_queryset
-from flows.actions import Action
 from flows.recordings import Recording
 from users.models import User
 from workspaces.models import Workspace
