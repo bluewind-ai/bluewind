@@ -50,3 +50,4 @@ evolution of number of queries for the same basic action.
 get metric number of DB query grouped by request path sliced by interval of 5 minutes.
 why flow run not in the search
 when clicking out of command palette -> leave the palette
+Learning: blacklist the word content_type. It should only be contenttype
