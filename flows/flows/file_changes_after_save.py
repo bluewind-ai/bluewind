@@ -2,7 +2,7 @@ import logging
 
 from models.models import Model  # Import the Model class
 
-logger = logging.getLogger("django.not_used")
+logger = logging.getLogger("django.debug")
 
 
 def file_changes_after_save(file_changes):

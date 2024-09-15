@@ -7,8 +7,10 @@ from watchdog.observers import Observer
 from file_changes.models import FileChange
 from flows.flows.is_ignored_by_git import is_ignored_by_git
 
-temp_logger = logging.getLogger("django.not_used")
+temp_logger = logging.getLogger("django.debug")
 observers_registry = {}
+
+"cdscdcdscdsscdcdscsdd"
 
 
 class DynamicFileChangeHandler(FileSystemEventHandler):

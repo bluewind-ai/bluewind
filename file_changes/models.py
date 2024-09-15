@@ -6,8 +6,9 @@ from django.db import models
 from flows.flows.file_changes_after_save import file_changes_after_save
 from workspaces.models import WorkspaceRelated
 
+"cdscdscds"
 # Setup logger for debugging
-temp_logger = logging.getLogger("django.not_used")
+temp_logger = logging.getLogger("django.debug")
 
 
 class FileChange(WorkspaceRelated):

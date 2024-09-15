@@ -31,8 +31,11 @@ def workspace_wsgi_middleware(django_app):
 # Get the default Django WSGI application
 django_application = get_wsgi_application()
 
-# Django has now fully started, so we can set startup mode to False
+set_workspace_id(1)
 set_startup_mode(False)
 
+from bluewind import startup  # no qa
+
+test = startup
 # Apply our middleware
 application = workspace_wsgi_middleware(django_application)
