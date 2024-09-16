@@ -2,7 +2,7 @@ import logging
 
 from files.models import File
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 "cdscds"
 
 

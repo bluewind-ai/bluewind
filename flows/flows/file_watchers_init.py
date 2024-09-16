@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from file_watchers.models import FileWatcher
 
 User = get_user_model()
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def file_watchers_init():

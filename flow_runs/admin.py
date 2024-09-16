@@ -13,7 +13,7 @@ from flows.models import Flow  # Adjust import based on your project structure
 
 from .models import FlowRun
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 @admin.register(FlowRun)
