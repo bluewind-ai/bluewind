@@ -72,49 +72,45 @@ class FlowRunAdmin(InWorkspace):
         flow = Flow.objects.get(pk=flow_id)
 
         if request.method == "POST":
-            return self.create_view(request, flow)
-        else:
-            context = self.admin_site.each_context(request)
-            return flow_runs_create_form(
-                request, flow, self.add_form_template, context, self.media
-            )
+            result = create_view(request, flow)
+            if result:
+                return result
+            # If create_view returns None, fall through to rendering the form again
 
-    def create_view(self, request, flow):
-        module_name = f"flows.flows.{flow.name}"
-        flow_module = importlib.import_module(module_name)
-        function_name = flow.name
-        snake_function_name = "".join(word.title() for word in function_name.split("_"))
-        form_class_name = f"{snake_function_name}Form"
-        FormClass = getattr(flow_module, form_class_name)
-        function_to_run = getattr(flow_module, function_name)
-
-        form = FormClass(request.POST)
-        if form.is_valid():
-            content_type = form.cleaned_data.get("content_type")
-            result = function_to_run(content_type=content_type)
-
-            input_data = form.cleaned_data.copy()
-            if isinstance(content_type, ContentType):
-                input_data["content_type"] = content_type.natural_key()
-
-            flow_run = FlowRun(
-                user=request.user,
-                workspace_id=get_workspace_id(),
-                input_data=input_data,
-                result=result,
-                executed_at=timezone.now(),
-                flow=flow,
-            )
-            flow_run.save()
-
-            messages.info(request, f"Flow Result:\n{escape(result)}")
-            return redirect(
-                reverse(
-                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
-                )
-            )
         context = self.admin_site.each_context(request)
-        # If form is not valid, fall back to create_form
         return flow_runs_create_form(
             request, flow, self.add_form_template, context, self.media
         )
+
+
+def create_view(request, flow):
+    module_name = f"flows.flows.{flow.name}"
+    flow_module = importlib.import_module(module_name)
+    function_name = flow.name
+    snake_function_name = "".join(word.title() for word in function_name.split("_"))
+    form_class_name = f"{snake_function_name}Form"
+    FormClass = getattr(flow_module, form_class_name)
+    function_to_run = getattr(flow_module, function_name)
+
+    form = FormClass(request.POST)
+    if form.is_valid():
+        content_type = form.cleaned_data.get("content_type")
+        result = function_to_run(content_type=content_type)
+
+        input_data = form.cleaned_data.copy()
+        if isinstance(content_type, ContentType):
+            input_data["content_type"] = content_type.natural_key()
+
+        flow_run = FlowRun(
+            user=request.user,
+            workspace_id=get_workspace_id(),
+            input_data=input_data,
+            result=result,
+            executed_at=timezone.now(),
+            flow=flow,
+        )
+        flow_run.save()
+
+        messages.info(request, f"Flow Result:\n{escape(result)}")
+        return redirect(reverse("admin:flow_runs_flowrun_changelist"))
+    return None
