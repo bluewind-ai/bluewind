@@ -3,7 +3,7 @@ import importlib
 from django.template.response import TemplateResponse
 
 
-def flow_runs_create_form(request, flow, add_form_template, context, media, form=None):
+def flow_runs_create_form(request, flow, add_form_template, context, form=None):
     if form is None:
         module_name = f"flows.flows.{flow.name}"
         flow_module = importlib.import_module(module_name)
@@ -17,7 +17,7 @@ def flow_runs_create_form(request, flow, add_form_template, context, media, form
         **context,
         "title": f"Run {flow.name}",
         "form": form,
-        "media": media + form.media,
+        "media": form.media,
     }
 
     return TemplateResponse(request, add_form_template, context)

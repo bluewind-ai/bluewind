@@ -74,6 +74,4 @@ class FlowRunAdmin(InWorkspace):
             # If create_view returns None, fall through to rendering the form again
 
         context = self.admin_site.each_context(request)
-        return flow_runs_create_form(
-            request, flow, self.add_form_template, context, self.media
-        )
+        return flow_runs_create_form(request, flow, self.add_form_template, context)
