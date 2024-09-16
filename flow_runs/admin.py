@@ -69,30 +69,10 @@ class FlowRunAdmin(InWorkspace):
                 )
             )
 
-        try:
-            flow = Flow.objects.get(pk=flow_id)
-        except Flow.DoesNotExist:
-            self.message_user(
-                request, f"Flow with ID {flow_id} does not exist.", level=messages.ERROR
-            )
-            return redirect(
-                reverse(
-                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
-                )
-            )
+        flow = Flow.objects.get(pk=flow_id)
 
         module_name = f"flows.flows.{flow.name}"
-        try:
-            flow_module = importlib.import_module(module_name)
-        except ImportError:
-            self.message_user(
-                request, f"Module {escape(module_name)} not found.", level="error"
-            )
-            return redirect(
-                reverse(
-                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
-                )
-            )
+        flow_module = importlib.import_module(module_name)
 
         def snake_to_pascal(snake_str):
             return "".join(word.title() for word in snake_str.split("_"))
@@ -100,30 +80,15 @@ class FlowRunAdmin(InWorkspace):
         function_name = flow.name
         form_class_name = f"{snake_to_pascal(function_name)}Form"
 
-        FormClass = getattr(flow_module, form_class_name, None)
-        function_to_run = getattr(flow_module, function_name, None)
-
-        if not FormClass or not function_to_run:
-            self.message_user(
-                request,
-                f"Function or Form not found for {escape(flow.name)}",
-                level="error",
-            )
-            return redirect(
-                reverse(
-                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
-                )
-            )
+        FormClass = getattr(flow_module, form_class_name)
+        function_to_run = getattr(flow_module, function_name)
 
         if request.method == "POST":
             form = FormClass(request.POST)
             if form.is_valid():
                 content_type = form.cleaned_data.get("content_type")
 
-                try:
-                    result = function_to_run(content_type=content_type)
-                except Exception as e:
-                    result = f"Error: {str(e)}"
+                result = function_to_run(content_type=content_type)
 
                 input_data = form.cleaned_data.copy()
                 if isinstance(content_type, ContentType):
