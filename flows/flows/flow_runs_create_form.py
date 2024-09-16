@@ -3,7 +3,7 @@ import logging
 
 from django.template.response import TemplateResponse
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.temp")
 
 
 def flow_runs_create_form(request, flow, add_form_template, context, form=None):
