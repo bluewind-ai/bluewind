@@ -1,16 +1,15 @@
 import logging
 
-# Import the utility function
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 from file_changes.models import FileChange
+from files.models import File
 from flows.flows.is_ignored_by_git import is_ignored_by_git
 
 temp_logger = logging.getLogger("django.debug")
 observers_registry = {}
-
-"cdscdcdscdsscdcdscsdd"
+"cdscdscds"
 
 
 class DynamicFileChangeHandler(FileSystemEventHandler):
@@ -32,18 +31,35 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
             )
             return
 
-        # Log the file change in the database
         try:
+            # Get or create the File instance
+            file_instance, created = File.objects.get_or_create(
+                path=event.src_path,
+                defaults={
+                    "content": "",
+                    "user_id": self.file_watcher.user_id,  # Set the user_id
+                    "workspace": self.file_watcher.workspace,
+                },
+            )
+
+            # Update the file content
+            with open(event.src_path, "r") as f:
+                file_instance.content = f.read()
+            file_instance.save()
+
+            # Create the FileChange instance
             FileChange.objects.create(
                 file_watcher=self.file_watcher,
-                file_path=event.src_path,
+                file=file_instance,
                 change_type="modified",
-                user=self.file_watcher.user,  # Assuming the user is set in FileWatcher
-                workspace=self.file_watcher.workspace,  # Set workspace from the FileWatcher
+                user_id=self.file_watcher.user_id,  # Use user_id instead of user object
+                workspace=self.file_watcher.workspace,
             )
             temp_logger.debug(f"FileChange created for {event.src_path}")
         except Exception as e:
-            temp_logger.error(f"Error creating FileChange: {e}")
+            temp_logger.exception(
+                f"Error creating FileChange: {e}"
+            )  # Use exception() to get full traceback
 
 
 def file_watchers_after_save(file_watcher):
