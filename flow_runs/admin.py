@@ -53,7 +53,7 @@ class FlowRunAdmin(InWorkspace):
             return
         super().save_model(request, obj, form, change)
 
-    def add_view(self, request, form_url="", extra_context=None):
+    def add_view(self, request):
         flow_id = request.GET.get("flow")
         if not flow_id:
             self.message_user(
