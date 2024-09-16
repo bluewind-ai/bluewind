@@ -72,7 +72,6 @@ def files_load_all():
                     model_instance = Model(
                         workspace_id=default_workspace_id,
                         name=model_name,
-                        content=file_instance.content,
                         app_label=app_label,
                         user_id=default_user_id,
                         file=file_instance,

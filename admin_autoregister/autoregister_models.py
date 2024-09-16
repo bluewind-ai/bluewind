@@ -62,7 +62,6 @@ def register_all_models(workspace):
                 model_instance = Model(
                     workspace=workspace,
                     name=model_name,
-                    content=content,  # Store the file content
                     app_label=app_label,  # Include the app label
                     user_id=1,  # Consider using a dynamic user or parameter
                 )

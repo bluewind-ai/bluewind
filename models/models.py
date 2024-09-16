@@ -13,9 +13,6 @@ class Model(WorkspaceRelated):
     """
 
     name = models.CharField(max_length=100)
-    content = models.TextField(
-        blank=True, null=True
-    )  # Field to store model-specific content
     app_label = models.CharField(max_length=100)
     file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="models")
 

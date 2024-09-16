@@ -43,12 +43,10 @@ class Workspace(models.Model):
 
         is_new = self.pk is None
         super().save(*args, **kwargs)
-        from admin_autoregister.autoregister_models import register_all_models
-        from admin_autoregister.register_actions import register_actions_and_models
 
         if is_new:
-            register_all_models(self)
-            register_actions_and_models(self)
+            # register_all_models(self)
+            # register_actions_and_models(self)
 
             load_flows(self)
 
