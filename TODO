@@ -206,3 +206,10 @@ get a clean schema of the request. create a model for this
 
 @admin.register(FlowRun) is a bit weird with InWorkspace
 TELL llm use get_workspace_id if need workspace_id
+change_form_template = "admin/change_form.html" -> this was present but we didn''t check it exists
+
+
+def has_change_permission(self, request, obj=None):
+    return True
+
+THIS SHOULD NEVER BE ALLOWED TO BE OVERWRITTEN in the admin. PERMISSIONS are not admin specific. They''re global.
