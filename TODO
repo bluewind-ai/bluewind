@@ -198,3 +198,6 @@ add a comment "# change to django.temp to show all logs in this file"
 
 if something has no import, better errors should appear
 The migration from using raw content to bespoke table for files is a great small exercise to keep repeating until it''s perfect.
+learning: do not rename functions or classes you''re given. Do not create any new method
+
+"you cannot create any" other files than models.py and admin.py
