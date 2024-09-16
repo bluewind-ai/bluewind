@@ -18,8 +18,11 @@ class FileChange(WorkspaceRelated):
         related_name="file_changes",
         help_text="The file watcher that detected this change.",
     )
-    file_path = models.CharField(
-        max_length=1024, help_text="The path of the file that was changed."
+    file = models.ForeignKey(
+        "files.File",
+        on_delete=models.CASCADE,
+        related_name="changes",
+        help_text="The file that was changed.",
     )
     change_type = models.CharField(
         max_length=50,
@@ -35,7 +38,7 @@ class FileChange(WorkspaceRelated):
     )
 
     def __str__(self):
-        return f"FileChanged(file_path={self.file_path}, change_type={self.change_type}, timestamp={self.timestamp})"
+        return f"{self.change_type} on {self.file.path} at {self.timestamp}"
 
     def save(self, *args, **kwargs):
         temp_logger.debug(f"Initiating save for FileChange: {self}")
@@ -46,4 +49,5 @@ class FileChange(WorkspaceRelated):
         temp_logger.debug(f"Completed file_changes_after_save for FileChange: {self}")
 
 
-"this is a tescccdscdsdscmdskdsmktv fvfdvdf"
+"this is a tcdscdsescccdscdsdscmdskdsmkcdscdscdscsdtv fvfdvdf"
+"wayne"
