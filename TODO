@@ -201,3 +201,7 @@ The migration from using raw content to bespoke table for files is a great small
 learning: do not rename functions or classes you''re given. Do not create any new method
 
 "you cannot create any" other files than models.py and admin.py
+
+get a clean schema of the request. create a model for this
+
+@admin.register(FlowRun) is a bit weird with InWorkspace
