@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.utils.html import escape
 
 from base_model_admin.admin import InWorkspace
+from bluewind.context_variables import get_workspace_id
 from flows.models import Flow  # Adjust import based on your project structure
 from workspaces.models import Workspace  # Adjust import based on your project structure
 
@@ -197,7 +198,7 @@ class FlowRunAdmin(InWorkspace):
                 # Retrieve the workspace from the URL or request
                 # Assuming your URL pattern includes 'workspaces/<workspace_id>/admin/...'
                 # Extract 'workspace_id' from the URL
-                workspace_id = self.get_workspace_id_from_request(request)
+                workspace_id = get_workspace_id()
                 if not workspace_id:
                     self.message_user(
                         request, "Workspace not found in the URL.", level=messages.ERROR
@@ -265,20 +266,3 @@ class FlowRunAdmin(InWorkspace):
         }
 
         return TemplateResponse(request, self.add_form_template, context)
-
-    def get_workspace_id_from_request(self, request):
-        """
-        Extract the workspace ID from the URL.
-        Assuming the URL structure is /workspaces/<workspace_id>/admin/...
-        """
-        path = request.path
-        # Split the path and find the workspace ID
-        try:
-            parts = path.split("/")
-            workspace_index = parts.index("workspaces") + 1
-            workspace_id = parts[workspace_index]
-            logger.debug(f"Extracted workspace_id: {workspace_id}")
-            return workspace_id
-        except (ValueError, IndexError) as e:
-            logger.error(f"Error extracting workspace_id from URL: {e}")
-            return None

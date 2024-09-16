@@ -205,3 +205,4 @@ learning: do not rename functions or classes you''re given. Do not create any ne
 get a clean schema of the request. create a model for this
 
 @admin.register(FlowRun) is a bit weird with InWorkspace
+TELL llm use get_workspace_id if need workspace_id
