@@ -43,6 +43,11 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
             )
 
             # Update the file content
+            if ".git" in event.src_path:
+                temp_logger.debug(
+                    f"File {event.src_path} is .gitignored, skipping logging."
+                )
+                return
             with open(event.src_path, "r") as f:
                 file_instance.content = f.read()
             file_instance.save()
