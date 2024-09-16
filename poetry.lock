@@ -811,17 +811,6 @@ files = [
 ]
 
 [[package]]
-name = "django-object-actions"
-version = "4.3.0"
-description = "A Django app for adding object tools for models in the admin"
-optional = false
-python-versions = "<4.0,>=3.7"
-files = [
-    {file = "django_object_actions-4.3.0-py3-none-any.whl", hash = "sha256:1af87dedcfd5a35207a4b90c386c059e5f02ecf1d954e3131e25f4a04d01c963"},
-    {file = "django_object_actions-4.3.0.tar.gz", hash = "sha256:611f768d768c9ca7b48278573feb7c07966174f5c50a9323ab4d02d0c4b7501e"},
-]
-
-[[package]]
 name = "django-reverse-admin"
 version = "2.9.6"
 description = ""
@@ -2495,4 +2484,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "d61482391b53da069fa6cca27b34a9e6e95e959de387e8fd41f18c38586d730b"
+content-hash = "dd0ef4381344dc5295e110a7d60ae63faa8cd18938845c28e3598825f54e9be5"

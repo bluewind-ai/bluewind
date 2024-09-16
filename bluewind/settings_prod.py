@@ -109,7 +109,7 @@ APP_TYPE = {
     "channels": "third_party",
     "debug_toolbar": "third_party",
     "django_extensions": "third_party",
-    "django_object_actions": "third_party",
+    "django_object_actions": "custom",
     "model_clone": "third_party",
     "widget_tweaks": "third_party",
     "slippers": "third_party",
