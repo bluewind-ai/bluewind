@@ -1,3 +1,4 @@
+import json
 import os
 import warnings
 from pathlib import Path
@@ -152,6 +153,10 @@ APP_TYPE = {
     "files": "custom",
     "app_logs": "custom",
 }
+
+custom_apps = [app for app, app_type in APP_TYPE.items() if app_type == "custom"]
+
+os.environ["CUSTOM_APPS"] = json.dumps(custom_apps)
 
 for app in INSTALLED_APPS:
     assert app in APP_TYPE, f"App '{app}' is in INSTALLED_APPS but not in APP_TYPE"

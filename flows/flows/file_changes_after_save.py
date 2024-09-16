@@ -11,7 +11,6 @@ def file_changes_after_save(file_change):
     # Check if is directory
     if file_change.file.path.endswith("models.py"):
         logger.debug(f"Detected change in models.py: {file_change.file.path}")
-
         # Fetch the File instance from the database
         try:
             file_instance = File.objects.get(path=file_change.file.path)

@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -21,22 +22,25 @@ def files_load_all():
     files_to_create = []
     files_to_update = []
     models_to_create = []
+    installed_apps = json.loads(os.environ["CUSTOM_APPS"])
 
-    for root, dirs, files in os.walk(base_dir):
-        for file_name in files:
-            if file_name.endswith(".py"):
-                file_path = os.path.join(root, file_name)
-                if not is_ignored_by_git(file_path):
-                    with open(file_path, "r") as file:
-                        content = file.read()
+    for app in installed_apps:
+        app_path = os.path.join(base_dir, app.replace(".", os.path.sep))
+        for root, dirs, files in os.walk(app_path):
+            for file_name in files:
+                if file_name.endswith(".py"):
+                    file_path = os.path.join(root, file_name)
+                    if not is_ignored_by_git(file_path):
+                        with open(file_path, "r") as file:
+                            content = file.read()
 
-                    file_obj = File(
-                        path=file_path,
-                        content=content,
-                        user_id=default_user_id,
-                        workspace_id=default_workspace_id,
-                    )
-                    files_to_create.append(file_obj)
+                        file_obj = File(
+                            path=file_path,
+                            content=content,
+                            user_id=default_user_id,
+                            workspace_id=default_workspace_id,
+                        )
+                        files_to_create.append(file_obj)
 
     with transaction.atomic():
         # Process files
