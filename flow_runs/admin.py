@@ -13,7 +13,6 @@ from django.utils.html import escape
 from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import get_workspace_id
 from flows.models import Flow  # Adjust import based on your project structure
-from workspaces.models import Workspace  # Adjust import based on your project structure
 
 from .models import FlowRun
 
@@ -195,39 +194,10 @@ class FlowRunAdmin(InWorkspace):
                         f"Serialized 'content_type' to natural key: {content_type.natural_key()}"
                     )
 
-                # Retrieve the workspace from the URL or request
-                # Assuming your URL pattern includes 'workspaces/<workspace_id>/admin/...'
-                # Extract 'workspace_id' from the URL
-                workspace_id = get_workspace_id()
-                if not workspace_id:
-                    self.message_user(
-                        request, "Workspace not found in the URL.", level=messages.ERROR
-                    )
-                    return redirect(
-                        reverse(
-                            f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
-                        )
-                    )
-
-                try:
-                    workspace = Workspace.objects.get(pk=workspace_id)
-                    logger.debug(f"Retrieved Workspace: {workspace}")
-                except Workspace.DoesNotExist:
-                    self.message_user(
-                        request,
-                        f"Workspace with ID {workspace_id} does not exist.",
-                        level=messages.ERROR,
-                    )
-                    return redirect(
-                        reverse(
-                            f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
-                        )
-                    )
-
                 # Create and save the FlowRun instance with user and workspace
                 flow_run = FlowRun(
-                    user=request.user,  # Set the user to the current user
-                    workspace=workspace,  # Set the workspace
+                    user=request.user,
+                    workspace_id=get_workspace_id(),  # Set the workspace
                     input_data=input_data,
                     result=result,
                     executed_at=timezone.now(),
