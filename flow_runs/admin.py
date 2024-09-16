@@ -133,12 +133,6 @@ class FlowRunAdmin(InWorkspace):
             "media": self.media + form.media,
             "opts": self.model._meta,
             "app_label": self.model._meta.app_label,
-            "add": True,
-            "change": False,
-            "has_view_permission": self.has_view_permission(request),
-            "has_add_permission": self.has_add_permission(request),
-            "has_change_permission": False,
-            "has_delete_permission": self.has_delete_permission(request),
         }
 
         return TemplateResponse(request, self.add_form_template, context)
