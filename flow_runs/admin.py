@@ -74,7 +74,7 @@ class FlowRunAdmin(InWorkspace):
         if request.method == "POST":
             return self.create_view(request, flow)
         else:
-            return self.create_form(request, flow)
+            return self.create_form(request, flow, self.add_form_template)
 
     def create_view(self, request, flow):
         module_name = f"flows.flows.{flow.name}"
@@ -114,7 +114,7 @@ class FlowRunAdmin(InWorkspace):
         # If form is not valid, fall back to create_form
         return self.create_form(request, flow, form)
 
-    def create_form(self, request, flow, form=None):
+    def create_form(self, request, flow, add_form_template, form=None):
         if form is None:
             module_name = f"flows.flows.{flow.name}"
             flow_module = importlib.import_module(module_name)
@@ -135,4 +135,4 @@ class FlowRunAdmin(InWorkspace):
             "app_label": self.model._meta.app_label,
         }
 
-        return TemplateResponse(request, self.add_form_template, context)
+        return TemplateResponse(request, add_form_template, context)
