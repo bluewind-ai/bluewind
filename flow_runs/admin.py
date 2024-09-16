@@ -74,11 +74,9 @@ class FlowRunAdmin(InWorkspace):
         module_name = f"flows.flows.{flow.name}"
         flow_module = importlib.import_module(module_name)
 
-        def snake_to_pascal(snake_str):
-            return "".join(word.title() for word in snake_str.split("_"))
-
         function_name = flow.name
-        form_class_name = f"{snake_to_pascal(function_name)}Form"
+        snake_function_name = "".join(word.title() for word in function_name.split("_"))
+        form_class_name = f"{snake_function_name}Form"
 
         FormClass = getattr(flow_module, form_class_name)
         function_to_run = getattr(flow_module, function_name)
