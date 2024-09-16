@@ -4,13 +4,13 @@ import importlib
 from django.contrib import admin, messages
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import redirect
-from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import escape
 
 from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import get_workspace_id
+from flows.flows.flow_runs_create_form import flow_runs_create_form
 from flows.models import Flow  # Adjust import based on your project structure
 
 from .models import FlowRun
@@ -74,7 +74,10 @@ class FlowRunAdmin(InWorkspace):
         if request.method == "POST":
             return self.create_view(request, flow)
         else:
-            return self.create_form(request, flow, self.add_form_template)
+            context = self.admin_site.each_context(request)
+            return flow_runs_create_form(
+                request, flow, self.add_form_template, context, self.media
+            )
 
     def create_view(self, request, flow):
         module_name = f"flows.flows.{flow.name}"
@@ -110,29 +113,8 @@ class FlowRunAdmin(InWorkspace):
                     f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
                 )
             )
-
+        context = self.admin_site.each_context(request)
         # If form is not valid, fall back to create_form
-        return self.create_form(request, flow, form)
-
-    def create_form(self, request, flow, add_form_template, form=None):
-        if form is None:
-            module_name = f"flows.flows.{flow.name}"
-            flow_module = importlib.import_module(module_name)
-            function_name = flow.name
-            snake_function_name = "".join(
-                word.title() for word in function_name.split("_")
-            )
-            form_class_name = f"{snake_function_name}Form"
-            FormClass = getattr(flow_module, form_class_name)
-            form = FormClass()
-
-        context = {
-            **self.admin_site.each_context(request),
-            "title": f"Run {flow.name}",
-            "form": form,
-            "media": self.media + form.media,
-            "opts": self.model._meta,
-            "app_label": self.model._meta.app_label,
-        }
-
-        return TemplateResponse(request, add_form_template, context)
+        return flow_runs_create_form(
+            request, flow, self.add_form_template, context, self.media
+        )
