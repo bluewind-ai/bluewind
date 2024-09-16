@@ -47,7 +47,3 @@ class FileChange(WorkspaceRelated):
         temp_logger.debug(f"Invoking file_changes_after_save for FileChange: {self}")
         file_changes_after_save(self)
         temp_logger.debug(f"Completed file_changes_after_save for FileChange: {self}")
-
-
-"this is a tcdscdsescccdscdsdscmdskdsmkcdscdscdscsdtv fvfdvdf"
-"wayne"
