@@ -8,7 +8,10 @@ logger = logging.getLogger("django.debug")
 
 def file_changes_after_save(file_change):
     logger.debug(f"Starting file_changes_after_save for: {file_change.file.path}")
-
+    # Check if is directory
+    if file_change.file.is_directory:
+        logger.debug(f"No action needed for directory: {file_change.file.path}")
+        return
     if file_change.file.path.endswith("models.py"):
         logger.debug(f"Detected change in models.py: {file_change.file.path}")
 
