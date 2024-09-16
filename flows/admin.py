@@ -6,7 +6,6 @@ from flows.flows.flow_runs_create_form import flow_runs_create_form
 
 class FlowAdmin(DjangoObjectActions, InWorkspace):
     add_form_template = "admin/flow_runs/flowrun/add_form.html"
-    change_form_template = "admin/flows/flow/change_form.html"
 
     change_actions = ("run_flow",)
 
