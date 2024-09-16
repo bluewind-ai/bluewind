@@ -1,10 +1,13 @@
+import logging
+
 from django import forms
-from django.template import Context, Template
 
 from files.models import File
 
+logger = logging.getLogger("django.temp")
 
-class FileSelectionForm(forms.Form):
+
+class ExtractContextsForm(forms.Form):
     files = forms.ModelMultipleChoiceField(
         queryset=File.objects.all(),
         widget=forms.CheckboxSelectMultiple,
@@ -12,15 +15,18 @@ class FileSelectionForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        logger.debug("Initializing ExtractContextsForm")
         self.workspace = kwargs.pop("workspace", None)
         super().__init__(*args, **kwargs)
         if self.workspace:
+            logger.debug(f"Filtering files for workspace: {self.workspace}")
             self.fields["files"].queryset = File.objects.filter(
                 workspace=self.workspace
             )
 
 
-def extract_contexts(selected_files):
+def extract_contexts(files):
+    logger.debug(f"Extracting contexts for {len(files)} files")
     template_content = """
 {% for file in files %}
 File: {{ file.path }}
@@ -29,13 +35,4 @@ Content:
 
 {% endfor %}
 """
-    return Template(template_content)
-
-
-def get_rendered_template(form):
-    if form.is_valid():
-        selected_files = form.cleaned_data["files"]
-        template = generate_template(selected_files)
-        context = {"files": selected_files}
-        return template.render(Context(context))
-    return None
+    return template_content
