@@ -31,12 +31,27 @@ class FlowRunAdmin(InWorkspace):
         return []
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
+        logger.debug(f"Change view called for object_id: {object_id}")
         obj = self.get_object(request, object_id)
         if obj is None:
             return self._get_obj_does_not_exist_redirect(
                 request, self.model._meta, object_id
             )
 
+        if request.method == "POST":
+            logger.warning("POST request received in change view, redirecting")
+            self.message_user(
+                request,
+                "Changes to FlowRun objects are not allowed.",
+                level=messages.ERROR,
+            )
+            return redirect(
+                reverse(
+                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                )
+            )
+
+        # Prepare context for the template
         context = {
             **self.admin_site.each_context(request),
             "opts": self.model._meta,
@@ -53,6 +68,7 @@ class FlowRunAdmin(InWorkspace):
             "object_id": object_id,
         }
 
+        # Delegate to the external function
         return flow_runs_change_form(
             request, obj.flow, obj, self.change_form_template, context
         )
