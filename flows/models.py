@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 from django.db import models
 from django.urls import reverse
 
+from files.models import File
 from flows.flows_after_save.flows import flows_after_save
 from workspaces.models import WorkspaceRelated
 
@@ -12,10 +13,18 @@ logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 class Flow(WorkspaceRelated):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    file = models.ForeignKey(
+        File, on_delete=models.SET_NULL, null=True, blank=True, related_name="flows"
+    )
 
     def get_custom_action_url(self):
         url = reverse("admin:flow_runs_flowrun_add")

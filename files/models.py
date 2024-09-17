@@ -9,6 +9,3 @@ class File(WorkspaceRelated):
 
     def __str__(self):
         return self.path
-
-
-"cdscds"
