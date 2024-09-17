@@ -31,6 +31,5 @@ def load_flows(workspace):
                     Flow.objects.create(
                         workspace=workspace,
                         name=flow_name,
-                        type="python",
                         user=default_user,
                     )

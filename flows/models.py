@@ -15,11 +15,6 @@ class Flow(WorkspaceRelated):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    type = models.CharField(
-        max_length=10,
-        choices=[("no-code", "No Code"), ("python", "Python")],
-        default="no-code",
-    )
 
     def get_custom_action_url(self):
         url = reverse("admin:flow_runs_flowrun_add")
