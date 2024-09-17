@@ -55,6 +55,17 @@ class FlowRunAdmin(InWorkspace):
         context = {
             **self.admin_site.each_context(request),
             "opts": self.model._meta,
+            "add": False,
+            "change": True,
+            "is_popup": False,
+            "save_as": False,
+            "has_delete_permission": self.has_delete_permission(request, obj),
+            "has_add_permission": self.has_add_permission(request),
+            "has_change_permission": self.has_change_permission(request, obj),
+            "has_view_permission": self.has_view_permission(request, obj),
+            "has_editable_inline_admin_formsets": False,
+            "title": f"View {self.model._meta.verbose_name}",
+            "object_id": object_id,
         }
 
         # Delegate to the external function

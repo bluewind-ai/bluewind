@@ -32,6 +32,8 @@ def flow_runs_change_form(request, flow, obj, form_template, context):
     """
     Handles dynamic form generation and template rendering for FlowRun change view.
     """
+    if "add" not in context:
+        context["add"] = obj.pk is None
     logger.debug(f"Creating form for flow: {flow.name}")
     function_name = flow.name
     class_name = "".join(word.title() for word in function_name.split("_"))
