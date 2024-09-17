@@ -13,8 +13,8 @@ from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 
 from bluewind.context_variables import get_workspace_id
-from flow_runs.models import FlowRun
 from flows.models import Flow
+from flows.run_flow.flows import run_flow
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger(__name__)
@@ -75,12 +75,8 @@ class CustomAdminSite(AdminSite):
         flow = Flow.objects.get(
             name="command_palette_get_commands", workspace_id=workspace_id
         )
-        flow_run = FlowRun.objects.create(
-            flow=flow,
-            workspace_id=workspace_id,
-            user=request.user,
-        )
-        context["flows_data"] = flow_run.state["flow_result"]
+        flow_run = run_flow(flow, request.user)
+        context["flows_data"] = flow_run.output_data["commands"]
 
         return context
 
