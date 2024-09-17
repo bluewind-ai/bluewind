@@ -46,7 +46,7 @@ def flow_runs_create_view(request, flow):
                 user=request.user,
                 workspace_id=get_workspace_id(),
                 input_data=parsed_input,
-                output_data=result,
+                output_data=str(e),
                 executed_at=executed_at,
                 flow=flow,
             )
