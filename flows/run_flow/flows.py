@@ -11,7 +11,10 @@ from flow_runs.models import FlowRun
 def run_flow(flow, user, input_data={}):
     deserialized_data = {}
     for field, value in input_data.items():
-        deserialized_data[field] = list(map(model_to_dict, list(value)))
+        if isinstance(value, list):
+            deserialized_data[field] = list(map(model_to_dict, list(value)))
+        else:
+            deserialized_data[field] = model_to_dict(value)
     executed_at = timezone.now()
     try:
         flow_module_name = f"flows.{flow.name}.flows"
