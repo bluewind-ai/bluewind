@@ -4,6 +4,7 @@ import logging
 
 from django.contrib import admin, messages
 from django.shortcuts import redirect
+from django.template.response import TemplateResponse
 from django.urls import reverse
 
 from base_model_admin.admin import InWorkspace
@@ -19,17 +20,11 @@ logger = logging.getLogger("django.debug")
 @admin.register(FlowRun)
 class FlowRunAdmin(InWorkspace):
     add_form_template = "admin/flow_runs/flowrun/add_form.html"
-    change_form_template = "admin/change_form.html"
+    change_form_template = "admin/flow_runs/flowrun/change_form.html"
 
     def has_change_permission(self, request, obj=None):
         logger.debug(f"Checking change permission for user: {request.user}")
         return True
-
-    def get_readonly_fields(self, request, obj=None):
-        logger.debug(f"Getting readonly fields for object: {obj}")
-        if obj:
-            return [field.name for field in self.model._meta.fields]
-        return self.readonly_fields
 
     def get_actions(self, request):
         logger.debug("Getting actions for FlowRunAdmin")
@@ -37,6 +32,12 @@ class FlowRunAdmin(InWorkspace):
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         logger.debug(f"Change view called for object_id: {object_id}")
+        obj = self.get_object(request, object_id)
+        if obj is None:
+            return self._get_obj_does_not_exist_redirect(
+                request, self.model._meta, object_id
+            )
+
         if request.method == "POST":
             logger.warning("POST request received in change view, redirecting")
             self.message_user(
@@ -50,7 +51,23 @@ class FlowRunAdmin(InWorkspace):
                 )
             )
 
-        return super().change_view(request, object_id, form_url, extra_context)
+        # Prepare context for the template
+        context = {
+            **self.admin_site.each_context(request),
+            "title": f"Flow Run: {obj.flow.name}",
+        }
+
+        # Directly use the form you want to display
+        # For example, use ExtractContextsOutputForm
+        from flows.extract_contexts.input_forms import ExtractContextsOutputForm
+
+        # Instantiate the form with initial data from obj.input_data
+        form = ExtractContextsOutputForm(initial=obj.input_data)
+
+        context["form"] = form
+        context["media"] = form.media
+
+        return TemplateResponse(request, self.change_form_template, context)
 
     def save_model(self, request, obj, form, change):
         logger.debug(f"Save model called for object: {obj}, change: {change}")

@@ -9,19 +9,22 @@ logger = logging.getLogger("django.temp")
 def flow_runs_create_form(request, flow, add_form_template, context, form=None):
     logger.debug(f"Creating form for flow: {flow.name}")
     function_name = flow.name
-    snake_function_name = "".join(word.title() for word in function_name.split("_"))
+    class_name = "".join(word.title() for word in function_name.split("_"))
     module_name = f"flows.{flow.name}.input_forms"
     form_module = importlib.import_module(module_name)
-    form_class_name = f"{snake_function_name}Form"
+    form_class_name = f"{class_name}Form"
     logger.debug(f"Looking for form class: {form_class_name}")
     FormClass = getattr(form_module, form_class_name)
-    form = FormClass()
 
-    context = {
-        **context,
-        "title": f"Run {flow.name}",
-        "form": form,
-        "media": form.media,
-    }
+    # Instantiate the form with any necessary arguments, such as 'workspace'
+    form = FormClass(workspace=request.workspace)
+
+    context.update(
+        {
+            "title": f"Run {flow.name}",
+            "form": form,
+            "media": form.media,
+        }
+    )
     logger.debug("Rendering template response")
     return TemplateResponse(request, add_form_template, context)
