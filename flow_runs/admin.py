@@ -4,6 +4,7 @@ import importlib
 import json
 import logging
 
+from django import forms
 from django.contrib import admin, messages
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -20,6 +21,34 @@ logger = logging.getLogger("django.debug")
 
 
 logger = logging.getLogger("django.debug")
+
+
+class OutputFormWidget(forms.Widget):
+    def render(self, name, value, attrs=None, renderer=None):
+        return value if value else ""
+
+
+class CustomFlowRunForm(forms.ModelForm):
+    rendered_output = forms.Field(widget=OutputFormWidget(), required=False)
+
+    class Meta:
+        model = FlowRun
+        fields = [
+            "rendered_output",
+            "user",
+            "workspace",
+            "flow",
+            "executed_at",
+            "input_data",
+            "output_data",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["rendered_output"].label = "Rendered Output"
+        self.fields["output_data"].widget = forms.Textarea(
+            attrs={"readonly": "readonly"}
+        )
 
 
 @admin.register(FlowRun)
@@ -75,10 +104,7 @@ class FlowRunAdmin(InWorkspace):
             logger.error(f"Failed to import module {module_name}: {e}")
             raise
 
-        form_type = "output" if hasattr(obj, "output_data") else "input"
-        form_class_name = (
-            f"{class_name}Form" if form_type == "input" else f"{class_name}OutputForm"
-        )
+        form_class_name = f"{class_name}OutputForm"
 
         logger.debug(f"Looking for form class: {form_class_name}")
         try:
@@ -89,19 +115,46 @@ class FlowRunAdmin(InWorkspace):
             )
             raise
 
-        # Ensure input_data is a dictionary
-        input_data = {}
-        if form_type == "output":
-            if isinstance(obj.output_data, str):
-                try:
-                    input_data = json.loads(obj.output_data)
-                except json.JSONDecodeError as e:
-                    logger.error(f"Failed to decode output_data JSON: {e}")
-            elif isinstance(obj.output_data, dict):
-                input_data = obj.output_data
+        # Ensure output_data is a dictionary
+        output_data = {}
+        if isinstance(obj.output_data, str):
+            try:
+                output_data = json.loads(obj.output_data)
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to decode output_data JSON: {e}")
+        elif isinstance(obj.output_data, dict):
+            output_data = obj.output_data
 
-        # Instantiate the form with initial data
-        form = FormClass(initial=input_data)
+        # Instantiate the output form with initial data
+        output_form = FormClass(initial=output_data)
+
+        # Instantiate the custom form
+        form = CustomFlowRunForm(
+            instance=obj,
+            initial={
+                "rendered_output": output_form.as_p(),
+                "user": obj.user,
+                "workspace": obj.workspace,
+                "flow": obj.flow,
+                "executed_at": obj.executed_at,
+                "input_data": obj.input_data,
+                "output_data": obj.output_data,
+            },
+        )
+
+        # Instantiate the custom form
+        form = CustomFlowRunForm(
+            instance=obj,
+            initial={
+                "rendered_output": output_form.as_p(),
+                "user": obj.user,
+                "workspace": obj.workspace,
+                "flow": obj.flow,
+                "executed_at": obj.executed_at,
+                "input_data": obj.input_data,
+                "output_data": obj.output_data,
+            },
+        )
 
         context.update(
             {
@@ -152,3 +205,28 @@ class FlowRunAdmin(InWorkspace):
 
         context = self.admin_site.each_context(request)
         return flow_runs_create_form(request, flow, self.add_form_template, context)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj and obj.output_data:
+            output_form = self.get_output_form(obj)
+            if output_form:
+                form.base_fields["output_data"].widget = forms.Widget()
+                form.base_fields["output_data"].widget.render = (
+                    lambda name, value, attrs=None, renderer=None: output_form.as_p()
+                )
+        return form
+
+    def get_output_form(self, obj):
+        flow = obj.flow
+        function_name = flow.name
+        class_name = "".join(word.title() for word in function_name.split("_"))
+        module_name = f"flows.{flow.name}.output_forms"
+
+        try:
+            form_module = importlib.import_module(module_name)
+            FormClass = getattr(form_module, f"{class_name}OutputForm")
+            return FormClass(initial=obj.output_data)
+        except (ImportError, AttributeError) as e:
+            logger.error(f"Failed to create output form: {e}")
+            return None
