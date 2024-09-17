@@ -7,6 +7,7 @@ from watchdog.observers import Observer
 from file_changes.models import FileChange
 from files.models import File
 from flows.is_ignored_by_git.flows import is_ignored_by_git
+from flows.models import Flow
 
 temp_logger = logging.getLogger("django.temp")
 observers_registry = {}
@@ -54,6 +55,21 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
         )
         temp_logger.debug(f"FileChange ({change_type}) created for {event.src_path}")
 
+        # Handle Flow creation for 'flows.py' files
+        if change_type == "created" and os.path.basename(event.src_path) == "flows.py":
+            parent_dir = os.path.basename(os.path.dirname(event.src_path))
+            Flow.objects.get_or_create(
+                name=parent_dir,
+                file=file_instance,
+                workspace=self.file_watcher.workspace,
+                defaults={
+                    "user_id": self.file_watcher.user_id,
+                },
+            )
+            temp_logger.debug(
+                f"Flow created for {event.src_path} with name {parent_dir}"
+            )
+
     def on_created(self, event):
         temp_logger.debug(f"Detected creation of path: {event.src_path}")
         self._handle_file_event(event, "created")
@@ -62,18 +78,21 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
         temp_logger.debug(f"Detected modification of path: {event.src_path}")
         self._handle_file_event(event, "modified")
 
-    def on_deleted(self, event):
-        temp_logger.debug(f"Detected deletion of path: {event.src_path}")
-        if os.path.isdir(event.src_path):
-            temp_logger.debug(
-                f"Path {event.src_path} is a directory, skipping deletion handling."
-            )
-            return
+    def _handle_directory_deletion(self, dir_path):
+        for root, dirs, files in os.walk(dir_path, topdown=False):
+            for file in files:
+                file_path = os.path.join(root, file)
+                self._delete_file_from_db(file_path)
+            for dir in dirs:
+                subdir_path = os.path.join(root, dir)
+                self._delete_file_from_db(subdir_path)
+        self._delete_file_from_db(dir_path)
 
+    def _delete_file_from_db(self, file_path):
         try:
-            file_instance = File.objects.get(path=event.src_path)
+            file_instance = File.objects.get(path=file_path)
             file_instance.delete()
-            temp_logger.debug(f"File {event.src_path} deleted from database")
+            temp_logger.debug(f"File {file_path} deleted from database")
 
             FileChange.objects.create(
                 file_watcher=self.file_watcher,
@@ -82,9 +101,19 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
                 user_id=self.file_watcher.user_id,
                 workspace=self.file_watcher.workspace,
             )
-            temp_logger.debug(f"FileChange (deletion) created for {event.src_path}")
+            temp_logger.debug(f"FileChange (deletion) created for {file_path}")
         except File.DoesNotExist:
-            temp_logger.debug(f"File {event.src_path} not found in database")
+            temp_logger.debug(f"File {file_path} not found in database")
+
+    def on_deleted(self, event):
+        temp_logger.debug(f"Detected deletion of path: {event.src_path}")
+        if os.path.isdir(event.src_path):
+            temp_logger.debug(
+                f"Directory {event.src_path} deleted, handling recursively."
+            )
+            self._handle_directory_deletion(event.src_path)
+        else:
+            self._delete_file_from_db(event.src_path)
 
 
 def file_watchers_after_save(file_watcher):

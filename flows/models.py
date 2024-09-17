@@ -23,7 +23,7 @@ class Flow(WorkspaceRelated):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     file = models.ForeignKey(
-        File, on_delete=models.SET_NULL, null=True, blank=True, related_name="flows"
+        File, on_delete=models.CASCADE, null=True, blank=True, related_name="flows"
     )
 
     def get_custom_action_url(self):
