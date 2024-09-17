@@ -17,7 +17,7 @@ class GetModelContextForm(forms.Form):
         super().__init__(*args, **kwargs)
 
 
-def get_model_context(content_type):
+def get_model_context(content_type, test):
     try:
         if not isinstance(content_type, ContentType):
             raise ValueError("content_type must be a ContentType instance")

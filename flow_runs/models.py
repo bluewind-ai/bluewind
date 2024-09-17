@@ -13,7 +13,7 @@ class FlowRun(WorkspaceRelated):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     input_data = models.JSONField(null=True, blank=True)
-    result = models.TextField(null=True, blank=True)
+    output_data = models.JSONField(null=True, blank=True)
     executed_at = models.DateTimeField(null=True, blank=True)
     flow = models.ForeignKey("flows.Flow", on_delete=models.CASCADE)
 

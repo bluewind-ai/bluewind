@@ -22,15 +22,6 @@ class GetFunctionParametersForm(forms.Form):
         super().__init__(*args, **kwargs)
 
 
-class GetFunctionParametersOutputForm(forms.Form):
-    parameters = forms.CharField(
-        widget=forms.Textarea(attrs={"readonly": "readonly", "rows": 5}),
-        required=False,
-        label="Function Parameters",
-        initial="parameter1, parameter2, parameter3",  # Replace with your actual parameters
-    )
-
-
 def get_function_parameters(files: List[File]) -> List[str]:
     for file in files:
         logger.debug(f"Getting function parameters for path: {file.path}")
@@ -59,7 +50,7 @@ def get_function_parameters(files: List[File]) -> List[str]:
                 parameters = list(inspect.signature(func).parameters.keys())
 
                 logger.debug(f"Parameters found: {parameters}")
-                return parameters[0]
+                return parameters
             else:
                 logger.debug("No functions found in the module")
                 return []

@@ -1,15 +1,26 @@
 # flow_runs/admin.py
 import importlib
+import json
 
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models.query import QuerySet
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.html import escape
 
 from bluewind.context_variables import get_workspace_id
 from flow_runs.models import FlowRun
+
+
+class CustomJSONEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, ContentType):
+            return obj.natural_key()
+        if isinstance(obj, QuerySet):
+            return list(obj.values_list("pk", flat=True))
+        return super().default(obj)
 
 
 def flow_runs_create_view(request, flow):
@@ -23,23 +34,35 @@ def flow_runs_create_view(request, flow):
 
     form = FormClass(request.POST)
     if form.is_valid():
-        content_type = form.cleaned_data.get("content_type")
-        result = function_to_run(content_type=content_type)
-
         input_data = form.cleaned_data.copy()
-        if isinstance(content_type, ContentType):
-            input_data["content_type"] = content_type.natural_key()
+
+        serialized_input = json.dumps(input_data, cls=CustomJSONEncoder)
+        parsed_input = json.loads(serialized_input)
+        executed_at = timezone.now()
+        try:
+            result = function_to_run(**input_data)
+        except Exception as e:
+            flow_run = FlowRun(
+                user=request.user,
+                workspace_id=get_workspace_id(),
+                input_data=parsed_input,
+                output_data=result,
+                executed_at=executed_at,
+                flow=flow,
+            )
+            raise e
 
         flow_run = FlowRun(
             user=request.user,
             workspace_id=get_workspace_id(),
-            input_data=input_data,
-            result=result,
-            executed_at=timezone.now(),
+            input_data=parsed_input,
+            output_data=result,
+            executed_at=executed_at,
             flow=flow,
         )
         flow_run.save()
 
-        messages.info(request, f"Flow Result:\n{escape(result)}")
-        return redirect(reverse("admin:flow_runs_flowrun_changelist"))
-    return None
+        return redirect(reverse("admin:flow_runs_flowrun_change", args=[flow_run.id]))
+    else:
+        messages.error(request, "Form is not valid.")
+        return redirect(reverse("admin:flow_runs_flowrun_change", args=[flow_run.id]))
