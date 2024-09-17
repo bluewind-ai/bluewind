@@ -1,13 +1,11 @@
 # flow_runs/admin.py
 
 import importlib
-import json
 import logging
 
 from django import forms
 from django.contrib import admin, messages
 from django.shortcuts import redirect
-from django.template.response import TemplateResponse
 from django.urls import reverse
 
 from base_model_admin.admin import InWorkspace
@@ -28,25 +26,25 @@ class OutputFormWidget(forms.Widget):
         return value if value else ""
 
 
-class CustomFlowRunForm(forms.ModelForm):
+class FlowRunForm(forms.ModelForm):
     rendered_output = forms.Field(widget=OutputFormWidget(), required=False)
 
     class Meta:
         model = FlowRun
         fields = [
             "rendered_output",
+            "input_data",
+            "output_data",
             "user",
             "workspace",
             "flow",
             "executed_at",
-            "input_data",
-            "output_data",
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["rendered_output"].label = "Rendered Output"
-        self.fields["output_data"].widget = forms.Textarea(
+        self.fields["rendered_output"].widget = forms.Textarea(
             attrs={"readonly": "readonly"}
         )
 
@@ -54,7 +52,7 @@ class CustomFlowRunForm(forms.ModelForm):
 @admin.register(FlowRun)
 class FlowRunAdmin(InWorkspace):
     add_form_template = "admin/flow_runs/flowrun/add_form.html"
-    change_form_template = "admin/flow_runs/flowrun/change_form.html"
+    form = FlowRunForm
 
     def has_change_permission(self, request, obj=None):
         logger.debug(f"Checking change permission for user: {request.user}")
@@ -63,109 +61,6 @@ class FlowRunAdmin(InWorkspace):
     def get_actions(self, request):
         logger.debug("Getting actions for FlowRunAdmin")
         return []
-
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        logger.debug(f"Change view called for object_id: {object_id}")
-        obj = self.get_object(request, object_id)
-        if obj is None:
-            return self._get_obj_does_not_exist_redirect(
-                request, self.model._meta, object_id
-            )
-
-        if request.method == "POST":
-            logger.warning("POST request received in change view, redirecting")
-            self.message_user(
-                request,
-                "Changes to FlowRun objects are not allowed.",
-                level=messages.ERROR,
-            )
-            return redirect(
-                reverse(
-                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
-                )
-            )
-
-        # Prepare context for the template
-        context = {
-            **self.admin_site.each_context(request),
-            "opts": self.model._meta,
-        }
-
-        # Dynamic form generation logic
-        flow = obj.flow
-        logger.debug(f"Creating form for flow: {flow.name}")
-        function_name = flow.name
-        class_name = "".join(word.title() for word in function_name.split("_"))
-        module_name = f"flows.{flow.name}.output_forms"
-
-        try:
-            form_module = importlib.import_module(module_name)
-        except ImportError as e:
-            logger.error(f"Failed to import module {module_name}: {e}")
-            raise
-
-        form_class_name = f"{class_name}OutputForm"
-
-        logger.debug(f"Looking for form class: {form_class_name}")
-        try:
-            FormClass = getattr(form_module, form_class_name)
-        except AttributeError as e:
-            logger.error(
-                f"Form class {form_class_name} not found in {module_name}: {e}"
-            )
-            raise
-
-        # Ensure output_data is a dictionary
-        output_data = {}
-        if isinstance(obj.output_data, str):
-            try:
-                output_data = json.loads(obj.output_data)
-            except json.JSONDecodeError as e:
-                logger.error(f"Failed to decode output_data JSON: {e}")
-        elif isinstance(obj.output_data, dict):
-            output_data = obj.output_data
-
-        # Instantiate the output form with initial data
-        output_form = FormClass(initial=output_data)
-
-        # Instantiate the custom form
-        form = CustomFlowRunForm(
-            instance=obj,
-            initial={
-                "rendered_output": output_form.as_p(),
-                "user": obj.user,
-                "workspace": obj.workspace,
-                "flow": obj.flow,
-                "executed_at": obj.executed_at,
-                "input_data": obj.input_data,
-                "output_data": obj.output_data,
-            },
-        )
-
-        # Instantiate the custom form
-        form = CustomFlowRunForm(
-            instance=obj,
-            initial={
-                "rendered_output": output_form.as_p(),
-                "user": obj.user,
-                "workspace": obj.workspace,
-                "flow": obj.flow,
-                "executed_at": obj.executed_at,
-                "input_data": obj.input_data,
-                "output_data": obj.output_data,
-            },
-        )
-
-        context.update(
-            {
-                "title": f"Flow Run: {flow.name}",
-                "form": form,
-                "media": form.media,
-            }
-        )
-        logger.debug("Rendering template response")
-
-        return TemplateResponse(request, self.change_form_template, context)
 
     def save_model(self, request, obj, form, change):
         logger.debug(f"Save model called for object: {obj}, change: {change}")
@@ -206,16 +101,16 @@ class FlowRunAdmin(InWorkspace):
         context = self.admin_site.each_context(request)
         return flow_runs_create_form(request, flow, self.add_form_template, context)
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if obj and obj.output_data:
-            output_form = self.get_output_form(obj)
-            if output_form:
-                form.base_fields["output_data"].widget = forms.Widget()
-                form.base_fields["output_data"].widget.render = (
-                    lambda name, value, attrs=None, renderer=None: output_form.as_p()
-                )
-        return form
+    # def get_form(self, request, obj=None, **kwargs):
+    #     form = super().get_form(request, obj, **kwargs)
+    #     if obj and obj.output_data:
+    #         output_form = self.get_output_form(obj)
+    #         if output_form:
+    #             form.base_fields["output_data"].widget = forms.Widget()
+    #             form.base_fields["output_data"].widget.render = (
+    #                 lambda name, value, attrs=None, renderer=None: output_form.as_p()
+    #             )
+    #     return form
 
     def get_output_form(self, obj):
         flow = obj.flow

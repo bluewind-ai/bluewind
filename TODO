@@ -217,3 +217,5 @@ history: remove
 
 linter: never put workspace in the list view
 linter: all files in an app should have a plural name
+if statements checking for types should be removed because types are always knows and always the same.
+if an error appears, the fix is not to throw an exception, it's to fix the error.
