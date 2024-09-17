@@ -12,13 +12,10 @@ def flows_update_arguments(file_change):
     if "flows/flows/" in file_change.file.path:
         logger.debug(f"Detected flow change: {file_change.file.path}")
         # Fetch the File instance from the database
-        try:
-            file_instance = File.objects.get(path=file_change.file.path)
-            content = file_instance.content
-            # TODO Update flow arguments
-            # Update all Model instances with the new content
-            logger.debug("All Flows instances updated")
-        except File.DoesNotExist:
-            logger.error(f"File not found in database: {file_change.file.path}")
+        file_instance = File.objects.get(path=file_change.file.path)
+        content = file_instance.content
+        # TODO Update flow arguments
+        # Update all Model instances with the new content
+        logger.debug("All Flows instances updated")
     else:
         logger.debug(f"No action needed for file: {file_change.file.path}")

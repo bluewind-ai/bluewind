@@ -223,3 +223,4 @@ if an error appears, the fix is not to throw an exception, it's to fix the error
 tactic: "I missed something can you tell what?" even when I am not sure something missed.
 
 RULE: some objects should not have after save. for example file. Because you should use file change
+LINTERS: not allowed to add files that don''t end with .py

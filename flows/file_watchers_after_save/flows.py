@@ -78,11 +78,11 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
     def on_deleted(self, event):
         temp_logger.debug(f"Detected deletion of path: {event.src_path}")
 
-        if os.path.isdir(event.src_path):
+        if event.src_path.endswith(".py"):
+            self._delete_file_from_db(event.src_path)
+        else:
             temp_logger.debug(f"Deleted path is a directory: {event.src_path}")
             self._handle_directory_deletion(event.src_path)
-        else:
-            self._delete_file_from_db(event.src_path)
 
     def _handle_directory_deletion(self, dir_path):
         # Delete all files in the database that start with this directory path
@@ -91,18 +91,12 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
             self._delete_file_from_db(file.path)
 
     def _delete_file_from_db(self, file_path):
+        if is_ignored_by_git(file_path) or ".git" in file_path:
+            temp_logger.debug(f"Path {file_path} is ignored, skipping deletion.")
+            return
         file_instance = File.objects.get(path=file_path)
         file_instance.delete()
         temp_logger.debug(f"File {file_path} deleted from database")
-
-        FileChange.objects.create(
-            file_watcher=self.file_watcher,
-            file=None,
-            change_type="deleted",
-            user_id=self.file_watcher.user_id,
-            workspace=self.file_watcher.workspace,
-        )
-        temp_logger.debug(f"FileChange (deletion) created for {file_path}")
 
         # If this was a Python file, also delete the associated Flow
         if file_path.endswith(".py"):
