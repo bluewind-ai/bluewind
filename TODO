@@ -216,3 +216,4 @@ THIS SHOULD NEVER BE ALLOWED TO BE OVERWRITTEN in the admin. PERMISSIONS are not
 history: remove
 
 linter: never put workspace in the list view
+linter: all files in an app should have a plural name

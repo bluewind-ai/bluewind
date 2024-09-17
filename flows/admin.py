@@ -7,6 +7,8 @@ class FlowAdmin(InWorkspace):
     list_display = (
         "name",
         "custom_action_button",
+        "workspace",
+        "created_at",
     )
 
     def custom_action_button(self, obj):
