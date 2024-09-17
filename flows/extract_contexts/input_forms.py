@@ -23,16 +23,3 @@ class ExtractContextsForm(forms.Form):
             self.fields["files"].queryset = File.objects.filter(
                 workspace=self.workspace
             )
-
-
-def extract_contexts(files):
-    logger.debug(f"Extracting contexts for {len(files)} files")
-    template_content = """
-{% for file in files %}
-File: {{ file.path }}
-Content:
-{{ file.content }}
-
-{% endfor %}
-"""
-    return template_content
