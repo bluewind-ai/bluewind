@@ -39,12 +39,9 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
         )
 
         if change_type == "created" or change_type == "modified":
-            try:
-                with open(event.src_path, "r") as f:
-                    file_instance.content = f.read()
-                file_instance.save()
-            except IOError as e:
-                temp_logger.error(f"Error reading file {event.src_path}: {e}")
+            with open(event.src_path, "r") as f:
+                file_instance.content = f.read()
+            file_instance.save()
 
         FileChange.objects.create(
             file_watcher=self.file_watcher,
@@ -78,42 +75,43 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
         temp_logger.debug(f"Detected modification of path: {event.src_path}")
         self._handle_file_event(event, "modified")
 
-    def _handle_directory_deletion(self, dir_path):
-        for root, dirs, files in os.walk(dir_path, topdown=False):
-            for file in files:
-                file_path = os.path.join(root, file)
-                self._delete_file_from_db(file_path)
-            for dir in dirs:
-                subdir_path = os.path.join(root, dir)
-                self._delete_file_from_db(subdir_path)
-        self._delete_file_from_db(dir_path)
-
-    def _delete_file_from_db(self, file_path):
-        try:
-            file_instance = File.objects.get(path=file_path)
-            file_instance.delete()
-            temp_logger.debug(f"File {file_path} deleted from database")
-
-            FileChange.objects.create(
-                file_watcher=self.file_watcher,
-                file=None,
-                change_type="deleted",
-                user_id=self.file_watcher.user_id,
-                workspace=self.file_watcher.workspace,
-            )
-            temp_logger.debug(f"FileChange (deletion) created for {file_path}")
-        except File.DoesNotExist:
-            temp_logger.debug(f"File {file_path} not found in database")
-
     def on_deleted(self, event):
         temp_logger.debug(f"Detected deletion of path: {event.src_path}")
+
         if os.path.isdir(event.src_path):
-            temp_logger.debug(
-                f"Directory {event.src_path} deleted, handling recursively."
-            )
+            temp_logger.debug(f"Deleted path is a directory: {event.src_path}")
             self._handle_directory_deletion(event.src_path)
         else:
             self._delete_file_from_db(event.src_path)
+
+    def _handle_directory_deletion(self, dir_path):
+        # Delete all files in the database that start with this directory path
+        files_to_delete = File.objects.filter(path__startswith=dir_path)
+        for file in files_to_delete:
+            self._delete_file_from_db(file.path)
+
+    def _delete_file_from_db(self, file_path):
+        file_instance = File.objects.get(path=file_path)
+        file_instance.delete()
+        temp_logger.debug(f"File {file_path} deleted from database")
+
+        FileChange.objects.create(
+            file_watcher=self.file_watcher,
+            file=None,
+            change_type="deleted",
+            user_id=self.file_watcher.user_id,
+            workspace=self.file_watcher.workspace,
+        )
+        temp_logger.debug(f"FileChange (deletion) created for {file_path}")
+
+        # If this was a Python file, also delete the associated Flow
+        if file_path.endswith(".py"):
+            flow_name = os.path.basename(os.path.dirname(file_path))
+            flow = Flow.objects.get(
+                name=flow_name, workspace=self.file_watcher.workspace
+            )
+            flow.delete()
+            temp_logger.debug(f"Flow {flow_name} deleted from database")
 
 
 def file_watchers_after_save(file_watcher):
