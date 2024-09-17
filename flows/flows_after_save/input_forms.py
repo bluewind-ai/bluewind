@@ -1,30 +1,20 @@
 import logging
 
-from django.template import Context, Template
+from django import forms
+
+from files.models import File
 
 logger = logging.getLogger("django.debug")
 
 
-from django.utils.safestring import mark_safe
+class FlowsAfterSaveForm(forms.Form):
+    files = forms.ModelMultipleChoiceField(
+        queryset=File.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        help_text="Select the files to include in the template",
+    )
 
-
-def extract_contexts(files):
-    logger.debug(f"Extracting contexts for {len(files)} files")
-    template_content = """
-{% autoescape off %}
-{% for file in files %}
-File: {{ file.path }}
-Content:
-{{ file.content }}
-
-{% endfor %}
-{% endautoescape %}
-"""
-    logger.debug(f"Template content: {template_content}")
-
-    template = Template(template_content)
-    context = Context({"files": files})
-    rendered_content = template.render(context)
-
-    logger.debug(f"Rendered content: {rendered_content}")
-    return {"extracted_contexts": mark_safe(rendered_content)}
+    def __init__(self, *args, **kwargs):
+        logger.debug("Initializing ExtractContextsForm")
+        self.workspace = kwargs.pop("workspace", None)
+        super().__init__(*args, **kwargs)

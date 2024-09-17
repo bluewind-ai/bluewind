@@ -39,7 +39,6 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
                 "workspace": self.file_watcher.workspace,
             },
         )
-
         # Update the file content
         if ".git" in event.src_path:
             temp_logger.debug(
