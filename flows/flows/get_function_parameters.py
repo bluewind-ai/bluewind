@@ -1,4 +1,3 @@
-import importlib
 import inspect
 import logging
 from typing import List
@@ -76,30 +75,53 @@ from files.models import File
 logger = logging.getLogger("django.temp")
 
 
+import logging
+
+logger = logging.getLogger("django.temp")
+
+import logging
+
+logger = logging.getLogger("django.temp")
+
+import logging
+
+logger = logging.getLogger("django.temp")
+import logging
+
+logger = logging.getLogger("django.temp")
+import importlib
+import logging
+
+logger = logging.getLogger("django.temp")
+
+
 def get_function_parameters(files: List[File]) -> List[dict]:
     for file in files:
-        logger.debug(f"Getting function parameters for path: {file.path}")
-
-        file_name = file.path.split("/")[-1].split(".")[0]
-        module_path = f"flows.flows.{file_name}"
-
-        logger.debug(f"Attempting to import module: {module_path}")
-
         try:
+            logger.debug(f"Attempting to process file: {file.path}")
+
+            # Extract the module path from the file path
+            module_path = (
+                file.path.replace("/Users/merwanehamadi/code/bluewind/", "")
+                .replace("/", ".")
+                .rstrip(".py")
+            )
+
+            # Import the module
             module = importlib.import_module(module_path)
 
-            # Look for a function with the same name as the file
-            func = getattr(module, file_name, None)
-            if func is None:
-                # If not found, look for any function in the module
-                functions = inspect.getmembers(module, inspect.isfunction)
-                if functions:
-                    _, func = functions[0]
-                else:
-                    raise ValidationError(f"No functions found in module {module_path}")
+            # Find the function named 'get_model_context' in the module
+            func = getattr(module, "get_model_context", None)
+
+            if not func or not inspect.isfunction(func):
+                logger.warning(
+                    f"Function 'get_model_context' not found in module: {module_path}"
+                )
+                continue
 
             signature = inspect.signature(func)
             parameters = []
+
             for name, param in signature.parameters.items():
                 param_info = {"name": name}
 
@@ -111,7 +133,10 @@ def get_function_parameters(files: List[File]) -> List[dict]:
                 )
 
                 if param_type is None:
-                    raise ValidationError(f"Parameter '{name}' has no type annotation")
+                    logger.warning(
+                        f"Parameter '{name}' has no type annotation in module: {module_path}"
+                    )
+                    continue
 
                 # Check if it's a List
                 origin = get_origin(param_type)
@@ -121,28 +146,51 @@ def get_function_parameters(files: List[File]) -> List[dict]:
                     if args and len(args) == 1:
                         param_type = args[0]
                     else:
-                        raise ValidationError(
-                            f"List parameter '{name}' must have exactly one type argument"
+                        logger.warning(
+                            f"List parameter '{name}' must have exactly one type argument in module: {module_path}"
                         )
+                        continue
                 else:
                     param_info["is_list"] = False
 
-                # Check if it's a Django model
-                if inspect.isclass(param_type) and issubclass(param_type, models.Model):
+                # Check if it's a string (which might represent a model field)
+                if isinstance(param_type, str):
+                    parts = param_type.split(".")
+                    if len(parts) == 2:
+                        param_info["model_name"] = parts[0]
+                        param_info["field_name"] = parts[1]
+                    else:
+                        logger.warning(
+                            f"Invalid type annotation for parameter '{name}' in module: {module_path}. Expected format: 'model.field'"
+                        )
+                        continue
+                elif inspect.isclass(param_type) and issubclass(
+                    param_type, models.Model
+                ):
                     param_info["model_name"] = param_type.__name__
                 else:
-                    raise ValidationError(f"Parameter '{name}' is not a Model type")
+                    logger.warning(
+                        f"Parameter '{name}' is not a valid Model type or model field reference in module: {module_path}"
+                    )
+                    continue
 
                 parameters.append(param_info)
 
-            logger.debug(f"Parameters found: {parameters}")
-            return parameters
+            if parameters:
+                logger.debug(f"Parameters found: {parameters}")
+                return parameters
+            else:
+                logger.warning(f"No valid parameters found in module: {module_path}")
 
-        except ImportError:
-            logger.error(f"ImportError: Could not import module {module_path}")
-            raise
         except Exception as e:
-            logger.error(f"Error in get_function_parameters: {str(e)}")
-            raise
+            logger.error(
+                f"Error processing module {module_path}: {str(e)}", exc_info=True
+            )
 
-    raise ValidationError("No valid flow function found in any of the provided files")
+    # If we've gone through all files and found nothing
+    raise ValidationError(
+        "No valid function with proper parameters found in any of the provided modules"
+    )
+
+
+# Example usage remains the same
