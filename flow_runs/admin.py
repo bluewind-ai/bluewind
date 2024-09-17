@@ -55,11 +55,12 @@ class FlowRunAdmin(InWorkspace):
         context = {
             **self.admin_site.each_context(request),
             "title": f"Flow Run: {obj.flow.name}",
+            "opts": self.model._meta,
         }
 
         # Directly use the form you want to display
         # For example, use ExtractContextsOutputForm
-        from flows.extract_contexts.input_forms import ExtractContextsOutputForm
+        from flows.extract_contexts.output_forms import ExtractContextsOutputForm
 
         # Instantiate the form with initial data from obj.input_data
         form = ExtractContextsOutputForm(initial=obj.input_data)

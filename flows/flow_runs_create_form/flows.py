@@ -3,6 +3,8 @@ import logging
 
 from django.template.response import TemplateResponse
 
+from bluewind.context_variables import get_workspace_id
+
 logger = logging.getLogger("django.temp")
 
 
@@ -17,7 +19,7 @@ def flow_runs_create_form(request, flow, add_form_template, context, form=None):
     FormClass = getattr(form_module, form_class_name)
 
     # Instantiate the form with any necessary arguments, such as 'workspace'
-    form = FormClass(workspace=request.workspace)
+    form = FormClass(workspace=get_workspace_id())
 
     context.update(
         {

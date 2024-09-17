@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.query import QuerySet
 from django.shortcuts import redirect
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
 
@@ -69,4 +70,10 @@ def flow_runs_create_view(request, flow):
         return redirect(reverse("admin:flow_runs_flowrun_change", args=[flow_run.id]))
     else:
         messages.error(request, "Form is not valid.")
-        return redirect(reverse("admin:flow_runs_flowrun_change", args=[flow_run.id]))
+    context = {
+        "form": form,
+        "title": f"Run {flow.name}",
+        "media": form.media,
+        # Include any other context variables needed by your template
+    }
+    return TemplateResponse(request, "admin/flow_runs/flowrun/add_form.html", context)
