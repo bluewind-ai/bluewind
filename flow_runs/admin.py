@@ -58,12 +58,13 @@ class FlowRunAdmin(InWorkspace):
             "opts": self.model._meta,
         }
 
-        # Directly use the form you want to display
-        # For example, use ExtractContextsOutputForm
+        # Use ExtractContextsOutputForm with output_data
         from flows.extract_contexts.output_forms import ExtractContextsOutputForm
 
-        # Instantiate the form with initial data from obj.input_data
-        form = ExtractContextsOutputForm(initial=obj.input_data)
+        # Initialize the form with output_data
+        form = ExtractContextsOutputForm(
+            initial={"extracted_contexts": obj.output_data["extracted_contexts"]}
+        )
 
         context["form"] = form
         context["media"] = form.media
