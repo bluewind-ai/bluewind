@@ -4,10 +4,10 @@ import logging
 
 from django.contrib import admin, messages
 from django.shortcuts import redirect
-from django.template.response import TemplateResponse
 from django.urls import reverse
 
 from base_model_admin.admin import InWorkspace
+from flows.flow_runs_change_form.flows import flow_runs_change_form
 from flows.flow_runs_create_form.flows import flow_runs_create_form
 from flows.flow_runs_create_view.flows import flow_runs_create_view
 from flows.models import Flow  # Adjust import based on your project structure
@@ -54,22 +54,13 @@ class FlowRunAdmin(InWorkspace):
         # Prepare context for the template
         context = {
             **self.admin_site.each_context(request),
-            "title": f"Flow Run: {obj.flow.name}",
             "opts": self.model._meta,
         }
 
-        # Use ExtractContextsOutputForm with output_data
-        from flows.extract_contexts.output_forms import ExtractContextsOutputForm
-
-        # Initialize the form with output_data
-        form = ExtractContextsOutputForm(
-            initial={"extracted_contexts": obj.output_data["extracted_contexts"]}
+        # Delegate to the external function
+        return flow_runs_change_form(
+            request, obj.flow, obj, self.change_form_template, context
         )
-
-        context["form"] = form
-        context["media"] = form.media
-
-        return TemplateResponse(request, self.change_form_template, context)
 
     def save_model(self, request, obj, form, change):
         logger.debug(f"Save model called for object: {obj}, change: {change}")

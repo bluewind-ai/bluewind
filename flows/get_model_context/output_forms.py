@@ -1,13 +1,18 @@
 import logging
 
 from django import forms
-from django.contrib.contenttypes.models import ContentType
+
+from files.models import File
 
 logger = logging.getLogger("django.debug")
 
 
-class GetModelContextForm(forms.Form):
-    content_type = forms.ModelChoiceField(queryset=ContentType.objects.all())
+class GetModelContextOutputForm(forms.Form):
+    files = forms.ModelMultipleChoiceField(
+        queryset=File.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        help_text="Select the files to include in the template",
+    )
 
     def __init__(self, *args, **kwargs):
         logger.debug("Initializing ExtractContextsForm")

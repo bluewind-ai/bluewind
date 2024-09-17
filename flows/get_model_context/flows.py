@@ -31,8 +31,8 @@ def get_model_context(content_type: Model):
         # Read the content of the models.py file
         with open(models_path, "r") as file:
             result = file.read()
-
-        return result
+        raise ValueError("Test Error")
+        return {"model_context": result}
 
     except Exception as e:
         logger.error(f"Error in get_model_context: {str(e)}")

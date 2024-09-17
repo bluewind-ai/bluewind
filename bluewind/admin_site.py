@@ -9,7 +9,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Model, QuerySet
 from django.http.response import HttpResponseRedirectBase
 from django.shortcuts import redirect
-from django.template.response import TemplateResponse
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 
@@ -97,14 +96,14 @@ class CustomAdminSite(AdminSite):
 
             response = view(request, *args, **kwargs)
 
-            if isinstance(response, TemplateResponse):
-                # Convert the context data to JSON
-                json_data = json.dumps(
-                    response.context_data, cls=MyJsonEncoder, ensure_ascii=False
-                )
+            # if isinstance(response, TemplateResponse):
+            #     # Convert the context data to JSON
+            #     json_data = json.dumps(
+            #         response.context_data, cls=MyJsonEncoder, ensure_ascii=False
+            #     )
 
-                # Add the JSON data to the context
-                response.context_data["json_data"] = json_data
+            #     # Add the JSON data to the context
+            #     response.context_data["json_data"] = json_data
 
             return response
 
