@@ -1,19 +1,22 @@
+from django.utils.html import format_html
+
 from base_model_admin.admin import InWorkspace
-from django_object_actions import DjangoObjectActions
-from flows.flow_runs_create_form.flows import flow_runs_create_form
 
 
-class FlowAdmin(DjangoObjectActions, InWorkspace):
-    change_actions = ("run_flow",)
+class FlowAdmin(InWorkspace):
+    list_display = (
+        "name",
+        "workspace",
+        "type",
+        "created_at",
+        "updated_at",
+        "custom_action_button",
+    )
 
-    def run_flow(self, request, obj):
-        # Implement your custom action logic here
-        # For example:
-        # Do something with the flow object
-        context = self.admin_site.each_context(request)
-        return flow_runs_create_form(
-            request, obj, "admin/flow_runs/flowrun/add_form.html", context
+    def custom_action_button(self, obj):
+        return format_html(
+            '<a class="button" href="{}">Custom Action</a>', obj.get_custom_action_url()
         )
 
-    run_flow.label = "Run Flow"
-    run_flow.short_description = "Perform a custom action on this Flow"
+    custom_action_button.short_description = ""
+    custom_action_button.allow_tags = True
