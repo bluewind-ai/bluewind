@@ -24,12 +24,16 @@ class CustomJSONEncoder(DjangoJSONEncoder):
 
 
 def flow_runs_create_view(request, flow):
-    module_name = f"flows.flows.{flow.name}"
-    flow_module = importlib.import_module(module_name)
+    flow_module_name = f"flows.{flow.name}.flows"
+    flow_module = importlib.import_module(flow_module_name)
     function_name = flow.name
     snake_function_name = "".join(word.title() for word in function_name.split("_"))
+
+    form_module_name = f"flows.{flow.name}.input_forms"
+    form_module = importlib.import_module(form_module_name)
     form_class_name = f"{snake_function_name}Form"
-    FormClass = getattr(flow_module, form_class_name)
+
+    FormClass = getattr(form_module, form_class_name)
     function_to_run = getattr(flow_module, function_name)
 
     form = FormClass(request.POST)

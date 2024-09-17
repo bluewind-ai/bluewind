@@ -23,7 +23,7 @@ def test_runner(flow_run):
     )
 
     # Dynamically import and run the flow
-    module_path = f"flows.flows.{flow_run.flow.name}"
+    module_path = f"flows.{flow_run.flow.name}.flows"
     flow_module = importlib.import_module(module_path)
     flow_function = getattr(flow_module, flow_run.flow.name)
 

@@ -7,4 +7,3 @@ class FilesConfig(AppConfig):
 
     def ready(self):
         pass
-        # from flows.flows.files_on_ready import files_on_ready

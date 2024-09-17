@@ -19,7 +19,7 @@ def flow_runner(flow_run):
         raise ValueError("ContentType argument is missing")
 
     # Import and run the flow function
-    module_path = f"flows.flows.{flow_run.flow.name}"
+    module_path = f"flows.{flow_run.flow.name}.flows"
 
     flow_module = importlib.import_module(module_path)
     flow_function = getattr(flow_module, flow_run.flow.name)
