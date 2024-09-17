@@ -1,3 +1,3 @@
-from flows.flows.bootstrap import bootstrap
+from flows.bootstrap.flows import bootstrap
 
 bootstrap()

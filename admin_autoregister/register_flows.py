@@ -12,7 +12,7 @@ def load_flows(workspace):
     User = get_user_model()
     default_user = User.objects.get(id=1)
 
-    flows_dir = os.path.join(settings.BASE_DIR, "flows", "flows")
+    flows_dir = os.path.join(settings.BASE_DIR, "flows")
 
     for filename in os.listdir(flows_dir):
         if filename.endswith(".py"):

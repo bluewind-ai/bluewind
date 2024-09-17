@@ -2,7 +2,7 @@ import logging
 import os
 
 from files.models import File
-from flows.flows.is_ignored_by_git import is_ignored_by_git
+from flows.is_ignored_by_git.flows import is_ignored_by_git
 
 logger = logging.getLogger("django.not_used")
 

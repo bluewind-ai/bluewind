@@ -1,6 +1,6 @@
 import logging
 
-from flows.flows.models_update_after_file_changes import flows_update_arguments
+from flows.models_update_after_file_changes.flows import flows_update_arguments
 
 logger = logging.getLogger("django.debug")
 

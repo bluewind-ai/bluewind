@@ -6,7 +6,7 @@ from django import forms
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
 
-from people.models import Person
+from models.models import Model
 
 logger = logging.getLogger("django.not_used")
 
@@ -19,10 +19,7 @@ class GetModelContextForm(forms.Form):
         super().__init__(*args, **kwargs)
 
 
-"csdcds"
-
-
-def get_model_context(content_type: "Person.name"):
+def get_model_context(content_type: Model):
     try:
         if not isinstance(content_type, ContentType):
             raise ValueError("content_type must be a ContentType instance")

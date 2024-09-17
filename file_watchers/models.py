@@ -2,7 +2,6 @@ import logging
 
 from django.db import models
 
-from flows.flows.file_watchers_after_save import file_watchers_after_save
 from workspaces.models import WorkspaceRelated
 
 # Initialize the logger

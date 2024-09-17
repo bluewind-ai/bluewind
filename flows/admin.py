@@ -1,6 +1,5 @@
 from base_model_admin.admin import InWorkspace
 from django_object_actions import DjangoObjectActions
-from flows.flows.flow_runs_create_form import flow_runs_create_form
 
 
 class FlowAdmin(DjangoObjectActions, InWorkspace):

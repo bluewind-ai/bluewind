@@ -3,7 +3,6 @@ import logging
 from django.conf import settings
 from django.db import models
 
-from flows.flows.file_changes_after_save import file_changes_after_save
 from workspaces.models import WorkspaceRelated
 
 "cdscdscds"

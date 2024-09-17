@@ -4,8 +4,8 @@ import os
 
 from django.db import transaction
 
-from flows.flows.load_and_process_files import load_and_process_files
-from flows.flows.register_models import register_models
+from flows.load_and_process_files.flows import load_and_process_files
+from flows.register_models.flows import register_models
 
 logger = logging.getLogger("django.not_used")
 
