@@ -7,6 +7,7 @@ from django import forms
 from django.contrib import admin, messages
 from django.shortcuts import redirect
 from django.urls import reverse
+from django_reverse_admin import mark_safe
 
 from base_model_admin.admin import InWorkspace
 from flows.flow_runs_create_form.flows import flow_runs_create_form
@@ -23,7 +24,23 @@ logger = logging.getLogger("django.debug")
 
 class OutputFormWidget(forms.Widget):
     def render(self, name, value, attrs=None, renderer=None):
-        return value if value else ""
+        if not value:
+            return ""
+
+        flow_run = self.flow_run
+        flow = flow_run.flow
+        module_name = f"flows.{flow.name}.output_forms"
+        class_name = (
+            "".join(word.title() for word in flow.name.split("_")) + "OutputForm"
+        )
+
+        try:
+            form_module = importlib.import_module(module_name)
+            FormClass = getattr(form_module, class_name)
+            form = FormClass(initial=flow_run.output_data)
+            return mark_safe(form.as_p())
+        except (ImportError, AttributeError) as e:
+            return f"Error rendering output form: {str(e)}"
 
 
 class FlowRunForm(forms.ModelForm):
@@ -44,9 +61,7 @@ class FlowRunForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["rendered_output"].label = "Rendered Output"
-        self.fields["rendered_output"].widget = forms.Textarea(
-            attrs={"readonly": "readonly"}
-        )
+        self.fields["rendered_output"].widget.flow_run = self.instance
 
 
 @admin.register(FlowRun)
@@ -61,6 +76,12 @@ class FlowRunAdmin(InWorkspace):
     def get_actions(self, request):
         logger.debug("Getting actions for FlowRunAdmin")
         return []
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj:
+            form.base_fields["rendered_output"].widget.flow_run = obj
+        return form
 
     def save_model(self, request, obj, form, change):
         logger.debug(f"Save model called for object: {obj}, change: {change}")
