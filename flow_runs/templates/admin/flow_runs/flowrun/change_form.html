@@ -1,12 +1,8 @@
 {% extends "admin/change_form.html" %}
 
 {% block content %}
-    {{ block.super }}  <!-- This will include the original admin form -->
-
-    <h2>Custom Output Form</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ custom_form.as_p }}
-        <input type="submit" value="Save Custom Data">
-    </form>
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" disabled>
+</form>
 {% endblock %}
