@@ -6,7 +6,7 @@ from django import forms
 
 from files.models import File
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 class GetFunctionParametersForm(forms.Form):
@@ -28,7 +28,7 @@ from django.core.exceptions import ValidationError
 
 from files.models import File
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 import logging
@@ -37,27 +37,27 @@ from django.db import models
 
 from files.models import File
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 import logging
 
 from files.models import File
 
-logger = logging.getLogger("django.temp")
-
-
-import logging
-
-from files.models import File
-
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 import logging
 
 from files.models import File
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
+
+
+import logging
+
+from files.models import File
+
+logger = logging.getLogger("django.debug")
 
 
 import logging
@@ -65,34 +65,34 @@ from typing import get_args, get_origin
 
 from files.models import File
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 import logging
 
 from files.models import File
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 import importlib
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def get_function_parameters(files: List[File]) -> List[dict]:

@@ -4,28 +4,28 @@ import logging
 
 from django.template.response import TemplateResponse
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 # Adjusted flow_runs_change_form function
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def flow_runs_change_form(request, flow, obj, form_template, context):

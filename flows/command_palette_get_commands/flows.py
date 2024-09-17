@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth.models import Permission
 from django.urls import reverse
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 import logging
