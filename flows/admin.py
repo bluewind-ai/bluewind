@@ -6,10 +6,6 @@ from base_model_admin.admin import InWorkspace
 class FlowAdmin(InWorkspace):
     list_display = (
         "name",
-        "workspace",
-        "type",
-        "created_at",
-        "updated_at",
         "custom_action_button",
     )
 

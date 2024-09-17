@@ -214,3 +214,5 @@ def has_change_permission(self, request, obj=None):
 
 THIS SHOULD NEVER BE ALLOWED TO BE OVERWRITTEN in the admin. PERMISSIONS are not admin specific. They''re global.
 history: remove
+
+linter: never put workspace in the list view

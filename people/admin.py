@@ -4,7 +4,6 @@ from time import sleep
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django_object_actions import DjangoObjectActions, action
 
 from base_model_admin.admin import InWorkspace
 from channels.models import Channel
@@ -13,7 +12,7 @@ from draft_messages.models import DraftMessage
 from people.models import Person
 
 
-class PersonAdmin(DjangoObjectActions, InWorkspace):
+class PersonAdmin(InWorkspace):
     list_filter = ("status", "source")
     search_fields = ("first_name", "last_name", "email", "company_domain_name")
     actions = ["enrich_emails"]
@@ -52,10 +51,6 @@ class PersonAdmin(DjangoObjectActions, InWorkspace):
 
     enrich_emails.short_description = "Enrich emails using PersonMagic"
 
-    @action(
-        label="Enrich",
-        description="Populate this person with random data",
-    )
     def do_stuff_action(self, request, obj):
         sleep(5)
         message = obj.do_stuff()
@@ -102,10 +97,6 @@ class PersonAdmin(DjangoObjectActions, InWorkspace):
     #         workspace_id=obj.workspace_id,
     #     )
 
-    @action(
-        label="Find Leads",
-        description="Find potential leads and create a draft message",
-    )
     def find_leads_action(self, request, obj):
         sleep(7)  # Simulating some processing time
 

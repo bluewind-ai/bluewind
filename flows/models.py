@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import urlencode
 
 from django.db import models
 from django.urls import reverse
@@ -21,7 +22,9 @@ class Flow(WorkspaceRelated):
     )
 
     def get_custom_action_url(self):
-        return reverse("flow_custom_action", args=[self.pk])
+        url = reverse("admin:flow_runs_flowrun_add")
+        query_string = urlencode({"flow": self.pk})
+        return f"{url}?{query_string}"
 
     class Meta:
         unique_together = ["name", "workspace"]
