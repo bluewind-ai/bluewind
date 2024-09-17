@@ -11,6 +11,7 @@ logger = logging.getLogger("django.not_used")
 
 
 def get_model_context(content_type: Model):
+    return {"model_context": "test"}
     try:
         if not isinstance(content_type, ContentType):
             raise ValueError("content_type must be a ContentType instance")

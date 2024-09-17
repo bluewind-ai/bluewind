@@ -1,20 +1,16 @@
-import logging
-
 from django import forms
-
-from files.models import File
-
-logger = logging.getLogger("django.debug")
 
 
 class GetModelContextOutputForm(forms.Form):
-    files = forms.ModelMultipleChoiceField(
-        queryset=File.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        help_text="Select the files to include in the template",
+    model_context = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                "rows": 100,
+                "cols": 100,
+                "class": "form-control",
+                "placeholder": "Enter the extracted contexts here...",
+                # Keep the existing styles
+                "style": "resize: none; overflow: hidden; min-height: 100px; font-family: monospace;",
+            }
+        ),
     )
-
-    def __init__(self, *args, **kwargs):
-        logger.debug("Initializing ExtractContextsForm")
-        self.workspace = kwargs.pop("workspace", None)
-        super().__init__(*args, **kwargs)
