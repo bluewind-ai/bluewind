@@ -44,4 +44,4 @@ def command_palette_get_commands():
     logger.debug(f"Sorted result list length: {len(result)}")
 
     logger.debug("Finished command_palette_get_commands function")
-    return result
+    return {"commands": result}
