@@ -5,7 +5,7 @@ from watchdog.observers import Observer
 
 from file_changes.models import FileChange
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 observers_registry = {}
 
 
