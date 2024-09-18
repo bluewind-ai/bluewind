@@ -1,7 +1,7 @@
 import logging
 import subprocess
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def run_autopep8():
