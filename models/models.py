@@ -18,3 +18,6 @@ class Model(WorkspaceRelated):
 
     def __str__(self):
         return self.app.plural_name
+
+
+"cdscds"

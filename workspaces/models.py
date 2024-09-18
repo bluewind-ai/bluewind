@@ -10,7 +10,6 @@ from django.forms import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
 
-from admin_autoregister.register_flows import load_flows
 from bluewind.context_variables import get_startup_mode, get_workspace_id
 from bluewind.do_not_log import DO_NOT_LOG
 from users.models import User
@@ -48,7 +47,7 @@ class Workspace(models.Model):
             # register_all_models(self)
             # register_actions_and_models(self)
 
-            load_flows(self)
+            # load_flows(self)
 
             # Create a new Recording for this workspace
             Recording.objects.create(

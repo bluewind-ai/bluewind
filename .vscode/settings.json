@@ -45,7 +45,8 @@
   "search.exclude": {
     "**/node_modules": true,
     "**/staticfiles": true,
-    "**/poetry.lock": true
+    "**/poetry.lock": true,
+    "**/migrations": true
   },
   "terminal.integrated.scrollback": 10000,
   "terminal.integrated.enableMultiLinePasteWarning": false,
