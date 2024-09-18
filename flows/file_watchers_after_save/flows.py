@@ -1,100 +1,37 @@
 import logging
-import os
 
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 from file_changes.models import FileChange
-from files.models import File
-from flows.is_ignored_by_git.flows import is_ignored_by_git
 
-temp_logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.temp")
 observers_registry = {}
 
 
-class DynamicFileChangeHandler(FileSystemEventHandler):
+class SimpleFileChangeHandler(FileSystemEventHandler):
     def __init__(self, file_watcher):
         super().__init__()
         self.file_watcher = file_watcher
 
-    def _handle_file_event(self, event, change_type):
-        if is_ignored_by_git(event.src_path) or ".git" in event.src_path:
-            temp_logger.debug(f"Path {event.src_path} is ignored, skipping logging.")
-            return
-
-        if os.path.isdir(event.src_path):
-            temp_logger.debug(
-                f"Path {event.src_path} is a directory, skipping file creation."
-            )
-            return
-
-        file_instance, created = File.objects.get_or_create(
-            path=event.src_path,
-            defaults={
-                "content": "",
-                "user_id": self.file_watcher.user_id,
-                "workspace": self.file_watcher.workspace,
-            },
-        )
-
-        if change_type == "created" or change_type == "modified":
-            with open(event.src_path, "r") as f:
-                file_instance.content = f.read()
-            file_instance.save()
-
+    def _create_file_change(self, event, change_type):
         FileChange.objects.create(
             file_watcher=self.file_watcher,
-            file=file_instance,
+            file_path=event.src_path,
             change_type=change_type,
             user_id=self.file_watcher.user_id,
             workspace=self.file_watcher.workspace,
         )
-        temp_logger.debug(f"FileChange ({change_type}) created for {event.src_path}")
+        logger.debug(f"FileChange ({change_type}) created for {event.src_path}")
 
     def on_created(self, event):
-        temp_logger.debug(f"Detected creation of path: {event.src_path}")
-        self._handle_file_event(event, "created")
+        self._create_file_change(event, "created")
 
     def on_modified(self, event):
-        temp_logger.debug(f"Detected modification of path: {event.src_path}")
-        self._handle_file_event(event, "modified")
+        self._create_file_change(event, "modified")
 
     def on_deleted(self, event):
-        temp_logger.debug(f"Detected deletion of path: {event.src_path}")
-
-        if event.src_path.endswith(".py"):
-            self._delete_file_from_db(event.src_path)
-        else:
-            temp_logger.debug(f"Deleted path is a directory: {event.src_path}")
-            self._handle_directory_deletion(event.src_path)
-
-    def _handle_directory_deletion(self, dir_path):
-        # Find all files in the database that start with this directory path
-        files_to_delete = File.objects.filter(path__startswith=dir_path)
-        for file in files_to_delete:
-            # Create a FileChange record for the deleted file
-            FileChange.objects.create(
-                file_watcher=self.file_watcher,
-                file=file,
-                change_type="deleted",
-                user_id=self.file_watcher.user_id,
-                workspace=self.file_watcher.workspace,
-            )
-            temp_logger.debug(f"FileChange (deleted) created for {file.path}")
-
-            # Now delete the file from the database
-            self._delete_file_from_db(file.path)
-
-    def _delete_file_from_db(self, file_path):
-        if is_ignored_by_git(file_path) or ".git" in file_path:
-            temp_logger.debug(f"Path {file_path} is ignored, skipping deletion.")
-            return
-        try:
-            file_instance = File.objects.get(path=file_path)
-            file_instance.delete()
-            temp_logger.debug(f"File {file_path} deleted from database")
-        except File.DoesNotExist:
-            temp_logger.debug(f"File {file_path} not found in database")
+        self._create_file_change(event, "deleted")
 
 
 def file_watchers_after_save(file_watcher):
