@@ -227,3 +227,4 @@ LINTERS: not allowed to add files that don''t end with .py
 
 create linters: not see pypoetry crap
 linter: warning: you''re using bulk on a model that has an after save /before save.
+if folder ends with .py don''t allow it
