@@ -12,12 +12,8 @@ class Model(WorkspaceRelated):
     This model is associated with a File and includes a 'content' field.
     """
 
-    name = models.CharField(max_length=100)
     app_label = models.CharField(max_length=100)
-    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="models")
+    file = models.OneToOneField(File, on_delete=models.CASCADE, related_name="model")
 
     def __str__(self):
-        return self.name
-
-    class Meta:
-        unique_together = ("workspace", "name")
+        return self.app_label

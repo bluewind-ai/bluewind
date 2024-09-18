@@ -224,3 +224,5 @@ tactic: "I missed something can you tell what?" even when I am not sure somethin
 
 RULE: some objects should not have after save. for example file. Because you should use file change
 LINTERS: not allowed to add files that don''t end with .py
+
+create linters: not see pypoetry crap

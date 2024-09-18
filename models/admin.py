@@ -9,6 +9,6 @@ from .models import Model
 
 @admin.register(Model)
 class ModelAdmin(InWorkspace):
-    list_display = ("name", "app_label", "workspace", "file")
+    list_display = ("app_label", "workspace", "file")
     list_filter = ("app_label", "workspace")
-    search_fields = ("name", "app_label", "file__path")
+    search_fields = ("app_label", "file__path")
