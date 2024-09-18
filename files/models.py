@@ -1,6 +1,9 @@
 from django.db import models
 
 from files.after_create import files_after_create
+from files.after_update import files_after_update
+from files.before_create import files_before_create
+from files.before_update import files_before_update
 from workspaces.models import WorkspaceRelated
 
 
@@ -13,7 +16,12 @@ class File(WorkspaceRelated):
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
+        if is_new:
+            files_before_create(self)
+        else:
+            files_before_update(self)
         super().save(*args, **kwargs)
-
         if is_new:
             files_after_create(self)
+        else:
+            files_after_update(self)

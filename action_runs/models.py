@@ -1,9 +1,13 @@
 import logging
 
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db import models, transaction
+from django.db import models
 from django.forms import ValidationError
 
+from action_runs.after_create import action_runs_after_create
+from action_runs.after_update import action_runs_after_update
+from action_runs.before_create import action_runs_before_create
+from action_runs.before_update import action_runs_before_update
 from actions.models import Action
 from credentials.models import Credentials
 from recordings.models import Recording
@@ -45,36 +49,16 @@ class ActionRun(WorkspaceRelated):
         return f"{self.action} by {self.user}"
 
     def save(self, *args, **kwargs):
-        is_new = self._state.adding
-        update_fields = kwargs.get("update_fields")
-
-        try:
-            with transaction.atomic():
-                if is_new:
-                    super().save(*args, **kwargs)
-                    self.status = "IN_PROGRESS"
-                    self.save(update_fields=["status"])
-
-                    self.status = "COMPLETED"
-                    self.save(update_fields=["status", "results"])
-
-                elif update_fields:
-                    type(self).objects.filter(pk=self.pk).update(
-                        **{field: getattr(self, field) for field in update_fields}
-                    )
-                else:
-                    super().save(*args, **kwargs)
-
-        except Exception as e:
-            self.status = "ERROR"
-            self.action_input = self.action_input or {}
-            self.action_input["error"] = str(e)
-            self.results = {"error": str(e)}
-            super().save(update_fields=None)
-            logger.error(f"Error in ActionRun {self.id}: {str(e)}")
-            raise ValidationError(f"Error in action execution: {str(e)}")
-
-        logger.debug(f"ActionRun {self.id} saved successfully")
+        is_new = self.pk is None
+        if is_new:
+            action_runs_before_create(self)
+        else:
+            action_runs_before_update(self)
+        super().save(*args, **kwargs)
+        if is_new:
+            action_runs_after_create(self)
+        else:
+            action_runs_after_update(self)
 
     def _execute_action(self):
         self.status = "IN_PROGRESS"

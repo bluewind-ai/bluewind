@@ -4,6 +4,10 @@ import os
 import requests
 from django.db import models
 
+from people.after_create import people_after_create
+from people.after_update import people_after_update
+from people.before_create import people_before_create
+from people.before_update import people_before_update
 from users.models import User
 from workspaces.models import WorkspaceRelated
 
@@ -126,3 +130,15 @@ class Person(WorkspaceRelated):
             print(f"Unexpected error enriching email for {self}: {str(e)}")
 
         return False
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        if is_new:
+            people_before_create(self)
+        else:
+            people_before_update(self)
+        super().save(*args, **kwargs)
+        if is_new:
+            people_after_create(self)
+        else:
+            people_after_update(self)

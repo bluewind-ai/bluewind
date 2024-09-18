@@ -6,8 +6,6 @@
 !admin_autoregister
 !allauth
 !allauth_ui
-!api_calls
-!api_providers
 !apollo_people_search
 !app_logs
 !apps
@@ -25,9 +23,9 @@
 !credentials
 !db_graph
 !debug_toolbar
+!diff_related_entities
 !django_extensions
 !django_json_widget
-!django_object_actions
 !draft_messages
 !drf_spectacular
 !drf_standardized_errors
@@ -47,6 +45,7 @@
 !model_clone
 !models
 !people
+!pub_sub_topics
 !recordings
 !rest_framework
 !sessions
@@ -57,7 +56,8 @@
 !step_runs
 !steps
 !users
-!webhook_tester
 !widget_tweaks
+!workspace_diffs
 !workspace_snapshots
+!workspace_users
 !workspaces

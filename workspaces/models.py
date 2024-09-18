@@ -13,16 +13,17 @@ from django.utils.html import format_html
 from bluewind.context_variables import get_startup_mode, get_workspace_id
 from bluewind.do_not_log import DO_NOT_LOG
 from users.models import User
+from workspace_users.models import WorkspaceUser
 
 
 class Workspace(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     users = models.ManyToManyField(
-        User, through="WorkspaceUser", related_name="workspaces"
+        User, through="workspace_users.WorkspaceUser", related_name="workspaces"
     )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="owned_workspaces"
+        "users.User", on_delete=models.CASCADE, related_name="owned_workspaces"
     )
 
     def __str__(self):
@@ -62,15 +63,6 @@ class Workspace(models.Model):
             WorkspaceUser.objects.create(workspace=self, user=self.user)
 
 
-class WorkspaceUser(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
-    is_default = models.BooleanField(default=False)
-
-    class Meta:
-        unique_together = ("user", "workspace")
-
-
 class WorkspaceAdmin(admin.ModelAdmin):
     readonly_fields = ("admin_url_link",)
 
@@ -86,10 +78,6 @@ class WorkspaceAdmin(admin.ModelAdmin):
 
 
 logger = logging.getLogger(__name__)
-
-
-from django.core.exceptions import ValidationError
-from django.db import models
 
 
 class WorkspaceRelatedManager(models.Manager):

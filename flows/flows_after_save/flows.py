@@ -7,25 +7,6 @@ from django.conf import settings
 logger = logging.getLogger("django.debug")
 
 
-import logging
-
-logger = logging.getLogger("django.debug")
-
-
-def to_pascal_case(snake_str):
-    return "".join(x.capitalize() for x in snake_str.split("_"))
-
-
-import logging
-
-logger = logging.getLogger("django.debug")
-
-
-import logging
-
-logger = logging.getLogger("django.debug")
-
-
 def to_pascal_case(snake_str):
     return "".join(x.capitalize() for x in snake_str.split("_"))
 

@@ -2,7 +2,10 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from base_model_admin.admin import InWorkspace
+from app_logs.after_create import app_logs_after_create
+from app_logs.after_update import app_logs_after_update
+from app_logs.before_create import app_logs_before_create
+from app_logs.before_update import app_logs_before_update
 from incoming_http_requests.models import IncomingHTTPRequest
 from workspaces.models import WorkspaceRelated
 
@@ -26,25 +29,14 @@ class AppLog(WorkspaceRelated):
             models.Index(fields=["timestamp"]),
         ]
 
-
-from django.contrib import admin
-
-from .models import AppLog
-
-
-@admin.register(AppLog)
-class AppLogAdmin(InWorkspace):
-    list_display = (
-        "user",
-        "message",
-        "traceback",
-        "timestamp",
-        "level",
-        "incoming_http_request",  # Updated field name
-        "logger",
-        "created_at",
-    )
-    search_fields = ("user__username", "message", "logger")
-    list_filter = ("level", "timestamp", "logger")  # Just add 'logger' here
-    ordering = ("-timestamp",)
-    date_hierarchy = "timestamp"
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        if is_new:
+            app_logs_before_create(self)
+        else:
+            app_logs_before_update(self)
+        super().save(*args, **kwargs)
+        if is_new:
+            app_logs_after_create(self)
+        else:
+            app_logs_after_update(self)

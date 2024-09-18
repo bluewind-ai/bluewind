@@ -1,19 +1,19 @@
 import logging
-import os
 from urllib.parse import urlencode
 
 from django.db import models
 from django.urls import reverse
 
-from flows.flows_after_save.flows import flows_after_save
+from flows.after_create import flows_after_create
+from flows.after_update import flows_after_update
+from flows.before_create import flows_before_create
+from flows.before_update import flows_before_update
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
 logger = logging.getLogger(__name__)
 
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,13 @@ class Flow(WorkspaceRelated):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.name = os.path.basename(os.path.dirname(self.file.path))
+        is_new = self.pk is None
+        if is_new:
+            flows_before_create(self)
+        else:
+            flows_before_update(self)
         super().save(*args, **kwargs)
-        flows_after_save(self)
+        if is_new:
+            flows_after_create(self)
+        else:
+            flows_after_update(self)

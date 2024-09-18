@@ -38,7 +38,6 @@ def register_all_models(workspace):
         for model in app_config.get_models():
             model_name = model.__name__
             app_label = app_config.label  # Extract the app label
-            snake_case_name = snake_case(model_name)
 
             # Check if model is already registered
             if model_name not in registered_models:
@@ -48,12 +47,9 @@ def register_all_models(workspace):
 
                 # Construct the file path for the content
                 file_path = os.path.join(settings.BASE_DIR, app_label, "models.py")
-                content = ""
 
                 # Read the content of the models.py file
                 if os.path.exists(file_path):
-                    with open(file_path, "r") as file:
-                        content = file.read()
                     temp_logger.debug(f"Read content from {file_path}")
                 else:
                     temp_logger.warning(f"File {file_path} does not exist.")

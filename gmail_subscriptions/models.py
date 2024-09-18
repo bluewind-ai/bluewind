@@ -11,32 +11,33 @@ from google.oauth2 import service_account
 
 from base_model_admin.admin import InWorkspace
 from credentials.models import Credentials
+from gmail_subscriptions.after_create import gmail_subscriptions_after_create
+from gmail_subscriptions.after_update import gmail_subscriptions_after_update
+from gmail_subscriptions.before_create import gmail_subscriptions_before_create
+from gmail_subscriptions.before_update import gmail_subscriptions_before_update
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
 
 
-class PubSubTopic(WorkspaceRelated):
-    project_id = models.CharField(max_length=100)
-    topic_id = models.CharField(max_length=100)
-
-    @property
-    def full_topic_name(self):
-        return f"projects/{self.project_id}/topics/{self.topic_id}"
-
-    def __str__(self):
-        return f"{self.topic_id} in {self.project_id}"
-
-    class Meta:
-        unique_together = ["project_id", "topic_id"]
-
-
 class GmailSubscription(WorkspaceRelated):
-    topic = models.ForeignKey(PubSubTopic, on_delete=models.CASCADE)
+    topic = models.ForeignKey("pub_sub_topics.PubSubTopic", on_delete=models.CASCADE)
     push_endpoint = models.URLField()
 
     def __str__(self):
         return f"Subscription for {self.topic} to {self.push_endpoint}"
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        if is_new:
+            gmail_subscriptions_before_create(self)
+        else:
+            gmail_subscriptions_before_update(self)
+        super().save(*args, **kwargs)
+        if is_new:
+            gmail_subscriptions_after_create(self)
+        else:
+            gmail_subscriptions_after_update(self)
 
 
 def get_pubsub_credentials(workspace):

@@ -6,9 +6,6 @@ from django.urls import reverse
 logger = logging.getLogger("django.debug")
 
 
-import logging
-
-
 def command_palette_get_commands():
     admin_links = {}
     logger = logging.getLogger(__name__)

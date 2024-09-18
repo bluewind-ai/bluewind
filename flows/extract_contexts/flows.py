@@ -1,11 +1,9 @@
 import logging
 
 from django.template import Context, Template
+from django.utils.safestring import mark_safe
 
 logger = logging.getLogger("django.debug")
-
-
-from django.utils.safestring import mark_safe
 
 
 def extract_contexts(files):

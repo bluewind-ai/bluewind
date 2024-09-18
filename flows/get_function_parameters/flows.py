@@ -1,8 +1,10 @@
+import importlib
 import inspect
 import logging
-from typing import List
+from typing import List, get_args, get_origin
 
 from django import forms
+from django.db import models
 
 from files.models import File
 
@@ -19,80 +21,6 @@ class GetFunctionParametersForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop("instance", None)
         super().__init__(*args, **kwargs)
-
-
-import logging
-
-from django import forms
-from django.core.exceptions import ValidationError
-
-from files.models import File
-
-logger = logging.getLogger("django.debug")
-
-
-import logging
-
-from django.db import models
-
-from files.models import File
-
-logger = logging.getLogger("django.debug")
-
-import logging
-
-from files.models import File
-
-logger = logging.getLogger("django.debug")
-
-
-import logging
-
-from files.models import File
-
-logger = logging.getLogger("django.debug")
-
-
-import logging
-
-from files.models import File
-
-logger = logging.getLogger("django.debug")
-
-
-import logging
-from typing import get_args, get_origin
-
-from files.models import File
-
-logger = logging.getLogger("django.debug")
-
-
-import logging
-
-from files.models import File
-
-logger = logging.getLogger("django.debug")
-
-
-import logging
-
-logger = logging.getLogger("django.debug")
-
-import logging
-
-logger = logging.getLogger("django.debug")
-
-import logging
-
-logger = logging.getLogger("django.debug")
-import logging
-
-logger = logging.getLogger("django.debug")
-import importlib
-import logging
-
-logger = logging.getLogger("django.debug")
 
 
 def get_function_parameters(files: List[File]) -> List[dict]:
@@ -161,8 +89,7 @@ def get_function_parameters(files: List[File]) -> List[dict]:
                         param_info["field_name"] = parts[1]
                     else:
                         logger.warning(
-                            f"Invalid type annotation for parameter '{name}' in module: {module_path}. Expected format: 'model.field'"
-                        )
+                            f"Invalid type annotation for parameter '{name}' in module: {module_path}. Expected format: 'model.field'")
                         continue
                 elif inspect.isclass(param_type) and issubclass(
                     param_type, models.Model
@@ -170,8 +97,7 @@ def get_function_parameters(files: List[File]) -> List[dict]:
                     param_info["model_name"] = param_type.__name__
                 else:
                     logger.warning(
-                        f"Parameter '{name}' is not a valid Model type or model field reference in module: {module_path}"
-                    )
+                        f"Parameter '{name}' is not a valid Model type or model field reference in module: {module_path}")
                     continue
 
                 parameters.append(param_info)
@@ -188,7 +114,7 @@ def get_function_parameters(files: List[File]) -> List[dict]:
             )
 
     # If we've gone through all files and found nothing
-    raise ValidationError(
+    raise forms.ValidationError(
         "No valid function with proper parameters found in any of the provided modules"
     )
 

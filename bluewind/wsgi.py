@@ -2,6 +2,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+from bluewind import startup  # no qa
 from bluewind.context_variables import (
     set_startup_mode,
     set_workspace_id,
@@ -38,6 +39,5 @@ set_startup_mode(False)
 # Apply our middleware
 application = workspace_wsgi_middleware(django_application)
 
-from bluewind import startup  # no qa
 
 test = startup

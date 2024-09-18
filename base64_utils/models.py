@@ -1,8 +1,9 @@
-import base64
-
-from django.core.exceptions import ValidationError
 from django.db import models
 
+from base64_utils.after_create import base64_utils_before_create
+from base64_utils.after_update import base64_utils_after_update
+from base64_utils.before_create import base64_utils_after_create
+from base64_utils.before_update import base64_utils_before_update
 from workspaces.models import WorkspaceRelated
 
 
@@ -23,12 +24,13 @@ class Base64Conversion(WorkspaceRelated):
         return f"{self.operation} at {self.created_at}"
 
     def save(self, *args, **kwargs):
-        try:
-            if self.operation == "encode":
-                self.output_text = base64.b64encode(self.input_text.encode()).decode()
-            else:
-                self.output_text = base64.b64decode(self.input_text).decode()
-        except Exception as e:
-            raise ValidationError(f"Error in base64 {self.operation}: {str(e)}")
-
+        is_new = self.pk is None
+        if is_new:
+            base64_utils_before_create(self)
+        else:
+            base64_utils_before_update(self)
         super().save(*args, **kwargs)
+        if is_new:
+            base64_utils_after_create(self)
+        else:
+            base64_utils_after_update(self)

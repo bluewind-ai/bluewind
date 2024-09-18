@@ -6,10 +6,7 @@ from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 from django.db.migrations.recorder import MigrationRecorder
 
-from admin_autoregister.admin_inheritance import check_admin_inheritance
-from admin_autoregister.check_unique_together import check_unique_constraints
-from admin_autoregister.forbid_imports import check_forbidden_imports
-from admin_autoregister.ruff_deal_breakers import run_ruff
+from admin_autoregister.append_dockerignore import append_to_dockerignore
 from base_model_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
 from workspaces.models import WorkspaceRelated  # Adjust this import as needed
@@ -17,43 +14,15 @@ from workspaces.models import WorkspaceRelated  # Adjust this import as needed
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def append_to_dockerignore(app_configs):
-    dockerignore_path = os.path.join(base_dir, ".dockerignore")
-
-    with open(dockerignore_path, "a") as f:
-        for app_config in app_configs:
-            f.write(f"!{app_config.label}\n")
-
-
-def clean_dockerignore():
-    dockerignore_path = os.path.join(base_dir, ".dockerignore")
-
-    with open(dockerignore_path, "r") as f:
-        lines = f.readlines()
-
-    # Keep the first line (assumed to be the wildcard *)
-    first_line = lines[0] if lines else ""
-
-    # Remove duplicates and sort the rest of the lines
-    unique_sorted_lines = sorted(set(lines[1:]))
-
-    # Write back to the file
-    with open(dockerignore_path, "w") as f:
-        f.write(first_line)  # Write the first line (wildcard) unchanged
-        f.writelines(unique_sorted_lines)  # Write the rest of the sorted, unique lines
-    # remove the last
-
-
-def get_workspace_models():
-    workspace_models = []
-    for app_config in apps.get_app_configs():
-        for model in app_config.get_models():
-            if issubclass(model, WorkspaceRelated) and model != WorkspaceRelated:
-                workspace_models.append(model.__name__)
-    return workspace_models
-
-
 def autoregister():
+    def get_workspace_models():
+        workspace_models = []
+        for app_config in apps.get_app_configs():
+            for model in app_config.get_models():
+                if issubclass(model, WorkspaceRelated) and model != WorkspaceRelated:
+                    workspace_models.append(model.__name__)
+        return workspace_models
+
     workspace_models = get_workspace_models()
     app_configs = []
 
@@ -117,15 +86,3 @@ def autoregister():
             pass
 
     append_to_dockerignore(app_configs)
-    clean_dockerignore()
-    check_admin_inheritance()
-    check_forbidden_imports()
-    check_unique_constraints()
-    run_ruff()
-    # create_superuser_workspace()
-    # register_forms()
-    # register_actions()  # Add this line
-
-    # create_channel_wizard()
-    # inserted_count = Model.insert_all_models()
-    # print(f"Inserted {inserted_count} models into the Model table.")

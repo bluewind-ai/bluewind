@@ -1,12 +1,12 @@
 [build-system]
-requires = [ "poetry-core",]
+requires = ["poetry-core",]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "Bluewind"
 version = "0.0.1"
 description = "Bluewind"
-authors = [ "Merwane Hamadi",]
+authors = ["Merwane Hamadi",]
 license = "MIT License"
 readme = "README.md"
 
@@ -63,8 +63,8 @@ slippers = "^0.6.2"
 watchdog = "^5.0.2"
 
 [tool.poetry.extras]
-argon2 = [ "argon2-cffi",]
-bcrypt = [ "bcrypt",]
+argon2 = ["argon2-cffi",]
+bcrypt = ["bcrypt",]
 
 [tool.poetry.scripts]
 django-admin = "django.core.management:execute_from_command_line"
@@ -74,10 +74,12 @@ version = "*"
 markers = "sys_platform == 'win32'"
 
 [tool.ruff]
+# The extend-ignore has been moved to the [tool.ruff.lint] section
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "F811"]  # Added F811 here
-ignore = ["E501"]  # Ignore line length errors
+select = ["E", "F", "I", "F811"]
+ignore = ["E501"]
+extend-ignore = ["E402"]  # Moved here from [tool.ruff]
 
 [tool.ruff.lint.isort]
 known-first-party = ["bluewind"]
@@ -119,3 +121,4 @@ max_line_length = 120
 in-place = true
 recursive = true
 aggressive = 3
+ignore-local-config = true

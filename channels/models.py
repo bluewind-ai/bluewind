@@ -18,6 +18,11 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 from base_model_admin.admin import InWorkspace
+from channels.after_create import channels_after_create
+from channels.after_update import channels_after_update
+from channels.before_create import channels_before_create
+from channels.before_update import channels_before_update
+from channels.tests import SCOPES
 from credentials.models import Credentials as CredentialsModel
 from gmail_subscriptions.models import GmailSubscription
 
@@ -52,17 +57,17 @@ class Channel(WorkspaceRelated):
     class Meta:
         unique_together = ["workspace", "email"]
 
-
-SCOPES = [
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile",
-    "openid",
-    "https://www.googleapis.com/auth/gmail.readonly",
-    "https://www.googleapis.com/auth/gmail.send",
-    "https://www.googleapis.com/auth/gmail.modify",
-    "https://www.googleapis.com/auth/gmail.settings.basic",
-    "https://www.googleapis.com/auth/pubsub",
-]
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        if is_new:
+            channels_before_create(self)
+        else:
+            channels_before_update(self)
+        super().save(*args, **kwargs)
+        if is_new:
+            channels_after_create(self)
+        else:
+            channels_after_update(self)
 
 
 def get_gmail_service(channel):

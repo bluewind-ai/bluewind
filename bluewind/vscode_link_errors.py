@@ -26,7 +26,11 @@ class VSCodeLinkMiddleware:
                 # Target specifically the exception location span and include the line number
                 content = re.sub(
                     r'(<span class="fname">(/.+?)</span>), line (\d+), in',
-                    lambda m: f'<a href="vscode://file{m.group(2)}:{m.group(3)}">{m.group(1)}, line {m.group(3)}</a>, in',
+                    lambda m: f'<a href="vscode://file{
+                        m.group(2)}:{
+                        m.group(3)}">{
+                        m.group(1)}, line {
+                        m.group(3)}</a>, in',
                     content,
                 )
 

@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     "django_json_widget",
     # Local apps
     "users",
-    "api_providers",
     "workspaces",
     "base_model_admin",
     "auto_tests",
@@ -59,7 +58,6 @@ INSTALLED_APPS = [
     "gmail_subscriptions",
     "base_model.apps.BaseModelConfig",
     "gmail_events",
-    "webhook_tester",
     "credentials",
     "base64_utils",
     # This should be last
@@ -70,7 +68,6 @@ INSTALLED_APPS = [
     "workspace_snapshots",
     "rest_framework",
     "drf_spectacular",
-    "api_calls",
     "drf_standardized_errors",
     "incoming_http_requests",
     "app_logs",
@@ -86,6 +83,10 @@ INSTALLED_APPS = [
     "files",
     "flow_parameters",
     "apps",
+    "workspace_diffs",
+    "diff_related_entities",
+    "pub_sub_topics",
+    "workspace_users",
     "admin_autoregister",
 ]
 
@@ -116,7 +117,6 @@ APP_TYPE = {
     "django_json_widget": "third_party",
     # Local apps
     "users": "custom",
-    "api_providers": "custom",
     "workspaces": "custom",
     "base_model_admin": "custom",
     "auto_tests": "custom",
@@ -127,7 +127,6 @@ APP_TYPE = {
     "gmail_subscriptions": "custom",
     "base_model.apps.BaseModelConfig": "custom",
     "gmail_events": "custom",
-    "webhook_tester": "custom",
     "credentials": "custom",
     "base64_utils": "custom",
     "channel_wizzard": "custom",
@@ -137,7 +136,6 @@ APP_TYPE = {
     "workspace_snapshots": "custom",
     "rest_framework": "third_party",
     "drf_spectacular": "third_party",
-    "api_calls": "custom",
     "drf_standardized_errors": "third_party",
     "admin_autoregister": "custom",
     "incoming_http_requests": "custom",
@@ -153,6 +151,10 @@ APP_TYPE = {
     "files": "custom",
     "flow_parameters": "custom",
     "apps": "custom",
+    "workspace_diffs": "custom",
+    "diff_related_entities": "custom",
+    "pub_sub_topics": "custom",
+    "workspace_users": "custom",
     "app_logs": "custom",
 }
 
