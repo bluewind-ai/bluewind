@@ -1,9 +1,5 @@
 from django.db import models
 
-from apollo_people_search.after_create import apollo_people_search_after_create
-from apollo_people_search.after_update import apollo_people_search_after_update
-from apollo_people_search.before_create import apollo_people_search_before_create
-from apollo_people_search.before_update import apollo_people_search_before_update
 from workspaces.models import WorkspaceRelated
 
 
@@ -70,15 +66,3 @@ class ApolloPeopleSearch(WorkspaceRelated):
         verbose_name = "Apollo People Search"
         verbose_name_plural = "Apollo People Searches"
         unique_together = ["name", "workspace"]
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        if is_new:
-            apollo_people_search_before_create(self)
-        else:
-            apollo_people_search_before_update(self)
-        super().save(*args, **kwargs)
-        if is_new:
-            apollo_people_search_after_create(self)
-        else:
-            apollo_people_search_after_update(self)

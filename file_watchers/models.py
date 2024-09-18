@@ -2,7 +2,6 @@ import logging
 
 from django.db import models
 
-from file_watchers.after_create import file_watchers_after_create
 from workspaces.models import WorkspaceRelated
 
 # Initialize the logger
@@ -33,12 +32,6 @@ class FileWatcher(WorkspaceRelated):
 
     class Meta:
         unique_together = ["name", "workspace"]
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
-            file_watchers_after_create(self)
 
     def delete(self, *args, **kwargs):
         temp_logger.debug(f"Deleting FileWatcher: {self}")

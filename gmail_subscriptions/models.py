@@ -11,10 +11,6 @@ from google.oauth2 import service_account
 
 from base_model_admin.admin import InWorkspace
 from credentials.models import Credentials
-from gmail_subscriptions.after_create import gmail_subscriptions_after_create
-from gmail_subscriptions.after_update import gmail_subscriptions_after_update
-from gmail_subscriptions.before_create import gmail_subscriptions_before_create
-from gmail_subscriptions.before_update import gmail_subscriptions_before_update
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -26,18 +22,6 @@ class GmailSubscription(WorkspaceRelated):
 
     def __str__(self):
         return f"Subscription for {self.topic} to {self.push_endpoint}"
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        if is_new:
-            gmail_subscriptions_before_create(self)
-        else:
-            gmail_subscriptions_before_update(self)
-        super().save(*args, **kwargs)
-        if is_new:
-            gmail_subscriptions_after_create(self)
-        else:
-            gmail_subscriptions_after_update(self)
 
 
 def get_pubsub_credentials(workspace):

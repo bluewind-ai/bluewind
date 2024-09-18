@@ -4,10 +4,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.forms import ValidationError
 
-from action_runs.after_create import action_runs_after_create
-from action_runs.after_update import action_runs_after_update
-from action_runs.before_create import action_runs_before_create
-from action_runs.before_update import action_runs_before_update
 from actions.models import Action
 from credentials.models import Credentials
 from recordings.models import Recording
@@ -47,18 +43,6 @@ class ActionRun(WorkspaceRelated):
 
     def __str__(self):
         return f"{self.action} by {self.user}"
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        if is_new:
-            action_runs_before_create(self)
-        else:
-            action_runs_before_update(self)
-        super().save(*args, **kwargs)
-        if is_new:
-            action_runs_after_create(self)
-        else:
-            action_runs_after_update(self)
 
     def _execute_action(self):
         self.status = "IN_PROGRESS"

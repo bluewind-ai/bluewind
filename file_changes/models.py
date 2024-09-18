@@ -3,10 +3,6 @@ import logging
 from django.conf import settings
 from django.db import models
 
-from file_changes.after_create import file_changes_after_create
-from file_changes.after_update import file_changes_after_update
-from file_changes.before_create import file_changes_before_create
-from file_changes.before_update import file_changes_before_update
 from workspaces.models import WorkspaceRelated
 
 # Setup logger for debugging
@@ -43,15 +39,3 @@ class FileChange(WorkspaceRelated):
 
     def __str__(self):
         return f"{self.change_type} on {self.source_path} at {self.timestamp}"
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        if is_new:
-            file_changes_before_create(self)
-        else:
-            file_changes_before_update(self)
-        super().save(*args, **kwargs)
-        if is_new:
-            file_changes_after_create(self)
-        else:
-            file_changes_after_update(self)

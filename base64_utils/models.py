@@ -1,9 +1,5 @@
 from django.db import models
 
-from base64_utils.after_create import base64_utils_before_create
-from base64_utils.after_update import base64_utils_after_update
-from base64_utils.before_create import base64_utils_after_create
-from base64_utils.before_update import base64_utils_before_update
 from workspaces.models import WorkspaceRelated
 
 
@@ -22,15 +18,3 @@ class Base64Conversion(WorkspaceRelated):
 
     def __str__(self):
         return f"{self.operation} at {self.created_at}"
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        if is_new:
-            base64_utils_before_create(self)
-        else:
-            base64_utils_before_update(self)
-        super().save(*args, **kwargs)
-        if is_new:
-            base64_utils_after_create(self)
-        else:
-            base64_utils_after_update(self)

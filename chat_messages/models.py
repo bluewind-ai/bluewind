@@ -2,10 +2,6 @@ import logging
 
 from django.db import models
 
-from chat_messages.after_create import chat_messages_after_create
-from chat_messages.after_update import chat_messages_after_update
-from chat_messages.before_create import chat_messages_before_create
-from chat_messages.before_update import chat_messages_before_update
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -35,15 +31,3 @@ class Message(WorkspaceRelated):
 
     def __str__(self):
         return f"{self.subject}: {self.content[:50]}"
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        if is_new:
-            chat_messages_before_create(self)
-        else:
-            chat_messages_before_update(self)
-        super().save(*args, **kwargs)
-        if is_new:
-            chat_messages_after_create(self)
-        else:
-            chat_messages_after_update(self)

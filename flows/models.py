@@ -37,4 +37,4 @@ class Flow(WorkspaceRelated):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        flows_after_save()
+        flows_after_save(self)

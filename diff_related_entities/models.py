@@ -5,10 +5,6 @@ from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
-from diff_related_entities.after_create import diff_related_entities_after_create
-from diff_related_entities.after_update import diff_related_entities_after_update
-from diff_related_entities.before_create import diff_related_entities_before_create
-from diff_related_entities.before_update import diff_related_entities_before_update
 from workspaces.models import WorkspaceRelated
 
 
@@ -23,18 +19,6 @@ class DiffRelatedEntities(WorkspaceRelated):
 
     def __str__(self):
         return f"Related entities for diff {self.diff.id} at {self.created_at}"
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        if is_new:
-            diff_related_entities_before_create(self)
-        else:
-            diff_related_entities_before_update(self)
-        super().save(*args, **kwargs)
-        if is_new:
-            diff_related_entities_after_create(self)
-        else:
-            diff_related_entities_after_update(self)
 
     def generate_related_entities_snapshot(self):
         all_data = {}

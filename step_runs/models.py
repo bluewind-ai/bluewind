@@ -3,10 +3,6 @@ from django.utils import timezone
 
 from action_runs.models import ActionRun
 from flow_runs.models import FlowRun
-from step_runs.after_create import step_runs_after_create
-from step_runs.after_update import step_runs_after_update
-from step_runs.before_create import step_runs_before_create
-from step_runs.before_update import step_runs_before_update
 from steps.models import Step
 from workspaces.models import WorkspaceRelated
 
@@ -33,18 +29,6 @@ class StepRun(WorkspaceRelated):
     )
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        if is_new:
-            step_runs_before_create(self)
-        else:
-            step_runs_before_update(self)
-        super().save(*args, **kwargs)
-        if is_new:
-            step_runs_after_create(self)
-        else:
-            step_runs_after_update(self)
 
     def find_and_run_next_step(self):
         self.find_next_step()

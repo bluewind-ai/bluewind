@@ -1,9 +1,6 @@
 from django.db import models
 
-from workspace_diffs.after_create import workspace_diffs_after_create
-from workspace_diffs.after_update import workspace_diffs_after_update
 from workspace_diffs.before_create import workspace_diffs_before_create
-from workspace_diffs.before_update import workspace_diffs_before_update
 from workspaces.models import WorkspaceRelated
 
 
@@ -33,10 +30,4 @@ class WorkspaceDiff(WorkspaceRelated):
         is_new = self.pk is None
         if is_new:
             workspace_diffs_before_create(self)
-        else:
-            workspace_diffs_before_update(self)
         super().save(*args, **kwargs)
-        if is_new:
-            workspace_diffs_after_create(self)
-        else:
-            workspace_diffs_after_update(self)

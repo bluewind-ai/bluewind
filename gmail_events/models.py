@@ -7,10 +7,6 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from channels.models import Channel, fetch_messages_from_gmail
-from gmail_events.after_create import gmail_events_after_create
-from gmail_events.after_update import gmail_events_after_update
-from gmail_events.before_create import gmail_events_before_create
-from gmail_events.before_update import gmail_events_before_update
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger(__name__)
@@ -46,15 +42,3 @@ class GmailEvent(WorkspaceRelated):
 
     class Meta:
         app_label = "gmail_events"
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        if is_new:
-            gmail_events_before_create(self)
-        else:
-            gmail_events_before_update(self)
-        super().save(*args, **kwargs)
-        if is_new:
-            gmail_events_after_create(self)
-        else:
-            gmail_events_after_update(self)
