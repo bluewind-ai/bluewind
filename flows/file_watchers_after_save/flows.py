@@ -17,7 +17,7 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
     def _create_file_change(self, event, change_type):
         FileChange.objects.create(
             file_watcher=self.file_watcher,
-            file_path=event.src_path,
+            source_path=event.src_path,
             change_type=change_type,
             user_id=self.file_watcher.user_id,
             workspace=self.file_watcher.workspace,
@@ -37,15 +37,15 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
 def file_watchers_after_save(file_watcher):
     if file_watcher.is_active and file_watcher.name not in observers_registry:
         # Start watching this path
-        event_handler = DynamicFileChangeHandler(file_watcher)
+        event_handler = SimpleFileChangeHandler(file_watcher)
         observer = Observer()
         observer.schedule(event_handler, path=file_watcher.path, recursive=True)
         observer.start()
         observers_registry[file_watcher.name] = observer
-        temp_logger.debug(f"Started watching: {file_watcher.path}")
+        logger.debug(f"Started watching: {file_watcher.path}")
     elif not file_watcher.is_active and file_watcher.name in observers_registry:
         # Stop watching this path
         observer = observers_registry.pop(file_watcher.name)
         observer.stop()
         observer.join()
-        temp_logger.debug(f"Stopped watching: {file_watcher.path}")
+        logger.debug(f"Stopped watching: {file_watcher.path}")"

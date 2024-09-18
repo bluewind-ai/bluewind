@@ -11,6 +11,12 @@ from workspaces.models import WorkspaceRelated
 temp_logger = logging.getLogger("django.debug")
 
 
+import logging
+
+# Setup logger for debugging
+temp_logger = logging.getLogger("django.debug")
+
+
 class FileChange(WorkspaceRelated):
     file_watcher = models.ForeignKey(
         "file_watchers.FileWatcher",
@@ -18,11 +24,9 @@ class FileChange(WorkspaceRelated):
         related_name="file_changes",
         help_text="The file watcher that detected this change.",
     )
-    file = models.ForeignKey(
-        "files.File",
-        on_delete=models.CASCADE,
-        related_name="changes",
-        help_text="The file that was changed.",
+    source_path = models.CharField(
+        max_length=255,
+        help_text="The path of the file that was changed.",
     )
     change_type = models.CharField(
         max_length=50,
@@ -38,7 +42,7 @@ class FileChange(WorkspaceRelated):
     )
 
     def __str__(self):
-        return f"{self.change_type} on {self.file.path} at {self.timestamp}"
+        return f"{self.change_type} on {self.source_path} at {self.timestamp}"
 
     def save(self, *args, **kwargs):
         temp_logger.debug(f"Initiating save for FileChange: {self}")
