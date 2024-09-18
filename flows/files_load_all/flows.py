@@ -110,21 +110,29 @@ def files_load_all():
                         models_updated.append(model)
 
             elif file_obj.path.endswith("flows.py"):
+                flow_name = os.path.basename(os.path.dirname(file_obj.path))
                 flow, created = Flow.objects.get_or_create(
-                    file=file_obj,
+                    name=flow_name,
+                    workspace_id=default_workspace_id,
                     defaults={
-                        "name": os.path.basename(os.path.dirname(file_obj.path)),
+                        "file": file_obj,
                         "app": app,
                         "user_id": default_user_id,
-                        "workspace_id": default_workspace_id,
                     },
                 )
 
                 if created:
                     flows_created.append(flow)
                 else:
+                    # Update existing flow if necessary
+                    updated = False
+                    if flow.file != file_obj:
+                        flow.file = file_obj
+                        updated = True
                     if flow.app != app:
                         flow.app = app
+                        updated = True
+                    if updated:
                         flow.save()
                         flows_updated.append(flow)
 
