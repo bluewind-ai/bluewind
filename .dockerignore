@@ -10,6 +10,7 @@
 !api_providers
 !apollo_people_search
 !app_logs
+!apps
 !auth
 !auto_tests
 !base64_utils

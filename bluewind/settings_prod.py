@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     "file_changes",
     "files",
     "flow_parameters",
+    "apps",
     "admin_autoregister",
 ]
 
@@ -151,6 +152,7 @@ APP_TYPE = {
     "file_changes": "custom",
     "files": "custom",
     "flow_parameters": "custom",
+    "apps": "custom",
     "app_logs": "custom",
 }
 

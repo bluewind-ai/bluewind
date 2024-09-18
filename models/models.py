@@ -2,6 +2,7 @@
 
 from django.db import models
 
+from apps.models import App
 from files.models import File
 from workspaces.models import WorkspaceRelated
 
@@ -12,7 +13,7 @@ class Model(WorkspaceRelated):
     This model is associated with a File and includes a 'content' field.
     """
 
-    app_label = models.CharField(max_length=100)
+    app = models.ForeignKey(App, on_delete=models.CASCADE, related_name="models")
     file = models.OneToOneField(File, on_delete=models.CASCADE, related_name="model")
 
     def __str__(self):
