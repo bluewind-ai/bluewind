@@ -7,7 +7,6 @@ from watchdog.observers import Observer
 from file_changes.models import FileChange
 from files.models import File
 from flows.is_ignored_by_git.flows import is_ignored_by_git
-from flows.models import Flow
 
 temp_logger = logging.getLogger("django.temp")
 observers_registry = {}
@@ -92,15 +91,6 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
         file_instance = File.objects.get(path=file_path)
         file_instance.delete()
         temp_logger.debug(f"File {file_path} deleted from database")
-
-        # If this was a Python file, also delete the associated Flow
-        if file_path.endswith(".py"):
-            flow_name = os.path.basename(os.path.dirname(file_path))
-            flow = Flow.objects.get(
-                name=flow_name, workspace=self.file_watcher.workspace
-            )
-            flow.delete()
-            temp_logger.debug(f"Flow {flow_name} deleted from database")
 
 
 def file_watchers_after_save(file_watcher):
