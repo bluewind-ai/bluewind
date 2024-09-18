@@ -17,4 +17,4 @@ class Model(WorkspaceRelated):
     file = models.OneToOneField(File, on_delete=models.CASCADE, related_name="model")
 
     def __str__(self):
-        return self.app_label
+        return self.app.plural_name
