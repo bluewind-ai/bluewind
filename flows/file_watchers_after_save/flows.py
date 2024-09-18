@@ -52,21 +52,6 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
         )
         temp_logger.debug(f"FileChange ({change_type}) created for {event.src_path}")
 
-        # Handle Flow creation for 'flows.py' files
-        if change_type == "created" and os.path.basename(event.src_path) == "flows.py":
-            parent_dir = os.path.basename(os.path.dirname(event.src_path))
-            Flow.objects.get_or_create(
-                name=parent_dir,
-                file=file_instance,
-                workspace=self.file_watcher.workspace,
-                defaults={
-                    "user_id": self.file_watcher.user_id,
-                },
-            )
-            temp_logger.debug(
-                f"Flow created for {event.src_path} with name {parent_dir}"
-            )
-
     def on_created(self, event):
         temp_logger.debug(f"Detected creation of path: {event.src_path}")
         self._handle_file_event(event, "created")
@@ -89,6 +74,16 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
         files_to_delete = File.objects.filter(path__startswith=dir_path)
         for file in files_to_delete:
             self._delete_file_from_db(file.path)
+
+            # Create a FileChange record for the deleted file
+            FileChange.objects.create(
+                file_watcher=self.file_watcher,
+                file=file,
+                change_type="deleted",
+                user_id=self.file_watcher.user_id,
+                workspace=self.file_watcher.workspace,
+            )
+            temp_logger.debug(f"FileChange (deleted) created for {file.path}")
 
     def _delete_file_from_db(self, file_path):
         if is_ignored_by_git(file_path) or ".git" in file_path:
