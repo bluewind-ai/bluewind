@@ -4,12 +4,12 @@ import shutil
 
 from django.conf import settings
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def to_pascal_case(snake_str):

@@ -3,7 +3,7 @@ import os
 
 from flows.models import Flow
 
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.debug")
 
 
 def flows_create_from_file(file):

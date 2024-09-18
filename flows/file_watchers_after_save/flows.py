@@ -8,7 +8,7 @@ from file_changes.models import FileChange
 from files.models import File
 from flows.is_ignored_by_git.flows import is_ignored_by_git
 
-temp_logger = logging.getLogger("django.debug")
+temp_logger = logging.getLogger("django.temp")
 observers_registry = {}
 
 
