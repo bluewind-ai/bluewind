@@ -48,4 +48,4 @@ def file_watchers_after_save(file_watcher):
         observer = observers_registry.pop(file_watcher.name)
         observer.stop()
         observer.join()
-        logger.debug(f"Stopped watching: {file_watcher.path}")"
+        logger.debug(f"Stopped watching: {file_watcher.path}")
