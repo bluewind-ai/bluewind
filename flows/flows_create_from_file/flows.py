@@ -1,6 +1,9 @@
+import logging
 import os
 
 from flows.models import Flow
+
+temp_logger = logging.getLogger("django.temp")
 
 
 def flows_create_from_file(file):

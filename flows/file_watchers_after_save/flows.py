@@ -8,7 +8,7 @@ from file_changes.models import FileChange
 from files.models import File
 from flows.is_ignored_by_git.flows import is_ignored_by_git
 
-temp_logger = logging.getLogger("django.temp")
+temp_logger = logging.getLogger("django.debug")
 observers_registry = {}
 
 
@@ -69,11 +69,9 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
             self._handle_directory_deletion(event.src_path)
 
     def _handle_directory_deletion(self, dir_path):
-        # Delete all files in the database that start with this directory path
+        # Find all files in the database that start with this directory path
         files_to_delete = File.objects.filter(path__startswith=dir_path)
         for file in files_to_delete:
-            self._delete_file_from_db(file.path)
-
             # Create a FileChange record for the deleted file
             FileChange.objects.create(
                 file_watcher=self.file_watcher,
@@ -84,13 +82,19 @@ class DynamicFileChangeHandler(FileSystemEventHandler):
             )
             temp_logger.debug(f"FileChange (deleted) created for {file.path}")
 
+            # Now delete the file from the database
+            self._delete_file_from_db(file.path)
+
     def _delete_file_from_db(self, file_path):
         if is_ignored_by_git(file_path) or ".git" in file_path:
             temp_logger.debug(f"Path {file_path} is ignored, skipping deletion.")
             return
-        file_instance = File.objects.get(path=file_path)
-        file_instance.delete()
-        temp_logger.debug(f"File {file_path} deleted from database")
+        try:
+            file_instance = File.objects.get(path=file_path)
+            file_instance.delete()
+            temp_logger.debug(f"File {file_path} deleted from database")
+        except File.DoesNotExist:
+            temp_logger.debug(f"File {file_path} not found in database")
 
 
 def file_watchers_after_save(file_watcher):
