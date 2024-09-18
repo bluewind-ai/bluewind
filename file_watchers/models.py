@@ -3,9 +3,6 @@ import logging
 from django.db import models
 
 from file_watchers.after_create import file_watchers_after_create
-from file_watchers.after_update import file_watchers_after_update
-from file_watchers.before_create import file_watchers_before_create
-from file_watchers.before_update import file_watchers_before_update
 from workspaces.models import WorkspaceRelated
 
 # Initialize the logger
@@ -39,15 +36,9 @@ class FileWatcher(WorkspaceRelated):
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
-        if is_new:
-            file_watchers_before_create(self)
-        else:
-            file_watchers_before_update(self)
         super().save(*args, **kwargs)
         if is_new:
             file_watchers_after_create(self)
-        else:
-            file_watchers_after_update(self)
 
     def delete(self, *args, **kwargs):
         temp_logger.debug(f"Deleting FileWatcher: {self}")
