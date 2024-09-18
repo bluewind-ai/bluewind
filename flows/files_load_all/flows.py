@@ -35,7 +35,7 @@ def files_load_all():
             for file_name in files:
                 if file_name.endswith((".py", "flows.py")):
                     file_path = os.path.join(root, file_name)
-                    if not is_ignored_by_git(file_path) and ".git" not in file_path:
+                    if not is_ignored_by_git(file_path):
                         with open(file_path, "r") as file:
                             content = file.read()
 
