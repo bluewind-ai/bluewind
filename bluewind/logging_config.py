@@ -92,36 +92,36 @@ def get_logging_config(base_dir):
         "loggers": {
             "django": {
                 "handlers": ["console"],
-                "level": "CRITICAL",
+                "level": "DEBUG",
                 "propagate": False,
             },
             "django.utils.autoreload": {
-                "level": "CRITICAL",
+                "level": "DEBUG",
                 "propagate": False,
             },
             "django.db.backends": {
-                "level": "CRITICAL",
+                "level": "DEBUG",
                 "handlers": ["console"],
                 "propagate": False,
             },
             "django.static": {
-                "level": "CRITICAL",
+                "level": "DEBUG",
                 "handlers": ["console"],
                 "propagate": False,
             },
             "django.db.backends.schema": {
-                "level": "CRITICAL",
+                "level": "DEBUG",
                 "handlers": ["console"],
                 "propagate": False,
             },
             "django.temp": {
                 "handlers": ["console"],
-                "level": "CRITICAL",
+                "level": "DEBUG",
                 "propagate": False,
             },
         },
         "root": {
             "handlers": ["console"],
-            "level": "CRITICAL",
+            "level": "DEBUG",
         },
     }

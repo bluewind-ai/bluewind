@@ -1,24 +1,23 @@
 import logging
 import os
 
-from django.utils import timezone
+from asgiref.sync import sync_to_async
 
-from manage import load_env  # noqa
+from gunicorn_instances.models import GunicornInstance
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.temp")
 
 
-def on_exit_handler(server):
-    logger.debug("SIGINT_HANDLER")
-    from gunicorn_instances.models import GunicornInstance
-
-    logger.info(f"[{timezone.now()}] Received SIGINT. Performing cleanup...")
-    logger.info(f"Master PID: {os.getppid()}")
-
-    updated_count = GunicornInstance.objects.filter(
-        master_pid=os.getppid(), status=GunicornInstance.Status.RUNNING
+@sync_to_async
+def update_gunicorn_instances(master_pid):
+    return GunicornInstance.objects.filter(
+        master_pid=master_pid, status=GunicornInstance.Status.RUNNING
     ).update(status=GunicornInstance.Status.TERMINATED)
 
-    logger.info(
-        f"[{timezone.now()}] Cleanup complete. Updated {updated_count} GunicornInstance(s)."
-    )
+
+async def on_exit_handler(server):
+    logger.debug("SIGINT_HANDLER")
+    await update_gunicorn_instances(os.getppid())
+    if server:
+        server.stop()
+    logger.debug("Exit handler completed")
