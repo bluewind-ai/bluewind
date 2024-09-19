@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "behave_django",
     "channels",
-    # "debug_toolbar",
+    "debug_toolbar",
     "django_extensions",
     "model_clone",
     "slippers",
@@ -112,7 +112,7 @@ APP_TYPE = {
     "allauth.socialaccount.providers.google": "third_party",
     "behave_django": "third_party",
     "channels": "third_party",
-    # "debug_toolbar": "third_party",
+    "debug_toolbar": "third_party",
     "django_extensions": "third_party",
     "model_clone": "third_party",
     "widget_tweaks": "third_party",
@@ -180,7 +180,7 @@ MIDDLEWARE = [
     # CORE
     "bluewind.middleware.custom_middleware",
     "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -298,7 +298,7 @@ DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TEMPLATE_CONTEXT": True,
     "ENABLE_STACKTRACES": True,
     "STACKTRACE_DEPTH": 20,  # Reduced from 10000
-    # "SHOW_TOOLBAR_CALLBACK": "bluewind.toolbar.show_toolbar",
+    "SHOW_TOOLBAR_CALLBACK": "bluewind.toolbar.show_toolbar",
 }
 
 # Email Configuration (AWS SES)
