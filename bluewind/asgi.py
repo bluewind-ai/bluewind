@@ -1,4 +1,20 @@
 import logging
+import signal
+import sys
+
+from flows.on_exit_handler.flows import on_exit_handler  # noqa
+
+
+def sigint_handler(signum, frame):
+    print("\nCtrl+C detected. Calling exit handler...")
+    on_exit_handler()
+    sys.exit(0)
+
+
+# Register the SIGINT handler
+signal.signal(signal.SIGINT, sigint_handler)
+
+
 import os  # noqa
 
 import django  # noqa
@@ -14,7 +30,6 @@ django.setup()
 
 from bluewind.context_variables import set_startup_mode, set_workspace_id  # noqa
 from flows.bootstrap.flows import bootstrap  # noqa
-from flows.on_exit_handler.flows import on_exit_handler  # noqa
 
 django_asgi_app = get_asgi_application()
 
