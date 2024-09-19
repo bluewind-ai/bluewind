@@ -15,6 +15,11 @@ temp_logger = logging.getLogger("django.debug")
 
 
 class FileChange(WorkspaceRelated):
+    class ChangeType(models.TextChoices):
+        CREATED = "created", "Created"
+        MODIFIED = "modified", "Modified"
+        DELETED = "deleted", "Deleted"
+
     file_watcher = models.ForeignKey(
         "file_watchers.FileWatcher",
         on_delete=models.CASCADE,
@@ -27,6 +32,7 @@ class FileChange(WorkspaceRelated):
     )
     change_type = models.CharField(
         max_length=50,
+        choices=ChangeType.choices,
         help_text="Type of change detected (e.g., modified, created, deleted).",
     )
     timestamp = models.DateTimeField(
