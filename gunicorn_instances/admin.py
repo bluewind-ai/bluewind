@@ -9,7 +9,7 @@ from .models import GunicornInstance
 class GunicornInstanceCreateForm(forms.ModelForm):
     class Meta:
         model = GunicornInstance
-        exclude = ["created_at", "updated_at", "pid"]
+        fields = []
 
 
 class GunicornInstanceUpdateForm(forms.ModelForm):
@@ -21,10 +21,12 @@ class GunicornInstanceUpdateForm(forms.ModelForm):
 class GunicornInstanceViewForm(forms.ModelForm):
     class Meta:
         model = GunicornInstance
-        exclude = ["__all__"]
+        fields = []
 
 
 class GunicornInstanceAdmin(InWorkspace):
+    form = GunicornInstanceCreateForm
+
     def get_form(self, request, obj=None, **kwargs):
         if not obj:
             return GunicornInstanceCreateForm

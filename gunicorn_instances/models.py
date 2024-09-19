@@ -1,6 +1,7 @@
 from django.db import models
 
 from bluewind.context_variables import get_user_id, get_workspace_id
+from gunicorn_instances.before_create import gunicorn_instance_before_create
 from gunicorn_instances.before_delete import gunicorn_instance_before_delete
 from workspaces.models import WorkspaceRelated
 
@@ -28,6 +29,7 @@ class GunicornInstance(WorkspaceRelated):
         if not self.pk:
             self.user_id = get_user_id()
             self.workspace_id = get_workspace_id()
+        gunicorn_instance_before_create(self)
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

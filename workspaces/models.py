@@ -17,7 +17,8 @@ from workspace_users.models import WorkspaceUser
 
 
 class Workspace(models.Model):
-    class Status(models.TextChoices):
+    class BootstrapStatus(models.TextChoices):
+        NOT_STARTED = "not_started", "Not Started"
         PENDING = "pending", "Pending"
         DONE = "done", "Done"
 
@@ -29,10 +30,10 @@ class Workspace(models.Model):
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="owned_workspaces"
     )
-    status = models.CharField(
+    bootstrap_status = models.CharField(
         max_length=20,
-        choices=Status.choices,
-        default=Status.PENDING,
+        choices=BootstrapStatus.choices,
+        default=BootstrapStatus.NOT_STARTED,
     )
 
     def __str__(self):
