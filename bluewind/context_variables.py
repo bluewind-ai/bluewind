@@ -36,3 +36,8 @@ def get_startup_mode():
 
 def set_startup_mode(startup_mode):
     startup_mode_var.set(startup_mode)
+
+
+def get_user_id():
+    # TODO
+    return 1

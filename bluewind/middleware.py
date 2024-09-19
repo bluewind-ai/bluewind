@@ -45,16 +45,19 @@ def custom_middleware(get_response):
         set_request_id(str(incoming_request.id))
         response = get_response(request)
         # Get user_id and request_id after the response
-        if request.user.is_authenticated:
+        if request.path.startswith("/static/"):
+            # no user_id for static files
+            push_logs_to_db(user_id, workspace_id, get_log_records())
+        elif request.user.is_authenticated:
             user_id = request.user.id
             IncomingHTTPRequest.objects.filter(id=incoming_request.id).update(
                 user_id=user_id
             )
+            push_logs_to_db(user_id, workspace_id, get_log_records())
 
         # Update IncomingHTTPRequest with user_id after the response
 
         # Push logs to database
-        push_logs_to_db(user_id, workspace_id, get_log_records())
 
         return response
 

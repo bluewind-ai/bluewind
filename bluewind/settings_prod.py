@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     "diff_related_entities",
     "pub_sub_topics",
     "workspace_users",
+    "gunicorn_instances",
     "admin_autoregister",
 ]
 
@@ -155,6 +156,7 @@ APP_TYPE = {
     "diff_related_entities": "custom",
     "pub_sub_topics": "custom",
     "workspace_users": "custom",
+    "gunicorn_instances": "custom",
     "app_logs": "custom",
 }
 
@@ -353,3 +355,5 @@ warnings.filterwarnings(
     message=".*Accessing the database during app initialization is discouraged.*",
     category=RuntimeWarning,
 )
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

@@ -6,7 +6,6 @@ from django.contrib.admin.views.main import ChangeList
 from django.contrib.contenttypes.models import ContentType
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import JSONField
-from django.forms import model_to_dict
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -89,54 +88,42 @@ class InWorkspace(admin.ModelAdmin):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def _log_admin_action(self, request, action, queryset, action_name):
-        workspace_id = get_workspace_id()
-        content_type = ContentType.objects.get_for_model(queryset.model)
+    # def _log_admin_action(self, request, action, queryset, action_name):
+    #     workspace_id = get_workspace_id()
+    #     content_type = ContentType.objects.get_for_model(queryset.model)
 
-        action_instance = Action.objects.get(
-            action_type=Action.ActionType.CUSTOM,
-            content_type=content_type,
-            workspace_id=workspace_id,
-        )
+    #     action_instance = Action.objects.get(
+    #         action_type=Action.ActionType.CUSTOM,
+    #         content_type=content_type,
+    #         workspace_id=workspace_id,
+    #     )
 
-        latest_recording = get_latest_recording(workspace_id)
+    #     latest_recording = get_latest_recording(workspace_id)
 
-        for obj in queryset:
-            input_data = model_to_dict(obj)
+    #     for obj in queryset:
+    #         input_data = model_to_dict(obj)
 
-            for key, value in input_data.items():
-                if not isinstance(value, (str, int, float, bool, type(None))):
-                    input_data[key] = str(value)
+    #         for key, value in input_data.items():
+    #             if not isinstance(value, (str, int, float, bool, type(None))):
+    #                 input_data[key] = str(value)
 
-            ActionRun.objects.create(
-                user=request.user,
-                action=action_instance,
-                model_name=content_type.model,
-                object_id=obj.id,
-                action_input=input_data,
-                results={},
-                workspace_id=workspace_id,
-                recording=latest_recording,
-            )
+    #         ActionRun.objects.create(
+    #             user=request.user,
+    #             action=action_instance,
+    #             model_name=content_type.model,
+    #             object_id=obj.id,
+    #             action_input=input_data,
+    #             results={},
+    #             workspace_id=workspace_id,
+    #             recording=latest_recording,
+    #         )
 
-    def get_actions(self, request):
-        actions = super().get_actions(request)
+    # def _wrap_action(self, action, action_name):
+    #     def wrapped_action(self, request, queryset):
+    #         self._log_admin_action(request, action, queryset, action_name)
+    #         return action(self, request, queryset)
 
-        for name, (func, description, short_description) in actions.items():
-            actions[name] = (
-                self._wrap_action(func, name),
-                description,
-                short_description,
-            )
-
-        return actions
-
-    def _wrap_action(self, action, action_name):
-        def wrapped_action(self, request, queryset):
-            self._log_admin_action(request, action, queryset, action_name)
-            return action(self, request, queryset)
-
-        return wrapped_action
+    #     return wrapped_action
 
     def get_changelist_class(self, request):
         return CustomChangeList

@@ -103,6 +103,11 @@ def get_logging_config(base_dir):
                 "handlers": ["console"],
                 "propagate": False,
             },
+            "django.static": {
+                "level": "DEBUG",
+                "handlers": ["console"],
+                "propagate": False,
+            },
             "django.db.backends.schema": {
                 "level": "ERROR",
                 "handlers": ["console"],

@@ -13,6 +13,7 @@ logger = logging.getLogger("django.debug")
 
 
 def bootstrap():
+    # create_gunicorn_instance_from_pid()
     files_load_all()
     file_watchers_init()
     run_ruff()
