@@ -5,7 +5,7 @@ from flows.file_watchers_init.flows import file_watchers_init
 from flows.files_load_all.flows import files_load_all
 from workspaces.models import Workspace
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def bootstrap_workspace():

@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from manage import load_env  # noqa
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def on_exit_handler(server):

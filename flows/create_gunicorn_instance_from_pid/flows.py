@@ -3,7 +3,7 @@ import os
 
 from gunicorn_instances.models import GunicornInstance
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def create_gunicorn_instance_from_pid():

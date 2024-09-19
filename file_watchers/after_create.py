@@ -6,7 +6,7 @@ from watchdog.observers import Observer
 from file_changes.models import FileChange
 from flows.is_ignored_by_git.flows import is_ignored_by_git
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 observers_registry = {}
 
 

@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def create_bluewind_node():
