@@ -13,7 +13,7 @@ class Command(BaseCommand):
     help = "Runs Daphne server with custom shutdown hook"
 
     def handle(self, *args, **options):
-        host = "0.0.0.0"
+        host = "127.0.0.1"
         port = 8000
         application_path = "bluewind.asgi:application"
 

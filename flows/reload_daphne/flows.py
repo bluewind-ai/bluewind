@@ -1,13 +1,22 @@
+import subprocess
+import logging
 import os
 import signal
 
+logger = logging.getLogger("django.temp")
 
-def reload_gunicorn(daphne_process):
-    # Get the parent process ID (Gunicorn master)
 
-    ppid = os.getppid()
+def reload_daphne(daphne_process):
+    pid = daphne_process.master_pid
+    logger.debug(f"Stopping Daphne process (PID: {pid})")
+    os.kill(pid, signal.SIGTERM)
 
-    # Send SIGHUP signal to the Gunicorn master process
-    os.kill(ppid, signal.SIGHUP)
+    # Wait for the process to terminate
+    try:
+        os.waitpid(pid, 0)
+    except OSError:
+        pass
 
-    return {"message": f"Sent reload signal to Gunicorn master process (PID: {ppid})"}
+    logger.debug("Restarting Daphne")
+    subprocess.Popen(["python3", "manage.py", "rundaphne"])
+    return {"message": "Daphne restarted"}

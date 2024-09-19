@@ -7,11 +7,10 @@ from daphne_processes.models import DaphneProcess
 logger = logging.getLogger("django.debug")
 
 
-class ReloadGunicornForm(forms.Form):
+class ReloadDaphneForm(forms.Form):
     daphne_process = forms.ModelChoiceField(
         queryset=DaphneProcess.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        help_text="Select the files to include in the template",
+        # widget=forms.CheckboxSelectMultiple,
     )
 
     def __init__(self, *args, **kwargs):
