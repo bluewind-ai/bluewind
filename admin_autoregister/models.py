@@ -6,7 +6,6 @@ from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 from django.db.migrations.recorder import MigrationRecorder
 
-from admin_autoregister.append_dockerignore import append_to_dockerignore
 from base_model_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
 from workspaces.models import WorkspaceRelated  # Adjust this import as needed
@@ -84,5 +83,3 @@ def autoregister():
             admin.site.register(model)
         except AlreadyRegistered:
             pass
-
-    append_to_dockerignore(app_configs)
