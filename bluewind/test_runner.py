@@ -6,18 +6,16 @@ class NoDbTestRunner(DiscoverRunner):
     """A test runner that does nothing with the database and checks for test case types."""
 
     def setup_databases(self, **kwargs):
-        print("NoDbTestRunner: Skipping database setup.")
         return None
 
     def teardown_databases(self, old_config, **kwargs):
-        print("NoDbTestRunner: Skipping database teardown.")
+        pass
 
     def setup_test_environment(self, **kwargs):
-        print("NoDbTestRunner: Skipping test environment setup.")
         self.check_test_cases()
 
     def teardown_test_environment(self, **kwargs):
-        print("NoDbTestRunner: Skipping test environment teardown.")
+        pass
 
     def check_test_cases(self):
         """

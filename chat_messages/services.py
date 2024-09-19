@@ -14,8 +14,7 @@ from users.models import User
 
 
 # Print current working directory and client secret file path for debugging
-print("Current working directory:", os.getcwd())
-print("GMAIL_CLIENT_SECRET_FILE:", os.getenv("GMAIL_CLIENT_SECRET_FILE"))
+
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
@@ -49,72 +48,51 @@ def get_gmail_service():
 
 
 def list_labels():
-    service = get_gmail_service()
-    try:
-        results = service.users().labels().list(userId="me").execute()
-        labels = results.get("labels", [])
-
-        if not labels:
-            print("No labels found.")
-        else:
-            print("Labels:")
-            for label in labels:
-                print(label["name"])
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    pass
 
 
 def create_messages_from_gmail():
     from chat_messages.models import Message
 
     service = get_gmail_service()
-    try:
-        results = service.users().messages().list(userId="me", maxResults=10).execute()
-        messages = results.get("messages", [])
+    results = service.users().messages().list(userId="me", maxResults=10).execute()
+    messages = results.get("messages", [])
 
-        if not messages:
-            print("No messages found.")
-            return
+    if not messages:
+        return
 
-        # Ensure we have at least one user
-        user, created = User.objects.get_or_create(username="gmail_user")
+    # Ensure we have at least one user
+    user, created = User.objects.get_or_create(username="gmail_user")
 
-        for message in messages:
-            msg = (
-                service.users().messages().get(userId="me", id=message["id"]).execute()
+    for message in messages:
+        msg = service.users().messages().get(userId="me", id=message["id"]).execute()
+
+        # Get email subject
+        subject = next(
+            (
+                header["value"]
+                for header in msg["payload"]["headers"]
+                if header["name"] == "Subject"
+            ),
+            "No Subject",
+        )
+
+        # Get email body
+        if "parts" in msg["payload"]:
+            body = base64.urlsafe_b64decode(
+                msg["payload"]["parts"][0]["body"]["data"]
+            ).decode("utf-8")
+        else:
+            body = base64.urlsafe_b64decode(msg["payload"]["body"]["data"]).decode(
+                "utf-8"
             )
 
-            # Get email subject
-            subject = next(
-                (
-                    header["value"]
-                    for header in msg["payload"]["headers"]
-                    if header["name"] == "Subject"
-                ),
-                "No Subject",
-            )
-
-            # Get email body
-            if "parts" in msg["payload"]:
-                body = base64.urlsafe_b64decode(
-                    msg["payload"]["parts"][0]["body"]["data"]
-                ).decode("utf-8")
-            else:
-                body = base64.urlsafe_b64decode(msg["payload"]["body"]["data"]).decode(
-                    "utf-8"
-                )
-
-            # Create Message object
-            Message.objects.create(
-                channel=user,
-                recipient=user,
-                subject=subject[:255],  # Limit subject to 255 characters
-                content=body,
-                timestamp=timezone.now(),
-                is_read=False,
-            )
-
-        print("10 messages created successfully from Gmail!")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
+        # Create Message object
+        Message.objects.create(
+            channel=user,
+            recipient=user,
+            subject=subject[:255],  # Limit subject to 255 characters
+            content=body,
+            timestamp=timezone.now(),
+            is_read=False,
+        )

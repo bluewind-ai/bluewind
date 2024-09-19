@@ -13,10 +13,7 @@ def gunicorn_instance_before_create(gunicorn_instance):
     #         check=True,
     #         capture_output=True,
     #         text=True,
-    #     )
-    #     print("Command output:", result.stdout)
+    #     ))
     #     return result
     # except subprocess.CalledProcessError as e:
-    #     print("Command failed with exit code:", e.returncode)
-    #     print("Error output:", e.stderr)
     #     raise  # Re-raise the exception after printing the error information

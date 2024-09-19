@@ -18,7 +18,7 @@ from flows.on_exit_handler.flows import on_exit_handler  # noqa
 
 django_asgi_app = get_asgi_application()
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def workspace_asgi_middleware(asgi_app):
@@ -37,11 +37,6 @@ def workspace_asgi_middleware(asgi_app):
                     # scope["path"] remains unchanged
 
             set_workspace_id(int(workspace_id))
-
-            logger.debug(f"Original path: {original_path}")
-            logger.debug(f"Root path: {scope.get('root_path', '')}")
-            logger.debug(f"Path: {scope['path']}")
-            logger.debug(f"Workspace ID: {workspace_id}")
 
         return await asgi_app(scope, receive, send)
 
