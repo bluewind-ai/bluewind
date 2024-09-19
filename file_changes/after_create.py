@@ -2,7 +2,7 @@ import logging
 
 from files.models import File
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django.temp")
 
 
 def file_changes_after_create(file_change):
@@ -38,3 +38,6 @@ def file_changes_after_create(file_change):
         ).delete()
 
     # Additional logic can be added here for other change types or actions
+
+
+"cds"
