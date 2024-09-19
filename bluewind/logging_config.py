@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 import traceback
 
 from django.conf import settings
@@ -76,52 +75,15 @@ def get_logging_config(base_dir):
     return {
         "version": 1,
         "disable_existing_loggers": False,
-        "formatters": {
-            "verbose": {
-                "()": CombinedFormatter,
-                "format": "%(asctime)s [%(levelname)s] [%(request_id)s] %(name)s: %(message)s",
-            },
-        },
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "verbose",
-                "stream": sys.stdout,
             },
         },
         "loggers": {
             "django": {
                 "handlers": ["console"],
-                "level": "CRITICAL",
-                "propagate": False,
+                "level": "WARNING",
             },
-            "django.utils.autoreload": {
-                "level": "CRITICAL",
-                "propagate": False,
-            },
-            "django.db.backends": {
-                "level": "CRITICAL",
-                "handlers": ["console"],
-                "propagate": False,
-            },
-            "django.static": {
-                "level": "CRITICAL",
-                "handlers": ["console"],
-                "propagate": False,
-            },
-            "django.db.backends.schema": {
-                "level": "CRITICAL",
-                "handlers": ["console"],
-                "propagate": False,
-            },
-            "django.temp": {
-                "handlers": ["console"],
-                "level": "CRITICAL",
-                "propagate": False,
-            },
-        },
-        "root": {
-            "handlers": ["console"],
-            "level": "CRITICAL",
         },
     }

@@ -43,12 +43,12 @@ def workspace_asgi_middleware(asgi_app):
     return wrapper
 
 
-set_workspace_id(1)
-set_startup_mode(False)
+# set_workspace_id(1)
+# set_startup_mode(False)
 
-bootstrap()
+# bootstrap()
 
-worker_int = on_exit_handler
+# worker_int = on_exit_handler
 
 # Apply the middleware to the Django ASGI application
 application = workspace_asgi_middleware(django_asgi_app)
