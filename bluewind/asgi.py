@@ -1,12 +1,9 @@
-from flows.on_exit_handler.flows import on_exit_handler
-from flows.bootstrap.flows import bootstrap
-from bluewind.context_variables import set_startup_mode, set_workspace_id
-import os
+import os  # noqa
 
-import django
-from django.core.asgi import get_asgi_application
+import django  # noqa
+from django.core.asgi import get_asgi_application  # noqa
 
-from manage import load_env
+from manage import load_env  # noqa
 
 # Set the Django settings module
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
@@ -14,6 +11,9 @@ load_env()
 # Initialize Django
 django.setup()
 
+from bluewind.context_variables import set_startup_mode, set_workspace_id  # noqa
+from flows.bootstrap.flows import bootstrap  # noqa
+from flows.on_exit_handler.flows import on_exit_handler  # noqa
 
 django_asgi_app = get_asgi_application()
 

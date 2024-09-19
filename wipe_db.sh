@@ -35,4 +35,4 @@ anonymous_workspace = Workspace.objects.create(name='Anonymous Workspace', user=
 WorkspaceUser.objects.create(user=anonymous_user, workspace=anonymous_workspace, is_default=True)"
 
 # Start the Django development server
-gunicorn -c gunicorn_config.py bluewind.wsgi:application
+daphne -b 0.0.0.0 -p 8000 bluewind.asgi:application
