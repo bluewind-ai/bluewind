@@ -3,24 +3,24 @@ from django import forms
 
 from base_model_admin.admin import InWorkspace
 
-from .models import GunicornInstance
+from .models import DaphneProcess
 
 
 class GunicornInstanceCreateForm(forms.ModelForm):
     class Meta:
-        model = GunicornInstance
+        model = DaphneProcess
         fields = []
 
 
 class GunicornInstanceUpdateForm(forms.ModelForm):
     class Meta:
-        model = GunicornInstance
+        model = DaphneProcess
         exclude = ["created_at", "updated_at", "pid", "status"]
 
 
 class GunicornInstanceViewForm(forms.ModelForm):
     class Meta:
-        model = GunicornInstance
+        model = DaphneProcess
         fields = []
 
 

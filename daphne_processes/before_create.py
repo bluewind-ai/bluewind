@@ -1,4 +1,4 @@
-def gunicorn_instance_before_create(gunicorn_instance):
+def daphne_process_before_create(daphne_process):
     pass
     # try:
     #     result = subprocess.run(

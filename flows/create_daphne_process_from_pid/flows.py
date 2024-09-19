@@ -1,17 +1,17 @@
 import logging
 import os
 
-from gunicorn_instances.models import GunicornInstance
+from daphne_processes.models import DaphneProcess
 
 logger = logging.getLogger("django.debug")
 
 
-def create_gunicorn_instance_from_pid():
+def create_daphne_process_from_pid():
     # Get the parent process ID (Gunicorn master)
     pid = os.getppid()
 
     # Create and save the GunicornInstance
-    instance = GunicornInstance(master_pid=pid, status=GunicornInstance.Status.RUNNING)
+    instance = DaphneProcess(master_pid=pid, status=DaphneProcess.Status.RUNNING)
     instance.save()
     logger.error(f"Created GunicornInstance with PID: {pid}")
 

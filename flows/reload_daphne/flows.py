@@ -2,7 +2,7 @@ import os
 import signal
 
 
-def reload_gunicorn(gunicorn_instance):
+def reload_gunicorn(daphne_process):
     # Get the parent process ID (Gunicorn master)
 
     ppid = os.getppid()

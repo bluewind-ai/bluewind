@@ -2,14 +2,14 @@ import logging
 
 from django import forms
 
-from gunicorn_instances.models import GunicornInstance
+from daphne_processes.models import DaphneProcess
 
 logger = logging.getLogger("django.debug")
 
 
 class ReloadGunicornForm(forms.Form):
-    gunicorn_instance = forms.ModelChoiceField(
-        queryset=GunicornInstance.objects.all(),
+    daphne_process = forms.ModelChoiceField(
+        queryset=DaphneProcess.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         help_text="Select the files to include in the template",
     )

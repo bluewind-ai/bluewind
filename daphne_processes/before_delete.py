@@ -11,8 +11,8 @@ logger = logging.getLogger("django.temp")
 logger = logging.getLogger("django.temp")
 
 
-def gunicorn_instance_before_delete(instance):
-    logger.info("Starting gunicorn_instance_before_delete function")
+def daphne_process_before_delete(instance):
+    logger.info("Starting daphne_process_before_delete function")
     logger.info(f"Instance ID: {instance.id}")
     logger.info(f"Master process ID: {instance.master_pid}")
 
@@ -23,5 +23,5 @@ def gunicorn_instance_before_delete(instance):
     master_process.terminate()
     logger.info("Master process terminated successfully")
 
-    logger.info("Exiting gunicorn_instance_before_delete function")
+    logger.info("Exiting daphne_process_before_delete function")
     return instance
