@@ -1,7 +1,7 @@
-import subprocess
 import logging
 import os
 import signal
+import subprocess
 
 logger = logging.getLogger("django.temp")
 
@@ -9,7 +9,7 @@ logger = logging.getLogger("django.temp")
 def reload_daphne(daphne_process):
     pid = daphne_process.master_pid
     logger.debug(f"Stopping Daphne process (PID: {pid})")
-    os.kill(pid, signal.SIGTERM)
+    os.kill(pid, signal.SIGHUP)
 
     # Wait for the process to terminate
     try:
