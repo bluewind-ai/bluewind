@@ -19,6 +19,8 @@ ALLOWED_HOSTS = environ.Env().list("ALLOWED_HOSTS")
 ROOT_URLCONF = "bluewind.urls"
 WSGI_APPLICATION = "bluewind.wsgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+ASGI_APPLICATION = "bluewind.asgi.application"
+
 
 # Application Definition
 INSTALLED_APPS = [
