@@ -17,10 +17,10 @@ from workspace_users.models import WorkspaceUser
 
 
 class Workspace(models.Model):
-    STATUS_CHOICES = [
-        ("pending", "Pending"),
-        ("done", "Done"),
-    ]
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        DONE = "done", "Done"
+
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     users = models.ManyToManyField(
@@ -29,7 +29,11 @@ class Workspace(models.Model):
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="owned_workspaces"
     )
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
 
     def __str__(self):
         return self.name

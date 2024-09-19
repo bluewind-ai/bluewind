@@ -11,11 +11,20 @@ from flows.create_gunicorn_instance_from_pid.flows import (
 )
 from flows.file_watchers_init.flows import file_watchers_init
 from flows.files_load_all.flows import files_load_all
+from flows.is_bootstrap_already_pending_or_done.flows import (
+    is_bootstrap_already_pending_or_done,
+)
+from flows.update_workspace_bootstrap_status.flows import (
+    update_workspace_bootstrap_status,
+)
 
 logger = logging.getLogger("django.debug")
 
 
 def bootstrap():
+    if is_bootstrap_already_pending_or_done():
+        return
+    update_workspace_bootstrap_status()
     create_gunicorn_instance_from_pid()
     files_load_all()
     file_watchers_init()
