@@ -18,6 +18,4 @@ def update_gunicorn_instances(master_pid):
 async def on_exit_handler(server):
     logger.debug("SIGINT_HANDLER")
     await update_gunicorn_instances(os.getppid())
-    if server:
-        server.stop()
-    logger.debug("Exit handler completed")
+    server.stop()
