@@ -1,3 +1,5 @@
+from flows.bootstrap.flows import bootstrap
+from bluewind.context_variables import set_startup_mode, set_workspace_id
 import os
 
 import django
@@ -10,8 +12,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
 load_env()
 # Initialize Django
 django.setup()
-
-from bluewind.context_variables import set_startup_mode, set_workspace_id
 
 
 def workspace_asgi_middleware(asgi_app):
@@ -35,6 +35,9 @@ def workspace_asgi_middleware(asgi_app):
 
 set_workspace_id(1)
 set_startup_mode(False)
+
+
+bootstrap()
 
 # Get the Django ASGI application
 django_asgi_app = get_asgi_application()
