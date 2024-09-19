@@ -1,8 +1,8 @@
+import logging
 import os  # noqa
 
 import django  # noqa
 from django.core.asgi import get_asgi_application  # noqa
-
 
 from manage import load_env  # noqa
 
@@ -18,21 +18,32 @@ from flows.on_exit_handler.flows import on_exit_handler  # noqa
 
 django_asgi_app = get_asgi_application()
 
+logger = logging.getLogger("django.temp")
 
-async def workspace_asgi_middleware(app):
+
+def workspace_asgi_middleware(asgi_app):
     async def wrapper(scope, receive, send):
-        path_info = scope["path"]
-        workspace_id = 2
+        if scope["type"] == "http":
+            original_path = scope["path"]
+            workspace_id = 2
 
-        if path_info.startswith("/workspaces/"):
-            parts = path_info.split("/")
-            workspace_id = parts[2]
-            scope["root_path"] = f"/workspaces/{workspace_id}"
-            scope["path"] = "/" + "/".join(parts[3:])
+            if original_path.startswith("/workspaces/"):
+                parts = original_path.split("/")
+                if len(parts) > 2:
+                    workspace_id = parts[2]
+                    # Set root_path to /workspaces/{id}
+                    scope["root_path"] = f"/workspaces/{workspace_id}"
+                    # Don't modify path_info
+                    # scope["path"] remains unchanged
 
-        set_workspace_id(int(workspace_id))
+            set_workspace_id(int(workspace_id))
 
-        await app(scope, receive, send)
+            logger.debug(f"Original path: {original_path}")
+            logger.debug(f"Root path: {scope.get('root_path', '')}")
+            logger.debug(f"Path: {scope['path']}")
+            logger.debug(f"Workspace ID: {workspace_id}")
+
+        return await asgi_app(scope, receive, send)
 
     return wrapper
 
@@ -44,21 +55,13 @@ bootstrap()
 
 worker_int = on_exit_handler
 
+# Apply the middleware to the Django ASGI application
+application = workspace_asgi_middleware(django_asgi_app)
 
-async def application(scope, receive, send):
-    middleware = await workspace_asgi_middleware(django_asgi_app)
-    await middleware(scope, receive, send)
+port = "8000"  # Assuming you're using port 8000
 
-
-def print_server_info():
-    print("\n" + "=" * 40)
-    print("Server is running!")
-    print("Local:   http://127.0.0.1:8000")
-    print("Network: http://0.0.0.0:8000")
-    print("=" * 40 + "\n")
-
-
-import asyncio  # noqa
-
-# Schedule the print_server_info function to run after a short delay
-asyncio.get_event_loop().call_later(1, print_server_info)
+print("\n" + "=" * 40)
+print("Server is running!")
+print(f"Port:     {port}")
+print(f"Local:    http://127.0.0.1:{port}")
+print("=" * 40 + "\n")
