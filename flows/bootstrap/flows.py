@@ -6,6 +6,9 @@ from admin_autoregister.check_unique_together import check_unique_constraints
 from admin_autoregister.clean_dockerignore import clean_dockerignore
 from admin_autoregister.forbid_imports import check_forbidden_imports
 from admin_autoregister.ruff import run_ruff
+from flows.create_gunicorn_instance_from_pid.flows import (
+    create_gunicorn_instance_from_pid,
+)
 from flows.file_watchers_init.flows import file_watchers_init
 from flows.files_load_all.flows import files_load_all
 
@@ -13,7 +16,7 @@ logger = logging.getLogger("django.debug")
 
 
 def bootstrap():
-    # create_gunicorn_instance_from_pid()
+    create_gunicorn_instance_from_pid()
     files_load_all()
     file_watchers_init()
     run_ruff()

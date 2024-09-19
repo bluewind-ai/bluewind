@@ -1,22 +1,20 @@
+import logging
 import os
 
-from manage import load_env  # noqa
+from django.core.wsgi import get_wsgi_application
 
-load_env()  # noqa
+from bluewind.context_variables import (
+    set_startup_mode,
+    set_workspace_id,
+)
+from manage import load_env  # noqa
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
 
-import django  # noqa
+load_env()
 
-django.setup()  # noqa
 
-from django.core.wsgi import get_wsgi_application  # noqa
-
-application = get_wsgi_application()
-
-# Now it's safe to import your project-specific modules
-
-from bluewind.context_variables import set_startup_mode, set_workspace_id  # noqa
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
 
 
 def workspace_wsgi_middleware(django_app):
@@ -37,15 +35,29 @@ def workspace_wsgi_middleware(django_app):
     return wrapper
 
 
-# Apply our middleware
-application = workspace_wsgi_middleware(application)
+# Get the default Django WSGI application
+django_application = get_wsgi_application()
 
 set_workspace_id(1)
-from bluewind import startup  # noqa
-
-from flows.sigint_handler.flows import sigint_handler  # noqa
-
-worker_int = sigint_handler()
-
 set_startup_mode(False)
-# # Register the signal handler
+
+
+application = workspace_wsgi_middleware(django_application)
+
+# from flows.on_exit_handler.flows import on_exit_handler  # noqa
+
+# signal.signal(signal.SIGINT, sigint_handler)
+
+# on_exit = on_exit
+# HERE
+from flows.bootstrap.flows import bootstrap  # noqa
+
+logger = logging.getLogger(__name__)
+
+try:
+    bootstrap()
+except BaseException:
+    logger.exception("Error during bootstrap")
+# from flows.bootstrap.flows import bootstrap  # noqa
+
+# when_ready = bootstrap
