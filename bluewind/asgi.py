@@ -1,14 +1,19 @@
 from flows.on_exit_handler.flows import on_exit_handler
 from flows.bootstrap.flows import bootstrap
+from bluewind.context_variables import set_startup_mode, set_workspace_id
 import os
 
+import django
 from django.core.asgi import get_asgi_application
 
-from bluewind.context_variables import set_startup_mode, set_workspace_id
 from manage import load_env
 
+# Set the Django settings module
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
 load_env()
+# Initialize Django
+django.setup()
+
 
 django_asgi_app = get_asgi_application()
 
@@ -34,9 +39,7 @@ async def workspace_asgi_middleware(app):
 set_workspace_id(1)
 set_startup_mode(False)
 
-
 bootstrap()
-
 
 worker_int = on_exit_handler
 
