@@ -3,6 +3,7 @@ import os  # noqa
 import django  # noqa
 from django.core.asgi import get_asgi_application  # noqa
 
+
 from manage import load_env  # noqa
 
 # Set the Django settings module
@@ -47,3 +48,17 @@ worker_int = on_exit_handler
 async def application(scope, receive, send):
     middleware = await workspace_asgi_middleware(django_asgi_app)
     await middleware(scope, receive, send)
+
+
+def print_server_info():
+    print("\n" + "=" * 40)
+    print("Server is running!")
+    print("Local:   http://127.0.0.1:8000")
+    print("Network: http://0.0.0.0:8000")
+    print("=" * 40 + "\n")
+
+
+import asyncio  # noqa
+
+# Schedule the print_server_info function to run after a short delay
+asyncio.get_event_loop().call_later(1, print_server_info)
