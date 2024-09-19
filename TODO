@@ -231,3 +231,4 @@ if folder ends with .py don''t allow it
 
 before create always have to return the object
 linter: function cannot be named like its directory
+create a model type: ephemeral for daphne processes, file watchers, etc, etc...

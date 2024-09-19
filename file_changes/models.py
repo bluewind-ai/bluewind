@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.db import models
 
+from file_changes.after_create import file_changes_after_create
 from workspaces.models import WorkspaceRelated
 
 # Setup logger for debugging

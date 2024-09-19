@@ -1,11 +1,10 @@
 import logging
 
 from bluewind.context_variables import get_workspace_id
-from flows.file_watchers_init.flows import file_watchers_init
 from flows.files_load_all.flows import files_load_all
 from workspaces.models import Workspace
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.temp")
 
 
 def bootstrap_workspace():
@@ -25,8 +24,7 @@ def bootstrap_workspace():
     ).update(bootstrap_status=Workspace.BootstrapStatus.PENDING)
 
     files_load_all()
-
-    file_watchers_init()
+    logger.debug("Files loaded successfully.")
 
     Workspace.objects.filter(
         id=workspace_id,

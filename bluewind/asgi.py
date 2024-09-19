@@ -4,7 +4,6 @@ import django
 from django.core.asgi import get_asgi_application
 
 from bluewind.context_variables import set_startup_mode, set_workspace_id
-from flows.bootstrap.flows import bootstrap
 from manage import load_env
 
 # Set the Django settings module
@@ -36,6 +35,7 @@ def workspace_asgi_middleware(asgi_app):
 set_workspace_id(1)
 set_startup_mode(False)
 
+from flows.bootstrap.flows import bootstrap  # noqa
 
 bootstrap()
 

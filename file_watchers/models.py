@@ -16,9 +16,18 @@ class FileWatcher(WorkspaceRelated):
     Model to represent a file or directory that is being watched for changes.
     """
 
-    name = models.CharField(
-        max_length=255, unique=True, help_text="A unique name for the file watcher."
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        RUNNING = "running", "Running"
+        SHUTTING_DOWN = "shutting-down", "Shutting Down"
+        TERMINATED = "terminated", "Terminated"
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
     )
+
     path = models.CharField(
         max_length=1024, help_text="The path of the file or directory to watch."
     )
@@ -29,10 +38,7 @@ class FileWatcher(WorkspaceRelated):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"FileWatcher(name={self.name}, path={self.path}, is_active={self.is_active})"
-
-    class Meta:
-        unique_together = ["name", "workspace"]
+        return f"FileWatcher(path={self.path}, is_active={self.is_active})"
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
