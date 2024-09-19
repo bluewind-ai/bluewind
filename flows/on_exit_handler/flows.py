@@ -5,7 +5,7 @@ from asgiref.sync import sync_to_async
 
 from gunicorn_instances.models import GunicornInstance
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 @sync_to_async

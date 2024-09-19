@@ -1,10 +1,10 @@
-from flows.bootstrap.flows import bootstrap
-from bluewind.context_variables import set_startup_mode, set_workspace_id
 import os
 
 import django
 from django.core.asgi import get_asgi_application
 
+from bluewind.context_variables import set_startup_mode, set_workspace_id
+from flows.bootstrap.flows import bootstrap
 from manage import load_env
 
 # Set the Django settings module

@@ -60,7 +60,7 @@ def flows_after_save(flow):
                 f"Successfully renamed and updated content for flow: {flow.name}"
             )
         else:
-            logger.warning(
+            logger.debug(
                 f"Folder {destination_folder} already exists. Skipping copy operation."
             )
     except Exception as e:

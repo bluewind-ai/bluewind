@@ -32,7 +32,7 @@ def register_models(base_dir, default_workspace_id, default_user_id, all_files):
                     model_instance.save()
                     models_created.append(model_instance)
                 except IntegrityError:
-                    logger.warning(
+                    logger.debug(
                         f"Model for file {file_path} already exists. Skipping."
                     )
             else:
