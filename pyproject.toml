@@ -62,6 +62,7 @@ autopep8 = "^2.3.1"
 slippers = "^0.6.2"
 watchdog = "^5.0.2"
 daphne = "^4.1.2"
+psutil = "^6.0.0"
 
 [tool.poetry.extras]
 argon2 = ["argon2-cffi",]

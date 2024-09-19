@@ -9,13 +9,13 @@ logger = logging.getLogger("django.debug")
 
 
 @sync_to_async
-def update_gunicorn_instances(master_pid):
+def update_gunicorn_instances(pid):
     return GunicornInstance.objects.filter(
-        master_pid=master_pid, status=GunicornInstance.Status.RUNNING
+        master_pid=pid, status=GunicornInstance.Status.RUNNING
     ).update(status=GunicornInstance.Status.TERMINATED)
 
 
 async def on_exit_handler(server):
     logger.debug("SIGINT_HANDLER")
-    await update_gunicorn_instances(os.getppid())
+    await update_gunicorn_instances(os.getpid())
     server.stop()
