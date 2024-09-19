@@ -39,3 +39,10 @@ class FileChange(WorkspaceRelated):
 
     def __str__(self):
         return f"{self.change_type} on {self.source_path} at {self.timestamp}"
+
+    def save(self, *args, **kwargs):  # noqa
+        is_new = self.pk is None
+
+        super().save(*args, **kwargs)
+        if is_new:
+            file_changes_after_create(self)
