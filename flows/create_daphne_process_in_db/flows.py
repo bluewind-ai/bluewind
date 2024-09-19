@@ -4,7 +4,7 @@ import os
 from daphne_processes.models import DaphneProcess
 from flows.file_watchers_init.flows import file_watchers_init
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def create_daphne_process_in_db():

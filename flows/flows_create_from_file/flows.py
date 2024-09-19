@@ -25,7 +25,9 @@ def flows_create_from_file(file):
         )
 
     # Log the action
-    from django.utils.log import getLogger
 
-    logger = getLogger("django.debug")
+    logger = logging.getLogger("django.debug")
     logger.debug(f"File created and processed: {file.path}")
+
+
+"cdscds"

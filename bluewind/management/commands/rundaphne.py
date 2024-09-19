@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
 # If you want to include the reload_daphne function in the same file:
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def reload_daphne(daphne_process):

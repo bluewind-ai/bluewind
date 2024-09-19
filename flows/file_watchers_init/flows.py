@@ -7,7 +7,7 @@ from bluewind.context_variables import get_workspace_id
 from file_watchers.models import FileWatcher
 
 User = get_user_model()
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def file_watchers_init():

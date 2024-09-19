@@ -6,7 +6,7 @@ from watchdog.observers import Observer
 from file_changes.models import FileChange
 from flows.is_ignored_by_git.flows import is_ignored_by_git
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 observers_registry = {}
 
 
@@ -14,7 +14,7 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
     def __init__(self, file_watcher):
         super().__init__()
         self.file_watcher = file_watcher
-        logger.error(f"Initialized SimpleFileChangeHandler for {file_watcher.path}")
+        logger.debug(f"Initialized SimpleFileChangeHandler for {file_watcher.path}")
 
     def _create_file_change(self, event, change_type):
         logger.debug(f"Processing {change_type} event for {event.src_path}")
@@ -26,7 +26,7 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
                 user_id=self.file_watcher.user_id,
                 workspace=self.file_watcher.workspace,
             )
-            logger.error(f"FileChange ({change_type}) created for {event.src_path}")
+            logger.debug(f"FileChange ({change_type}) created for {event.src_path}")
         else:
             logger.debug(f"Ignoring git-ignored file: {event.src_path}")
 

@@ -81,6 +81,10 @@ def get_logging_config(base_dir):
                 "()": CombinedFormatter,
                 "format": "%(asctime)s [%(levelname)s] [%(request_id)s] %(name)s: %(message)s",
             },
+            "simple": {
+                "format": "[{levelname}] {asctime} {module} {message}",
+                "style": "{",
+            },
         },
         "handlers": {
             "console": {

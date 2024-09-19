@@ -3,7 +3,7 @@ import os
 import signal
 import subprocess
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def reload_daphne(daphne_process):
