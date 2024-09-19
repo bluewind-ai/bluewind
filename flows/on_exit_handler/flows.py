@@ -14,7 +14,11 @@ def on_exit_handler(server):
 
     logger.info(f"[{timezone.now()}] Received SIGINT. Performing cleanup...")
     logger.info(f"Master PID: {os.getppid()}")
-    GunicornInstance.objects.filter(
+
+    updated_count = GunicornInstance.objects.filter(
         master_pid=os.getppid(), status=GunicornInstance.Status.RUNNING
     ).update(status=GunicornInstance.Status.TERMINATED)
-    logger.info(f"[{timezone.now()}] Cleanup complete.")
+
+    logger.info(
+        f"[{timezone.now()}] Cleanup complete. Updated {updated_count} GunicornInstance(s)."
+    )

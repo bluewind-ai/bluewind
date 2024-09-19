@@ -5,7 +5,7 @@ from django import forms
 logger = logging.getLogger("django.debug")
 
 
-class IsWorkspaceBootstrapAlreadyPendingOrDoneForm(forms.Form):
+class UpdateGunicornBootstrapStatusForm(forms.Form):
     def __init__(self, *args, **kwargs):
         logger.debug("Initializing ExtractContextsForm")
         self.workspace = kwargs.pop("workspace", None)
