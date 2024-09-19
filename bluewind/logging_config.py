@@ -92,25 +92,25 @@ def get_logging_config(base_dir):
         "loggers": {
             "django": {
                 "handlers": ["console"],
-                "level": "DEBUG",
+                "level": "WARNING",
                 "propagate": False,
             },
             "django.utils.autoreload": {
-                "level": "DEBUG",
+                "level": "WARNING",
                 "propagate": False,
             },
             "django.db.backends": {
-                "level": "DEBUG",
+                "level": "WARNING",
                 "handlers": ["console"],
                 "propagate": False,
             },
             "django.static": {
-                "level": "DEBUG",
+                "level": "WARNING",
                 "handlers": ["console"],
                 "propagate": False,
             },
             "django.db.backends.schema": {
-                "level": "DEBUG",
+                "level": "WARNING",
                 "handlers": ["console"],
                 "propagate": False,
             },
@@ -122,6 +122,6 @@ def get_logging_config(base_dir):
         },
         "root": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "WARNING",
         },
     }
