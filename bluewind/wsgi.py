@@ -1,4 +1,3 @@
-import logging
 import os
 
 from django.core.wsgi import get_wsgi_application
@@ -44,20 +43,6 @@ set_startup_mode(False)
 
 application = workspace_wsgi_middleware(django_application)
 
-# from flows.on_exit_handler.flows import on_exit_handler  # noqa
-
-# signal.signal(signal.SIGINT, sigint_handler)
-
-# on_exit = on_exit
-# HERE
 from flows.bootstrap.flows import bootstrap  # noqa
 
-logger = logging.getLogger(__name__)
-
-try:
-    bootstrap()
-except BaseException:
-    logger.exception("Error during bootstrap")
-# from flows.bootstrap.flows import bootstrap  # noqa
-
-# when_ready = bootstrap
+bootstrap()
