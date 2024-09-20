@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "behave_django",
     "channels",
     "debug_toolbar",
+    "django_extensions",
     "model_clone",
     "slippers",
     "widget_tweaks",
@@ -89,7 +90,6 @@ INSTALLED_APPS = [
     "pub_sub_topics",
     "workspace_users",
     "daphne_processes",
-    "silk",
     "admin_autoregister",
 ]
 
@@ -113,6 +113,7 @@ APP_TYPE = {
     "behave_django": "third_party",
     "channels": "third_party",
     "debug_toolbar": "third_party",
+    "django_extensions": "third_party",
     "model_clone": "third_party",
     "widget_tweaks": "third_party",
     "slippers": "third_party",
@@ -159,7 +160,6 @@ APP_TYPE = {
     "workspace_users": "custom",
     "daphne_processes": "custom",
     "app_logs": "custom",
-    "silk": "third_party",
 }
 
 custom_apps = [app for app, app_type in APP_TYPE.items() if app_type == "custom"]
@@ -179,7 +179,6 @@ for app in APP_TYPE:
 MIDDLEWARE = [
     # CORE
     "bluewind.middleware.custom_middleware",
-    # "silk.middleware.SilkyMiddleware",
     "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -297,8 +296,8 @@ SOCIALACCOUNT_PROVIDERS = {
 INTERNAL_IPS = ["127.0.0.1"]
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TEMPLATE_CONTEXT": True,
-    # "ENABLE_STACKTRACES": True,
-    # "STACKTRACE_DEPTH": 20,  # Reduced from 10000
+    "ENABLE_STACKTRACES": True,
+    "STACKTRACE_DEPTH": 20,  # Reduced from 10000
     "SHOW_TOOLBAR_CALLBACK": "bluewind.toolbar.show_toolbar",
 }
 
@@ -360,5 +359,3 @@ warnings.filterwarnings(
 )
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-SILKY_PYTHON_PROFILER = True
