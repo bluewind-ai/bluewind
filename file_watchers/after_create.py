@@ -16,7 +16,7 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
         self.file_watcher = file_watcher
         logger.debug(f"Initialized SimpleFileChangeHandler for {file_watcher.path}")
 
-    def _create_file_change(self, event, change_type):
+    def _create_file_system_change(self, event, change_type):
         logger.debug(f"Processing {change_type} event for {event.src_path}")
         if not is_ignored_by_git(event.src_path):
             FileSystemChange.objects.create(
@@ -32,15 +32,15 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
 
     def on_created(self, event):
         logger.debug(f"File created event detected: {event.src_path}")
-        self._create_file_change(event, "created")
+        self._create_file_system_change(event, "created")
 
     def on_modified(self, event):
         logger.debug(f"File modified event detected: {event.src_path}")
-        self._create_file_change(event, "modified")
+        self._create_file_system_change(event, "modified")
 
     def on_deleted(self, event):
         logger.debug(f"File deleted event detected: {event.src_path}")
-        self._create_file_change(event, "deleted")
+        self._create_file_system_change(event, "deleted")
 
 
 def file_watchers_after_create(file_watcher):
