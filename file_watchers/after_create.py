@@ -22,7 +22,7 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
             FileSystemChange.objects.create(
                 file_watcher=self.file_watcher,
                 source_path=event.src_path,
-                dest_path=event.dest_path if change_type == "moved" else None,
+                destination_path=event.dest_path if change_type == "moved" else None,
                 change_type=change_type,
                 user_id=self.file_watcher.user_id,
                 workspace=self.file_watcher.workspace,
@@ -33,7 +33,7 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
 
     def on_moved(self, event):
         logger.debug(
-            f"File/directory moved event detected: {event.src_path} -> {event.dest_path}"
+            f"File/directory moved event detected: {event.src_path} -> {event.destination_path}"
         )
         self._create_file_system_change(event, "moved")
 

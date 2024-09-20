@@ -14,6 +14,10 @@ temp_logger = logging.getLogger("django.debug")
 temp_logger = logging.getLogger("django.debug")
 
 
+# Setup logger for debugging
+temp_logger = logging.getLogger("django.debug")
+
+
 class FileSystemChange(WorkspaceRelated):
     class ChangeType(models.TextChoices):
         CREATED = "created", "Created"
@@ -30,6 +34,12 @@ class FileSystemChange(WorkspaceRelated):
     source_path = models.CharField(
         max_length=255,
         help_text="The path of the file that was changed.",
+    )
+    destination = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="The destination path for moved files.",
     )
     change_type = models.CharField(
         max_length=50,
