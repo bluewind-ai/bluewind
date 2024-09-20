@@ -1,6 +1,8 @@
 import logging
+import os
 
 from files.models import File
+from flows.directory_system_changes.flows import directory_system_changes
 
 logger = logging.getLogger("django.temp")
 
@@ -9,6 +11,9 @@ def file_system_changes_after_create(file_change):
     logger.debug(
         f"FileChange ({file_change.change_type}) detected for {file_change.source_path}"
     )
+
+    if os.path.isdir(file_change.source_path):
+        return directory_system_changes(file_change)
 
     # Assuming the workspace has a user associated with it
     user = file_change.workspace.user  # Adjust this based on your actual data model
