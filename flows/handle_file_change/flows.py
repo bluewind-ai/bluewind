@@ -2,25 +2,25 @@ import logging
 
 from files.models import File
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.debug")
 
 
 def handle_file_change(file_system_change):
