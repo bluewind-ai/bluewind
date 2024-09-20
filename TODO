@@ -100,7 +100,7 @@ Model to represent a detected file change.
     file_watcher = models.ForeignKey(
         "file_watchers.FileWatcher",
         on_delete=models.CASCADE,
-        related_name="file_changes",
+        related_name="file_system_changes",
         help_text="The file watcher that detected this change.",
     )
     file_path = models.CharField(
@@ -173,7 +173,7 @@ I think I should forbid creating entities in the before_save() and only favor af
 right now I shipped the file watcher feature and I am discovering later that there are regressions. What could be very powerful is if tests were automagically created for this.
 And the most powerful tests in my opinion are the ones that come after a regression is discovered. Because they''re very relevant. Since the bug happened. The problem with a lot of tests is they never break, which defeats the purpose.
 
-def file_changes_after_save(file_changes): -> should not be plural, it should always be singular
+def file_system_changes_after_save(file_system_changes): -> should not be plural, it should always be singular
 
 the name of the file watcher is useless.
 I discovered file watchers can't be edited. This is ok but incorporated into the models or somewhere, so that django admin automatically knows.
@@ -186,7 +186,7 @@ maybe put the logger on ALL the files? Also allows me to log the methods inputs 
 
 replace flows by workflows
 
-linters based on the type: file_changes_on_ready has no type
+linters based on the type: file_system_changes_on_ready has no type
 
 very disappointing errors don''t give tracebacks "2024-09-15 21:11:02,389 [ERROR] [no_request_id] django.temp: Error in file watchers operation: null value in column "workspace_id" of relation "file_watchers_filewatcher" violates not-null constraint"
 

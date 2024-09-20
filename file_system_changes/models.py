@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 from django.db import models
 
-from file_changes.after_create import file_changes_after_create
+from file_system_changes.after_create import file_system_changes_after_create
 from workspaces.models import WorkspaceRelated
 
 # Setup logger for debugging
@@ -14,7 +14,7 @@ temp_logger = logging.getLogger("django.debug")
 temp_logger = logging.getLogger("django.debug")
 
 
-class FileChange(WorkspaceRelated):
+class FileSystemChange(WorkspaceRelated):
     class ChangeType(models.TextChoices):
         CREATED = "created", "Created"
         MODIFIED = "modified", "Modified"
@@ -23,7 +23,7 @@ class FileChange(WorkspaceRelated):
     file_watcher = models.ForeignKey(
         "file_watchers.FileWatcher",
         on_delete=models.CASCADE,
-        related_name="file_changes",
+        related_name="file_system_changes",
         help_text="The file watcher that detected this change.",
     )
     source_path = models.CharField(
@@ -52,4 +52,4 @@ class FileChange(WorkspaceRelated):
 
         super().save(*args, **kwargs)
         if is_new:
-            file_changes_after_create(self)
+            file_system_changes_after_create(self)

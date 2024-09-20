@@ -3,7 +3,7 @@ import logging
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-from file_changes.models import FileChange
+from file_system_changes.models import FileSystemChange
 from flows.is_ignored_by_git.flows import is_ignored_by_git
 
 logger = logging.getLogger("django.debug")
@@ -19,7 +19,7 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
     def _create_file_change(self, event, change_type):
         logger.debug(f"Processing {change_type} event for {event.src_path}")
         if not is_ignored_by_git(event.src_path):
-            FileChange.objects.create(
+            FileSystemChange.objects.create(
                 file_watcher=self.file_watcher,
                 source_path=event.src_path,
                 change_type=change_type,
