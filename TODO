@@ -232,3 +232,12 @@ if folder ends with .py don''t allow it
 before create always have to return the object
 linter: function cannot be named like its directory
 create a model type: ephemeral for daphne processes, file watchers, etc, etc...
+
+
+class Meta:
+        ordering = ["-updated_at"]
+        constraints = [
+            UniqueConstraint(fields=['workspace', 'path'], name='unique_path_per_workspace')
+        ]
+
+prevent usage of this: it''s more verbous
