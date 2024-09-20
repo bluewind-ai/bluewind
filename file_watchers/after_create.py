@@ -33,7 +33,7 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
 
     def on_moved(self, event):
         logger.debug(
-            f"File/directory moved event detected: {event.src_path} -> {event.destination_path}"
+            f"File/directory moved event detected: {event.src_path} -> {event.dest_path}"
         )
         self._create_file_system_change(event, "moved")
 
@@ -72,3 +72,6 @@ def file_watchers_after_create(file_watcher):
         logger.debug(f"Successfully stopped watching: {file_watcher.path}")
     else:
         logger.debug(f"No action taken for file_watcher: {file_watcher.path}")
+
+
+"cdscds"

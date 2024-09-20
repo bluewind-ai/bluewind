@@ -35,7 +35,7 @@ class FileSystemChange(WorkspaceRelated):
         max_length=255,
         help_text="The path of the file that was changed.",
     )
-    destination = models.CharField(
+    destination_path = models.CharField(
         max_length=255,
         null=True,
         blank=True,
