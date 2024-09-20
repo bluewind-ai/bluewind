@@ -19,6 +19,7 @@ class FileSystemChange(WorkspaceRelated):
         CREATED = "created", "Created"
         MODIFIED = "modified", "Modified"
         DELETED = "deleted", "Deleted"
+        MOVED = "moved", "Moved"
 
     file_watcher = models.ForeignKey(
         "file_watchers.FileWatcher",

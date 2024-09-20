@@ -22,6 +22,7 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
             FileSystemChange.objects.create(
                 file_watcher=self.file_watcher,
                 source_path=event.src_path,
+                dest_path=event.dest_path if change_type == "moved" else None,
                 change_type=change_type,
                 user_id=self.file_watcher.user_id,
                 workspace=self.file_watcher.workspace,
@@ -29,6 +30,12 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
             logger.debug(f"FileChange ({change_type}) created for {event.src_path}")
         else:
             logger.debug(f"Ignoring git-ignored file: {event.src_path}")
+
+    def on_moved(self, event):
+        logger.debug(
+            f"File/directory moved event detected: {event.src_path} -> {event.dest_path}"
+        )
+        self._create_file_system_change(event, "moved")
 
     def on_created(self, event):
         logger.debug(f"File created event detected: {event.src_path}")
