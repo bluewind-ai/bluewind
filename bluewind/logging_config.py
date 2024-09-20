@@ -43,7 +43,11 @@ class CleanTracebackFormatter(logging.Formatter):
 
 
 class CombinedFormatter(CleanTracebackFormatter):
+    def clean_pathname(self, pathname):
+        return pathname.replace("/Users/merwanehamadi/code/bluewind/", "")
+
     def format(self, record):
+        record.pathname = self.clean_pathname(record.pathname)
         # First, attach the request ID using ContextAwareRequestIDFormatter
         if request_id_var.get(None) is None:
             record.request_id = "no_request_id"
@@ -79,7 +83,7 @@ def get_logging_config(base_dir):
         "formatters": {
             "verbose": {
                 "()": CombinedFormatter,
-                "format": "%(asctime)s [%(levelname)s] [%(request_id)s] %(name)s: %(message)s",
+                "format": "%(asctime)s [%(levelname)s] [%(request_id)s] %(name)s: %(message)s (%(pathname)s:%(lineno)d)",
             },
             "simple": {
                 "format": "[{levelname}] {asctime} {module} {message}",

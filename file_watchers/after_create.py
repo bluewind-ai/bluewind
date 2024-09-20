@@ -17,19 +17,24 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
         logger.debug(f"Initialized SimpleFileChangeHandler for {file_watcher.path}")
 
     def _create_file_system_change(self, event, change_type):
-        logger.debug(f"Processing {change_type} event for {event.src_path}")
-        if not is_ignored_by_git(event.src_path):
-            FileSystemChange.objects.create(
-                file_watcher=self.file_watcher,
-                source_path=event.src_path,
-                destination_path=event.dest_path if change_type == "moved" else None,
-                change_type=change_type,
-                user_id=self.file_watcher.user_id,
-                workspace=self.file_watcher.workspace,
-            )
-            logger.debug(f"FileChange ({change_type}) created for {event.src_path}")
-        else:
-            logger.debug(f"Ignoring git-ignored file: {event.src_path}")
+        try:
+            logger.debug(f"Processing {change_type} event for {event.src_path}")
+            if not is_ignored_by_git(event.src_path):
+                FileSystemChange.objects.create(
+                    file_watcher=self.file_watcher,
+                    source_path=event.src_path,
+                    destination_path=event.dest_path
+                    if change_type == "moved"
+                    else None,
+                    change_type=change_type,
+                    user_id=self.file_watcher.user_id,
+                    workspace=self.file_watcher.workspace,
+                )
+                logger.debug(f"FileChange ({change_type}) created for {event.src_path}")
+            else:
+                logger.debug(f"Ignoring git-ignored file: {event.src_path}")
+        except Exception:
+            logger.exception("Error processing file creation event")
 
     def on_moved(self, event):
         logger.debug(
@@ -43,7 +48,11 @@ class SimpleFileChangeHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         logger.debug(f"File modified event detected: {event.src_path}")
-        self._create_file_system_change(event, "modified")
+        try:
+            self._create_file_system_change(event, "created")
+        except Exception:
+            logger.exception("Error processing file creation event")
+        # self._create_file_system_change(event, "modified")
 
     def on_deleted(self, event):
         logger.debug(f"File deleted event detected: {event.src_path}")
