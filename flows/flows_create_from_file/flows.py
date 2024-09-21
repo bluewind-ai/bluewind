@@ -3,7 +3,7 @@ import os
 
 from flows.models import Flow
 
-temp_logger = logging.getLogger("django.debug")
+temp_logger = logging.getLogger("django.not_used")
 
 
 def flows_create_from_file(file):
@@ -26,7 +26,7 @@ def flows_create_from_file(file):
 
     # Log the action
 
-    logger = logging.getLogger("django.debug")
+    logger = logging.getLogger("django.not_used")
     logger.debug(f"File created and processed: {file.path}")
 
 

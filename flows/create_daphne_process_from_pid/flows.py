@@ -3,7 +3,7 @@ import os
 
 from daphne_processes.models import DaphneProcess
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def create_daphne_process_from_pid():

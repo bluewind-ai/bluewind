@@ -6,7 +6,7 @@ from file_watchers.after_create import file_watchers_after_create
 from workspaces.models import WorkspaceRelated
 
 # Initialize the logger
-temp_logger = logging.getLogger("django.debug")
+temp_logger = logging.getLogger("django.not_used")
 
 observers_registry = {}
 

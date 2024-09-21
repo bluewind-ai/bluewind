@@ -1,8 +1,8 @@
 import asyncio
 
 
-async def run_command(command, log_file, env=None, verbose=True):
-    process = await asyncio.create_subprocess_shell(
+def run_command(command, log_file, env=None, verbose=True):
+    process = asyncio.create_subprocess_shell(
         command,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
@@ -10,10 +10,10 @@ async def run_command(command, log_file, env=None, verbose=True):
         start_new_session=True,  # Add this line
     )
 
-    async def log_output():
+    def log_output():
         with open(log_file, "w") as f:
             while True:
-                line = await process.stdout.readline()
+                line = process.stdout.readline()
                 if not line:
                     break
                 line = line.decode("utf-8").strip()
@@ -22,8 +22,8 @@ async def run_command(command, log_file, env=None, verbose=True):
                 f.write(line + "\n")
                 f.flush()
 
-    await log_output()
-    return_code = await process.wait()
+    log_output()
+    return_code = process.wait()
 
     if return_code != 0:
         raise RuntimeError(f"Command '{command}' failed with return code {return_code}")

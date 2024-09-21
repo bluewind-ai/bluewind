@@ -1,7 +1,7 @@
 import logging
 import os
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def check_flow_compliance():

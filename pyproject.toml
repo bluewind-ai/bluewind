@@ -47,7 +47,6 @@ django-widget-tweaks = "^1.5.0"
 django-ses = {extras = ["events"], version = "^4.1.1"}
 autoflake = "^2.3.1"
 ruff = "^0.6.3"
-django-extensions = "^3.2.3"
 nanoid = "^2.0.0"
 django-fernet-encrypted-fields = "^0.1.3"
 click = "^8.1.7"
@@ -57,12 +56,13 @@ django-reverse-admin = "^2.9.6"
 djangorestframework = "^3.15.2"
 drf-spectacular = "^0.27.2"
 drf-standardized-errors = "^0.14.1"
-pylint = "^3.2.7"
 autopep8 = "^2.3.1"
 slippers = "^0.6.2"
 watchdog = "^5.0.2"
 daphne = "^4.1.2"
 psutil = "^6.0.0"
+django-silk = "^5.2.0"
+scalene = "^1.5.44.1"
 
 [tool.poetry.extras]
 argon2 = ["argon2-cffi",]

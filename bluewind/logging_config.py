@@ -81,7 +81,7 @@ def get_logging_config(base_dir):
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "verbose": {
+            "pretty": {
                 "()": CombinedFormatter,
                 "format": "%(asctime)s [%(levelname)s] [%(request_id)s] %(name)s: %(message)s (%(pathname)s:%(lineno)d)",
             },
@@ -93,7 +93,7 @@ def get_logging_config(base_dir):
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "verbose",
+                "formatter": "pretty",
                 "stream": sys.stdout,
             },
         },
@@ -125,6 +125,11 @@ def get_logging_config(base_dir):
             "django.temp": {
                 "handlers": ["console"],
                 "level": "DEBUG",
+                "propagate": False,
+            },
+            "django.watchdog": {
+                "handlers": ["console"],
+                "level": "ERROR",
                 "propagate": False,
             },
         },

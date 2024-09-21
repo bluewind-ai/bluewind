@@ -3,7 +3,7 @@ import logging
 from django import forms
 from django_json_widget.widgets import JSONEditorWidget
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 class RunFlowForm(forms.Form):

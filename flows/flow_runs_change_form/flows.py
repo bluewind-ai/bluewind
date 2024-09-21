@@ -4,7 +4,7 @@ import logging
 
 from django.template.response import TemplateResponse
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def flow_runs_change_form(request, flow, obj, form_template, context):

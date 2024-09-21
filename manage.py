@@ -32,7 +32,13 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+        # try:
     execute_from_command_line(sys.argv)
+    # except Exception:
+    #     import logging
+
+    #     logger = logging.getLogger("django.temp")
+    #     logger.exception("Error executing command.")
 
 
 if __name__ == "__main__":

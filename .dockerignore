@@ -25,7 +25,6 @@
 !db_graph
 !debug_toolbar
 !diff_related_entities
-!django_extensions
 !django_json_widget
 !draft_messages
 !drf_spectacular

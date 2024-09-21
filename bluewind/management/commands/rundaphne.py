@@ -10,6 +10,8 @@ from django.core.management.base import BaseCommand
 
 from flows.on_exit_handler.flows import on_exit_handler
 
+logger = logging.getLogger("django.temp")
+
 
 class Command(BaseCommand):
     help = "Runs Daphne server with custom shutdown and reload hooks"
@@ -19,7 +21,7 @@ class Command(BaseCommand):
         self.port = 8000
         self.application_path = "bluewind.asgi:application"
 
-        self.setup_server()
+        self.setup_server()  # noqa
 
         signal.signal(signal.SIGINT, self.sigint_handler)
         signal.signal(signal.SIGHUP, self.sighup_handler)
@@ -27,10 +29,7 @@ class Command(BaseCommand):
         print(f"\nServer is running on http://{self.host}:{self.port}")
         print(f"PID: {os.getpid()}\n")
 
-        try:
-            self.server.run()
-        except KeyboardInterrupt:
-            pass
+        self.server.run()
 
     def setup_server(self):
         module_path, object_name = self.application_path.split(":")
@@ -54,8 +53,8 @@ class Command(BaseCommand):
             lambda: asyncio.create_task(self.reload_server())
         )
 
-    async def reload_server(self):
-        await on_exit_handler(self.server)
+    def reload_server(self):
+        on_exit_handler(self.server)
         self.setup_server()
         print(f"\nServer reloaded and running on http://{self.host}:{self.port}")
         print(f"PID: {os.getpid()}\n")
@@ -63,8 +62,6 @@ class Command(BaseCommand):
 
 
 # If you want to include the reload_daphne function in the same file:
-
-logger = logging.getLogger("django.debug")
 
 
 def reload_daphne(daphne_process):

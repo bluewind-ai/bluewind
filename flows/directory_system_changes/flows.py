@@ -5,7 +5,7 @@ from django.db.models import Q
 
 from files.models import File
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def directory_system_changes(file_system_change):

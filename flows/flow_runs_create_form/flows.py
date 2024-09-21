@@ -5,7 +5,7 @@ from django.template.response import TemplateResponse
 
 from bluewind.context_variables import get_workspace_id
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def flow_runs_create_form(request, flow, add_form_template, context, form=None):

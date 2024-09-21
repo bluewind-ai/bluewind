@@ -6,7 +6,7 @@ from django.db import IntegrityError
 
 from models.models import Model
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def register_models(base_dir, default_workspace_id, default_user_id, all_files):

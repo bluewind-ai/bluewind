@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth.models import Permission
 from django.urls import reverse
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def command_palette_get_commands():
@@ -11,8 +11,9 @@ def command_palette_get_commands():
     logger = logging.getLogger(__name__)
     logger.debug("Starting command_palette_get_commands function")
     logger.debug("Getting admin links")
+    permissions = Permission.objects.select_related("content_type").all()
 
-    for perm in Permission.objects.select_related("content_type").all():
+    for perm in permissions:
         app_label = perm.content_type.app_label.replace("_", " ").title()
         model_name = perm.content_type.model.replace("_", " ").title()
         logger.debug(f"Processing permission: {perm} for {app_label} - {model_name}")

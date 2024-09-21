@@ -7,15 +7,15 @@ from file_system_changes.after_create import file_system_changes_after_create
 from workspaces.models import WorkspaceRelated
 
 # Setup logger for debugging
-temp_logger = logging.getLogger("django.debug")
+temp_logger = logging.getLogger("django.not_used")
 
 
 # Setup logger for debugging
-temp_logger = logging.getLogger("django.debug")
+temp_logger = logging.getLogger("django.not_used")
 
 
 # Setup logger for debugging
-temp_logger = logging.getLogger("django.debug")
+temp_logger = logging.getLogger("django.not_used")
 
 
 class FileSystemChange(WorkspaceRelated):

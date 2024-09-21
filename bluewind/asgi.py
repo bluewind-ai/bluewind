@@ -14,7 +14,7 @@ django.setup()
 
 
 def workspace_asgi_middleware(asgi_app):
-    async def wrapper(scope, receive, send):
+    def wrapper(scope, receive, send):
         if scope["type"] == "http":
             original_path = scope["path"]
             workspace_id = 2
@@ -27,7 +27,7 @@ def workspace_asgi_middleware(asgi_app):
 
             set_workspace_id(int(workspace_id))
 
-        return await asgi_app(scope, receive, send)
+        return asgi_app(scope, receive, send)
 
     return wrapper
 
@@ -35,9 +35,9 @@ def workspace_asgi_middleware(asgi_app):
 set_workspace_id(1)
 set_startup_mode(False)
 
-from flows.bootstrap.flows import bootstrap  # noqa
+from flows.bootstrap.flows import bootstrap, sync_bootstrap  # noqa
 
-bootstrap()
+sync_bootstrap()
 
 # Get the Django ASGI application
 django_asgi_app = get_asgi_application()

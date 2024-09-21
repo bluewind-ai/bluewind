@@ -41,5 +41,6 @@ def run_flow(flow, user, input_data={}):
         executed_at=executed_at,
         flow=flow,
     )
-    flow_run.save()
+    flow_run.asave()
+
     return flow_run

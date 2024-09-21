@@ -2,13 +2,13 @@ import logging
 
 import psutil
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def daphne_process_before_delete(instance):

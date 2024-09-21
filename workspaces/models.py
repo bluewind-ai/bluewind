@@ -1,7 +1,6 @@
 import logging
 
 # Assuming these are defined elsewhere
-from django.apps import apps
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -11,7 +10,6 @@ from django.utils import timezone
 from django.utils.html import format_html
 
 from bluewind.context_variables import get_startup_mode, get_workspace_id
-from bluewind.do_not_log import DO_NOT_LOG
 from users.models import User
 from workspace_users.models import WorkspaceUser
 
@@ -145,29 +143,30 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.update_entity()
+        return super().save(*args, **kwargs)
 
-    def update_entity(self):
-        model_str = f"{self._meta.app_label}.{self._meta.object_name}"
+    # self.update_entity()
 
-        if model_str in DO_NOT_LOG:
-            return
+    # def update_entity(self):
+    #     model_str = f"{self._meta.app_label}.{self._meta.object_name}"
 
-        Entity = apps.get_model("entity", "Entity")
-        content_type = self.get_model_instance()
-        name = str(self)[:255]  # Truncate to 255 characters
+    #     if model_str in DO_NOT_LOG:
+    #         return
 
-        Entity.objects.update_or_create(
-            workspace=self.workspace,
-            content_type=content_type,
-            object_id=self.pk,
-            defaults={
-                "name": name,
-                "updated_at": models.functions.Now(),
-                "user": self.user,
-            },
-        )
+    #     Entity = apps.get_model("entity", "Entity")
+    #     content_type = self.get_model_instance()
+    #     name = str(self)[:255]  # Truncate to 255 characters
+
+    #     Entity.objects.update_or_create(
+    #         workspace_id=get_workspace_id,
+    #         content_type=content_type,
+    #         object_id=self.pk,
+    #         defaults={
+    #             "name": name,
+    #             "updated_at": models.functions.Now(),
+    #             "user": self.user,
+    #         },
+    #     )
 
     def get_model_instance(self):
         return ContentType.objects.get_for_model(self.__class__)

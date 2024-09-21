@@ -16,10 +16,10 @@ from flows.models import Flow  # Adjust import based on your project structure
 
 from .models import FlowRun
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 class OutputFormWidget(forms.Widget):

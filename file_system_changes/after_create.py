@@ -4,7 +4,7 @@ import os
 from flows.directory_system_changes.flows import directory_system_changes
 from flows.handle_file_change.flows import handle_file_change
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def file_system_changes_after_create(file_system_change):

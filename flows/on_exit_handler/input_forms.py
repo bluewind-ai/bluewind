@@ -4,7 +4,7 @@ from django import forms
 
 from daphne_processes.models import DaphneProcess
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 class ReloadGunicornForm(forms.Form):

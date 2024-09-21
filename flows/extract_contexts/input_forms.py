@@ -4,7 +4,7 @@ from django import forms
 
 from files.models import File
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 class ExtractContextsForm(forms.Form):

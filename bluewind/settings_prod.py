@@ -297,8 +297,8 @@ SOCIALACCOUNT_PROVIDERS = {
 INTERNAL_IPS = ["127.0.0.1"]
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TEMPLATE_CONTEXT": True,
-    # "ENABLE_STACKTRACES": True,
-    # "STACKTRACE_DEPTH": 20,  # Reduced from 10000
+    "ENABLE_STACKTRACES": True,
+    "STACKTRACE_DEPTH": 20,  # Reduced from 10000
     "SHOW_TOOLBAR_CALLBACK": "bluewind.toolbar.show_toolbar",
 }
 
@@ -361,4 +361,4 @@ warnings.filterwarnings(
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER = False

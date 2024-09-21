@@ -12,6 +12,16 @@ from bluewind.push_logs import push_logs_to_db
 from incoming_http_requests.models import IncomingHTTPRequest
 from workspaces.models import Workspace, WorkspaceUser
 
+# def sync_only_middleware(middleware_func):
+#     def wrapper(get_response):
+#         if asyncio.iscoroutinefunction(get_response):
+#             raise MiddlewareNotUsed(
+#                 "This middleware only supports synchronous requests"
+#             )
+#         return middleware_func(get_response)
+
+#     return wrapper
+
 
 def custom_middleware(get_response):
     def middleware(request):
@@ -66,6 +76,8 @@ def custom_middleware(get_response):
 
 def admin_middleware(get_response):
     def middleware(request):
+        if request.path.startswith("/silk/"):
+            return get_response(request)
         if request.path == "/":
             return redirect("/workspaces/2/accounts/login/")
         if request.path == "/workspaces/2/accounts/login/":

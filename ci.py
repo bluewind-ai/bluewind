@@ -8,9 +8,7 @@ from ci_utils import run_command
 from deploy_stack import run_deploy
 
 
-async def run_e2e_dev_green(
-    log_file, verbose=True, env_modifiers={}, additional_args=None
-):
+def run_e2e_dev_green(log_file, verbose=True, env_modifiers={}, additional_args=None):
     env_modifiers = {"SITE_PORT": "8001", "SITE_URL": "localhost"}
     env = os.environ.copy()
     env.update(env_modifiers)
@@ -20,15 +18,15 @@ async def run_e2e_dev_green(
         f"{base_command} {additional_args}" if additional_args else base_command
     )
 
-    return await run_command(full_command, log_file, env=env, verbose=verbose)
+    return run_command(full_command, log_file, env=env, verbose=verbose)
 
 
-async def run_e2e_prod_green(log_file, verbose=True):
+def run_e2e_prod_green(log_file, verbose=True):
     env_modifiers = {"SITE_PORT": "8080"}
     env = os.environ.copy()
     # modify env
     env.update(env_modifiers)
-    return await run_command(
+    return run_command(
         "SITE_PORT=8080 npx playwright test --project=chromium --reporter=list",
         log_file,
         env=env,
@@ -36,8 +34,8 @@ async def run_e2e_prod_green(log_file, verbose=True):
     )
 
 
-async def run_e2e_prod(log_file, verbose=True):
-    return await run_command(
+def run_e2e_prod(log_file, verbose=True):
+    return run_command(
         "SITE_PORT=443 SITE_URL=https://app.bluewind.ai npx playwright test --project=chromium --reporter=list",
         log_file,
         env=None,
@@ -45,7 +43,7 @@ async def run_e2e_prod(log_file, verbose=True):
     )
 
 
-async def run_e2e_local(log_file, verbose=True):
+def run_e2e_local(log_file, verbose=True):
     env = os.environ.copy()
     env.update(
         {
@@ -61,18 +59,18 @@ async def run_e2e_local(log_file, verbose=True):
     server_process = None
     try:
         for cmd in setup_commands:
-            await run_command(cmd, log_file, env=env, verbose=verbose)
+            run_command(cmd, log_file, env=env, verbose=verbose)
 
-        server_process = await asyncio.create_subprocess_shell(
+        server_process = asyncio.create_subprocess_shell(
             "python manage.py runserver",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             env=env,
         )
 
-        await asyncio.sleep(2)  # Wait for server to start
+        asyncio.sleep(2)  # Wait for server to start
 
-        await run_command(
+        run_command(
             "npx playwright test --project=chromium --reporter=list",
             log_file,
             env=env,
@@ -88,24 +86,24 @@ async def run_e2e_local(log_file, verbose=True):
                 return True
                 server_process.terminate()
                 server_process.kill()
-                await server_process.wait()
+                server_process.wait()
             except asyncio.TimeoutError:
                 print("couldn't kill the server")
 
 
-async def run_local_unit_tests(log_file, verbose=True):
+def run_local_unit_tests(log_file, verbose=True):
     if verbose:
         click.echo("Running unit tests locally...")
 
     command = "python3 manage.py test"
-    return await run_command(command, log_file, env=None, verbose=verbose)
+    return run_command(command, log_file, env=None, verbose=verbose)
 
 
-async def run_all_commands(log_dir, verbose=False):
-    async def timed_run(name, coroutine, verbose=verbose):
+def run_all_commands(log_dir, verbose=False):
+    def timed_run(name, coroutine, verbose=verbose):
         log_file = os.path.join(log_dir, f"{name}_tests.log")
         start_time = time.time()
-        success = await coroutine(log_file, verbose)
+        success = coroutine(log_file, verbose)
         duration = time.time() - start_time
         return name, success, duration
 
@@ -120,7 +118,7 @@ async def run_all_commands(log_dir, verbose=False):
         timed_run("deploy", run_deploy, verbose=True),
     ]
 
-    results = await asyncio.gather(*tasks)
+    results = asyncio.gather(*tasks)
     total_duration = time.time() - start_time
 
     return {
@@ -154,7 +152,7 @@ def cli(command, log_dir, verbose, additional_args):
     asyncio.run(async_cli(command, log_dir, verbose, additional_args))
 
 
-async def async_cli(command, log_dir, verbose, additional_args):
+def async_cli(command, log_dir, verbose, additional_args):
     if log_dir is None:
         reverse_timestamp = str(9999999999 - int(time.time())).zfill(10)
         log_dir = f"./logs/{reverse_timestamp}"
@@ -163,7 +161,7 @@ async def async_cli(command, log_dir, verbose, additional_args):
 
     if command == "full":
         click.echo("Starting full test and deploy process...")
-        results, total_duration = await run_all_commands(log_dir, verbose)
+        results, total_duration = run_all_commands(log_dir, verbose)
         overall_success = all(result["success"] for result in results.values())
         status_text = "Success" if overall_success else "Failure"
         click.echo(
@@ -183,25 +181,25 @@ async def async_cli(command, log_dir, verbose, additional_args):
         success = False  # Initialize success to False
         try:
             if command == "local_unit_tests":
-                success = await run_local_unit_tests(log_file, verbose=True)
+                success = run_local_unit_tests(log_file, verbose=True)
             # elif command == 'staging':
-            # success = await run_tests_against_staging(log_file, verbose=True)
+            # success = run_tests_against_staging(log_file, verbose=True)
             # elif command == 'docker':
-            #     success = await run_docker_tests(log_file, verbose=True)
+            #     success = run_docker_tests(log_file, verbose=True)
             elif command == "e2e_local":
-                return await run_e2e_local(log_file, verbose=True)
+                return run_e2e_local(log_file, verbose=True)
             elif command == "e2e_prod":
-                return await run_e2e_prod(log_file, verbose=True)
+                return run_e2e_prod(log_file, verbose=True)
             elif command == "e2e_prod_green":
-                return await run_e2e_prod_green(log_file, verbose=True)
+                return run_e2e_prod_green(log_file, verbose=True)
             elif command == "e2e_dev_green":
-                return await run_e2e_dev_green(
+                return run_e2e_dev_green(
                     log_file, verbose=True, additional_args=additional_args
                 )
             # elif command == 'e2e_staging':
-            #     success = await run_e2e_staging(log_file, verbose=True)
+            #     success = run_e2e_staging(log_file, verbose=True)
             elif command == "deploy":
-                return await run_deploy(log_file, verbose=True)
+                return run_deploy(log_file, verbose=True)
             else:
                 click.echo(f"Unknown command: {command}")
         except Exception as e:

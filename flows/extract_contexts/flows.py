@@ -3,7 +3,7 @@ import logging
 from django.template import Context, Template
 from django.utils.safestring import mark_safe
 
-logger = logging.getLogger("django.debug")
+logger = logging.getLogger("django.not_used")
 
 
 def extract_contexts(files):

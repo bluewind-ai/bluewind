@@ -19,7 +19,7 @@ def get_secret_keys_and_values():
     return secret.items()
 
 
-async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
+def build_and_push_docker_image(output_data, log_file, env, verbose=True):
     with open("last_deployment.json", "r") as file:
         last_deployment = json.load(file)
 
@@ -32,7 +32,7 @@ async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
         "echo $IMAGE_ID > image_id.txt",
     ]
 
-    await run_command(" && ".join(build_commands), log_file, env=env, verbose=verbose)
+    run_command(" && ".join(build_commands), log_file, env=env, verbose=verbose)
 
     with open("image_id.txt", "r") as file:
         new_image_id = file.read().strip()
@@ -50,7 +50,7 @@ async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
                 output_data['ecr_repository_url']['value']}:{new_image_id}",
         ]
         for command in push_commands:
-            await run_command(command, log_file, env=env, verbose=verbose)
+            run_command(command, log_file, env=env, verbose=verbose)
 
         # keep this for later
         last_deployment = {"image_id": new_image_id}
@@ -63,7 +63,7 @@ async def build_and_push_docker_image(output_data, log_file, env, verbose=True):
     return previous_image_id
 
 
-async def run_deploy(log_file, verbose=True):
+def run_deploy(log_file, verbose=True):
     print("running logs in", log_file)
     print("Starting deployment process")
 
@@ -95,13 +95,13 @@ async def run_deploy(log_file, verbose=True):
         "tofu output -json > ../tofu_output.json"
     )
 
-    await run_command(combined_command, log_file, env=env, verbose=verbose)
+    run_command(combined_command, log_file, env=env, verbose=verbose)
 
     print("OpenTofu commands completed successfully")
     with open("tofu_output.json", "r") as f:
         output_data = json.load(f)
 
-    image_id = await build_and_push_docker_image(output_data, log_file, env, verbose)
+    image_id = build_and_push_docker_image(output_data, log_file, env, verbose)
 
     elbv2_client = boto3.client(
         "elbv2",
@@ -326,7 +326,7 @@ async def run_deploy(log_file, verbose=True):
                     ],
                 )
 
-            # if not await run_e2e_prod_green('logs/test.log', verbose=True):
+            # if not run_e2e_prod_green('logs/test.log', verbose=True):
             #     raise("E2E prod green failed")
 
             https_listener = next(
@@ -369,7 +369,7 @@ async def run_deploy(log_file, verbose=True):
                 )
             print("Deployment completed successfully")
             return True
-        await asyncio.sleep(delay)
+        asyncio.sleep(delay)
     ecs_client.delete_task_set(
         cluster=cluster_arn, service=service_name, taskSet=new_task_set_id, force=True
     )
