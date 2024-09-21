@@ -179,7 +179,7 @@ for app in APP_TYPE:
 MIDDLEWARE = [
     # CORE
     "bluewind.middleware.custom_middleware",
-    # "silk.middleware.SilkyMiddleware",
+    "silk.middleware.SilkyMiddleware",
     "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",

@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 from django import template
 from django.contrib.admin import AdminSite
@@ -82,6 +83,8 @@ class CustomAdminSite(AdminSite):
 
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
+            time.sleep(2)
+
             context = self.each_context(request)
             if "redirect_url" in context:
                 return redirect(context["redirect_url"])
