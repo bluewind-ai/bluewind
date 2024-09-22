@@ -67,15 +67,15 @@ class Command(BaseCommand):
         gunicorn_options = {
             "bind": options["bind"],
             "worker_class": "gevent",
-            "workers": 5,
-            # "worker_connections": 1000,
-            "max_requests": options["max_requests"],
+            "workers": 1,
+            "worker_connections": 10000,
+            "max_requests": 10000,
             "timeout": options["timeout"],
             "loglevel": options["log_level"],
             "logger_class": Logger,
             "accesslog": "-",
             "errorlog": "-",
-            "preload_app": True,
+            # "preload_app": True,
             # "gevent_pool": pool.Pool(10000),
         }
 
