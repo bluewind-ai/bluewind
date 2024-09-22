@@ -223,21 +223,25 @@ DB_NAME = os.environ["DB_NAME"]
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django_db_geventpool.backends.postgresql_psycopg3",
         "NAME": DB_NAME,
         "USER": DB_USERNAME,
         "PASSWORD": DB_PASSWORD,
         "HOST": DB_HOST,
         "PORT": DB_PORT,
-        "CONN_MAX_AGE": 600,
+        "CONN_MAX_AGE": 0,
         "OPTIONS": {
             "sslmode": "disable",
+            "MAX_CONNS": 20,  # Adjust based on your needs
+            "REUSE_CONNS": 10,  # Adjust based on your needs
         },
     }
 }
 
 NO_LOG_TABLES = []
+# from psycopg_pool import ConnectionPool
 
+# DATABASES["default"]["OPTIONS"]["pool_class"] = ConnectionPool
 
 # Authentication and Authorization
 AUTH_USER_MODEL = "users.User"

@@ -132,6 +132,16 @@ def get_logging_config(base_dir):
                 "level": "ERROR",
                 "propagate": False,
             },
+            "django.geventpool": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+            "django.gunicorn": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
         },
         "root": {
             "handlers": ["console"],
