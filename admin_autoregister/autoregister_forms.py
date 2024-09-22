@@ -1,3 +1,5 @@
+import logging
+
 from django import forms
 from django.apps import apps
 from django.contrib import admin
@@ -6,6 +8,8 @@ from django.core.exceptions import ImproperlyConfigured
 from forms.models import Form
 
 from workspaces.models import Workspace
+
+logger = logging.getLogger(__name__)
 
 
 def register_forms():
@@ -17,7 +21,7 @@ def register_forms():
     def register_form(name, form_class):
         if name not in registered_forms:
             Form.objects.create(name=name, workspace=default_workspace)
-            print(f"Registered new form: {name}")
+            logger.debug(f"Registered new form: {name}")
 
     # Register forms from django.forms
     for name, obj in forms.__dict__.items():
@@ -77,4 +81,4 @@ def register_forms():
                 model_form_class = forms.modelform_factory(model, fields=[])
                 register_form(f"{model.__name__}ModelForm", model_form_class)
             except BaseException:
-                print(f"Could not create ModelForm for {model.__name__}")
+                logger.debug(f"Could not create ModelForm for {model.__name__}")

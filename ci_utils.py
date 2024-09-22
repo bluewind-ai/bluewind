@@ -1,4 +1,7 @@
 import asyncio
+import logging
+
+logger = logging.getLogger("django.temp")
 
 
 def run_command(command, log_file, env=None, verbose=True):
@@ -18,7 +21,7 @@ def run_command(command, log_file, env=None, verbose=True):
                     break
                 line = line.decode("utf-8").strip()
                 if verbose:
-                    print(line)  # Print to stdout only if verbose
+                    logger.debug(line)  # Print to stdout only if verbose
                 f.write(line + "\n")
                 f.flush()
 

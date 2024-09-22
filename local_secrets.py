@@ -36,7 +36,7 @@
 #     client = get_secrets_manager_client()
 
 #     if not secret_exists(client, secret_name):
-#         print(f"Secret '{secret_name}' does not exist.")
+#         logger.debug(f"Secret '{secret_name}' does not exist.")
 #         return False
 
 #     try:
@@ -55,16 +55,16 @@
 #         with open("env_list.json", "w") as f:
 #             json.dump(env_keys, f, indent=2)
 
-#         print(f"Secret loaded and written to {env_file}.")
-#         print("Environment variable keys dumped to env_list.json.")
+#         logger.debug(f"Secret loaded and written to {env_file}.")
+#         logger.debug("Environment variable keys dumped to env_list.json.")
 #         return True
 
 #     except ClientError as e:
-#         print(f"Error retrieving secret: {e}")
+#         logger.debug(f"Error retrieving secret: {e}")
 #     except json.JSONDecodeError:
-#         print("Error decoding secret JSON.")
+#         logger.debug("Error decoding secret JSON.")
 #     except Exception as e:
-#         print(f"Unexpected error: {e}")
+#         logger.debug(f"Unexpected error: {e}")
 
 #     return False
 

@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import os
 import time
 
@@ -7,6 +8,8 @@ import boto3
 from botocore.exceptions import ClientError
 
 from ci_utils import run_command
+
+logger = logging.getLogger("django.temp")
 
 
 def get_secret_keys_and_values():
@@ -64,8 +67,8 @@ def build_and_push_docker_image(output_data, log_file, env, verbose=True):
 
 
 def run_deploy(log_file, verbose=True):
-    print("running logs in", log_file)
-    print("Starting deployment process")
+    logger.debug("running logs in", log_file)
+    logger.debug("Starting deployment process")
 
     env = os.environ.copy()
     if os.path.exists(".aws"):
@@ -87,7 +90,7 @@ def run_deploy(log_file, verbose=True):
         }
     )
 
-    print("Running OpenTofu commands")
+    logger.debug("Running OpenTofu commands")
     combined_command = (
         "cd opentf_deploy && "
         "tofu init && "
@@ -97,7 +100,7 @@ def run_deploy(log_file, verbose=True):
 
     run_command(combined_command, log_file, env=env, verbose=verbose)
 
-    print("OpenTofu commands completed successfully")
+    logger.debug("OpenTofu commands completed successfully")
     with open("tofu_output.json", "r") as f:
         output_data = json.load(f)
 
@@ -111,7 +114,7 @@ def run_deploy(log_file, verbose=True):
     )
     service_name = output_data["ecs_service_name"]["value"]
 
-    print("Reading OpenTofu output")
+    logger.debug("Reading OpenTofu output")
 
     cluster_arn = output_data["ecs_cluster_arn"]["value"]
     service_name = output_data["ecs_service_name"]["value"]
@@ -145,10 +148,10 @@ def run_deploy(log_file, verbose=True):
         Attributes=[{"Key": "deregistration_delay.timeout_seconds", "Value": "10"}],
     )
 
-    print(f"Cluster ARN: {cluster_arn}")
-    print(f"Service Name: {service_name}")
+    logger.debug(f"Cluster ARN: {cluster_arn}")
+    logger.debug(f"Service Name: {service_name}")
 
-    print("Initializing ECS client")
+    logger.debug("Initializing ECS client")
     ecs_client = boto3.client(
         "ecs",
         aws_access_key_id=env["AWS_ACCESS_KEY_ID"],
@@ -156,7 +159,7 @@ def run_deploy(log_file, verbose=True):
         region_name="us-west-2",
     )
 
-    print("Creating new task definition")
+    logger.debug("Creating new task definition")
     # with open("opentf_deploy/image_tag.txt", 'r') as f:
     #     image_id = f.read().strip()
 
@@ -178,7 +181,7 @@ def run_deploy(log_file, verbose=True):
         {"name": key, "valueFrom": f"{os.environ["SECRET_ARN"]}:{key}::"}
         for key, _ in secrets.items()
     ]
-    print(secrets)
+    logger.debug(secrets)
     secrets += [
         {"name": "DB_HOST", "valueFrom": f"{os.environ["SECRET_DB_ARN"]}:DB_HOST::"},
         {
@@ -186,7 +189,7 @@ def run_deploy(log_file, verbose=True):
             "valueFrom": f"{os.environ["SECRET_DB_ARN"]}:DB_PASSWORD::",
         },
     ]
-    print(secrets)
+    logger.debug(secrets)
 
     task_definition_response = ecs_client.register_task_definition(
         family="app-task",
@@ -218,9 +221,9 @@ def run_deploy(log_file, verbose=True):
     task_definition = f"{
         task_definition_response['taskDefinition']['family']}:{
         task_definition_response['taskDefinition']['revision']}"
-    print(f"New task definition created: {task_definition}")
+    logger.debug(f"New task definition created: {task_definition}")
 
-    print("Describing ECS service")
+    logger.debug("Describing ECS service")
     service_description = ecs_client.describe_services(
         cluster=cluster_arn, services=[service_name]
     )
@@ -230,11 +233,13 @@ def run_deploy(log_file, verbose=True):
         task_set for task_set in task_sets if task_set["status"] != "DRAINING"
     ]
 
-    print(json.dumps(active_task_sets, indent=4, sort_keys=True, default=str))
-    print(f"Found {len(active_task_sets)} existing task sets")
+    logger.debug(json.dumps(active_task_sets, indent=4, sort_keys=True, default=str))
+    logger.debug(f"Found {len(active_task_sets)} existing task sets")
 
     if len(active_task_sets) > 1:
-        print(f"Found {len(active_task_sets)} task sets. Deleting excess task sets.")
+        logger.debug(
+            f"Found {len(active_task_sets)} task sets. Deleting excess task sets."
+        )
         for task_set in active_task_sets:
             task_set_arn = task_set["taskSetArn"]
             ecs_client.delete_task_set(
@@ -243,12 +248,12 @@ def run_deploy(log_file, verbose=True):
                 taskSet=task_set_arn,
                 force=True,
             )
-        print(
+        logger.debug(
             f"Error: Found {len(active_task_sets)} task sets after OpenTofu operations. Expected 1 or fewer."
         )
         return
 
-    print("Creating new task set")
+    logger.debug("Creating new task set")
     try:
         response = ecs_client.create_task_set(
             cluster=cluster_arn,
@@ -265,15 +270,15 @@ def run_deploy(log_file, verbose=True):
             ],
         )
         new_task_set_id = response["taskSet"]["id"]
-        print(f"New task set created with ID: {new_task_set_id}")
+        logger.debug(f"New task set created with ID: {new_task_set_id}")
     except ClientError as e:
-        print(f"Error creating task set: {e}")
+        logger.debug(f"Error creating task set: {e}")
         return False
 
     if len(active_task_sets) == 0:
-        print("No task was running in this environment previously")
+        logger.debug("No task was running in this environment previously")
 
-    print("Waiting for new task set to reach steady state")
+    logger.debug("Waiting for new task set to reach steady state")
     max_attempts = 70
     delay = 1
 
@@ -289,11 +294,11 @@ def run_deploy(log_file, verbose=True):
             service=service_name,
             taskSets=[new_task_set_id],
         )
-        print(
+        logger.debug(
             f"Attempt {attempt}: Task set status: {response['taskSets'][0]['stabilityStatus']}"
         )
         if response["taskSets"][0]["stabilityStatus"] == "STEADY_STATE":
-            print("New task set reached steady state")
+            logger.debug("New task set reached steady state")
 
             existing_listeners = elbv2_client.describe_listeners(
                 LoadBalancerArn=output_data["alb_arn"]["value"]
@@ -360,20 +365,20 @@ def run_deploy(log_file, verbose=True):
                         {"Type": "forward", "TargetGroupArn": new_target_group_arn}
                     ],
                 )
-            print("Deleting old task set")
+            logger.debug("Deleting old task set")
             if len(active_task_sets) == 1:
                 ecs_client.delete_task_set(
                     cluster=cluster_arn,
                     service=service_name,
                     taskSet=active_task_sets[0]["taskSetArn"],
                 )
-            print("Deployment completed successfully")
+            logger.debug("Deployment completed successfully")
             return True
         asyncio.sleep(delay)
     ecs_client.delete_task_set(
         cluster=cluster_arn, service=service_name, taskSet=new_task_set_id, force=True
     )
-    print(
+    logger.debug(
         "Deployment failed: New task set did not reach steady state within the timeout period"
     )
     return False

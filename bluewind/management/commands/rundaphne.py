@@ -26,8 +26,8 @@ class Command(BaseCommand):
         signal.signal(signal.SIGINT, self.sigint_handler)
         signal.signal(signal.SIGHUP, self.sighup_handler)
 
-        print(f"\nServer is running on http://{self.host}:{self.port}")
-        print(f"PID: {os.getpid()}\n")
+        logger.debug(f"\nServer is running on http://{self.host}:{self.port}")
+        logger.debug(f"PID: {os.getpid()}\n")
 
         self.server.run()
 
@@ -42,13 +42,13 @@ class Command(BaseCommand):
         )
 
     def sigint_handler(self, signum, frame):
-        print("\nCtrl+C detected. Calling exit handler...")
+        logger.debug("\nCtrl+C detected. Calling exit handler...")
         asyncio.get_event_loop().call_soon(
             lambda: asyncio.create_task(on_exit_handler(self.server))
         )
 
     def sighup_handler(self, signum, frame):
-        print("\nSIGHUP detected. Reloading server...")
+        logger.debug("\nSIGHUP detected. Reloading server...")
         asyncio.get_event_loop().call_soon(
             lambda: asyncio.create_task(self.reload_server())
         )
@@ -56,8 +56,8 @@ class Command(BaseCommand):
     def reload_server(self):
         on_exit_handler(self.server)
         self.setup_server()
-        print(f"\nServer reloaded and running on http://{self.host}:{self.port}")
-        print(f"PID: {os.getpid()}\n")
+        logger.debug(f"\nServer reloaded and running on http://{self.host}:{self.port}")
+        logger.debug(f"PID: {os.getpid()}\n")
         self.server.run()
 
 

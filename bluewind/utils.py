@@ -1,6 +1,6 @@
+import logging
 import sys
 import uuid
-from pprint import pprint
 
 from django.http import Http404
 from rest_framework import status
@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
 from bluewind.context_variables import get_workspace_id
+
+logger = logging.getLogger(__name__)
 
 
 class UUID(uuid.UUID):
@@ -86,7 +88,7 @@ def get_queryset(cls, request):
 
 def dd(*args):
     for arg in args:
-        pprint(arg)
+        logger.debug(arg)
     sys.exit(1)
 
 

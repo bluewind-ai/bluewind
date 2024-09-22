@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import time
 
@@ -6,6 +7,8 @@ import click
 
 from ci_utils import run_command
 from deploy_stack import run_deploy
+
+logger = logging.getLogger("django.temp")
 
 
 def run_e2e_dev_green(log_file, verbose=True, env_modifiers={}, additional_args=None):
@@ -88,7 +91,7 @@ def run_e2e_local(log_file, verbose=True):
                 server_process.kill()
                 server_process.wait()
             except asyncio.TimeoutError:
-                print("couldn't kill the server")
+                logger.debug("couldn't kill the server")
 
 
 def run_local_unit_tests(log_file, verbose=True):
