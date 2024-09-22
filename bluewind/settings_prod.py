@@ -181,7 +181,7 @@ MIDDLEWARE = [
     "bluewind.middleware.custom_middleware",
     "silk.middleware.SilkyMiddleware",
     "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -232,8 +232,8 @@ DATABASES = {
         "CONN_MAX_AGE": 0,
         "OPTIONS": {
             "sslmode": "disable",
-            "MAX_CONNS": 20,  # Adjust based on your needs
-            "REUSE_CONNS": 10,  # Adjust based on your needs
+            "MAX_CONNS": 100,  # Adjust based on your needs
+            "REUSE_CONNS": 100,  # Adjust based on your needs
         },
     }
 }

@@ -124,7 +124,7 @@ def get_logging_config(base_dir):
             },
             "django.temp": {
                 "handlers": ["console"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
             "django.watchdog": {
@@ -134,12 +134,12 @@ def get_logging_config(base_dir):
             },
             "django.geventpool": {
                 "handlers": ["console"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
             "django.gunicorn": {
                 "handlers": ["console"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
         },

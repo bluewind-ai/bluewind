@@ -1,13 +1,9 @@
-import logging
-
-from gevent import monkey
-
-# Patch as early as possible
-monkey.patch_all()
+import logging  # noqa
 
 
 from django.core.management.base import BaseCommand
 from django.core.wsgi import get_wsgi_application
+from gevent import pool
 from gunicorn.app.base import BaseApplication
 from gunicorn.glogging import Logger
 
@@ -71,8 +67,9 @@ class Command(BaseCommand):
 
         gunicorn_options = {
             "bind": options["bind"],
-            "workers": options["workers"],
             "worker_class": "gevent",
+            "workers": 5,
+            "worker_connections": 1000,
             "max_requests": options["max_requests"],
             "timeout": options["timeout"],
             "loglevel": options["log_level"],
@@ -80,6 +77,7 @@ class Command(BaseCommand):
             "accesslog": "-",
             "errorlog": "-",
             "preload_app": False,
+            "gevent_pool": pool.Pool(10000),
         }
 
         logger.info("Starting Gunicorn with gevent workers")

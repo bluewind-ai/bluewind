@@ -1,6 +1,5 @@
 import json
 import logging
-import time
 
 from django import template
 from django.contrib.admin import AdminSite
@@ -86,7 +85,6 @@ class CustomAdminSite(AdminSite):
         def inner(request, *args, **kwargs):
             logger.debug(f"Starting request handling in greenlet {id(getcurrent())}")
 
-            time.sleep(2)
             logger.debug(f"Finished sleep in greenlet {id(getcurrent())}")
             context = self.each_context(request)
             if "redirect_url" in context:

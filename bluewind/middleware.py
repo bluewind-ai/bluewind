@@ -76,6 +76,8 @@ def custom_middleware(get_response):
 
 def admin_middleware(get_response):
     def middleware(request):
+        if request.path.startswith("/health/"):
+            return get_response(request)
         if request.path.startswith("/silk/"):
             return get_response(request)
         if request.path == "/":
