@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 
 from flows.on_exit_handler.flows import on_exit_handler
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 class Command(BaseCommand):

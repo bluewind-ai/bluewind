@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 
 from ci_utils import run_command
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def get_secret_keys_and_values():

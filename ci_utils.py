@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def run_command(command, log_file, env=None, verbose=True):

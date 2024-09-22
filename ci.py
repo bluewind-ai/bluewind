@@ -8,7 +8,7 @@ import click
 from ci_utils import run_command
 from deploy_stack import run_deploy
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def run_e2e_dev_green(log_file, verbose=True, env_modifiers={}, additional_args=None):

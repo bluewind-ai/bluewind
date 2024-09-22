@@ -41,7 +41,7 @@ def main():
     # except Exception:
     #     import logging
 
-    #     logger = logging.getLogger("django.temp")
+    #     logger = logging.getLogger("django.not_used")
     #     logger.exception("Error executing command.")
 
 

@@ -18,7 +18,7 @@ from flows.models import Flow
 from flows.run_flow.flows import run_flow
 from workspaces.models import Workspace, WorkspaceUser
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 register = template.Library()

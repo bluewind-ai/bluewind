@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from admin_autoregister.whitelist import MODEL_WHITELIST
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django.not_used")
 
 CUSTOM_WHITELIST = {"Entity", "FlowRunArgument", "Profile"}
 
