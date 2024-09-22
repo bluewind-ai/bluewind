@@ -12,13 +12,14 @@ from django.http.response import HttpResponseRedirectBase
 from django.shortcuts import redirect
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
+from gevent import getcurrent
 
 from bluewind.context_variables import get_workspace_id
 from flows.models import Flow
 from flows.run_flow.flows import run_flow
 from workspaces.models import Workspace, WorkspaceUser
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django.temp")
 
 
 register = template.Library()
@@ -83,8 +84,10 @@ class CustomAdminSite(AdminSite):
 
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
-            time.sleep(2)
+            logger.debug(f"Starting request handling in greenlet {id(getcurrent())}")
 
+            time.sleep(2)
+            logger.debug(f"Finished sleep in greenlet {id(getcurrent())}")
             context = self.each_context(request)
             if "redirect_url" in context:
                 return redirect(context["redirect_url"])
