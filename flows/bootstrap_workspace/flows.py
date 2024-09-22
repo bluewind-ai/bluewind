@@ -22,7 +22,7 @@ def bootstrap_workspace():
 
     Workspace.objects.filter(
         id=workspace_id,
-    ).aupdate(bootstrap_status=Workspace.BootstrapStatus.PENDING)
+    ).update(bootstrap_status=Workspace.BootstrapStatus.PENDING)
 
     files_load_all()
     logger.debug("Files loaded successfully.")

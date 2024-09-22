@@ -2,7 +2,6 @@ import logging
 import os
 
 from daphne_processes.models import DaphneProcess
-from flows.file_watchers_init.flows import file_watchers_init
 
 logger = logging.getLogger("django.not_used")
 
@@ -18,4 +17,3 @@ def create_daphne_process_in_db():
             master_pid=pid, status=DaphneProcess.Status.RUNNING
         )
         logger.debug("DaphneProcess created.")
-        file_watchers_init()

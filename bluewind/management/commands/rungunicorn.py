@@ -7,6 +7,7 @@ from gunicorn.app.base import BaseApplication
 from gunicorn.glogging import Logger
 
 from bluewind.context_variables import set_startup_mode, set_workspace_id
+from flows.bootstrap.flows import bootstrap
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -62,7 +63,7 @@ class Command(BaseCommand):
         set_startup_mode(False)
         application = workspace_wsgi_middleware(django_application)
 
-        # bootstrap()
+        bootstrap()
 
         gunicorn_options = {
             "bind": options["bind"],

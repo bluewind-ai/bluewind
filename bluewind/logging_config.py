@@ -93,7 +93,7 @@ def get_logging_config(base_dir):
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "simple",
+                "formatter": "pretty",
                 "stream": sys.stdout,
             },
         },
@@ -129,7 +129,7 @@ def get_logging_config(base_dir):
             },
             "django.watchdog": {
                 "handlers": ["console"],
-                "level": "ERROR",
+                "level": "DEBUG",
                 "propagate": False,
             },
             "django.geventpool": {

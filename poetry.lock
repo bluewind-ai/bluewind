@@ -2791,6 +2791,23 @@ support = ["sphobjinv"]
 test = ["coverage[toml]", "pytest", "pytest-cov"]
 
 [[package]]
+name = "supervisor"
+version = "4.2.5"
+description = "A system for controlling process state under UNIX"
+optional = false
+python-versions = "*"
+files = [
+    {file = "supervisor-4.2.5-py2.py3-none-any.whl", hash = "sha256:2ecaede32fc25af814696374b79e42644ecaba5c09494c51016ffda9602d0f08"},
+    {file = "supervisor-4.2.5.tar.gz", hash = "sha256:34761bae1a23c58192281a5115fb07fbf22c9b0133c08166beffc70fed3ebc12"},
+]
+
+[package.dependencies]
+setuptools = "*"
+
+[package.extras]
+testing = ["pytest", "pytest-cov"]
+
+[[package]]
 name = "twisted"
 version = "24.7.0"
 description = "An asynchronous networking framework written in Python"
@@ -3160,4 +3177,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "0c225aaafe2f7f58a62afbcc21f04f3b6fac4f81e11c7d22267c2d1ff4506262"
+content-hash = "3bf721be3505e96b9644183a1feebb3d4b4c83efa1bff5faa4de98505a16a194"

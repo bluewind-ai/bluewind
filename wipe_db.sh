@@ -1,7 +1,30 @@
 #!/bin/bash
 
 # Load environment variables
-sh pg_sync.sh
+source .env
+
+# Check if the role exists, if not create it
+psql postgres -c "DO
+\$do\$
+BEGIN
+   IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'dbadmin') THEN
+      CREATE ROLE dbadmin WITH LOGIN PASSWORD '$DB_PASSWORD';
+   END IF;
+END
+\$do\$;"
+
+echo "Role check/creation completed."
+
+psql postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
+createdb $DB_NAME
+
+echo "Database dropped (if existed) and recreated."
+
+# Grant privileges to dbadmin
+psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO dbadmin;"
+psql $DB_NAME -c "ALTER SCHEMA public OWNER TO dbadmin;"
+
+echo "Privileges granted to dbadmin."
 
 # Run Django management commands
 python manage.py makemigrations

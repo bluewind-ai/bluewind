@@ -1,7 +1,10 @@
-# #!/bin/bash
+#!/bin/bash
 
-PGPASSWORD=$DB_PASSWORD dropdb -h $DB_HOST -U $DB_USERNAME $DB_NAME
-PGPASSWORD=$DB_PASSWORD createdb -h $DB_HOST -U $DB_USERNAME $DB_NAME
+# Drop the database, ignoring errors
+
+# Create the database
+
+# Additional commands (if any) can be added here
 
 # # Run pg_dump on the replica
 

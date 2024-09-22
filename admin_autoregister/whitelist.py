@@ -33,4 +33,8 @@ MODEL_ADMIN_WHITELIST = {
     "User",
     "APICall",
     "Migration",
+    "Profile",
+    "SQLQuery",
+    "Response",
+    "Request",
 }

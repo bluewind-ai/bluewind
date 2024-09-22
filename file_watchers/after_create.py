@@ -1,4 +1,5 @@
 import logging
+import time
 
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
@@ -73,6 +74,15 @@ def file_watchers_after_create(file_watcher):
             observer.start()
             observers_registry[file_watcher.path] = observer
             logger.debug(f"Successfully started watching: {file_watcher.path}")
+
+            # Keep the main thread alive
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                observer.stop()
+            observer.join()
+
         elif not file_watcher.is_active and file_watcher.path in observers_registry:
             # Stop watching this path
             logger.debug(f"Stopping watch for path: {file_watcher.path}")
@@ -82,5 +92,5 @@ def file_watchers_after_create(file_watcher):
             logger.debug(f"Successfully stopped watching: {file_watcher.path}")
         else:
             logger.debug(f"No action taken for file_watcher: {file_watcher.path}")
-    except Exception:  # noqa One of the very few exceptions because this runs in a separate thread and the logs look ugly if I don't do that.
+    except Exception:
         logger.exception(f"Error in file_watcher: {file_watcher.path}")

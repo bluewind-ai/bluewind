@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     "workspace_users",
     "daphne_processes",
     "silk",
+    "supervisord",
     "admin_autoregister",
 ]
 
@@ -159,6 +160,7 @@ APP_TYPE = {
     "workspace_users": "custom",
     "daphne_processes": "custom",
     "app_logs": "custom",
+    "supervisord": "custom",
     "silk": "third_party",
 }
 
@@ -287,14 +289,14 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 # ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 # Social Account Providers
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "APP": {
-            "client_id": os.environ["GOOGLE_OAUTH_CLIENT_ID"],
-            "secret": os.environ["GOOGLE_OAUTH_CLIENT_SECRET"],
-        }
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     "google": {
+#         "APP": {
+#             "client_id": os.environ["GOOGLE_OAUTH_CLIENT_ID"],
+#             "secret": os.environ["GOOGLE_OAUTH_CLIENT_SECRET"],
+#         }
+#     }
+# }
 
 
 # Debug Toolbar Settings
@@ -308,8 +310,8 @@ DEBUG_TOOLBAR_CONFIG = {
 
 # Email Configuration (AWS SES)
 EMAIL_BACKEND = "django_ses.SESBackend"
-AWS_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
-AWS_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
+# AWS_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
+# AWS_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
 AWS_SES_REGION_NAME = "us-west-2"
 AWS_SES_REGION_ENDPOINT = "email.us-west-2.amazonaws.com"
 USE_SES_V2 = True

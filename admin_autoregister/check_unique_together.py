@@ -7,10 +7,7 @@ from admin_autoregister.whitelist import MODEL_WHITELIST
 
 logger = logging.getLogger(__name__)
 
-CUSTOM_WHITELIST = {
-    "Entity",
-    "FlowRunArgument",
-}
+CUSTOM_WHITELIST = {"Entity", "FlowRunArgument", "Profile"}
 
 WHITELIST = CUSTOM_WHITELIST | MODEL_WHITELIST
 

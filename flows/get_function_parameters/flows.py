@@ -89,8 +89,7 @@ def get_function_parameters(files: List[File]) -> List[dict]:
                         param_info["field_name"] = parts[1]
                     else:
                         logger.warning(
-                            f"Invalid type annotation for parameter '{name}' in module: {module_path}. Expected format: 'model.field'"
-                        )
+                            f"Invalid type annotation for parameter '{name}' in module: {module_path}. Expected format: 'model.field'")
                         continue
                 elif inspect.isclass(param_type) and issubclass(
                     param_type, models.Model
@@ -98,8 +97,7 @@ def get_function_parameters(files: List[File]) -> List[dict]:
                     param_info["model_name"] = param_type.__name__
                 else:
                     logger.warning(
-                        f"Parameter '{name}' is not a valid Model type or model field reference in module: {module_path}"
-                    )
+                        f"Parameter '{name}' is not a valid Model type or model field reference in module: {module_path}")
                     continue
 
                 parameters.append(param_info)
