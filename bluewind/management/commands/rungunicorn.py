@@ -3,7 +3,6 @@ import logging  # noqa
 
 from django.core.management.base import BaseCommand
 from django.core.wsgi import get_wsgi_application
-from gevent import pool
 from gunicorn.app.base import BaseApplication
 from gunicorn.glogging import Logger
 
@@ -69,15 +68,15 @@ class Command(BaseCommand):
             "bind": options["bind"],
             "worker_class": "gevent",
             "workers": 5,
-            "worker_connections": 1000,
+            # "worker_connections": 1000,
             "max_requests": options["max_requests"],
             "timeout": options["timeout"],
             "loglevel": options["log_level"],
             "logger_class": Logger,
             "accesslog": "-",
             "errorlog": "-",
-            "preload_app": False,
-            "gevent_pool": pool.Pool(10000),
+            "preload_app": True,
+            # "gevent_pool": pool.Pool(10000),
         }
 
         logger.info("Starting Gunicorn with gevent workers")
