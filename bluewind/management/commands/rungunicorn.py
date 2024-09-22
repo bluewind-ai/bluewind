@@ -4,7 +4,6 @@ import logging  # noqa
 from django.core.management.base import BaseCommand
 from django.core.wsgi import get_wsgi_application
 from gunicorn.app.base import BaseApplication
-from gunicorn.glogging import Logger
 
 from bluewind.context_variables import set_startup_mode, set_workspace_id
 from flows.bootstrap.flows import bootstrap
@@ -62,7 +61,16 @@ class Command(BaseCommand):
         set_workspace_id(1)
         set_startup_mode(False)
         application = workspace_wsgi_middleware(django_application)
+        from django.conf import settings
+        from django.utils.module_loading import import_string
 
+        logging_config_func = import_string(settings.LOGGING_CONFIG)
+        logging_config = logging_config_func()
+
+        # Configure logging
+        import logging.config
+
+        logging.config.dictConfig(logging_config)
         bootstrap()
 
         gunicorn_options = {
@@ -72,10 +80,11 @@ class Command(BaseCommand):
             "worker_connections": 10000,
             "max_requests": 10000,
             "timeout": options["timeout"],
-            "loglevel": options["log_level"],
-            "logger_class": Logger,
-            "accesslog": "-",
-            "errorlog": "-",
+            "logconfig_dict": logging_config,
+            # "loglevel": options["log_level"],
+            # "logger_class": Logger,
+            # "accesslog": "-",
+            # "errorlog": "-",
             # "preload_app": True,
             # "gevent_pool": pool.Pool(10000),
         }
