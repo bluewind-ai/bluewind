@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 
+import gevent.monkey  # noqa
+
+gevent.monkey.patch_all()  # noqa
+
+import logging.config
 import os
 import sys
-
-import gevent.monkey
-
-gevent.monkey.patch_all()
 
 
 def load_env():
@@ -25,7 +26,11 @@ def load_env():
 
 def main():
     """Run administrative tasks."""
-    load_env()  # Load environment variables before setting up Django
+    load_env()
+    from bluewind.logging_config import get_logging_config  # noqa
+
+    logging.config.dictConfig(get_logging_config())
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
 
     try:
@@ -46,4 +51,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except BaseException:
+        logger = logging.getLogger("django.temp")
+        logger.exception("Error executing command.")
