@@ -15,4 +15,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Your command logic goes here
         flow = Flow.objects.get(name="run_bluewind")
-        run_flow(flow, flow.user)
+        run_flow(flow, flow.user, input_data={})

@@ -21,7 +21,14 @@ def run_flow(flow, user, input_data={}):
         flow_module = importlib.import_module(flow_module_name)
         function_name = flow.name
         function_to_run = getattr(flow_module, function_name)
-        result = function_to_run(**input_data)
+        flow_run = FlowRun.objects.create(
+            user=user,
+            workspace_id=get_workspace_id(),
+            input_data=deserialized_data,
+            output_data="",
+            flow=flow,
+        )
+        result = function_to_run(flow_run, **input_data)
     except Exception as e:
         flow_run = FlowRun(
             user=user,

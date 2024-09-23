@@ -1,0 +1,39 @@
+---
+title: Append only software
+---
+
+# "Append only" software
+
+Backward incompatible changes are what slows down software development the most.
+
+Any framework claiming to build applications fast need to address backward incompatible changes.
+
+The append only mindset helps with that. There is always a way to make a change such that the old code is still correct.
+
+Basic example: you need to change the name of a field in a table. Step 1: add the new field. Step 2: update the code to use the new field. Step 3: remove the old field.
+
+But you could further: instead of updating the code, you can append the code.
+
+In step 1, you can add the field and ADD all the new code as a separate copy/code path.
+
+This is nothing new, this is basically feature flags. It leads to an explosion of code where you don't know what's being used. But
+
+The key in all of these backward compatible changes is to ONLY append.
+
+Append only software has a lot of nice properties. It makes your code immutable. There is even a world where you could decide to not delete the old code.
+
+Append only software makes everything archivable, loggable, and traceable.
+
+Any company claiming to have built AGI will effectively claim that it built something that can build itself.
+
+Most likely this thing is software. Or whatever you want to call this hybrid between software and artificial intelligence.
+
+So AGI is all about building stuff that builds software. Which means that anyone solving backward incompatibility will win BIG, since it's the number one issue that prevents software development from being done in parallel.
+
+Update is hell, when it's done as an atomic task. Updates should be the result of smaller atomic tasks that are backward compatible.
+
+These atomic tasks are the primitives of software development and more generally speaking self-learning systems.
+
+Without these primitives, change can only happen on one single thread and synchronously. No parallelism or concurrency is possible.
+
+In practice this ideal is really really hard to achieve. But this is a worthy goal to strive for.

@@ -130,7 +130,7 @@ def get_logging_config():
             },
             "django.temp": {
                 "handlers": ["console", "file"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
             "django.watchdog": {
@@ -150,22 +150,22 @@ def get_logging_config():
             },
             "gunicorn.error": {
                 "handlers": ["console", "file"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
             "gunicorn.access": {
                 "handlers": ["console", "file"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
             "django.always_used": {
                 "handlers": ["console", "file"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
         },
         "root": {
             "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "level": "ERROR",
         },
     }

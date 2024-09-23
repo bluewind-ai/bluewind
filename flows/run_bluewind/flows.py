@@ -6,19 +6,32 @@ import gevent
 from gevent import subprocess
 
 from bluewind.settings_prod import LOG_FILE_PATH
+from flow_runs.models import FlowRun
+from flows.models import Flow
 
 # Patch standard library
 logger = logging.getLogger("django.temp")
 
 
-def run_bluewind():
+def run_bluewind(flow_run):
+    # raise NotImplementedError(model_to_dict(flow_run))
     logger.info("Starting run_bluewind function")
 
     logger.info("Creating greenlets for centralize_logs and run_gunicorn")
-    ran_gunicorn = False
-    if not ran_gunicorn:
+    ran_one_function = False
+    if not ran_one_function and not flow_run.state.get("run_gunicorn", False):
         run_gunicorn()
-    centralize_logs()
+
+        ran_one_function = True
+
+    if ran_one_function and not flow_run.state.get("centralize_logs", False):
+        FlowRun.objects.create(
+            input_data={},
+            flow=Flow.objects.get(name="centralize_logs"),
+            # parent_flow_run=None,
+            status=FlowRun.Status.READY,
+        )
+        centralize_logs()
 
 
 def clean_log_entry(log_entry):
@@ -47,4 +60,4 @@ def centralize_logs():
 
 
 def run_gunicorn():
-    subprocess.run(["python", "manage.py", "rungunicorn"])
+    subprocess.Popen("nohup python manage.py rungunicorn &", shell=True)
