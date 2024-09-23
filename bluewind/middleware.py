@@ -95,9 +95,11 @@ def admin_middleware(get_response):
             if workspace_id == 2:
                 return redirect("/workspaces/1/admin/")
             flow_run = FlowRun.objects.filter(
-                status="READY",
+                status=FlowRun.Status.READY_FOR_APPROVAL,
             ).first()
-            if flow_run:
+            if flow_run and not request.path.startswith(
+                "/workspaces/1/admin/flow_runs/flowrun/"
+            ):
                 return redirect(f"/workspaces/1/admin/flow_runs/flowrun/{flow_run.id}/")
             # raise NotImplementedError("No flow runs available")
             return get_response(request)

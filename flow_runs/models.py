@@ -12,7 +12,8 @@ logger = logging.getLogger("django.not_used")
 class FlowRun(WorkspaceRelated):
     class Status(models.TextChoices):
         CONDITIONS_NOT_MET = "conditions-not-met", "Conditions Not Met"
-        READY = "ready", "READY"
+        READY_FOR_APPROVAL = "read-for-approval", "Ready for Approval"
+        APPROVED = "approved", "Approved"
         RUNNING = "running", "Running"
         COMPLETED = "completed", "Completed"
 

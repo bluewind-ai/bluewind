@@ -19,19 +19,23 @@ def run_bluewind(flow_run):
     ran_one_function = False
     if not ran_one_function and not flow_run.state.get("run_gunicorn", False):
         run_gunicorn()
-
         ran_one_function = True
 
-    if ran_one_function and not flow_run.state.get("centralize_logs", False):
+    if ran_one_function:
         FlowRun.objects.create(
             user=flow_run.user,
             workspace_id=flow_run.workspace_id,
             input_data={},
             flow=Flow.objects.get(name="centralize_logs"),
             # parent_flow_run=None,
-            status=FlowRun.Status.READY,
+            status=FlowRun.Status.READY_FOR_APPROVAL,
         )
+
+        ran_one_function = True
+    elif not flow_run.state.get("centralize_logs", False):
         centralize_logs()
+
+        ran_one_function = True
 
 
 def clean_log_entry(log_entry):

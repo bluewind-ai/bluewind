@@ -160,6 +160,11 @@ class FlowRunAdmin(InWorkspace):
         extra_context["custom_actions"] = self.get_custom_actions(request, object_id)
         return super().change_view(request, object_id, form_url, extra_context)
 
+    # def get_form(self, request, obj=None, **kwargs):
+    #     if obj and obj.status == "READY":
+    #         return ReadyFlowRunChangeForm
+    #     return super().get_form(request, obj, **kwargs)
+
     def get_custom_actions(self, request, object_id):
         # Define your custom actions here
         return [
