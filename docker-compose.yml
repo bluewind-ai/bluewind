@@ -30,9 +30,23 @@ services:
     networks:
       - app-network
 
+  code-server:
+    image: codercom/code-server:latest
+    volumes:
+      - .:/home/coder/project
+      - code-server-config:/home/coder/.config
+    ports:
+      - "8080:8080"
+    environment:
+      - DOCKER_USER=$USER
+    user: "${UID}:${GID}"
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
 
 volumes:
   postgres_data:
+  code-server-config:

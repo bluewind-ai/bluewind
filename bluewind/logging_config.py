@@ -45,7 +45,7 @@ class CleanTracebackFormatter(logging.Formatter):
 
 class CombinedFormatter(CleanTracebackFormatter):
     def clean_pathname(self, pathname):
-        return pathname.replace("/Users/merwanehamadi/code/bluewind/", "")
+        return pathname.replace("/bluewind/", "")
 
     def format(self, record):
         record.pathname = self.clean_pathname(record.pathname)

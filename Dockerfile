@@ -7,13 +7,14 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
     postgresql-client \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /code
+WORKDIR /bluewind
 
 RUN pip install poetry
-COPY pyproject.toml poetry.lock /code/
+COPY pyproject.toml poetry.lock /bluewind/
 RUN poetry config virtualenvs.create false
 RUN poetry install --only main --no-root
 
-COPY . /code/
+COPY . /bluewind/
