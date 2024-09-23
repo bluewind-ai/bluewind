@@ -1,11 +1,11 @@
 import logging  # noqa
 
 
-from django.core.management.base import BaseCommand
 from django.core.wsgi import get_wsgi_application
 from gunicorn.app.base import BaseApplication
 
 from bluewind.context_variables import set_startup_mode, set_workspace_id
+from bluewind.management.base_command import BluewindBaseCommand
 from flows.bootstrap.flows import bootstrap
 
 # Set up logging
@@ -32,7 +32,7 @@ class GeventGunicornApplication(BaseApplication):
         return self.application
 
 
-class Command(BaseCommand):
+class Command(BluewindBaseCommand):
     help = "Runs Gunicorn with the project WSGI application using gevent"
 
     def add_arguments(self, parser):
@@ -80,7 +80,7 @@ class Command(BaseCommand):
             "worker_connections": 10000,
             "max_requests": 10000,
             "timeout": options["timeout"],
-            "logconfig_dict": logging_config,
+            # "logconfig_dict": logging_config,
             # "loglevel": options["log_level"],
             # "logger_class": Logger,
             # "accesslog": "-",
@@ -95,6 +95,4 @@ class Command(BaseCommand):
 
         GeventGunicornApplication(application, gunicorn_options).run()
 
-        self.stdout.write(
-            self.style.SUCCESS("Gunicorn server started with gevent workers")
-        )
+        self.stdout.write(self.style.SUCCESS("Gunicorn server stopped"))

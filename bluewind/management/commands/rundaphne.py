@@ -6,14 +6,14 @@ import signal
 
 from daphne.endpoints import build_endpoint_description_strings
 from daphne.server import Server
-from django.core.management.base import BaseCommand
 
+from bluewind.management.base_command import BluewindBaseCommand
 from flows.on_exit_handler.flows import on_exit_handler
 
 logger = logging.getLogger("django.not_used")
 
 
-class Command(BaseCommand):
+class Command(BluewindBaseCommand):
     help = "Runs Daphne server with custom shutdown and reload hooks"
 
     def handle(self, *args, **options):

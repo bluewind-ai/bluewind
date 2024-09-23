@@ -28,7 +28,6 @@ class FlowRun(WorkspaceRelated):
     output_data = models.JSONField(null=True, blank=True)
     executed_at = models.DateTimeField(null=True, blank=True)
     flow = models.ForeignKey("flows.Flow", on_delete=models.CASCADE)
-    status = models.CharField(max_length=50, default="PENDING")
 
     def __str__(self):
         return f"FlowRun {self.id} by {self.user} on {self.executed_at}"

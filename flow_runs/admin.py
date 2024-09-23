@@ -42,15 +42,7 @@ class FlowRunForm(forms.ModelForm):
 
     class Meta:
         model = FlowRun
-        fields = [
-            "rendered_output",
-            "input_data",
-            "output_data",
-            "user",
-            "workspace",
-            "flow",
-            "executed_at",
-        ]
+        fields = ["flow"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,9 +52,30 @@ class FlowRunForm(forms.ModelForm):
 
 @admin.register(FlowRun)
 class FlowRunAdmin(InWorkspace):
+    change_form_template = "admin/flow_runs/flowrun/change_form.html"
+
     add_form_template = "admin/flow_runs/flowrun/add_form.html"
     form = FlowRunForm
+    readonly_fields = ["flow", "status"]
     list_display = ["flow__name", "executed_at"]
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "flow",
+                    "status",
+                    "rendered_output",
+                    "input_data",
+                    "output_data",
+                    "user",
+                    "workspace",
+                    "executed_at",
+                )
+            },
+        ),
+    )
 
     def has_change_permission(self, request, obj=None):
         logger.debug(f"Checking change permission for user: {request.user}")
@@ -141,3 +154,27 @@ class FlowRunAdmin(InWorkspace):
         except (ImportError, AttributeError) as e:
             logger.error(f"Failed to create output form: {e}")
             return None
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        extra_context["custom_actions"] = self.get_custom_actions(request, object_id)
+        return super().change_view(request, object_id, form_url, extra_context)
+
+    def get_custom_actions(self, request, object_id):
+        # Define your custom actions here
+        return [
+            {
+                "name": "action1",
+                "label": "Action 1",
+                "title": "Perform Action 1",
+                "css_class": "button",
+                "method": "get",
+            },
+            {
+                "name": "action2",
+                "label": "Action 2",
+                "title": "Perform Action 2",
+                "css_class": "button",
+                "method": "post",
+            },
+        ]

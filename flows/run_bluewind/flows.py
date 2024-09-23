@@ -1,16 +1,14 @@
 import logging
 import re
-import sys
 
-import gevent
 from gevent import subprocess
 
-from bluewind.settings_prod import LOG_FILE_PATH
 from flow_runs.models import FlowRun
+from flows.centralize_logs.flows import centralize_logs
 from flows.models import Flow
 
 # Patch standard library
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.temp")  # noqa: F821
 
 
 def run_bluewind(flow_run):
@@ -26,6 +24,8 @@ def run_bluewind(flow_run):
 
     if ran_one_function and not flow_run.state.get("centralize_logs", False):
         FlowRun.objects.create(
+            user=flow_run.user,
+            workspace_id=flow_run.workspace_id,
             input_data={},
             flow=Flow.objects.get(name="centralize_logs"),
             # parent_flow_run=None,
@@ -37,26 +37,6 @@ def run_bluewind(flow_run):
 def clean_log_entry(log_entry):
     pattern = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} \[.*?\] \[.*?\] .*?: "
     return re.sub(pattern, "", log_entry)
-
-
-def centralize_logs():
-    logger.info("Starting centralize_logs function")
-    try:
-        with open(LOG_FILE_PATH, "r") as log_file:
-            log_file.seek(0, 2)
-            logger.info(f"Opened log file: {LOG_FILE_PATH}")
-            while True:
-                line = log_file.readline()
-                if not line:
-                    gevent.sleep(0.1)
-                    continue
-                # cleaned_line = clean_log_entry(line)
-                sys.stdout.write(line)
-                sys.stdout.flush()
-    except FileNotFoundError:
-        logger.error(f"Log file not found: {LOG_FILE_PATH}")
-    except IOError as e:
-        logger.error(f"Error reading log file: {e}")
 
 
 def run_gunicorn():

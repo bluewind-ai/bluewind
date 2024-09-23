@@ -54,3 +54,1277 @@
 2024-09-23 17:29:03,749 [ERROR] [no_request_id] gunicorn.error: Retrying in 1 second. (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
 2024-09-23 17:29:04,755 [ERROR] [no_request_id] gunicorn.error: Connection in use: ('127.0.0.1', 8000) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
 2024-09-23 17:29:04,755 [ERROR] [no_request_id] gunicorn.error: Retrying in 1 second. (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 17:50:14,385 [DEBUG] [no_request_id] django.temp: cdsnjkcdsbnhjcbdshjbchdjsbchjdsbjh (bluewind/management/commands/run_bluewind.py:25)
+2024-09-23 17:50:14,407 [ERROR] [no_request_id] django.temp: Error executing command. (manage.py:55)
+Traceback (most recent call last):
+  File "/manage.py", line 52, in <module>
+    main()
+  File "/manage.py", line 42, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 30, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 17:53:18,562 [DEBUG] [no_request_id] django.temp: cdsnjkcdsbnhjcbdshjbchdjsbchjdsbjh (bluewind/management/commands/run_bluewind.py:24)
+2024-09-23 17:53:18,585 [ERROR] [no_request_id] django.temp: Error executing command. (manage.py:55)
+Traceback (most recent call last):
+  File "/manage.py", line 52, in <module>
+    main()
+  File "/manage.py", line 42, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 29, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 17:53:30,110 [ERROR] [no_request_id] django.temp: Error executing command. (manage.py:55)
+Traceback (most recent call last):
+  File "/manage.py", line 52, in <module>
+    main()
+  File "/manage.py", line 42, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 27, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 17:53:35,051 [ERROR] [no_request_id] django.temp: Error executing command. (manage.py:55)
+Traceback (most recent call last):
+  File "/manage.py", line 52, in <module>
+    main()
+  File "/manage.py", line 42, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 24, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 17:54:02,498 [ERROR] [no_request_id] django.temp: Error executing command. (manage.py:50)
+Traceback (most recent call last):
+  File "/manage.py", line 47, in <module>
+    main()
+  File "/manage.py", line 42, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 17, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 17:54:39,143 [ERROR] [no_request_id] django.temp: Error executing command. (manage.py:50)
+Traceback (most recent call last):
+  File "/manage.py", line 47, in <module>
+    main()
+  File "/manage.py", line 42, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 17, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 17:54:54,203 [ERROR] [no_request_id] django.temp: Error executing command. (manage.py:50)
+Traceback (most recent call last):
+  File "/manage.py", line 47, in <module>
+    main()
+  File "/manage.py", line 42, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 17, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 17:56:33,441 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 17:56:37,264 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 17:56:42,574 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+AttributeError: 'GeventGunicornApplication' object has no attribute 'run'
+
+2024-09-23 17:57:20,815 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+AttributeError: 'GeventGunicornApplication' object has no attribute 'run'
+
+2024-09-23 17:59:08,982 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+AttributeError: 'GeventGunicornApplication' object has no attribute 'run'
+
+2024-09-23 17:59:34,637 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+AttributeError: 'GeventGunicornApplication' object has no attribute 'run'
+
+2024-09-23 18:00:02,109 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+AttributeError: 'GeventGunicornApplication' object has no attribute 'run'
+
+2024-09-23 18:00:39,110 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+AttributeError: 'GeventGunicornApplication' object has no attribute 'run'
+
+2024-09-23 18:01:17,204 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 21, in run_flow
+    flow_module = importlib.import_module(flow_module_name)
+  File "/flows/run_bluewind/flows.py", line 10, in <module>
+    logger = logging.getLogger("django.temp")  # noqa: F821
+NameError: name 'logging' is not defined. Did you forget to import 'logging'
+
+2024-09-23 18:01:26,342 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 18:01:31,249 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+AttributeError: 'GeventGunicornApplication' object has no attribute 'run'
+
+2024-09-23 18:02:45,337 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+AttributeError: 'GeventGunicornApplication' object has no attribute 'run'
+
+2024-09-23 18:03:40,019 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+  File "/bluewind/management/commands/rungunicorn.py", line 18, in __init__
+    super().__init__()
+SystemExit: 1
+
+2024-09-23 18:04:18,790 [ERROR] [no_request_id] gunicorn.error: Connection in use: ('127.0.0.1', 8000) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:18,790 [ERROR] [no_request_id] gunicorn.error: Retrying in 1 second. (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:19,796 [ERROR] [no_request_id] gunicorn.error: Connection in use: ('127.0.0.1', 8000) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:19,796 [ERROR] [no_request_id] gunicorn.error: Retrying in 1 second. (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:20,802 [ERROR] [no_request_id] gunicorn.error: Connection in use: ('127.0.0.1', 8000) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:20,802 [ERROR] [no_request_id] gunicorn.error: Retrying in 1 second. (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:21,804 [ERROR] [no_request_id] gunicorn.error: Connection in use: ('127.0.0.1', 8000) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:21,805 [ERROR] [no_request_id] gunicorn.error: Retrying in 1 second. (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:22,809 [ERROR] [no_request_id] gunicorn.error: Connection in use: ('127.0.0.1', 8000) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:22,810 [ERROR] [no_request_id] gunicorn.error: Retrying in 1 second. (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:23,815 [ERROR] [no_request_id] gunicorn.error: Can't connect to ('127.0.0.1', 8000) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:272)
+2024-09-23 18:04:23,816 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 1
+
+2024-09-23 18:04:37,181 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:04:37,390 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:05:11,610 [INFO] [no_request_id] gunicorn.error: Starting gunicorn 22.0.0 (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:11,611 [INFO] [no_request_id] gunicorn.error: Listening at: http://127.0.0.1:8000 (59038) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:11,611 [INFO] [no_request_id] gunicorn.error: Using worker: gevent (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:11,615 [INFO] [no_request_id] gunicorn.error: Booting worker with pid: 59060 (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:15,265 [INFO] [no_request_id] gunicorn.error: Handling signal: int (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:15,367 [INFO] [no_request_id] gunicorn.error: Worker exiting (pid: 59060) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:15,370 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:05:15,582 [INFO] [no_request_id] gunicorn.error: Shutting down: Master (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:15,583 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:05:32,259 [INFO] [no_request_id] gunicorn.error: Starting gunicorn 22.0.0 (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:32,260 [INFO] [no_request_id] gunicorn.error: Listening at: http://127.0.0.1:8000 (59395) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:32,260 [INFO] [no_request_id] gunicorn.error: Using worker: gevent (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:32,263 [INFO] [no_request_id] gunicorn.error: Booting worker with pid: 59422 (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:36,884 [INFO] [no_request_id] gunicorn.error: Handling signal: int (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:36,986 [INFO] [no_request_id] gunicorn.error: Worker exiting (pid: 59422) (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:36,988 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:05:37,193 [INFO] [no_request_id] gunicorn.error: Shutting down: Master (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/gunicorn/glogging.py:278)
+2024-09-23 18:05:37,194 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:06:01,483 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:06:01,695 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:06:29,208 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 15, in run_bluewind
+    raise NotImplementedError("This function is not implemented")
+NotImplementedError: This function is not implemented
+
+2024-09-23 18:06:34,096 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:06:34,096 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:06:34,106 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 26, in run_bluewind
+    FlowRun.objects.create(
+  File "/workspaces/models.py", line 146, in save
+    return super().save(*args, **kwargs)
+django.db.utils.IntegrityError: null value in column "user_id" of relation "flow_runs_flowrun" violates not-null constraint
+DETAIL:  Failing row contains (98, {}, null, null, 27, null, null, ready, {}).
+
+2024-09-23 18:06:51,918 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:06:51,918 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:06:51,926 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 41, in run_flow
+    raise e
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 26, in run_bluewind
+    FlowRun.objects.create(
+  File "/workspaces/models.py", line 146, in save
+    return super().save(*args, **kwargs)
+django.db.utils.IntegrityError: null value in column "workspace_id" of relation "flow_runs_flowrun" violates not-null constraint
+DETAIL:  Failing row contains (100, {}, null, null, 27, 1, null, ready, {}).
+
+2024-09-23 18:06:58,644 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 1
+
+2024-09-23 18:07:00,523 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:07:00,523 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:07:00,533 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:07:00,533 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:07:07,228 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 1
+
+2024-09-23 18:07:18,160 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:07:20,362 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:07:20,362 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:07:20,382 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:07:20,382 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:07:27,004 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 1
+
+2024-09-23 18:07:29,276 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:07:37,809 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 1
+
+2024-09-23 18:07:48,238 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:07:48,238 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:07:48,246 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:07:48,246 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:08:11,659 [ERROR] [121] django.request: Internal Server Error: /workspaces/1/admin/flow_runs/flowrun/106/change/ (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/django/utils/log.py:248)
+Traceback (most recent call last):
+  File "/flow_runs/admin.py", line 34, in render
+    form_module = importlib.import_module(module_name)
+ModuleNotFoundError: No module named 'flows.centralize_logs.output_forms'
+
+Traceback (most recent call last):
+  File "/flow_runs/admin.py", line 34, in render
+    form_module = importlib.import_module(module_name)
+ModuleNotFoundError: No module named 'flows.centralize_logs.output_forms'
+
+2024-09-23 18:16:39,491 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:16:39,495 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:16:39,701 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:16:40,699 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:16:40,700 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:16:40,707 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:16:40,708 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:16:51,135 [ERROR] [124] django.request: Internal Server Error: /workspaces/1/admin/flow_runs/flowrun/106/change/ (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/django/utils/log.py:248)
+Traceback (most recent call last):
+  File "/flow_runs/admin.py", line 34, in render
+    form_module = importlib.import_module(module_name)
+ModuleNotFoundError: No module named 'flows.centralize_logs.output_forms'
+
+Traceback (most recent call last):
+  File "/flow_runs/admin.py", line 34, in render
+    form_module = importlib.import_module(module_name)
+ModuleNotFoundError: No module named 'flows.centralize_logs.output_forms'
+
+2024-09-23 18:18:15,861 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:18:15,962 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:18:16,176 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:18:16,845 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:18:16,845 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:18:16,855 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:18:16,856 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:18:18,943 [ERROR] [127] django.request: Internal Server Error: /workspaces/1/admin/flow_runs/flowrun/106/change/ (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/django/utils/log.py:248)
+Traceback (most recent call last):
+  File "/flow_runs/admin.py", line 35, in render
+    FormClass = getattr(form_module, class_name)
+AttributeError: module 'flows.centralize_logs.output_forms' has no attribute 'CentralizeLogsOutputForm'. Did you mean: 'CentralizeLogsForm'?
+
+Traceback (most recent call last):
+  File "/flow_runs/admin.py", line 35, in render
+    FormClass = getattr(form_module, class_name)
+AttributeError: module 'flows.centralize_logs.output_forms' has no attribute 'CentralizeLogsOutputForm'. Did you mean: 'CentralizeLogsForm'?
+
+2024-09-23 18:18:19,022 [ERROR] [128] django.request: Internal Server Error: /workspaces/1/admin/flow_runs/flowrun/106/change/ (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/django/utils/log.py:248)
+Traceback (most recent call last):
+  File "/flow_runs/admin.py", line 35, in render
+    FormClass = getattr(form_module, class_name)
+AttributeError: module 'flows.centralize_logs.output_forms' has no attribute 'CentralizeLogsOutputForm'. Did you mean: 'CentralizeLogsForm'?
+
+Traceback (most recent call last):
+  File "/flow_runs/admin.py", line 35, in render
+    FormClass = getattr(form_module, class_name)
+AttributeError: module 'flows.centralize_logs.output_forms' has no attribute 'CentralizeLogsOutputForm'. Did you mean: 'CentralizeLogsForm'?
+
+2024-09-23 18:20:30,215 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:20:30,315 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:20:30,527 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:20:31,574 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:20:31,574 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:20:31,583 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:20:31,583 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:21:32,486 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:21:32,587 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:21:32,802 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:21:33,662 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:21:33,662 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:21:33,672 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:21:33,672 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:22:08,386 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:22:08,454 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:22:08,597 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:22:22,246 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:22:22,246 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:22:22,254 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:22:22,254 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:22:38,870 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:22:38,970 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:22:39,183 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:22:40,088 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:22:40,088 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:22:40,096 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:22:40,097 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:24:39,956 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:24:39,994 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:24:40,167 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:24:40,910 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:24:40,911 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:24:40,923 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:24:40,923 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:25:14,074 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:25:14,176 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:25:14,388 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:25:19,146 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:25:19,146 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:25:19,155 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:25:19,155 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:33:48,138 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:33:48,239 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:33:48,454 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:33:49,356 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:33:49,356 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:33:49,364 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:33:49,364 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:34:00,814 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:34:00,914 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:34:01,121 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:34:01,884 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:34:01,884 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:34:01,894 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:34:01,895 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:34:04,118 [ERROR] [683] django.request: Internal Server Error: /workspaces/1/admin/flow_runs/flowrun/232/change/ (/Users/merwanehamadi/Library/Caches/pypoetry/virtualenvs/bluewind-5kHNo6Af-py3.12/lib/python3.12/site-packages/django/utils/log.py:248)
+Traceback (most recent call last):
+django.template.exceptions.TemplateSyntaxError: Could not parse the remainder: ' action.title' from 'cdscds action.title'
+
+Traceback (most recent call last):
+django.template.exceptions.TemplateSyntaxError: Could not parse the remainder: ' action.title' from 'cdscds action.title'
+
+2024-09-23 18:35:03,367 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:35:03,467 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:35:03,682 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:35:04,387 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:35:04,387 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:35:04,397 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:35:04,397 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:40:09,441 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:40:09,542 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:40:09,757 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:40:10,532 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:40:10,532 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:40:10,542 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:40:10,542 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:41:59,437 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:41:59,458 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:41:59,644 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:42:00,417 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:42:00,417 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:42:00,426 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:42:00,427 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:42:44,021 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:42:44,122 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:42:44,326 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:43:39,962 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:43:39,962 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:43:39,970 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:43:39,970 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:44:00,444 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:44:00,545 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:44:00,760 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:44:01,493 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+SystemExit: 1
+
+2024-09-23 18:44:13,037 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:44:13,037 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:44:13,048 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:44:13,048 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:44:55,861 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:44:55,962 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:44:56,173 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:44:56,797 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:44:56,797 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:44:56,808 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:44:56,808 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)
+2024-09-23 18:47:58,844 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 25, in handle
+    run_flow(flow, flow.user, input_data={})
+  File "/flows/run_flow/flows.py", line 31, in run_flow
+    result = function_to_run(flow_run, **input_data)
+  File "/flows/run_bluewind/flows.py", line 34, in run_bluewind
+    centralize_logs()
+  File "/flows/centralize_logs/flows.py", line 21, in centralize_logs
+    gevent.sleep(0.1)
+KeyboardInterrupt
+
+2024-09-23 18:47:58,945 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:47:59,156 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 0
+
+2024-09-23 18:47:59,695 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+SystemExit: 1
+
+2024-09-23 18:49:08,426 [INFO] [no_request_id] django.temp: Starting run_bluewind function (flows/run_bluewind/flows.py:16)
+2024-09-23 18:49:08,426 [INFO] [no_request_id] django.temp: Creating greenlets for centralize_logs and run_gunicorn (flows/run_bluewind/flows.py:18)
+2024-09-23 18:49:08,435 [INFO] [no_request_id] django.temp: Starting centralize_logs function (flows/centralize_logs/flows.py:13)
+2024-09-23 18:49:08,435 [INFO] [no_request_id] django.temp: Opened log file: /Users/merwanehamadi/code/bluewind/logs/app.log (flows/centralize_logs/flows.py:17)

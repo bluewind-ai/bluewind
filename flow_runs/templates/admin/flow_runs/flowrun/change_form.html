@@ -1,0 +1,25 @@
+{% extends "admin/change_form.html" %}
+{% load admin_urls %}
+
+{% block object-tools-items %}
+  {% for action in custom_actions %}
+    <li class="custom-action-item" data-action-name="{{ action.name }}">
+      {% url 'your_custom_action_view' pk=object_id action=action.name as action_url %}
+      {% if action.method == 'get' %}
+        <a href="{% add_preserved_filters action_url %}"
+           title="{{ action.title }}"
+           class="{{ action.css_class }}"
+        >{{ action.label|capfirst }}</a>
+      {% elif action.method == 'post' %}
+        <form method="post" action="{% add_preserved_filters action_url %}">
+          {% csrf_token %}
+          <button type="submit"
+                  title="{{ action.title }}"
+                  class="{{ action.css_class }}"
+          >{{ action.label|capfirst }}</button>
+        </form>
+      {% endif %}
+    </li>
+  {% endfor %}
+  {{ block.super }}
+{% endblock %}

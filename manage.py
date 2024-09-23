@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 
-import gevent.monkey  # noqa
+import logging
+
+import gevent.monkey
 
 gevent.monkey.patch_all()  # noqa
 
-import logging.config
 import os
 import sys
 
@@ -27,9 +28,6 @@ def load_env():
 def main():
     """Run administrative tasks."""
     load_env()
-    from bluewind.logging_config import get_logging_config  # noqa
-
-    logging.config.dictConfig(get_logging_config())
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
 
@@ -43,16 +41,11 @@ def main():
         ) from exc
         # try:
     execute_from_command_line(sys.argv)
-    # except Exception:
-    #     import logging
-
-    #     logger = logging.getLogger("django.not_used")
-    #     logger.exception("Error executing command.")
 
 
 if __name__ == "__main__":
     try:
         main()
     except BaseException:
-        logger = logging.getLogger("django.temp")
-        logger.exception("Error executing command.")
+        logger = logging.getLogger("django.gunicorn")
+        logger.exception("Error in manage.py")
