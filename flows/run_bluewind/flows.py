@@ -1,15 +1,29 @@
 import logging
+import re
 import sys
 
 import gevent
-from gevent import monkey, subprocess
+from gevent import subprocess
 
 from bluewind.settings_prod import LOG_FILE_PATH
 
 # Patch standard library
-monkey.patch_all()
+logger = logging.getLogger("django.temp")
 
-logger = logging.getLogger("django.not_used")
+
+def run_bluewind():
+    logger.info("Starting run_bluewind function")
+
+    logger.info("Creating greenlets for centralize_logs and run_gunicorn")
+    ran_gunicorn = True
+    if not ran_gunicorn:
+        run_gunicorn()
+    centralize_logs()
+
+
+def clean_log_entry(log_entry):
+    pattern = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} \[.*?\] \[.*?\] .*?: "
+    return re.sub(pattern, "", log_entry)
 
 
 def centralize_logs():
@@ -23,6 +37,7 @@ def centralize_logs():
                 if not line:
                     gevent.sleep(0.1)
                     continue
+                # cleaned_line = clean_log_entry(line)
                 sys.stdout.write(line)
                 sys.stdout.flush()
     except FileNotFoundError:
@@ -32,45 +47,5 @@ def centralize_logs():
 
 
 def run_gunicorn():
-    logger.info("Starting run_gunicorn function")
-    try:
-        logger.info("Attempting to run gunicorn")
-        result = subprocess.run(
-            ["python", "manage.py", "rungunicorn", "--bind", "127.0.0.1:8080"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            logger.error(
-                f"Gunicorn command failed with return code {result.returncode}"
-            )
-            logger.error(f"STDOUT: {result.stdout}")
-            logger.error(f"STDERR: {result.stderr}")
-        else:
-            logger.info("Gunicorn command completed successfully")
-        return result.stdout
-    except Exception as e:
-        logger.exception(f"An error occurred while running gunicorn: {e}")
-        return None
-
-
-def run_bluewind():
-    logger.info("Starting run_bluewind function")
-
-    logger.info("Creating greenlets for centralize_logs and run_gunicorn")
-    log_greenlet = gevent.spawn(centralize_logs)
-    gunicorn_greenlet = gevent.spawn(run_gunicorn)
-
-    logger.info("Waiting for gunicorn process to finish")
-    try:
-        gunicorn_result = gunicorn_greenlet.get()
-        logger.info("Gunicorn process finished")
-    except Exception as e:
-        logger.exception(f"Error while waiting for gunicorn to finish: {e}")
-    finally:
-        logger.info("Killing log_greenlet")
-        log_greenlet.kill()
-
-    logger.info("run_bluewind function completed")
-    return gunicorn_result
+    subprocess.run(["python", "manage.py", "rungunicorn", "--bind", "127.0.0.1:8080"])
+    logger.debug("127.0.0.1:8080")
