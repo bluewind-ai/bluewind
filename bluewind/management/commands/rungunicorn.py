@@ -37,7 +37,7 @@ class Command(BluewindBaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--workers", type=int, default=1)
-        parser.add_argument("--bind", type=str, default="127.0.0.1:8000")
+        parser.add_argument("--bind", type=str, default="0.0.0.0:8000")
         parser.add_argument("--max-requests", type=int, default=1000)
         parser.add_argument("--timeout", type=int, default=30)
         parser.add_argument("--log-level", type=str, default="debug")

@@ -9,24 +9,30 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgres://dbadmin:${DB_PASSWORD}@db:5432/${DB_NAME}
-      - DB_NAME=${DB_NAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-    env_file:
-      - .env
+      - DB_NAME=appbluewinddb
+      - DB_USERNAME=dbadmin
+      - DB_PASSWORD=zYx8mQTqAe9r8A99thazK
+      - DB_HOST=db
+      - DB_PORT=5432
     depends_on:
       - db
+    networks:
+      - app-network
 
   db:
-    image: postgres:13
+    image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_DB=appbluewinddb
       - POSTGRES_USER=dbadmin
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    env_file:
-      - .env
+      - POSTGRES_PASSWORD=zYx8mQTqAe9r8A99thazK
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   postgres_data:
