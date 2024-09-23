@@ -62,6 +62,7 @@ class FlowRunForm(forms.ModelForm):
 class FlowRunAdmin(InWorkspace):
     add_form_template = "admin/flow_runs/flowrun/add_form.html"
     form = FlowRunForm
+    list_display = ["flow__name", "executed_at"]
 
     def has_change_permission(self, request, obj=None):
         logger.debug(f"Checking change permission for user: {request.user}")

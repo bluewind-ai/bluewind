@@ -15,7 +15,7 @@ def run_bluewind():
     logger.info("Starting run_bluewind function")
 
     logger.info("Creating greenlets for centralize_logs and run_gunicorn")
-    ran_gunicorn = True
+    ran_gunicorn = False
     if not ran_gunicorn:
         run_gunicorn()
     centralize_logs()
@@ -47,5 +47,4 @@ def centralize_logs():
 
 
 def run_gunicorn():
-    subprocess.run(["python", "manage.py", "rungunicorn", "--bind", "127.0.0.1:8080"])
-    logger.debug("127.0.0.1:8080")
+    subprocess.run(["python", "manage.py", "rungunicorn"])

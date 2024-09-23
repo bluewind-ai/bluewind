@@ -150,12 +150,12 @@ def get_logging_config():
             },
             "gunicorn.error": {
                 "handlers": ["console", "file"],
-                "level": "ERROR",
+                "level": "DEBUG",
                 "propagate": False,
             },
             "gunicorn.access": {
                 "handlers": ["console", "file"],
-                "level": "ERROR",
+                "level": "DEBUG",
                 "propagate": False,
             },
             "django.always_used": {
@@ -166,6 +166,6 @@ def get_logging_config():
         },
         "root": {
             "handlers": ["console", "file"],
-            "level": "ERROR",
+            "level": "DEBUG",
         },
     }

@@ -58,4 +58,4 @@ anonymous_workspace = Workspace.objects.create(name='Anonymous Workspace', user=
 WorkspaceUser.objects.create(user=anonymous_user, workspace=anonymous_workspace, is_default=True)"
 
 # Start the Django development server
-python manage.py rungunicorn
+# python manage.py rungunicorn

@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from flows.run_bluewind.flows import run_bluewind
+from flows.models import Flow
+from flows.run_flow.flows import run_flow
 
 
 class Command(BaseCommand):
@@ -13,4 +14,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Your command logic goes here
-        run_bluewind()
+        flow = Flow.objects.get(name="run_bluewind")
+        run_flow(flow, flow.user)
