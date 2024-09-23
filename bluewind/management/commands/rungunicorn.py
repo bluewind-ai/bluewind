@@ -1,5 +1,5 @@
-import logging  # noqa
-
+import logging
+import subprocess  # noqa
 
 from django.core.wsgi import get_wsgi_application
 from gunicorn.app.base import BaseApplication
@@ -71,6 +71,8 @@ class Command(BluewindBaseCommand):
         import logging.config
 
         logging.config.dictConfig(logging_config)
+        subprocess.run(["sh", "wipe_db.sh"])
+
         bootstrap()
 
         gunicorn_options = {

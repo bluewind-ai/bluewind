@@ -1,6 +1,5 @@
 from bluewind.management.base_command import BluewindBaseCommand
-from flows.models import Flow
-from flows.run_flow.flows import run_flow
+from flows.run_bluewind.flows import run_gunicorn
 
 
 class Command(BluewindBaseCommand):
@@ -19,7 +18,7 @@ class Command(BluewindBaseCommand):
         # logger = logging.getLogger("django.temp")
 
         # logger.debug("cdsnjkcdsbnhjcbdshjbchdjsbchjdsbjh")
+        run_gunicorn()
+        # flow = Flow.objects.get(name="run_bluewind")
 
-        flow = Flow.objects.get(name="run_bluewind")
-
-        run_flow(flow, flow.user, input_data={})
+        # run_flow(flow, flow.user, input_data={})

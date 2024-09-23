@@ -61,7 +61,6 @@ watchdog = "^5.0.2"
 daphne = "^4.1.2"
 psutil = "^6.0.0"
 django-silk = "^5.2.0"
-scalene = "^1.5.44.1"
 gevent = "^24.2.1"
 psycopg = {extras = ["binary"], version = "^3.2.2"}
 django-db-geventpool = "4.0.6"

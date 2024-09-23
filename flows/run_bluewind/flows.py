@@ -5,6 +5,7 @@ from gevent import subprocess
 
 from flow_runs.models import FlowRun
 from flows.centralize_logs.flows import centralize_logs
+from flows.create_a_business.flows import create_a_business
 from flows.models import Flow
 
 # Patch standard library
@@ -17,7 +18,8 @@ def run_bluewind(flow_run):
 
     logger.info("Creating greenlets for centralize_logs and run_gunicorn")
     ran_one_function = False
-    if not ran_one_function and not flow_run.state.get("run_gunicorn", False):
+    if not ran_one_function and not flow_run.state.get("create_a_business", False):
+        create_a_business()
         run_gunicorn()
         ran_one_function = True
 

@@ -1,26 +1,19 @@
-ARG PYTHON_VERSION=3.12-slim-bullseye
-
-FROM --platform=linux/arm64 python:${PYTHON_VERSION}
+FROM python:3.12-slim-bullseye
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# install psycopg2 dependencies.
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir -p /code
 
 WORKDIR /code
 
 RUN pip install poetry
 COPY pyproject.toml poetry.lock /code/
 RUN poetry config virtualenvs.create false
-COPY . /code
-RUN poetry install --only main --no-root --no-interaction
+RUN poetry install --only main --no-root
 
-EXPOSE 8000
-
-CMD ["gunicorn", "--bind", ":8000", "--workers", "1", "bluewind.wsgi"]
+COPY . /code/

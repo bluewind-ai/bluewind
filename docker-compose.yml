@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    command: python manage.py rungunicorn
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://dbadmin:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - DB_NAME=${DB_NAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=dbadmin
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:

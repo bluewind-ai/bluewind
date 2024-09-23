@@ -1248,3 +1248,87 @@ All checks passed!
 [2024-09-23 19:38:12 +0000] [13342] [INFO] Listening at: http://127.0.0.1:8000 (13342)
 [2024-09-23 19:38:12 +0000] [13342] [INFO] Using worker: gevent
 [2024-09-23 19:38:12 +0000] [13383] [INFO] Booting worker with pid: 13383
+unique_constraints_check.py module loaded
+All checks passed!
+[2024-09-23 20:37:11 +0000] [43741] [INFO] Starting gunicorn 22.0.0
+[2024-09-23 20:37:11 +0000] [43741] [INFO] Listening at: http://127.0.0.1:8000 (43741)
+[2024-09-23 20:37:11 +0000] [43741] [INFO] Using worker: gevent
+[2024-09-23 20:37:11 +0000] [43804] [INFO] Booting worker with pid: 43804
+unique_constraints_check.py module loaded
+unique_constraints_check.py module loaded
+All checks passed!
+All checks passed!
+[2024-09-23 20:38:59 +0000] [44914] [INFO] Starting gunicorn 22.0.0
+[2024-09-23 20:38:59 +0000] [44914] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:38:59 +0000] [44914] [ERROR] Retrying in 1 second.
+[2024-09-23 20:38:59 +0000] [44917] [INFO] Starting gunicorn 22.0.0
+[2024-09-23 20:38:59 +0000] [44917] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:38:59 +0000] [44917] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:00 +0000] [44917] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:00 +0000] [44917] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:00 +0000] [44914] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:00 +0000] [44914] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:01 +0000] [44917] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:01 +0000] [44917] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:01 +0000] [44914] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:01 +0000] [44914] [ERROR] Retrying in 1 second.
+unique_constraints_check.py module loaded
+All checks passed!
+[2024-09-23 20:39:02 +0000] [44917] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:02 +0000] [44917] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:02 +0000] [44914] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:02 +0000] [44914] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:03 +0000] [45051] [INFO] Starting gunicorn 22.0.0
+[2024-09-23 20:39:03 +0000] [45051] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:03 +0000] [45051] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:03 +0000] [44917] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:03 +0000] [44917] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:03 +0000] [44914] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:03 +0000] [44914] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:04 +0000] [45051] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:04 +0000] [45051] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:04 +0000] [44917] [ERROR] Can't connect to ('127.0.0.1', 8000)
+2024-09-23 20:39:04,191 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 1
+
+[2024-09-23 20:39:04 +0000] [44914] [ERROR] Can't connect to ('127.0.0.1', 8000)
+2024-09-23 20:39:04,200 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 1
+
+[2024-09-23 20:39:05 +0000] [45051] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:05 +0000] [45051] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:06 +0000] [45051] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:06 +0000] [45051] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:07 +0000] [45051] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2024-09-23 20:39:07 +0000] [45051] [ERROR] Retrying in 1 second.
+[2024-09-23 20:39:08 +0000] [45051] [ERROR] Can't connect to ('127.0.0.1', 8000)
+2024-09-23 20:39:08,101 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/rungunicorn.py", line 96, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 1
+
+unique_constraints_check.py module loaded
+All checks passed!
+[2024-09-23 20:44:21 +0000] [48644] [INFO] Starting gunicorn 22.0.0
+[2024-09-23 20:44:21 +0000] [48644] [INFO] Listening at: http://127.0.0.1:8000 (48644)
+[2024-09-23 20:44:21 +0000] [48644] [INFO] Using worker: gevent
+[2024-09-23 20:44:21 +0000] [48696] [INFO] Booting worker with pid: 48696
