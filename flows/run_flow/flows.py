@@ -1,11 +1,14 @@
 # flow_runs/admin.py
 import importlib
+import logging
 
 from django.forms import model_to_dict
 from django.utils import timezone
 
 from bluewind.context_variables import get_workspace_id
 from flow_runs.models import FlowRun
+
+logger = logging.getLogger("django.temp")
 
 
 def run_flow(flow, user, input_data={}):
@@ -32,12 +35,12 @@ def run_flow(flow, user, input_data={}):
         function_to_run = getattr(flow_module, function_name)
 
         result = function_to_run(flow_run, **input_data)
+        flow_run.output_data = result
+        flow_run.save()
+
     except Exception as e:
         flow_run.output_data = str(e)
+        flow_run.save()
+
         raise e
-
-    flow_run.output_data = result
-
-    flow_run.save()
-
     return flow_run

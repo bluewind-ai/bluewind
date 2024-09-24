@@ -3,10 +3,12 @@ import logging
 from django.contrib.auth.models import Permission
 from django.urls import reverse
 
+from flow_runs.models import FlowRun
+
 logger = logging.getLogger(__name__)
 
 
-def command_palette_get_commands(function_run):
+def command_palette_get_commands(flow_run):
     logger.debug("Starting command_palette_get_commands function")
 
     logger.debug("Getting permission admin links")
@@ -31,6 +33,8 @@ def command_palette_get_commands(function_run):
     logger.debug(f"Sorted result list length: {len(result)}")
 
     logger.debug("Finished command_palette_get_commands function")
+    flow_run.status = FlowRun.Status.COMPLETED
+
     return {"commands": result}
 
 
@@ -56,7 +60,6 @@ def get_flow_admin_links():
             logger.warning(
                 f"Failed to generate admin link for Flow - {flow.name}: {str(e)}"
             )
-
     return admin_links
 
 

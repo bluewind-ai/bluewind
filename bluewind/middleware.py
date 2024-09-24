@@ -135,14 +135,11 @@ def flow_mode(request, get_response):
             status=FlowRun.Status.READY_FOR_APPROVAL,
         ).first()
         if not flow_run:
-            flow_run = FlowRun.objects.create(
-                flow=Flow.objects.filter(name="deliver_value").first(),
-                status=FlowRun.Status.READY_FOR_APPROVAL,
-                workspace_id=get_workspace_id(),
-                user_id=request.user.id,
-            )
+            flow_to_run = Flow.filter(name="deliver_value")
+        else:
+            flow_to_run = flow_run
         return redirect(
-            f"/workspaces/1/admin/flow_runs/flowrun/add/?flow={flow_run.flow.id}"
+            f"/workspaces/1/admin/flow_runs/flowrun/add/?flow={flow_to_run.id}"
         )
 
     return get_response(request)

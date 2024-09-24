@@ -53,11 +53,15 @@ class FlowRunForm(forms.ModelForm):
 @admin.register(FlowRun)
 class FlowRunAdmin(InWorkspace):
     change_form_template = "admin/flow_runs/flowrun/change_form.html"
-
     add_form_template = "admin/flow_runs/flowrun/add_form.html"
     form = FlowRunForm
-    readonly_fields = ["flow", "status"]
-    list_display = ["flow__name", "executed_at"]
+
+    list_display = ["id", "flow", "user", "status", "executed_at", "workspace"]
+    list_filter = ["status", "flow", "workspace"]
+    search_fields = ["flow__name", "user__username", "workspace__name"]
+    ordering = ["-executed_at"]  # Most recent first
+
+    readonly_fields = ["flow", "status", "executed_at", "user", "workspace"]
 
     fieldsets = (
         (

@@ -67,3 +67,5 @@ anonymous_workspace = Workspace.objects.create(name='Anonymous Workspace', user=
 WorkspaceUser.objects.create(user=anonymous_user, workspace=anonymous_workspace, is_default=True)"
 
 echo "Database setup and initial data creation completed."
+
+gunicorn -c gunicorn_config.py bluewind.wsgi:application
