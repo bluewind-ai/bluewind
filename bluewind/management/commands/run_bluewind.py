@@ -1,5 +1,6 @@
 import logging
-import subprocess  # noqa
+import os
+import subprocess
 
 from django.core.wsgi import get_wsgi_application
 from gunicorn.app.base import BaseApplication
@@ -30,6 +31,10 @@ class GeventGunicornApplication(BaseApplication):
 
     def load(self):
         return self.application
+
+    def reload(self):
+        logger.info("Detected change. Reloading...")
+        return super().reload()
 
 
 class Command(BluewindBaseCommand):
@@ -75,6 +80,20 @@ class Command(BluewindBaseCommand):
 
         bootstrap()
 
+        def on_starting(server):
+            logger.info("Gunicorn is starting up...")
+
+        def on_reload(server):
+            logger.info("Gunicorn worker reloading...")
+
+        def post_worker_init(worker):
+            logger.info(f"Gunicorn worker {worker.id} initialized")
+
+        # Get the current working directory
+        current_dir = "/bluewind"
+        logger.info(f"Current working directory: {current_dir}")
+        logger.info(f"Files in current directory: {os.listdir(current_dir)}")
+
         gunicorn_options = {
             "bind": options["bind"],
             "worker_class": "gevent",
@@ -82,19 +101,27 @@ class Command(BluewindBaseCommand):
             "worker_connections": 10000,
             "max_requests": 10000,
             "timeout": options["timeout"],
-            # "logconfig_dict": logging_config,
-            # "loglevel": options["log_level"],
-            # "logger_class": Logger,
-            # "accesslog": "-",
-            # "errorlog": "-",
-            # "preload_app": True,
-            # "gevent_pool": pool.Pool(10000),
+            "reload": True,
+            "reload_engine": "auto",
+            "reload_extra_files": [current_dir],
+            "loglevel": "debug",
+            "accesslog": "-",
+            "errorlog": "-",
+            "capture_output": True,
+            "on_starting": on_starting,
+            "on_reload": on_reload,
+            "post_worker_init": post_worker_init,
         }
 
-        logger.info("Starting Gunicorn with gevent workers")
+        logger.info("Starting Gunicorn with gevent workers and hot reloading")
+
         for key, value in gunicorn_options.items():
             logger.debug(f"Gunicorn option: {key} = {value}")
 
-        GeventGunicornApplication(application, gunicorn_options).run()
+        try:
+            GeventGunicornApplication(application, gunicorn_options).run()
+        except Exception as e:
+            logger.error(f"An error occurred: {str(e)}", exc_info=True)
+            raise
 
         self.stdout.write(self.style.SUCCESS("Gunicorn server stopped"))

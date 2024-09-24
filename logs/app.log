@@ -2734,3 +2734,2223 @@ django.db.utils.OperationalError: connection is bad: connection to server at "::
 2024-09-23 22:17:39,194 [ERROR] [no_request_id] django.not_used: Error checking if file is gitignored: [Errno 2] No such file or directory: 'git' (/code/flows/is_ignored_by_git/flows.py:45)
 2024-09-23 22:17:39,200 [ERROR] [no_request_id] django.not_used: Error checking if file is gitignored: [Errno 2] No such file or directory: 'git' (/code/flows/is_ignored_by_git/flows.py:45)
 2024-09-23 22:17:39,209 [ERROR] [no_request_id] django.not_used: Error checking if file is gitignored: [Errno 2] No such file or directory: 'git' (/code/flows/is_ignored_by_git/flows.py:45)
+2024-09-24 02:20:09,971 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:10,152 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:10,401 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:10,606 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:10,808 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:10,997 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:11,170 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:11,352 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:11,504 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:11,650 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:11,792 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:11,939 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:12,097 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:12,245 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:12,390 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:12,531 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:12,672 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:12,820 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:12,989 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:13,178 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:13,326 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:13,474 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:13,617 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:13,797 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:13,956 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:14,142 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:14,325 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:14,501 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:14,668 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:14,814 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:14,992 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:15,157 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:15,330 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:15,494 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:15,678 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:15,834 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:16,020 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:16,172 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:16,342 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:16,501 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:16,657 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:16,817 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:16,965 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:17,124 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:17,307 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:17,481 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:17,637 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:17,805 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:17,959 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:18,107 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:18,256 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:18,407 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:18,555 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:18,699 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:18,842 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:18,992 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:19,199 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:19,403 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:19,628 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:19,835 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:20,016 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:20,201 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:20,403 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:20,630 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:20,832 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:20,997 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:21,177 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:21,374 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:21,536 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:21,713 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:21,886 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:22,088 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:22,249 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:22,403 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:22,556 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:22,748 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:22,946 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:23,092 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:23,242 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:23,406 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:23,582 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:23,734 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:23,892 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:24,060 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:24,225 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:24,434 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:24,626 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:24,835 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:25,046 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:25,246 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:25,480 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:25,680 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:25,876 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:26,112 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:26,321 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:26,528 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:26,755 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:26,954 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:27,204 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:27,414 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:27,618 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:27,833 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:28,041 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:28,277 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:28,488 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:28,690 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:28,881 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:29,093 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:29,323 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:29,525 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:29,731 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:29,923 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:30,134 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:30,348 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:30,551 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:30,760 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:30,956 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:31,155 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:31,368 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:31,558 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:31,763 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:31,975 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:32,134 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:32,323 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:32,549 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:32,744 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:32,928 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:33,134 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:33,330 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:33,516 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:33,718 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:33,926 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:34,147 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:34,329 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:34,544 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:34,774 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:34,960 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:35,172 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:35,382 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:35,583 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:35,808 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:36,008 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:36,220 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:36,428 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:36,625 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:36,866 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:37,065 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:37,263 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:37,474 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:37,667 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:37,891 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:38,087 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:38,300 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:38,525 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:38,738 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:38,947 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:39,148 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:39,348 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:39,556 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:39,761 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:39,976 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:40,158 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:40,355 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:40,571 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:40,793 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:41,007 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:41,199 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:41,421 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:41,627 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:41,823 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:42,039 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:42,238 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:42,455 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:42,673 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:42,867 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:43,086 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:43,297 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:43,487 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:43,705 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:43,913 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:44,138 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:44,334 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:44,548 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:44,780 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:44,979 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:45,210 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:45,419 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:45,635 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:45,854 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:46,080 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:46,320 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:46,572 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:46,802 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:47,039 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:47,267 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:47,489 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:47,745 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:47,967 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:48,148 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:48,327 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:48,528 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:48,713 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:48,913 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:49,135 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:49,348 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:49,590 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:49,807 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:50,012 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:50,178 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:50,342 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:50,508 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:50,703 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:50,858 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:51,014 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:51,166 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:51,336 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:51,497 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:51,665 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:51,853 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:52,001 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:52,144 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+
+2024-09-24 02:20:52,296 [ERROR] [no_request_id] django.gunicorn: Error in manage.py (manage.py:51)
+Traceback (most recent call last):
+  File "/manage.py", line 48, in <module>
+    main()
+  File "/manage.py", line 43, in main
+    execute_from_command_line(sys.argv)
+  File "/bluewind/management/commands/run_bluewind.py", line 122, in handle
+    GeventGunicornApplication(application, gunicorn_options).run()
+SystemExit: 3
+

@@ -3,7 +3,7 @@ services:
     build: .
     command: python manage.py run_bluewind
     volumes:
-      - .:/code
+      - .:/bluewind
     ports:
       - "8000:8000"
     environment:
