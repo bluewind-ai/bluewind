@@ -10,7 +10,6 @@ from bluewind.context_variables import (
     get_request_id,
     request_id_var,
 )
-from bluewind.settings_prod import BASE_DIR
 
 
 # Define a custom traceback formatter
@@ -45,6 +44,7 @@ class CleanTracebackFormatter(logging.Formatter):
 
 class CombinedFormatter(CleanTracebackFormatter):
     def clean_pathname(self, pathname):
+        raise NotImplementedError("This formatter should not be used directly")
         return pathname.replace("/bluewind/bluewind/", "")
 
     def format(self, record):
@@ -98,11 +98,11 @@ def get_logging_config():
                 "formatter": "pretty",
                 "stream": sys.stdout,
             },
-            "file": {
-                "class": "logging.FileHandler",
-                "filename": os.path.join(BASE_DIR, "logs", "app.log"),
-                "formatter": "pretty",
-            },
+            # "file": {
+            #     "class": "logging.FileHandler",
+            #     "filename": os.path.join(BASE_DIR, "logs", "app.log"),
+            #     "formatter": "pretty",
+            # },
         },
         "loggers": {
             "django": {
@@ -135,7 +135,7 @@ def get_logging_config():
                 "propagate": False,
             },
             "django.watchdog": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "ERROR",
                 "propagate": False,
             },

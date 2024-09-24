@@ -75,7 +75,10 @@ def custom_middleware(get_response):
 
         return response
 
-    return middleware
+    try:
+        return middleware
+    except Exception as e:
+        print(e)
 
 
 def admin_middleware(get_response):
