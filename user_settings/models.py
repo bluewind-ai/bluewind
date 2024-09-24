@@ -2,10 +2,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from workspaces.models import WorkspaceRelated
 
-
-class UserSettings(WorkspaceRelated):
+class UserSettings(models.Model):
     class Mode(models.TextChoices):
         FLOW = "flow", "Flow"
         MANUAL = "manual", "Manual"
