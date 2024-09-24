@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 
-import gevent.monkey
-
-gevent.monkey.patch_all()  # noqa
 import os
 import sys
 
 from bluewind.env import load_env
-from bluewind.logging_config import get_logging_config  # noqa
 
 
 def main():
@@ -30,10 +26,4 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except BaseException:
-        import logging
-
-        logger = logging.getLogger("django.temp")
-        logger.error("An error occurred", exc_info=True)
+    main()

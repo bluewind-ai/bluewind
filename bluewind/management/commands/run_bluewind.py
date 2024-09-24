@@ -5,7 +5,6 @@ from django.core.wsgi import get_wsgi_application
 from gunicorn.app.base import BaseApplication
 
 from bluewind.context_variables import set_startup_mode, set_workspace_id
-from bluewind.logging_config import get_logging_config
 from bluewind.management.base_command import BluewindBaseCommand
 
 # Set up logging
@@ -101,7 +100,7 @@ class Command(BluewindBaseCommand):
             "on_starting": on_starting,
             "on_reload": on_reload,
             "post_worker_init": post_worker_init,
-            "logconfig_dict": get_logging_config(),
+            # "logconfig_dict": get_logging_config(),
         }
         "cdscds"
         "cdscdscs"
