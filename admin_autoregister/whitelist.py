@@ -14,6 +14,7 @@ MODEL_WHITELIST = {
     "EmailConfirmation",
     "User",
     "Migration",
+    "UserSettings",
 }
 
 MODEL_ADMIN_WHITELIST = {
@@ -37,4 +38,5 @@ MODEL_ADMIN_WHITELIST = {
     "SQLQuery",
     "Response",
     "Request",
+    "UserSettings",
 }

@@ -7,12 +7,29 @@ logger = logging.getLogger("django.not_used")
 
 
 def command_palette_get_commands(function_run):
-    admin_links = {}
     logger = logging.getLogger(__name__)
     logger.debug("Starting command_palette_get_commands function")
     logger.debug("Getting admin links")
+    permission_admin_links = get_permission_admin_links()
+    flow_admin_links = get_flow_admin_links()
+    admin_links = permission_admin_links | flow_admin_links
+    logger.debug(f"Total admin links gathered: {len(admin_links)}")
+
+    result = sorted(admin_links.values(), key=lambda x: x["name"])
+    logger.debug(f"Sorted result list length: {len(result)}")
+
+    logger.debug("Finished command_palette_get_commands function")
+    return {"commands": result}
+
+
+def get_flow_admin_links():
+    return {}
+
+
+def get_permission_admin_links():
     permissions = Permission.objects.select_related("content_type").all()
 
+    admin_links = {}
     for perm in permissions:
         app_label = perm.content_type.app_label.replace("_", " ").title()
         model_name = perm.content_type.model.replace("_", " ").title()
@@ -34,12 +51,3 @@ def command_palette_get_commands(function_run):
                     f"Failed to reverse URL for {app_label} - {model_name}: {str(e)}"
                 )
                 pass  # If the URL can't be reversed, skip this admin link
-
-    logger.debug(f"Total admin links gathered: {len(admin_links)}")
-
-    # Convert dictionary to list and sort
-    result = sorted(admin_links.values(), key=lambda x: x["name"])
-    logger.debug(f"Sorted result list length: {len(result)}")
-
-    logger.debug("Finished command_palette_get_commands function")
-    return {"commands": result}
