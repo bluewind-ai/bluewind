@@ -3,16 +3,28 @@ import logging
 from django.contrib.auth.models import Permission
 from django.urls import reverse
 
-logger = logging.getLogger("django.not_used")
+logger = logging.getLogger(__name__)
 
 
 def command_palette_get_commands(function_run):
-    logger = logging.getLogger(__name__)
     logger.debug("Starting command_palette_get_commands function")
-    logger.debug("Getting admin links")
+
+    logger.debug("Getting permission admin links")
     permission_admin_links = get_permission_admin_links()
+    logger.debug(f"Permission admin links type: {type(permission_admin_links)}")
+    logger.debug(f"Permission admin links: {permission_admin_links}")
+
+    logger.debug("Getting flow admin links")
     flow_admin_links = get_flow_admin_links()
-    admin_links = permission_admin_links | flow_admin_links
+    logger.debug(f"Flow admin links type: {type(flow_admin_links)}")
+    logger.debug(f"Flow admin links: {flow_admin_links}")
+
+    admin_links = {}
+    if isinstance(permission_admin_links, dict):
+        admin_links.update(permission_admin_links)
+    if isinstance(flow_admin_links, dict):
+        admin_links.update(flow_admin_links)
+
     logger.debug(f"Total admin links gathered: {len(admin_links)}")
 
     result = sorted(admin_links.values(), key=lambda x: x["name"])
@@ -23,7 +35,29 @@ def command_palette_get_commands(function_run):
 
 
 def get_flow_admin_links():
-    return {}
+    from flows.models import Flow
+
+    flows = Flow.objects.all()
+
+    admin_links = {}
+    for flow in flows:
+        logger.debug(f"Processing flow: {flow}")
+
+        try:
+            # URL for the custom action (add flow run)
+            custom_action_url = flow.get_custom_action_url()
+
+            admin_links[f"Run {flow.name}"] = {
+                "name": f"Run {flow.name}",
+                "url": custom_action_url,
+            }
+            logger.debug(f"Added admin link for Flow - {flow.name}")
+        except Exception as e:
+            logger.warning(
+                f"Failed to generate admin link for Flow - {flow.name}: {str(e)}"
+            )
+
+    return admin_links
 
 
 def get_permission_admin_links():
@@ -46,8 +80,9 @@ def get_permission_admin_links():
                     "url": url,
                 }
                 logger.debug(f"Added admin link for {app_label}")
-            except BaseException as e:
+            except Exception as e:
                 logger.warning(
                     f"Failed to reverse URL for {app_label} - {model_name}: {str(e)}"
                 )
-                pass  # If the URL can't be reversed, skip this admin link
+
+    return admin_links

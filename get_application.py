@@ -33,7 +33,7 @@ def get_application():
 
     from flows.bootstrap.flows import bootstrap  # noqa
 
-    # bootstrap()
+    bootstrap()
     try:
         return workspace_wsgi_middleware(application)
     except Exception:
