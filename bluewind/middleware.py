@@ -76,7 +76,7 @@ def custom_middleware(get_response):
 
 def admin_middleware(get_response):
     def middleware(request):
-        raise NotImplementedError("No flocsdcdscsdw  available")
+        # raise NotImplementedError("No flocsdcdscsdw  available")
         if request.path.startswith("/health/"):
             return get_response(request)
         if request.path.startswith("/silk/"):
