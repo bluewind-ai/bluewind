@@ -1,3 +1,6 @@
+from bluewind.env import load_env
+
+
 def get_application():
     import logging
     import os
@@ -5,10 +8,10 @@ def get_application():
     from django.core.wsgi import get_wsgi_application
 
     from bluewind.context_variables import set_startup_mode, set_workspace_id
-    from manage import load_env
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
     load_env()
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
+
     from bluewind.logging_config import get_logging_config
 
     logging.config.dictConfig(get_logging_config())

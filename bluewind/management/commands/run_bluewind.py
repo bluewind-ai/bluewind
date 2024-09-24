@@ -98,7 +98,6 @@ class Command(BluewindBaseCommand):
             "timeout": options["timeout"],
             "reload": True,
             "reload_engine": "auto",
-            "reload_extra_files": [current_dir],
             "on_starting": on_starting,
             "on_reload": on_reload,
             "post_worker_init": post_worker_init,

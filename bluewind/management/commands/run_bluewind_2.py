@@ -14,7 +14,6 @@ class CustomGunicornApplication(BaseApplication):
             "timeout": 30,
             "reload": True,
             "reload_engine": "auto",
-            "reload_extra_files": ["/bluewind"],
         }
         self.application = (
             "bluewind.wsgi:application"  # Changed from 'app' to 'application'

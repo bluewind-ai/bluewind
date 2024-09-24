@@ -4,24 +4,11 @@
 import gevent.monkey
 
 gevent.monkey.patch_all()  # noqa
-from bluewind.logging_config import get_logging_config  # noqa
-
 import os
 import sys
 
-
-def load_env():
-    """Load environment variables from .env file."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
-
-    env_file = os.path.join(os.path.dirname(__file__), ".env")
-    if os.path.exists(env_file):
-        with open(env_file, "r") as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith("#"):
-                    key, value = line.split("=", 1)
-                    os.environ[key] = value.strip("'").strip('"')
+from bluewind.env import load_env
+from bluewind.logging_config import get_logging_config  # noqa
 
 
 def main():

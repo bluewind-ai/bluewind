@@ -6,4 +6,3 @@ max_requests = 10000
 timeout = 30
 reload = True
 reload_engine = "auto"
-reload_extra_files = ["/bluewind"]
