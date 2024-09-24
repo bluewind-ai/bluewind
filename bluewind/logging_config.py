@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import traceback
+from pathlib import Path
 
 from django.conf import settings
 
@@ -10,6 +11,9 @@ from bluewind.context_variables import (
     get_request_id,
     request_id_var,
 )
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+os.environ["BASE_DIR"] = str(BASE_DIR)
 
 
 # Define a custom traceback formatter
@@ -44,7 +48,7 @@ class CleanTracebackFormatter(logging.Formatter):
 
 class CombinedFormatter(CleanTracebackFormatter):
     def clean_pathname(self, pathname):
-        return pathname.replace("", "")
+        return pathname.replace("/bluewind/bluewind/", "")
 
     def format(self, record):
         # record.pathname = self.clean_pathname(record.pathname)
@@ -76,94 +80,95 @@ class CombinedFormatter(CleanTracebackFormatter):
         return formatted_record
 
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "pretty": {
-            "()": CombinedFormatter,
-            "format": "%(asctime)s [%(levelname)s] [%(request_id)s] %(name)s: %(message)s (%(pathname)s:%(lineno)d)",
+def get_logging_config():
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "pretty": {
+                "()": CombinedFormatter,
+                "format": "%(asctime)s [%(levelname)s] [%(request_id)s] %(name)s: %(message)s (%(pathname)s:%(lineno)d)",
+            },
+            "simple": {
+                "format": "[{levelname}] {asctime} {module} {message}",
+                "style": "{",
+            },
         },
-        "simple": {
-            "format": "[{levelname}] {asctime} {module} {message}",
-            "style": "{",
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "pretty",
+                "stream": sys.stdout,
+            },
+            # "file": {
+            #     "class": "logging.FileHandler",
+            #     "filename": os.path.join(BASE_DIR, "logs", "app.log"),
+            #     "formatter": "pretty",
+            # },
         },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "simple",
-            "stream": sys.stdout,
+        "loggers": {
+            "django": {
+                "handlers": ["console"],
+                "level": "ERROR",
+                "propagate": False,
+            },
+            "django.utils.autoreload": {
+                "level": "ERROR",
+                "propagate": False,
+            },
+            "django.db.backends": {
+                "level": "ERROR",
+                "handlers": ["console"],
+                "propagate": False,
+            },
+            "django.static": {
+                "level": "ERROR",
+                "handlers": ["console"],
+                "propagate": False,
+            },
+            "django.db.backends.schema": {
+                "level": "ERROR",
+                "handlers": ["console"],
+                "propagate": False,
+            },
+            "django.temp": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+            "django.watchdog": {
+                "handlers": ["console"],
+                "level": "ERROR",
+                "propagate": False,
+            },
+            "django.geventpool": {
+                "handlers": ["console"],
+                "level": "ERROR",
+                "propagate": False,
+            },
+            "django.gunicorn": {
+                "handlers": ["console"],
+                "level": "ERROR",
+                "propagate": False,
+            },
+            # "gunicorn.ERROR": {
+            #     "handlers": ["console"],
+            #     "level": "ERROR",
+            #     "propagate": False,
+            # },
+            # "gunicorn.access": {
+            #     "handlers": ["console"],
+            #     "level": "ERROR",
+            #     "propagate": False,
+            # },
+            "django.always_used": {
+                "handlers": ["console"],
+                "level": "ERROR",
+                "propagate": False,
+            },
         },
-        # "file": {
-        #     "class": "logging.FileHandler",
-        #     "filename": os.path.join(BASE_DIR, "logs", "app.log"),
-        #     "formatter": "pretty",
-        # },
-    },
-    "loggers": {
-        "django": {
+        "root": {
             "handlers": ["console"],
             "level": "ERROR",
-            "propagate": False,
         },
-        "django.utils.autoreload": {
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "django.db.backends": {
-            "level": "ERROR",
-            "handlers": ["console"],
-            "propagate": False,
-        },
-        "django.static": {
-            "level": "ERROR",
-            "handlers": ["console"],
-            "propagate": False,
-        },
-        "django.db.backends.schema": {
-            "level": "ERROR",
-            "handlers": ["console"],
-            "propagate": False,
-        },
-        "django.temp": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-        "django.watchdog": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "django.geventpool": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "django.gunicorn": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": False,
-        },
-        # "gunicorn.ERROR": {
-        #     "handlers": ["console"],
-        #     "level": "ERROR",
-        #     "propagate": False,
-        # },
-        # "gunicorn.access": {
-        #     "handlers": ["console"],
-        #     "level": "ERROR",
-        #     "propagate": False,
-        # },
-        "django.always_used": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": False,
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "ERROR",
-    },
-}
+    }
