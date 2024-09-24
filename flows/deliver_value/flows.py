@@ -25,11 +25,14 @@ def deliver_value(flow_run):
 
     ran_one_function = False
     if not ran_one_function and not flow_run.state.get("avoid_going_into_spam", False):
-        avoid_going_into_spam()
+        FlowRun.objects.create(
+            flow=Flow.objects.get(name="avoid_going_into_spam"),
+            user=flow_run.user,
+            workspace_id=flow_run.workspace_id,
+        )
+        return
+        avoid_going_into_spam(flow_run)
         ran_one_function = True
-    "cdscdcsd"
-
-    "cdsnjkcnjdsknckjds"
 
     if ran_one_function:
         FlowRun.objects.create(

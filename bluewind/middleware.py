@@ -135,12 +135,14 @@ def flow_mode(request, get_response):
             status=FlowRun.Status.READY_FOR_APPROVAL,
         ).first()
         if not flow_run:
-            FlowRun.objects.create(
-                flow=Flow.objects.filter(name="deliver_value"),
+            flow_run = FlowRun.objects.create(
+                flow=Flow.objects.filter(name="deliver_value").first(),
                 status=FlowRun.Status.READY_FOR_APPROVAL,
+                workspace_id=get_workspace_id(),
+                user_id=request.user.id,
             )
-        return redirect("/workspaces/1/admin/flow_runs/flowrun/add/?flow=1")
+        return redirect(
+            f"/workspaces/1/admin/flow_runs/flowrun/add/?flow={flow_run.flow.id}"
+        )
 
-        raise NotImplementedError("This middleware is not implemented")
-    raise NotImplementedError("This middleware is not implemented")
     return get_response(request)

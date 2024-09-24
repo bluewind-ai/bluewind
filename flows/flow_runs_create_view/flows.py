@@ -34,6 +34,7 @@ def flow_runs_create_view(request, flow):
         input_data = form.cleaned_data.copy()
 
         flow_run = run_flow(flow, request.user, input_data)
+        return redirect("/workspaces/1/admin/users")
 
         return redirect(reverse("admin:flow_runs_flowrun_change", args=[flow_run.id]))
     else:
@@ -44,4 +45,5 @@ def flow_runs_create_view(request, flow):
         "media": form.media,
         # Include any other context variables needed by your template
     }
+    return redirect("workspaces/1/admin/whatever")
     return TemplateResponse(request, "admin/flow_runs/flowrun/add_form.html", context)
