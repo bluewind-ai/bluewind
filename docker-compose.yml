@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
   web:
     build: .
-    command: python manage.py rungunicorn
+    command: python manage.py run_bluewind
     volumes:
       - .:/code
     ports:

@@ -12,15 +12,11 @@ from flows.models import Flow
 logger = logging.getLogger("django.temp")  # noqa: F821
 
 
-def run_bluewind(flow_run):
+def deliver_value(flow_run):
     # raise NotImplementedError(model_to_dict(flow_run))
-    logger.info("Starting run_bluewind function")
-
-    logger.info("Creating greenlets for centralize_logs and run_gunicorn")
     ran_one_function = False
     if not ran_one_function and not flow_run.state.get("create_a_business", False):
         create_a_business()
-        run_gunicorn()
         ran_one_function = True
 
     if ran_one_function:
@@ -45,5 +41,5 @@ def clean_log_entry(log_entry):
     return re.sub(pattern, "", log_entry)
 
 
-def run_gunicorn():
-    subprocess.Popen("nohup python manage.py rungunicorn &", shell=True)
+def run_bluewind():
+    subprocess.Popen("nohup python manage.py run_bluewind &", shell=True)

@@ -20,7 +20,7 @@ def bootstrap():
         user=User.objects.get(id=1),
         workspace_id=get_workspace_id(),
         input_data={},
-        flow=Flow.objects.get(name="run_bluewind"),
+        flow=Flow.objects.get(name="deliver_value"),
         # parent_flow_run=None,
         status=FlowRun.Status.READY_FOR_APPROVAL,
     )
