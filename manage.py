@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 
-import logging
-
 import gevent.monkey
 
 gevent.monkey.patch_all()  # noqa
@@ -44,8 +42,4 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except BaseException:
-        logger = logging.getLogger("django.gunicorn")
-        logger.exception("Error in manage.py")
+    main()

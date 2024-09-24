@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     "daphne_processes",
     "silk",
     "supervisord",
+    "approvals",
     "admin_autoregister",
 ]
 
@@ -161,6 +162,7 @@ APP_TYPE = {
     "daphne_processes": "custom",
     "app_logs": "custom",
     "supervisord": "custom",
+    "approvals": "custom",
     "silk": "third_party",
 }
 

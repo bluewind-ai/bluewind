@@ -9,7 +9,6 @@ from bluewind.context_variables import (
     set_request_id,
 )
 from bluewind.push_logs import push_logs_to_db
-from flow_runs.models import FlowRun
 from incoming_http_requests.models import IncomingHTTPRequest
 from workspaces.models import Workspace, WorkspaceUser
 
@@ -94,17 +93,17 @@ def admin_middleware(get_response):
         ):  # User asks for a workspace he has access to
             if workspace_id == 2:
                 return redirect("/workspaces/1/admin/")
-            flow_run = FlowRun.objects.filter(
-                status=FlowRun.Status.READY_FOR_APPROVAL,
-            ).first()
-            if (
-                flow_run
-                and not request.path.startswith(
-                    "/workspaces/1/admin/flow_runs/flowrun/"
-                )
-                and "logout" not in request.path
-            ):
-                return redirect(f"/workspaces/1/admin/flow_runs/flowrun/{flow_run.id}/")
+            # flow_run = FlowRun.objects.filter(
+            #     status=FlowRun.Status.READY_FOR_APPROVAL,
+            # ).first()
+            # if (
+            #     flow_run
+            #     and not request.path.startswith(
+            #         "/workspaces/1/admin/flow_runs/flowrun/"
+            #     )
+            #     and "logout" not in request.path
+            # ):
+            # return redirect("/workspaces/1/admin/flow_runs/flowrun/add/?flow=")
             # raise NotImplementedError("No flow runs available")
             return get_response(request)
         if (
@@ -120,3 +119,7 @@ def admin_middleware(get_response):
         return HttpResponseNotFound("Page not found")
 
     return middleware
+
+
+"cdscdscds"
+"cdscdscsd"

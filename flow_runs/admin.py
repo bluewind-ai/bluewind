@@ -174,12 +174,6 @@ class FlowRunAdmin(InWorkspace):
                 "title": "Perform Action 1",
                 "css_class": "button",
                 "method": "get",
-            },
-            {
-                "name": "action2",
-                "label": "Action 2",
-                "title": "Perform Action 2",
-                "css_class": "button",
-                "method": "post",
-            },
+                "url": reverse("admin:flowrun_action1", args=[object_id]),
+            }
         ]

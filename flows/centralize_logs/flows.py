@@ -20,6 +20,7 @@ def centralize_logs():
                 if not line:
                     gevent.sleep(0.1)
                     continue
+                "cdscds"
                 # cleaned_line = clean_log_entry(line)
                 sys.stdout.write(line)
                 sys.stdout.flush()

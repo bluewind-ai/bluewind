@@ -7,3 +7,5 @@ class Command(BluewindBaseCommand):
 
     def handle(self, *args, **options):
         file_watchers_init()
+
+    "cdscdds"

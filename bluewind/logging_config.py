@@ -45,7 +45,7 @@ class CleanTracebackFormatter(logging.Formatter):
 
 class CombinedFormatter(CleanTracebackFormatter):
     def clean_pathname(self, pathname):
-        return pathname.replace("/bluewind/", "")
+        return pathname.replace("/bluewind/bluewind/", "")
 
     def format(self, record):
         record.pathname = self.clean_pathname(record.pathname)
@@ -105,7 +105,7 @@ def get_logging_config():
         },
         "loggers": {
             "django": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "ERROR",
                 "propagate": False,
             },
@@ -115,21 +115,21 @@ def get_logging_config():
             },
             "django.db.backends": {
                 "level": "ERROR",
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "propagate": False,
             },
             "django.static": {
                 "level": "ERROR",
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "propagate": False,
             },
             "django.db.backends.schema": {
                 "level": "ERROR",
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "propagate": False,
             },
             "django.temp": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "ERROR",
                 "propagate": False,
             },
@@ -139,33 +139,40 @@ def get_logging_config():
                 "propagate": False,
             },
             "django.geventpool": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "ERROR",
                 "propagate": False,
             },
             "django.gunicorn": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "ERROR",
                 "propagate": False,
             },
-            "gunicorn.ERROR": {
-                "handlers": ["console", "file"],
-                "level": "DEBUG",
-                "propagate": False,
-            },
-            "gunicorn.access": {
-                "handlers": ["console", "file"],
-                "level": "DEBUG",
-                "propagate": False,
-            },
+            # "gunicorn.ERROR": {
+            #     "handlers": ["console"],
+            #     "level": "ERROR",
+            #     "propagate": False,
+            # },
+            # "gunicorn.access": {
+            #     "handlers": ["console"],
+            #     "level": "ERROR",
+            #     "propagate": False,
+            # },
             "django.always_used": {
-                "handlers": ["console", "file"],
+                "handlers": ["console"],
                 "level": "ERROR",
                 "propagate": False,
             },
         },
         "root": {
-            "handlers": ["console", "file"],
-            "level": "ERROR",
+            "handlers": [],
+            "level": "DEBUG",
         },
     }
+
+
+"cdsdssdc"
+"cdscds"
+
+
+"cdscds"

@@ -4,8 +4,8 @@ import re
 from gevent import subprocess
 
 from flow_runs.models import FlowRun
+from flows.avoid_going_into_spam.flows import avoid_going_into_spam
 from flows.centralize_logs.flows import centralize_logs
-from flows.create_a_business.flows import create_a_business
 from flows.models import Flow
 
 # Patch standard library
@@ -13,11 +13,23 @@ logger = logging.getLogger("django.temp")  # noqa: F821
 
 
 def deliver_value(flow_run):
-    # raise NotImplementedError(model_to_dict(flow_run))
+    """
+    Deliver value to your or your business in a variety of ways.
+
+    Args:
+        flow_run (FlowRun): The current flow run object.
+
+    Returns:
+        None
+    """
+
     ran_one_function = False
-    if not ran_one_function and not flow_run.state.get("create_a_business", False):
-        create_a_business()
+    if not ran_one_function and not flow_run.state.get("avoid_going_into_spam", False):
+        avoid_going_into_spam()
         ran_one_function = True
+    "cdscdcsd"
+
+    "cdsnjkcnjdsknckjds"
 
     if ran_one_function:
         FlowRun.objects.create(

@@ -15,6 +15,8 @@ logger = logging.getLogger("django.not_used")
 
 class Command(BluewindBaseCommand):
     help = "Runs Daphne server with custom shutdown and reload hooks"
+    "cdscdscsd"
+    "cdscdscds"
 
     def handle(self, *args, **options):
         self.host = "127.0.0.1"

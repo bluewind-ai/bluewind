@@ -1,16 +1,15 @@
 import logging
 import os
-import subprocess
 
 from django.core.wsgi import get_wsgi_application
 from gunicorn.app.base import BaseApplication
 
+from bluewind import logging_config
 from bluewind.context_variables import set_startup_mode, set_workspace_id
 from bluewind.management.base_command import BluewindBaseCommand
 from flows.bootstrap.flows import bootstrap
 
 # Set up logging
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("django.gunicorn")
 
 
@@ -66,17 +65,10 @@ class Command(BluewindBaseCommand):
         set_workspace_id(1)
         set_startup_mode(False)
         application = workspace_wsgi_middleware(django_application)
-        from django.conf import settings
-        from django.utils.module_loading import import_string
-
-        logging_config_func = import_string(settings.LOGGING_CONFIG)
-        logging_config = logging_config_func()
 
         # Configure logging
-        import logging.config
-
-        logging.config.dictConfig(logging_config)
-        subprocess.run(["sh", "wipe_db.sh"])
+        # subprocess.run(["python", "manage.py", "run_watchdog"])
+        # subprocess.run(["sh", "wipe_db.sh"])
 
         bootstrap()
 
@@ -84,10 +76,10 @@ class Command(BluewindBaseCommand):
             logger.info("Gunicorn is starting up...")
 
         def on_reload(server):
-            logger.info("Gunicorn worker reloading...")
+            logging.config.dictConfig(logging_config())
 
         def post_worker_init(worker):
-            logger.info(f"Gunicorn worker {worker.id} initialized")
+            logger.info(f"Gunicorn worker initialized (pid: {worker.pid})")
 
         # Get the current working directory
         current_dir = "/bluewind"
@@ -104,14 +96,11 @@ class Command(BluewindBaseCommand):
             "reload": True,
             "reload_engine": "auto",
             "reload_extra_files": [current_dir],
-            "loglevel": "debug",
-            "accesslog": "-",
-            "errorlog": "-",
-            "capture_output": True,
             "on_starting": on_starting,
             "on_reload": on_reload,
             "post_worker_init": post_worker_init,
         }
+        "cdscds"
 
         logger.info("Starting Gunicorn with gevent workers and hot reloading")
 
@@ -123,5 +112,4 @@ class Command(BluewindBaseCommand):
         except Exception as e:
             logger.error(f"An error occurred: {str(e)}", exc_info=True)
             raise
-
         self.stdout.write(self.style.SUCCESS("Gunicorn server stopped"))
