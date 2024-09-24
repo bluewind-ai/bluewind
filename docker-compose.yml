@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    command: python manage.py run_bluewind_2
+    command: gunicorn -c gunicorn_config.py bluewind.wsgi:application
     volumes:
       - .:/bluewind
     ports:

@@ -1,7 +1,7 @@
 def get_application():
+    import logging
     import os
 
-    import django
     from django.core.wsgi import get_wsgi_application
 
     from bluewind.context_variables import set_startup_mode, set_workspace_id
@@ -9,7 +9,10 @@ def get_application():
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bluewind.settings_prod")
     load_env()
-    django.setup()
+    from bluewind.logging_config import get_logging_config
+
+    logging.config.dictConfig(get_logging_config())
+    # django.setup()
 
     def workspace_wsgi_middleware(django_app):
         def wrapper(environ, start_response):
@@ -28,4 +31,8 @@ def get_application():
     application = get_wsgi_application()
     set_workspace_id(1)
     set_startup_mode(False)
+
+    from flows.bootstrap.flows import bootstrap  # noqa
+
+    # bootstrap()
     return workspace_wsgi_middleware(application)

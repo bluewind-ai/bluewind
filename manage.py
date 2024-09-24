@@ -45,7 +45,7 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except:
+    except BaseException:
         import logging
 
         logger = logging.getLogger("django.temp")
