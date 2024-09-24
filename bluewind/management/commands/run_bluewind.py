@@ -1,12 +1,11 @@
 import logging
 import os
-import subprocess
 
 from django.core.wsgi import get_wsgi_application
 from gunicorn.app.base import BaseApplication
 
 from bluewind.context_variables import set_startup_mode, set_workspace_id
-from bluewind.logging_config import get_logging_config
+from bluewind.logging_config import LOGGING
 from bluewind.management.base_command import BluewindBaseCommand
 from flows.bootstrap.flows import bootstrap
 
@@ -69,7 +68,7 @@ class Command(BluewindBaseCommand):
 
         # Configure logging
         # subprocess.run(["python", "manage.py", "run_watchdog"])
-        subprocess.run(["sh", "wipe_db.sh"])
+        # subprocess.run(["sh", "wipe_db.sh"])
 
         bootstrap()
 
@@ -81,9 +80,11 @@ class Command(BluewindBaseCommand):
 
         def on_reload(server):
             logger.info("Gunicorn is reloacdscdscdsding...")
-            # logging.config.dictConfig(logging_config())
+            # logging.config.dictConfig(LOGGING)
 
         def post_worker_init(worker):
+            # logging.config.dictConfig(LOGGING)
+
             logger.info(f"Gunicorn worker initialized (pid: {worker.pid})")
 
         # Get the current working directory
@@ -104,10 +105,8 @@ class Command(BluewindBaseCommand):
             "on_starting": on_starting,
             "on_reload": on_reload,
             "post_worker_init": post_worker_init,
-            "logconfig_dict": get_logging_config(),
+            "logconfig_dict": LOGGING,
         }
-        "cdscds"
-        "cdscdscs"
 
         logger.info("Starting Gunicorn with gevent workers and hot reloading")
 

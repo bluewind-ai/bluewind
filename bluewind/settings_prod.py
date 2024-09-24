@@ -9,7 +9,7 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 os.environ["BASE_DIR"] = str(BASE_DIR)
 LOG_FILE_PATH = os.path.join(BASE_DIR, "logs", "app.log")
-LOGGING_CONFIG = "bluewind.logging_config.get_logging_config"
+LOGGING = "bluewind.logging_config.LOGGING"
 
 
 # Core Django Settings
