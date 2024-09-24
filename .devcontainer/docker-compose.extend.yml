@@ -1,0 +1,6 @@
+version: "3.8"
+services:
+  web:
+    volumes:
+      - ..:/code:cached
+    command: /bin/sh -c "while sleep 1000; do :; done"
