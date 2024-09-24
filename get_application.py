@@ -12,7 +12,6 @@ def get_application():
     from bluewind.logging_config import get_logging_config
 
     logging.config.dictConfig(get_logging_config())
-    # django.setup()
 
     def workspace_wsgi_middleware(django_app):
         def wrapper(environ, start_response):
@@ -35,4 +34,8 @@ def get_application():
     from flows.bootstrap.flows import bootstrap  # noqa
 
     # bootstrap()
-    return workspace_wsgi_middleware(application)
+    try:
+        return workspace_wsgi_middleware(application)
+    except Exception:
+        logging.exception("Error initializing application")
+        raise

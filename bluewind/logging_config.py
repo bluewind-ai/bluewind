@@ -48,6 +48,7 @@ class CombinedFormatter(CleanTracebackFormatter):
         return pathname.replace("/bluewind/bluewind/", "")
 
     def format(self, record):
+        raise NotImplementedError("This formatter should not be used directly")
         record.pathname = self.clean_pathname(record.pathname)
         # First, attach the request ID using ContextAwareRequestIDFormatter
         if request_id_var.get(None) is None:

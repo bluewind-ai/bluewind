@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     "silk",
     "supervisord",
     "approvals",
+    "user_settings",
     "admin_autoregister",
 ]
 
@@ -163,6 +164,7 @@ APP_TYPE = {
     "app_logs": "custom",
     "supervisord": "custom",
     "approvals": "custom",
+    "user_settings": "custom",
     "silk": "third_party",
 }
 
