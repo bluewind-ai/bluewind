@@ -28,7 +28,7 @@ class CleanTracebackFormatter(logging.Formatter):
                 and "site-packages" not in frame.filename
             ):
                 relative_filename = os.path.relpath(frame.filename, self.project_root)
-                clean_path = f"/{relative_filename}"
+                clean_path = f"/{relative_filename[:10]}"
                 clean_tb.append(
                     traceback.FrameSummary(
                         filename=clean_path,
@@ -130,7 +130,7 @@ def get_logging_config():
             },
             "django.temp": {
                 "handlers": ["console"],
-                "level": "ERROR",
+                "level": "DEBUG",
                 "propagate": False,
             },
             "django.watchdog": {
@@ -165,14 +165,10 @@ def get_logging_config():
             },
         },
         "root": {
-            "handlers": [],
-            "level": "DEBUG",
+            "handlers": ["console"],
+            "level": "ERROR",
         },
     }
-
-
-"cdsdssdc"
-"cdscds"
 
 
 "cdscds"

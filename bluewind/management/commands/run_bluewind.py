@@ -1,16 +1,17 @@
 import logging
 import os
+import subprocess
 
 from django.core.wsgi import get_wsgi_application
 from gunicorn.app.base import BaseApplication
 
-from bluewind import logging_config
 from bluewind.context_variables import set_startup_mode, set_workspace_id
+from bluewind.logging_config import get_logging_config
 from bluewind.management.base_command import BluewindBaseCommand
 from flows.bootstrap.flows import bootstrap
 
 # Set up logging
-logger = logging.getLogger("django.gunicorn")
+logger = logging.getLogger("django.temp")
 
 
 class GeventGunicornApplication(BaseApplication):
@@ -68,15 +69,19 @@ class Command(BluewindBaseCommand):
 
         # Configure logging
         # subprocess.run(["python", "manage.py", "run_watchdog"])
-        # subprocess.run(["sh", "wipe_db.sh"])
+        subprocess.run(["sh", "wipe_db.sh"])
 
         bootstrap()
 
         def on_starting(server):
             logger.info("Gunicorn is starting up...")
+            print(
+                "========== Gunicorn is reloading =========="
+            )  # This will print to stdout
 
         def on_reload(server):
-            logging.config.dictConfig(logging_config())
+            logger.info("Gunicorn is reloacdscdscdsding...")
+            # logging.config.dictConfig(logging_config())
 
         def post_worker_init(worker):
             logger.info(f"Gunicorn worker initialized (pid: {worker.pid})")
@@ -99,8 +104,10 @@ class Command(BluewindBaseCommand):
             "on_starting": on_starting,
             "on_reload": on_reload,
             "post_worker_init": post_worker_init,
+            "logconfig_dict": get_logging_config(),
         }
         "cdscds"
+        "cdscdscs"
 
         logger.info("Starting Gunicorn with gevent workers and hot reloading")
 
