@@ -10,7 +10,7 @@ from flows.is_ignored_by_git.flows import is_ignored_by_git
 from flows.models import Flow
 from models.models import Model
 
-logger = logging.getLogger("django.not_used")
+logger = logging.getLogger("django.temp")
 
 
 def files_load_all():
@@ -116,7 +116,6 @@ def files_load_all():
                     workspace_id=default_workspace_id,
                     defaults={
                         "file": file_obj,
-                        "app": app,
                         "user_id": default_user_id,
                     },
                 )
@@ -128,9 +127,6 @@ def files_load_all():
                     updated = False
                     if flow.file != file_obj:
                         flow.file = file_obj
-                        updated = True
-                    if flow.app != app:
-                        flow.app = app
                         updated = True
                     if updated:
                         flow.save()

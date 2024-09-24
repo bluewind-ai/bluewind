@@ -4,6 +4,7 @@
 import gevent.monkey
 
 gevent.monkey.patch_all()  # noqa
+from bluewind.logging_config import get_logging_config  # noqa
 
 import os
 import sys
@@ -42,4 +43,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except:
+        import logging
+
+        logger = logging.getLogger("django.temp")
+        logger.error("An error occurred", exc_info=True)

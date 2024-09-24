@@ -76,6 +76,7 @@ def custom_middleware(get_response):
 
 def admin_middleware(get_response):
     def middleware(request):
+        raise NotImplementedError("No flocsdcdscsdw  available")
         if request.path.startswith("/health/"):
             return get_response(request)
         if request.path.startswith("/silk/"):
@@ -93,6 +94,7 @@ def admin_middleware(get_response):
         ):  # User asks for a workspace he has access to
             if workspace_id == 2:
                 return redirect("/workspaces/1/admin/")
+            "cdscdscds"
             # flow_run = FlowRun.objects.filter(
             #     status=FlowRun.Status.READY_FOR_APPROVAL,
             # ).first()
@@ -105,6 +107,7 @@ def admin_middleware(get_response):
             # ):
             # return redirect("/workspaces/1/admin/flow_runs/flowrun/add/?flow=")
             # raise NotImplementedError("No flow runs available")
+            "cdscds"
             return get_response(request)
         if (
             WorkspaceUser.objects.filter(user_id=request.user.id).count() == 0

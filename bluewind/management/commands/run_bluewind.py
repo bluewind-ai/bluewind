@@ -1,6 +1,5 @@
 import logging
 import os
-import subprocess
 
 from django.core.wsgi import get_wsgi_application
 from gunicorn.app.base import BaseApplication
@@ -8,7 +7,6 @@ from gunicorn.app.base import BaseApplication
 from bluewind.context_variables import set_startup_mode, set_workspace_id
 from bluewind.logging_config import get_logging_config
 from bluewind.management.base_command import BluewindBaseCommand
-from flows.bootstrap.flows import bootstrap
 
 # Set up logging
 logger = logging.getLogger("django.temp")
@@ -69,9 +67,9 @@ class Command(BluewindBaseCommand):
 
         # Configure logging
         # subprocess.run(["python", "manage.py", "run_watchdog"])
-        subprocess.run(["sh", "wipe_db.sh"])
-
-        bootstrap()
+        # subprocess.run(["sh", "wipe_db.sh"])
+        # logging.config.dictConfig(get_logging_config())
+        # bootstrap()
 
         def on_starting(server):
             logger.info("Gunicorn is starting up...")

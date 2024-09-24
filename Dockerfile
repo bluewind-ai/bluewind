@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y \
     gcc \
     postgresql-client \
     git \
+    procps \
+    grep \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /bluewind

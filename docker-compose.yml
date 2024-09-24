@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    command: python manage.py run_bluewind
+    command: python manage.py run_bluewind_2
     volumes:
       - .:/bluewind
     ports:
@@ -12,6 +12,13 @@ services:
       - DB_PASSWORD=zYx8mQTqAe9r8A99thazK
       - DB_HOST=db
       - DB_PORT=5432
+      - SECRET_KEY=change_your_secret_key
+      - DEBUG=True
+      - ALLOWED_HOSTS=*
+      - CSRF_TRUSTED_ORIGINS=localhost
+      - SALT_KEY=change_your_salt_key
+      - ENVIRONMENT=prod
+      - SITE_URL=http://localhost:8000
     depends_on:
       - db
     networks:

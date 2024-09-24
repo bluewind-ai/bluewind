@@ -4,10 +4,12 @@ from bluewind.context_variables import get_workspace_id
 from flows.files_load_all.flows import files_load_all
 from workspaces.models import Workspace
 
-logger = logging.getLogger("django.not_used")
+logger = logging.getLogger("django.temp")
 
 
 def bootstrap_workspace():
+    logger.error("Bootstrapping workspace.")
+    # raise NotImplementedError("This function is not implemented yet.")
     workspace_id = get_workspace_id()
     workspace_already_bootstrapped = Workspace.objects.filter(
         id=workspace_id,

@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 os.environ["BASE_DIR"] = str(BASE_DIR)
 LOG_FILE_PATH = os.path.join(BASE_DIR, "logs", "app.log")
 LOGGING_CONFIG = "bluewind.logging_config.get_logging_config"
-
+# logging.config.dictConfig(get_logging_config())
 
 # Core Django Settings
 SECRET_KEY = os.environ["SECRET_KEY"]
