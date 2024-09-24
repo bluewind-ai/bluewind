@@ -9,7 +9,10 @@ from bluewind.context_variables import (
     set_request_id,
 )
 from bluewind.push_logs import push_logs_to_db
+from flow_runs.models import FlowRun
+from flows.models import Flow
 from incoming_http_requests.models import IncomingHTTPRequest
+from user_settings.models import UserSettings
 from workspaces.models import Workspace, WorkspaceUser
 
 # def sync_only_middleware(middleware_func):
@@ -96,18 +99,7 @@ def admin_middleware(get_response):
         ):  # User asks for a workspace he has access to
             if workspace_id == 2:
                 return redirect("/workspaces/1/admin/")
-
-            # flow_run = FlowRun.objects.filter(
-            #     status=FlowRun.Status.READY_FOR_APPROVAL,
-            # ).first()
-            # if (
-            #     flow_run
-            #     and not request.path.startswith(
-            #         "/workspaces/1/admin/flow_runs/flowrun/"
-            #     )
-            #     and "logout" not in request.path
-            # ):
-            #     return redirect("/workspaces/1/admin/flow_runs/flowrun/add/?flow=1")
+            return flow_mode(request, get_response)
             return get_response(request)
         if (
             WorkspaceUser.objects.filter(user_id=request.user.id).count() == 0
@@ -126,3 +118,26 @@ def admin_middleware(get_response):
 
 "cdscdscds"
 "cdscdscsd"
+
+
+def flow_mode(request, get_response):
+    if (
+        request.path.startswith("/workspaces/1/admin/flow_runs/flowrun/")
+        and "logout" not in request.path
+    ):
+        return get_response(request)
+    user_settings = UserSettings.objects.filter(user_id=request.user.id).first()
+    if user_settings and user_settings.mode == UserSettings.Mode.FLOW:
+        flow_run = FlowRun.objects.filter(
+            status=FlowRun.Status.READY_FOR_APPROVAL,
+        ).first()
+        if not flow_run:
+            FlowRun.objects.create(
+                flow=Flow.objects.filter(name="deliver_value"),
+                status=FlowRun.Status.READY_FOR_APPROVAL,
+            )
+        return redirect("/workspaces/1/admin/flow_runs/flowrun/add/?flow=1")
+
+        raise NotImplementedError("This middleware is not implemented")
+    raise NotImplementedError("This middleware is not implemented")
+    return get_response(request)
