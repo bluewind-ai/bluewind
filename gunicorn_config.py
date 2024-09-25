@@ -1,4 +1,4 @@
-bind = "0.0.0.0:8000"
+bind = "127.0.0.1:8000"
 worker_class = "gevent"
 workers = 1
 worker_connections = 10000

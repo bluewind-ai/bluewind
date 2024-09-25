@@ -131,7 +131,6 @@
 
   function handleShortcut(e) {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "p") {
-      console.log("Cmd/Ctrl + P: Toggle Command Palette");
       e.preventDefault();
       e.stopPropagation();
       toggleCommandPalette();

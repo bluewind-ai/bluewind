@@ -21,29 +21,25 @@
 {% block footer %}
     {{ block.super }}
     {% include 'json_editor.html' %}
-    
+
     <!-- Embed data for JavaScript -->
     {% if flows_data %}
         {{ flows_data|json_script:"initial-data" }}
-        <script>console.log('Raw flows_data:', {{ flows_data|safe }});</script>
     {% else %}
         <script>console.log('flows_data is not available in the context');</script>
     {% endif %}
-    
+
     <script>
         const initialDataElement = document.getElementById('initial-data');
-        console.log('Raw JSON content:', initialDataElement ? initialDataElement.textContent : 'Element not found');
         try {
             const initialData = JSON.parse(initialDataElement ? initialDataElement.textContent : '{}');
             window.initialData = {
                 flows: initialData || []
             };
-            console.log('Parsed initialData:', window.initialData);
         } catch (error) {
-            console.error('Error parsing JSON:', error);
             window.initialData = { flows: [] };
         }
     </script>
-    
+
     <script src="{% static 'bluewind/js/admin_shortcuts.js' %}"></script>
 {% endblock %}

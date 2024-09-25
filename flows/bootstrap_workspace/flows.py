@@ -18,9 +18,9 @@ def bootstrap_workspace():
             Workspace.BootstrapStatus.DONE,
         ],
     ).exists()
-    if workspace_already_bootstrapped:
-        logger.debug("Workspace is already bootstrapped, skipping.")
-        return
+    # if workspace_already_bootstrapped:
+    #     logger.debug("Workspace is already bootstrapped, skipping.")
+    #     return
 
     Workspace.objects.filter(
         id=workspace_id,
