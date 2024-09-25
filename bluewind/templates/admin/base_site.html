@@ -15,7 +15,7 @@
 
 {% block nav-global %}
 {{ block.super }}
-<button id="toggleButton" onclick="toggleSite()" style="margin-left: 10px;">G</button>
+<button id="toggleButton" onclick="toggleRequest()" style="margin-left: 10px;">G</button>
 {% endblock %}
 
 {% block footer %}
@@ -41,16 +41,33 @@
         }
 
         let isGoogle = true;
-        function toggleSite() {
+        function toggleRequest() {
             const button = document.getElementById('toggleButton');
-            if (isGoogle) {
-                window.open('http://www.facebook.com', '_blank');
-                button.textContent = 'F';
-            } else {
-                window.open('https://www.google.com', '_blank');
-                button.textContent = 'M';
-            }
-            isGoogle = !isGoogle;
+            const url = isGoogle ? 'http://127.0.0.1:8000/workspaces/1/admin/flow_runs/flowrun/add/?flow_mode=true': 'http://127.0.0.1:8000/workspaces/1/admin/flow_runs/flowrun/add/?flow_mode=false';
+            const method = isGoogle ? 'GET' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: method === 'POST' ? JSON.stringify({ key: 'value' }) : undefined
+            })
+            .then(response => {
+                if (response.headers.get("content-type").includes("application/json")) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+            })
+            .then(data => {
+                console.log('Success:', data);
+                button.textContent = isGoogle ? 'F' : 'G';
+                isGoogle = !isGoogle;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
         }
     </script>
 

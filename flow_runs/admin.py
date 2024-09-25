@@ -12,9 +12,12 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from base_model_admin.admin import InWorkspace
+from bluewind.context_variables import get_workspace_id
 from flows.flow_runs_create_form.flows import flow_runs_create_form
 from flows.flow_runs_create_view.flows import flow_runs_create_view
 from flows.generate_graph.flows import generate_graph_data
+from flows.models import Flow
+from flows.toggle_flow_mode.flows import toggle_flow_mode
 
 from .models import FlowRun
 
@@ -110,8 +113,15 @@ class FlowRunAdmin(InWorkspace):
         super().save_model(request, obj, form, change)
 
     def add_view(self, request):
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return JsonResponse({"done": True})
+        if request.GET.get("flow_mode"):
+            flow_run = FlowRun.objects.create(
+                flow=Flow.objects.get(name="toggle_flow_mode"),
+                user_id=1,
+                workspace_id=get_workspace_id(),
+                status=FlowRun.Status.RUNNING,
+            )
+            toggle_flow_mode(flow_run)
+            return JsonResponse({"status": "success"})
 
         logger.debug("Add view called for FlowRunAdmin")
         flow_run_id = request.GET.get("flow")
