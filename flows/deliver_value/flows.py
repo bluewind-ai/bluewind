@@ -20,26 +20,26 @@ def deliver_value(flow_run):
     Returns:
         None
     """
+    FlowRun.objects.create(
+        flow=Flow.objects.get(name="build_flow_runs_graph"),
+        user=flow_run.user,
+        workspace_id=flow_run.workspace_id,
+        status=FlowRun.Status.READY_FOR_APPROVAL,
+    )
+
     # FlowRun.objects.create(
-    #     flow=Flow.objects.get(name="get_all_parent_flows"),
+    #     flow=Flow.objects.get(name="check_if_files_are_synchronized_with_the_db"),
     #     user=flow_run.user,
     #     workspace_id=flow_run.workspace_id,
     #     status=FlowRun.Status.READY_FOR_APPROVAL,
     # )
 
-    FlowRun.objects.create(
-        flow=Flow.objects.get(name="check_if_files_are_synchronized_with_the_db"),
-        user=flow_run.user,
-        workspace_id=flow_run.workspace_id,
-        status=FlowRun.Status.READY_FOR_APPROVAL,
-    )
-
-    FlowRun.objects.create(
-        flow=Flow.objects.get(name="synchronize_files_with_the_db"),
-        user=flow_run.user,
-        workspace_id=flow_run.workspace_id,
-        status=FlowRun.Status.READY_FOR_APPROVAL,
-    )
+    # FlowRun.objects.create(
+    #     flow=Flow.objects.get(name="synchronize_files_with_the_db"),
+    #     user=flow_run.user,
+    #     workspace_id=flow_run.workspace_id,
+    #     status=FlowRun.Status.READY_FOR_APPROVAL,
+    # )
 
     # FlowRun.objects.create(
     #     flow=Flow.objects.get(name="quickly_create_a_new_flow"),

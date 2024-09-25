@@ -12,6 +12,7 @@ def bootstrap():
     create_daphne_process_in_db()
     run_linters()
     bootstrap_workspace()
+
     # gevent.spawn(centralize_logs)
 
     # FlowRun.objects.create(

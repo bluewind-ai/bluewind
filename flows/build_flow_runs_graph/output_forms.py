@@ -6,7 +6,7 @@ from django_json_widget.widgets import JSONEditorWidget
 logger = logging.getLogger("django.not_used")
 
 
-class GenerateGraphOutputForm(forms.Form):
+class BuildFlowRunsGraphOutputForm(forms.Form):
     input = forms.JSONField(widget=JSONEditorWidget)
 
     def __init__(self, *args, **kwargs):

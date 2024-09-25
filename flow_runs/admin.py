@@ -15,7 +15,7 @@ from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import get_workspace_id
 from flows.flow_runs_create_form.flows import flow_runs_create_form
 from flows.flow_runs_create_view.flows import flow_runs_create_view
-from flows.generate_graph.flows import generate_graph_data
+from flows.generate_graph_data.flows import generate_graph_data
 from flows.models import Flow
 from flows.toggle_flow_mode.flows import toggle_flow_mode
 
@@ -125,18 +125,30 @@ class FlowRunAdmin(InWorkspace):
 
         logger.debug("Add view called for FlowRunAdmin")
         flow_run_id = request.GET.get("flow")
-        if not flow_run_id:
-            logger.error("Missing 'flow' query parameter")
-            self.message_user(
-                request, "Missing 'flow' query parameter.", level=messages.ERROR
-            )
-            return redirect(
-                reverse(
-                    f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
-                )
-            )
+        flow_run = None
 
-        flow_run = FlowRun.objects.filter(id=flow_run_id).first()
+        if not flow_run_id:
+            real_flow = request.GET.get("real-flow")
+            if real_flow:
+                flow_run = FlowRun.objects.create(
+                    flow=Flow.objects.get(name=real_flow),
+                    user_id=1,
+                    workspace_id=get_workspace_id(),
+                    status=FlowRun.Status.READY_FOR_APPROVAL,
+                )
+            else:
+                raise ValueError("Missing 'flow' query parameter")
+                logger.error("Missing 'flow' query parameter")
+                self.message_user(
+                    request, "Missing 'flow' query parameter.", level=messages.ERROR
+                )
+                return redirect(
+                    reverse(
+                        f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
+                    )
+                )
+        else:
+            flow_run = FlowRun.objects.filter(id=flow_run_id).first()
         logger.debug(f"Flow Run retrieved: {flow_run}")
 
         if request.method == "POST":
@@ -203,6 +215,5 @@ class FlowRunAdmin(InWorkspace):
                 "title": "Perform Action 1",
                 "css_class": "button",
                 "method": "get",
-                # "url": reverse("admin:flowrun_action1", args=[object_id]),
             }
         ]

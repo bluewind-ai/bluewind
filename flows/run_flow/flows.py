@@ -1,17 +1,29 @@
 # flow_runs/admin.py
 import importlib
+import json
 import logging
+from datetime import datetime
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.forms import model_to_dict
 from django.utils import timezone
 
 from flow_runs.models import FlowRun
 
-logger = logging.getLogger("django.not_used")
+logger = logging.getLogger("django.temp")
+
+
+def json_serial(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")
 
 
 def run_flow(flow_run, user, input_data={}):
     deserialized_data = {}
+    if not flow_run.flow.name == "command_palette_get_commands":
+        pass
+
     for field, value in input_data.items():
         if isinstance(value, list):
             deserialized_data[field] = list(map(model_to_dict, list(value)))
@@ -35,12 +47,22 @@ def run_flow(flow_run, user, input_data={}):
     function_to_run = getattr(flow_module, function_name)
     result = function_to_run(flow_run, **input_data)
     logger.debug(f"Flow {flow_run.flow.name} executed successfully")
-    flow_run.output_data = result
-    # if not flow_run.flow_run.flow.name == "command_palette_get_commands":
-    #     raise Exception(flow_run.status, flow)
-    # raise Exception(model_to_dict(flow_run))
-    if not flow_run.flow.name == "command_palette_get_commands":
-        # raise Exception(model_to_dict(flow_run))
 
-        flow_run.save()
+    # Serialize the result to handle datetime objects
+    flow_run.output_data = json.loads(json.dumps(result, default=json_serial))
+
+    if not flow_run.flow.name == "command_palette_get_commands":
+        pass
+
+    logger.debug(
+        f"Attempting to save FlowRun with input_data: {
+            json.dumps(
+                flow_run.input_data,
+                cls=DjangoJSONEncoder)} and output_data: {
+            json.dumps(
+                flow_run.output_data,
+                cls=DjangoJSONEncoder)}"
+    )
+
+    flow_run.save()
     return flow_run

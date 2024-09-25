@@ -12,7 +12,7 @@ logger = logging.getLogger("django.not_used")
 class FlowRun(WorkspaceRelated):
     class Status(models.TextChoices):
         CONDITIONS_NOT_MET = "conditions-not-met", "Conditions Not Met"
-        READY_FOR_APPROVAL = "read-for-approval", "Ready for Approval"
+        READY_FOR_APPROVAL = "ready-for-approval", "Ready for Approval"
         APPROVED = "approved", "Approved"
         RUNNING = "running", "Running"
         COMPLETED = "completed", "Completed"
@@ -29,6 +29,13 @@ class FlowRun(WorkspaceRelated):
     output_data = models.JSONField(null=True, blank=True)
     executed_at = models.DateTimeField(null=True, blank=True)
     flow = models.ForeignKey("flows.Flow", on_delete=models.CASCADE)
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="children",
+    )
 
     def __str__(self):
-        return f"FlowRun {self.id} by {self.user} on {self.executed_at}"
+        return f"{self.flow.name} on {self.executed_at}"

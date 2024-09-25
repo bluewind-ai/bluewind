@@ -25,7 +25,7 @@ class Flow(WorkspaceRelated):
 
     def get_custom_action_url(self):
         url = reverse("admin:flow_runs_flowrun_add")
-        query_string = urlencode({"flow": self.name})
+        query_string = urlencode({"real-flow": self.name})
         return f"{url}?{query_string}"
 
     class Meta:
