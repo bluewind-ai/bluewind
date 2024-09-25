@@ -5,6 +5,7 @@ import logging
 
 from django import forms
 from django.contrib import admin, messages
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -12,6 +13,7 @@ from django.utils.safestring import mark_safe
 from base_model_admin.admin import InWorkspace
 from flows.flow_runs_create_form.flows import flow_runs_create_form
 from flows.flow_runs_create_view.flows import flow_runs_create_view
+from flows.generate_graph.flows import generate_graph_data
 
 from .models import FlowRun
 
@@ -131,6 +133,13 @@ class FlowRunAdmin(InWorkspace):
             # If create_view returns None, fall through to rendering the form again
 
         context = self.admin_site.each_context(request)
+
+        # Generate the graph
+        graph_data = generate_graph_data(flow_run)
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse(graph_data)
+
+        # Use TemplateResponse instead of directly calling flow_runs_create_form
         return flow_runs_create_form(request, flow_run, self.add_form_template, context)
 
     # def get_form(self, request, obj=None, **kwargs):
