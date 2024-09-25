@@ -4,20 +4,26 @@
 {% block extrastyle %}
 {{ block.super }}
 <style>
-    #mynetwork {
+    .container {
+        display: flex;
         width: 100%;
-        height: 400px;
+    }
+    #mynetwork {
+        width: 50%;
+        height: 600px;
         border: 1px solid lightgray;
+    }
+    .form-container {
+        width: 50%;
+        padding-left: 20px;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-6">
-        <div id="mynetwork"></div>
-    </div>
-    <div class="col-6 form-container">
+<div class="container">
+    <div id="mynetwork"></div>
+    <div class="form-container">
         <form method="post" enctype="multipart/form-data">{% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Run Flow" class="default">
@@ -44,11 +50,26 @@
         // Only proceed if we have valid data
         if (data && data.nodes && data.edges) {
             var options = {
+                layout: {
+                    hierarchical: {
+                        direction: 'UD',
+                        sortMethod: 'directed'
+                    }
+                },
                 nodes: {
-                    shape: 'box'
+                    shape: 'box',
+                    fixed: {
+                        x: true,
+                        y: true
+                    }
                 },
                 edges: {
                     arrows: 'to'
+                },
+                interaction: {
+                    dragNodes: false,
+                    dragView: false,
+                    zoomView: false
                 }
             };
             var network = new vis.Network(container, data, options);

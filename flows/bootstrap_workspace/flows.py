@@ -11,13 +11,13 @@ def bootstrap_workspace():
     logger.error("Bootstrapping workspace.")
     # raise NotImplementedError("This function is not implemented yet.")
     workspace_id = get_workspace_id()
-    workspace_already_bootstrapped = Workspace.objects.filter(
-        id=workspace_id,
-        bootstrap_status__in=[
-            Workspace.BootstrapStatus.PENDING,
-            Workspace.BootstrapStatus.DONE,
-        ],
-    ).exists()
+    # workspace_already_bootstrapped = Workspace.objects.filter(
+    #     id=workspace_id,
+    #     bootstrap_status__in=[
+    #         Workspace.BootstrapStatus.PENDING,
+    #         Workspace.BootstrapStatus.DONE,
+    #     ],
+    # ).exists()
     # if workspace_already_bootstrapped:
     #     logger.debug("Workspace is already bootstrapped, skipping.")
     #     return

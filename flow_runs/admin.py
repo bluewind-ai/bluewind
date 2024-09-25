@@ -1,6 +1,7 @@
 # flow_runs/admin.py
 
 import importlib
+import json
 import logging
 
 from django import forms
@@ -138,6 +139,9 @@ class FlowRunAdmin(InWorkspace):
         graph_data = generate_graph_data(flow_run)
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return JsonResponse(graph_data)
+
+        # Add graph_data to the context
+        context["graph_data"] = json.dumps(graph_data)
 
         # Use TemplateResponse instead of directly calling flow_runs_create_form
         return flow_runs_create_form(request, flow_run, self.add_form_template, context)
