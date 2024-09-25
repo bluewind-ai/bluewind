@@ -27,7 +27,7 @@ def create_flow_from_boilerplate(flow_run, flow_name, flow_to_clone):
         for root, dirs, files in os.walk(directory):
             # Rename directories
             for dir_name in dirs:
-                new_dir_name = dir_name.replace(to_be_replaced, replacement)
+                new_dir_name = replace_all_cases(dir_name, to_be_replaced, replacement)
                 if new_dir_name != dir_name:
                     os.rename(
                         os.path.join(root, dir_name), os.path.join(root, new_dir_name)
@@ -36,7 +36,9 @@ def create_flow_from_boilerplate(flow_run, flow_name, flow_to_clone):
             # Rename and modify files
             for file_name in files:
                 file_path = os.path.join(root, file_name)
-                new_file_name = file_name.replace(to_be_replaced, replacement)
+                new_file_name = replace_all_cases(
+                    file_name, to_be_replaced, replacement
+                )
                 new_file_path = os.path.join(root, new_file_name)
 
                 # Rename file if necessary
@@ -57,12 +59,8 @@ def create_flow_from_boilerplate(flow_run, flow_name, flow_to_clone):
                         ("utf", "ascii", "iso")
                     ):
                         content = raw_content.decode(encoding)
-                        content = content.replace(to_be_replaced, replacement)
-                        content = content.replace(
-                            to_snake_case(to_be_replaced), to_snake_case(replacement)
-                        )
-                        content = content.replace(
-                            to_camel_case(to_be_replaced), to_camel_case(replacement)
+                        content = replace_all_cases(
+                            content, to_be_replaced, replacement
                         )
 
                         with open(new_file_path, "w", encoding=encoding) as file:
@@ -75,12 +73,30 @@ def create_flow_from_boilerplate(flow_run, flow_name, flow_to_clone):
                 except Exception as e:
                     logger.error(f"Error processing file {new_file_path}: {str(e)}")
 
+    def replace_all_cases(text, old, new):
+        snake_old = to_snake_case(old)
+        camel_old = to_camel_case(old)
+        pascal_old = to_pascal_case(old)
+
+        snake_new = to_snake_case(new)
+        camel_new = to_camel_case(new)
+        pascal_new = to_pascal_case(new)
+
+        text = text.replace(snake_old, snake_new)
+        text = text.replace(camel_old, camel_new)
+        text = text.replace(pascal_old, pascal_new)
+
+        return text
+
     def to_snake_case(string):
         return re.sub(r"(?<!^)(?=[A-Z])", "_", string).lower()
 
     def to_camel_case(string):
         components = string.split("_")
         return components[0] + "".join(x.title() for x in components[1:])
+
+    def to_pascal_case(string):
+        return "".join(x.title() for x in string.split("_"))
 
     base_dir = "flows"
     source_dir = os.path.join(base_dir, flow_to_clone.name)
