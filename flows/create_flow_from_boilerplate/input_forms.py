@@ -8,8 +8,10 @@ logger = logging.getLogger("django.not_used")
 
 
 class CreateFlowFromBoilerplateForm(forms.Form):
-    flow_name = forms.CharField()
-    flow_to_clone = forms.ModelChoiceField(queryset=Flow.objects.all())
+    flow_name = forms.CharField(initial="new_flow")
+    flow_to_clone = forms.ModelChoiceField(
+        queryset=Flow.objects.all(), initial=Flow.objects.first()
+    )
 
     def __init__(self, *args, **kwargs):
         logger.debug("Initializing ExtractContextsForm")
