@@ -15,7 +15,6 @@ from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import get_workspace_id
 from flows.flow_runs_create_form.flows import flow_runs_create_form
 from flows.flow_runs_create_view.flows import flow_runs_create_view
-from flows.generate_graph_data.flows import generate_graph_data
 from flows.models import Flow
 from flows.run_flow.flows import run_flow
 from flows.toggle_flow_mode.flows import toggle_flow_mode
@@ -162,7 +161,13 @@ class FlowRunAdmin(InWorkspace):
         context = self.admin_site.each_context(request)
 
         # Generate the graph
-        graph_data = generate_graph_data(flow_run)
+        build_flow_runs_graph = FlowRun.objects.create(
+            flow=Flow.objects.get(name="build_flow_runs_graph"),
+            user_id=1,
+            workspace_id=get_workspace_id(),
+            status=FlowRun.Status.READY_FOR_APPROVAL,
+        )
+        graph_data = run_flow(build_flow_runs_graph, {"flow_run_1": flow_run})
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return JsonResponse(graph_data)
 
@@ -202,11 +207,17 @@ class FlowRunAdmin(InWorkspace):
         if real_flow:
             if real_flow == "mark_flow_run_as_successful":
                 flow_run_to_mark_as_successful = FlowRun.objects.get(id=object_id)
-                flow_to_run = Flow.objects.filter(
-                    name="mark_flow_run_as_successful",
-                ).first()
-                run_flow(flow_to_run, flow_run_to_mark_as_successful)
-                return redirect(reverse("workspaces/1/admin/users"))
+                flow_to_run = FlowRun.objects.create(
+                    flow=Flow.objects.get(name="mark_flow_run_as_successful"),
+                    user_id=1,
+                    workspace_id=get_workspace_id(),
+                    status=FlowRun.Status.READY_FOR_APPROVAL,
+                )
+                run_flow(
+                    flow_to_run,
+                    {"flow_run_1": flow_run_to_mark_as_successful},
+                )
+                return redirect("/workspaces/1/admin/users")
             else:
                 raise ValueError(f"Invalid real-flow: {real_flow}")
         extra_context = extra_context or {}

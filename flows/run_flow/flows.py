@@ -29,7 +29,10 @@ def run_flow(flow_run, input_data={}):
     deserialized_data = {}
     if not flow_run.flow.name == "command_palette_get_commands":
         pass
-
+    # if isinstance(input_data, object):
+    #     # raise Exception("input_data is not a dictionary")
+    #     input_data = model_to_dict(input_data)
+    # else:
     for field, value in input_data.items():
         if isinstance(value, list):
             deserialized_data[field] = list(map(model_to_dict, list(value)))

@@ -20,6 +20,14 @@ class FlowRun(WorkspaceRelated):
             "completed-waiting-for-approval",
             "Completed Waiting for Approval",
         )
+        MARKED_SUCCESSFUL = (
+            "marked-successful",
+            "Marked Successful",
+        )
+        SUCCESSFUL = (
+            "successful",
+            "Successful",
+        )
 
     status = models.CharField(
         max_length=35,

@@ -13,6 +13,11 @@ from datetime import datetime
 logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
+import logging
+
+logger = logging.getLogger("django.not_used")  # noqa: F821
+
+
 def build_flow_runs_graph(flow_run, flow_run_1):
     nodes = []
     edges = []
@@ -31,52 +36,31 @@ def build_flow_runs_graph(flow_run, flow_run_1):
         node_id_counter += 1
         return node["id"]
 
-    def add_flow_run_and_parents(flow_run, parent_id=None):
-        if flow_run.id in processed_flow_runs:
+    def add_flow_run_and_parents(flow_run_1, parent_id=None):
+        if flow_run_1.id in processed_flow_runs:
             return None
 
-        processed_flow_runs.add(flow_run.id)
+        processed_flow_runs.add(flow_run_1.id)
         extra_data = {
-            "executed_at": flow_run.executed_at,
-            "user": str(flow_run.user),
-            "workspace": str(flow_run.workspace),
+            "executed_at": flow_run_1.executed_at,
+            "user": str(flow_run_1.user),
+            "workspace": str(flow_run_1.workspace),
         }
-        flow_run_id = add_node(flow_run.flow.name, flow_run.status, extra_data)
+        flow_run_id = add_node(flow_run_1.flow.name, flow_run_1.status, extra_data)
 
         if parent_id is not None:
             edges.append({"from": parent_id, "to": flow_run_id})
 
-        if flow_run.parent:
-            parent_flow_run_id = add_flow_run_and_parents(flow_run.parent, flow_run_id)
+        if flow_run_1.parent:
+            parent_flow_run_id = add_flow_run_and_parents(
+                flow_run_1.parent, flow_run_id
+            )
             if parent_flow_run_id:
                 edges.append({"from": parent_flow_run_id, "to": flow_run_id})
 
         return flow_run_id
 
-    # Add start node
-    start_id = add_node("Start", "COMPLETED")
+    add_flow_run_and_parents(flow_run_1)
 
-    # Add flow_run and its parents
-    flow_run_id = add_flow_run_and_parents(flow_run)
-
-    # Connect start node to the main flow_run
-    if flow_run_id:
-        edges.append({"from": start_id, "to": flow_run_id})
-
-    # Add flow_run_1 and its parents
-    flow_run_1_id = add_flow_run_and_parents(flow_run_1)
-
-    # Connect flow_run_1 to the graph if it's not already connected
-    if flow_run_1_id and flow_run_1_id != flow_run_id:
-        edges.append({"from": start_id, "to": flow_run_1_id})
-
-    # Add end node
-    end_id = add_node("End", "COMPLETED")
-
-    # Connect end node to all leaf nodes (nodes with no outgoing edges)
-    leaf_nodes = set(node["id"] for node in nodes) - set(edge["from"] for edge in edges)
-    for leaf_node in leaf_nodes:
-        if leaf_node != end_id:
-            edges.append({"from": leaf_node, "to": end_id})
-    flow_run.status = FlowRun.Status.COMPLETED_READY_FOR_APPROVAL
+    flow_run_1.status = FlowRun.Status.COMPLETED_READY_FOR_APPROVAL
     return {"nodes": nodes, "edges": edges}
