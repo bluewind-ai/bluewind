@@ -15,7 +15,7 @@
 
 {% block nav-global %}
 {{ block.super }}
-<button id="toggleButton" onclick="toggleRequest()" style="margin-left: 10px;">G</button>
+<button id="toggleButton" onclick="sendRequest()" style="margin-left: 10px;">F</button>
 {% endblock %}
 
 {% block footer %}
@@ -40,18 +40,14 @@
             window.initialData = { flows: [] };
         }
 
-        let isGoogle = true;
-        function toggleRequest() {
-            const button = document.getElementById('toggleButton');
-            const url = isGoogle ? 'http://127.0.0.1:8000/workspaces/1/admin/flow_runs/flowrun/add/?flow_mode=true': 'http://127.0.0.1:8000/workspaces/1/admin/flow_runs/flowrun/add/?flow_mode=false';
-            const method = isGoogle ? 'GET' : 'POST';
+        function sendRequest() {
+            const url = 'http://127.0.0.1:8000/workspaces/1/admin/flow_runs/flowrun/add/?flow_mode=true';
 
             fetch(url, {
-                method: method,
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: method === 'POST' ? JSON.stringify({ key: 'value' }) : undefined
+                }
             })
             .then(response => {
                 if (response.headers.get("content-type").includes("application/json")) {
@@ -62,8 +58,6 @@
             })
             .then(data => {
                 console.log('Success:', data);
-                button.textContent = isGoogle ? 'F' : 'G';
-                isGoogle = !isGoogle;
             })
             .catch((error) => {
                 console.error('Error:', error);
