@@ -62,5 +62,5 @@ def build_flow_runs_graph(flow_run, flow_run_1):
 
     add_flow_run_and_parents(flow_run_1)
 
-    flow_run_1.status = FlowRun.Status.COMPLETED_READY_FOR_APPROVAL
+    flow_run.status = FlowRun.Status.COMPLETED_READY_FOR_APPROVAL
     return {"nodes": nodes, "edges": edges}

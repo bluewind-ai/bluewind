@@ -167,12 +167,12 @@ class FlowRunAdmin(InWorkspace):
             workspace_id=get_workspace_id(),
             status=FlowRun.Status.READY_FOR_APPROVAL,
         )
-        graph_data = run_flow(build_flow_runs_graph, {"flow_run_1": flow_run})
+        run_flow(build_flow_runs_graph, {"flow_run_1": flow_run})
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return JsonResponse(graph_data)
-
+            return JsonResponse(forms.model_to_dict(build_flow_runs_graph))
+        # raise ValueError(forms.model_to_dict(build_flow_runs_graph))
         # Add graph_data to the context
-        context["graph_data"] = json.dumps(graph_data)
+        context["graph_data"] = json.dumps(build_flow_runs_graph.output_data)
 
         # Use TemplateResponse instead of directly calling flow_runs_create_form
         return flow_runs_create_form(request, flow_run, self.add_form_template, context)
