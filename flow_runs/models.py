@@ -16,9 +16,13 @@ class FlowRun(WorkspaceRelated):
         APPROVED = "approved", "Approved"
         RUNNING = "running", "Running"
         COMPLETED = "completed", "Completed"
+        COMPLETED_READY_FOR_APPROVAL = (
+            "completed-waiting-for-approval",
+            "Completed Waiting for Approval",
+        )
 
     status = models.CharField(
-        max_length=20,
+        max_length=35,
         choices=Status.choices,
         default=Status.CONDITIONS_NOT_MET,
     )

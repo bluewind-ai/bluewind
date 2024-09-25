@@ -17,6 +17,7 @@ from flows.flow_runs_create_form.flows import flow_runs_create_form
 from flows.flow_runs_create_view.flows import flow_runs_create_view
 from flows.generate_graph_data.flows import generate_graph_data
 from flows.models import Flow
+from flows.run_flow.flows import run_flow
 from flows.toggle_flow_mode.flows import toggle_flow_mode
 
 from .models import FlowRun
@@ -197,6 +198,17 @@ class FlowRunAdmin(InWorkspace):
             return None
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
+        real_flow = request.GET.get("real_flow")
+        if real_flow:
+            if real_flow == "mark_flow_run_as_successful":
+                flow_run_to_mark_as_successful = FlowRun.objects.get(id=object_id)
+                flow_to_run = Flow.objects.filter(
+                    name="mark_flow_run_as_successful",
+                ).first()
+                run_flow(flow_to_run, flow_run_to_mark_as_successful)
+                return redirect(reverse("workspaces/1/admin/users"))
+            else:
+                raise ValueError(f"Invalid real-flow: {real_flow}")
         extra_context = extra_context or {}
         extra_context["custom_actions"] = self.get_custom_actions(request, object_id)
         return super().change_view(request, object_id, form_url, extra_context)
@@ -211,9 +223,10 @@ class FlowRunAdmin(InWorkspace):
         return [
             {
                 "name": "action1",
-                "label": "Action 1",
-                "title": "Perform Action 1",
+                "label": "Mark Flow Run as Successful",
+                "title": "Mark Flow Run as Successful",
                 "css_class": "button",
                 "method": "get",
+                "url": "?real_flow=mark_flow_run_as_successful",
             }
         ]

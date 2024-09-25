@@ -132,8 +132,17 @@ def flow_mode(request, get_response):
     user_settings = UserSettings.objects.filter(user_id=request.user.id).first()
     if user_settings and user_settings.mode == UserSettings.Mode.FLOW:
         flow_run = FlowRun.objects.filter(
+            status=FlowRun.Status.COMPLETED_READY_FOR_APPROVAL,
+        ).first()
+        if flow_run:
+            return redirect(
+                f"/workspaces/1/admin/flow_runs/flowrun/{flow_run.id}/change"
+            )
+
+        flow_run = FlowRun.objects.filter(
             status=FlowRun.Status.READY_FOR_APPROVAL,
         ).first()
+
         if not flow_run:
             flow_run = FlowRun.objects.create(
                 flow=Flow.objects.get(name="deliver_value"),

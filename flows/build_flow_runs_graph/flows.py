@@ -1,5 +1,7 @@
 import logging
 
+from flow_runs.models import FlowRun
+
 # Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
 
@@ -76,5 +78,5 @@ def build_flow_runs_graph(flow_run, flow_run_1):
     for leaf_node in leaf_nodes:
         if leaf_node != end_id:
             edges.append({"from": leaf_node, "to": end_id})
-
+    flow_run.status = FlowRun.Status.COMPLETED_READY_FOR_APPROVAL
     return {"nodes": nodes, "edges": edges}

@@ -16,10 +16,16 @@ logger = logging.getLogger("django.temp")
 def json_serial(obj):
     if isinstance(obj, datetime):
         return obj.isoformat()
+    if isinstance(obj, FlowRun):
+        return str(obj.id)
     raise TypeError(f"Type {type(obj)} not serializable")
 
 
-def run_flow(flow_run, user, input_data={}):
+def serialize_json_fields(data):
+    return json.loads(json.dumps(data, default=json_serial))
+
+
+def run_flow(flow_run, input_data={}):
     deserialized_data = {}
     if not flow_run.flow.name == "command_palette_get_commands":
         pass
@@ -38,7 +44,7 @@ def run_flow(flow_run, user, input_data={}):
 
     flow_run.status = FlowRun.Status.RUNNING
     flow_run.executed_at = timezone.now()
-    flow_run.input_data = deserialized_data
+    flow_run.input_data = serialize_json_fields(deserialized_data)
     flow_run.output_data = ""
 
     flow_module_name = f"flows.{flow_run.flow.name}.flows"
@@ -49,10 +55,13 @@ def run_flow(flow_run, user, input_data={}):
     logger.debug(f"Flow {flow_run.flow.name} executed successfully")
 
     # Serialize the result to handle datetime objects
-    flow_run.output_data = json.loads(json.dumps(result, default=json_serial))
+    flow_run.output_data = serialize_json_fields(result)
 
     if not flow_run.flow.name == "command_palette_get_commands":
         pass
+
+    # Serialize state field as well
+    flow_run.state = serialize_json_fields(flow_run.state)
 
     logger.debug(
         f"Attempting to save FlowRun with input_data: {

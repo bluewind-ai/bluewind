@@ -33,7 +33,7 @@ def flow_runs_create_view(request, flow_run):
     if form.is_valid():
         input_data = form.cleaned_data.copy()
 
-        flow_run = run_flow(flow_run, request.user, input_data)
+        flow_run = run_flow(flow_run, input_data)
         return redirect("/workspaces/1/admin/users")
 
         return redirect(reverse("admin:flow_runs_flowrun_change", args=[flow_run.id]))
