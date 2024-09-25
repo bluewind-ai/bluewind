@@ -4,7 +4,7 @@ import os
 def load_env():
     import logging
 
-    logger = logging.getLogger("django.temp")
+    logger = logging.getLogger("django.not_used")
     """Load environment variables from .env file."""
     env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
     if os.path.exists(env_file):

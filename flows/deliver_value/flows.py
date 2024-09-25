@@ -7,7 +7,7 @@ from flow_runs.models import FlowRun
 from flows.models import Flow
 
 # Patch standard library
-logger = logging.getLogger("django.temp")  # noqa: F821
+logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
 def deliver_value(flow_run):

@@ -4,7 +4,7 @@ from bluewind.context_variables import get_workspace_id
 from flows.files_load_all.flows import files_load_all
 from workspaces.models import Workspace
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def bootstrap_workspace():

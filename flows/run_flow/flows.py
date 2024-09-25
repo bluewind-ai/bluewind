@@ -6,9 +6,8 @@ from django.forms import model_to_dict
 from django.utils import timezone
 
 from flow_runs.models import FlowRun
-from flows.models import Flow
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def run_flow(flow_run, user, input_data={}):
@@ -18,8 +17,12 @@ def run_flow(flow_run, user, input_data={}):
             deserialized_data[field] = list(map(model_to_dict, list(value)))
         elif isinstance(value, dict):
             deserialized_data[field] = model_to_dict(value)
-        else:
+        elif isinstance(value, (int, str, bool, float)):
             deserialized_data[field] = value
+        elif isinstance(value, object):
+            deserialized_data[field] = model_to_dict(value)
+        else:
+            raise Exception("type not covered", field, value)
 
     flow_run.status = FlowRun.Status.RUNNING
     flow_run.executed_at = timezone.now()
@@ -33,9 +36,11 @@ def run_flow(flow_run, user, input_data={}):
     result = function_to_run(flow_run, **input_data)
     logger.debug(f"Flow {flow_run.flow.name} executed successfully")
     flow_run.output_data = result
-    flow_run.flow = Flow.objects.get(name=flow_run.flow.name)
     # if not flow_run.flow_run.flow.name == "command_palette_get_commands":
     #     raise Exception(flow_run.status, flow)
     # raise Exception(model_to_dict(flow_run))
-    flow_run.save()
+    if not flow_run.flow.name == "command_palette_get_commands":
+        # raise Exception(model_to_dict(flow_run))
+
+        flow_run.save()
     return flow_run

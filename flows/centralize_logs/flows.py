@@ -6,7 +6,7 @@ import gevent
 from bluewind.settings_prod import LOG_FILE_PATH
 
 # Patch standard library
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def centralize_logs():

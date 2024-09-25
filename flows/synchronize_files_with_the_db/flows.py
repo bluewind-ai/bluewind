@@ -4,7 +4,7 @@ from flow_runs.models import FlowRun
 from flows.models import Flow
 
 # Patch standard library
-logger = logging.getLogger("django.temp")  # noqa: F821
+logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
 def synchronize_files_with_the_db(flow_run):

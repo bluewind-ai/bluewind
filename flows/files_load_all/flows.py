@@ -10,7 +10,7 @@ from flows.is_ignored_by_git.flows import is_ignored_by_git
 from flows.models import Flow
 from models.models import Model
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def files_load_all():

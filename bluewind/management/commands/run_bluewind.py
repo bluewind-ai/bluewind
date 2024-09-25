@@ -8,7 +8,7 @@ from bluewind.context_variables import set_startup_mode, set_workspace_id
 from bluewind.management.base_command import BluewindBaseCommand
 
 # Set up logging
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 class GeventGunicornApplication(BaseApplication):
