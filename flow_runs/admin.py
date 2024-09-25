@@ -110,6 +110,9 @@ class FlowRunAdmin(InWorkspace):
         super().save_model(request, obj, form, change)
 
     def add_view(self, request):
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({"done": True})
+
         logger.debug("Add view called for FlowRunAdmin")
         flow_run_id = request.GET.get("flow")
         if not flow_run_id:

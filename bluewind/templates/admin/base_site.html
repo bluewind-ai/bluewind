@@ -15,7 +15,7 @@
 
 {% block nav-global %}
 {{ block.super }}
-<button onclick="toggleJsonEditor()" style="margin-left: 10px;">Toggle JSON Editor</button>
+<button id="toggleButton" onclick="toggleSite()" style="margin-left: 10px;">G</button>
 {% endblock %}
 
 {% block footer %}
@@ -38,6 +38,19 @@
             };
         } catch (error) {
             window.initialData = { flows: [] };
+        }
+
+        let isGoogle = true;
+        function toggleSite() {
+            const button = document.getElementById('toggleButton');
+            if (isGoogle) {
+                window.open('http://www.facebook.com', '_blank');
+                button.textContent = 'F';
+            } else {
+                window.open('https://www.google.com', '_blank');
+                button.textContent = 'M';
+            }
+            isGoogle = !isGoogle;
         }
     </script>
 
