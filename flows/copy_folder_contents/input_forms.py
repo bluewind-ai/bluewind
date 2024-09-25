@@ -2,10 +2,15 @@ import logging
 
 from django import forms
 
+from flows.models import Flow
+
 logger = logging.getLogger("django.not_used")
 
 
-class AvoidGoingIntoSpamForm(forms.Form):
+class CopyFolderContentsForm(forms.Form):
+    flow_name = forms.CharField()
+    flow_to_copy = forms.ModelChoiceField(queryset=Flow.objects.all())
+
     def __init__(self, *args, **kwargs):
         logger.debug("Initializing ExtractContextsForm")
         self.workspace = kwargs.pop("workspace", None)

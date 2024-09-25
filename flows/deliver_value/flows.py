@@ -4,8 +4,6 @@ import re
 from gevent import subprocess
 
 from flow_runs.models import FlowRun
-from flows.avoid_going_into_spam.flows import avoid_going_into_spam
-from flows.centralize_logs.flows import centralize_logs
 from flows.models import Flow
 
 # Patch standard library
@@ -22,33 +20,63 @@ def deliver_value(flow_run):
     Returns:
         None
     """
+    FlowRun.objects.create(
+        flow=Flow.objects.get(name="check_if_files_are_synchronized_with_the_db"),
+        user=flow_run.user,
+        workspace_id=flow_run.workspace_id,
+        status=FlowRun.Status.READY_FOR_APPROVAL,
+    )
 
-    ran_one_function = False
-    if not ran_one_function and not flow_run.state.get("avoid_going_into_spam", False):
-        FlowRun.objects.create(
-            flow=Flow.objects.get(name="avoid_going_into_spam"),
-            user=flow_run.user,
-            workspace_id=flow_run.workspace_id,
-        )
-        return
-        avoid_going_into_spam(flow_run)
-        ran_one_function = True
+    FlowRun.objects.create(
+        flow=Flow.objects.get(name="synchronize_files_with_the_db"),
+        user=flow_run.user,
+        workspace_id=flow_run.workspace_id,
+        status=FlowRun.Status.READY_FOR_APPROVAL,
+    )
 
-    if ran_one_function:
-        FlowRun.objects.create(
-            user=flow_run.user,
-            workspace_id=flow_run.workspace_id,
-            input_data={},
-            flow=Flow.objects.get(name="centralize_logs"),
-            # parent_flow_run=None,
-            status=FlowRun.Status.READY_FOR_APPROVAL,
-        )
+    # FlowRun.objects.create(
+    #     flow=Flow.objects.get(name="quickly_create_a_new_flow"),
+    #     user=flow_run.user,
+    #     workspace_id=flow_run.workspace_id,
+    #     status=FlowRun.Status.READY_FOR_APPROVAL,
+    # )
 
-        ran_one_function = True
-    elif not flow_run.state.get("centralize_logs", False):
-        centralize_logs()
+    # FlowRun.objects.create(
+    #     flow=Flow.objects.get(name="rename_flow_runs_to_jobs"),
+    #     user=flow_run.user,
+    #     workspace_id=flow_run.workspace_id,
+    #     status=FlowRun.Status.READY_FOR_APPROVAL,
+    # )
 
-        ran_one_function = True
+    # FlowRun.objects.create(
+    #     flow=Flow.objects.get(name="rename_activate_flow_mode_to_disable_flow_mode"),
+    #     user=flow_run.user,
+    #     workspace_id=flow_run.workspace_id,
+    #     status=FlowRun.Status.READY_FOR_APPROVAL,
+    # )
+
+    # FlowRun.objects.create(
+    #     flow=Flow.objects.get(
+    #         name="stop_returning_exceptions_that_point_to_library_code"
+    #     ),
+    #     user=flow_run.user,
+    #     workspace_id=flow_run.workspace_id,
+    #     status=FlowRun.Status.READY_FOR_APPROVAL,
+    # )
+
+    # FlowRun.objects.create(
+    #     flow=Flow.objects.get(name="stop_using_the_flow_mode_by_toggling_create_a_dedicated_button_instead"),
+    #     user=flow_run.user,
+    #     workspace_id=flow_run.workspace_id,
+    #     status=FlowRun.Status.READY_FOR_APPROVAL,
+    # )
+
+    # FlowRun.objects.create(
+    #     flow=Flow.objects.get(name="avoid_going_into_spam"),
+    #     user=flow_run.user,
+    #     workspace_id=flow_run.workspace_id,
+    #     status=FlowRun.Status.READY_FOR_APPROVAL,
+    # )
 
 
 def clean_log_entry(log_entry):

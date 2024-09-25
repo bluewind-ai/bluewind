@@ -21,10 +21,10 @@ class CustomJSONEncoder(DjangoJSONEncoder):
         return super().default(obj)
 
 
-def flow_runs_create_view(request, flow):
-    function_name = flow.name
+def flow_runs_create_view(request, flow_run):
+    function_name = flow_run.flow.name
     snake_function_name = "".join(word.title() for word in function_name.split("_"))
-    form_module_name = f"flows.{flow.name}.input_forms"
+    form_module_name = f"flows.{flow_run.flow.name}.input_forms"
     form_module = importlib.import_module(form_module_name)
     form_class_name = f"{snake_function_name}Form"
     FormClass = getattr(form_module, form_class_name)
@@ -33,7 +33,7 @@ def flow_runs_create_view(request, flow):
     if form.is_valid():
         input_data = form.cleaned_data.copy()
 
-        flow_run = run_flow(flow, request.user, input_data)
+        flow_run = run_flow(flow_run, request.user, input_data)
         return redirect("/workspaces/1/admin/users")
 
         return redirect(reverse("admin:flow_runs_flowrun_change", args=[flow_run.id]))
@@ -41,7 +41,7 @@ def flow_runs_create_view(request, flow):
         messages.error(request, "Form is not valid.")
     context = {
         "form": form,
-        "title": f"Run {flow.name}",
+        "title": f"Run {flow_run.flow.name}",
         "media": form.media,
         # Include any other context variables needed by your template
     }

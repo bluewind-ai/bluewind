@@ -7,9 +7,9 @@ from flows.models import Flow
 logger = logging.getLogger("django.temp")  # noqa: F821
 
 
-def avoid_going_into_spam(flow_run):
+def synchronize_files_with_the_db(flow_run):
     """
-    I am going to check if you have implemented best practices to avoid going into spam, ok?
+    Synchronize files with the database.
 
     Args:
         flow_run (FlowRun): The current flow run object.
@@ -18,9 +18,10 @@ def avoid_going_into_spam(flow_run):
         None
     """
     FlowRun.objects.create(
-        flow=Flow.objects.get(name="scan_domain_name_for_dkim"),
+        flow=Flow.objects.get(name="file_watchers_init"),
         user=flow_run.user,
         workspace_id=flow_run.workspace_id,
         status=FlowRun.Status.READY_FOR_APPROVAL,
     )
-    # TBD after this
+    flow_run.status = FlowRun.Status.COMPLETED
+    flow_run.save()

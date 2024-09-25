@@ -12,7 +12,6 @@ from django.utils.safestring import mark_safe
 from base_model_admin.admin import InWorkspace
 from flows.flow_runs_create_form.flows import flow_runs_create_form
 from flows.flow_runs_create_view.flows import flow_runs_create_view
-from flows.models import Flow  # Adjust import based on your project structure
 
 from .models import FlowRun
 
@@ -109,8 +108,8 @@ class FlowRunAdmin(InWorkspace):
 
     def add_view(self, request):
         logger.debug("Add view called for FlowRunAdmin")
-        flow_id = request.GET.get("flow")
-        if not flow_id:
+        flow_run_id = request.GET.get("flow")
+        if not flow_run_id:
             logger.error("Missing 'flow' query parameter")
             self.message_user(
                 request, "Missing 'flow' query parameter.", level=messages.ERROR
@@ -121,18 +120,18 @@ class FlowRunAdmin(InWorkspace):
                 )
             )
 
-        flow = Flow.objects.get(pk=flow_id)
-        logger.debug(f"Flow retrieved: {flow}")
+        flow_run = FlowRun.objects.filter(id=flow_run_id).first()
+        logger.debug(f"Flow Run retrieved: {flow_run}")
 
         if request.method == "POST":
             logger.debug("POST request received in add view")
-            result = flow_runs_create_view(request, flow)
+            result = flow_runs_create_view(request, flow_run)
             if result:
                 return result
             # If create_view returns None, fall through to rendering the form again
 
         context = self.admin_site.each_context(request)
-        return flow_runs_create_form(request, flow, self.add_form_template, context)
+        return flow_runs_create_form(request, flow_run, self.add_form_template, context)
 
     # def get_form(self, request, obj=None, **kwargs):
     #     form = super().get_form(request, obj, **kwargs)

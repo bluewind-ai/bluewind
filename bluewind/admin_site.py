@@ -14,6 +14,7 @@ from django.utils.safestring import mark_safe
 from gevent import getcurrent
 
 from bluewind.context_variables import get_workspace_id
+from flow_runs.models import FlowRun
 from flows.models import Flow
 from flows.run_flow.flows import run_flow
 from workspaces.models import Workspace, WorkspaceUser
@@ -73,10 +74,14 @@ class CustomAdminSite(AdminSite):
             redirect_url = f"/workspaces/{workspace.id}{request.path}"
             context["redirect_url"] = redirect_url
 
-        flow = Flow.objects.get(
-            name="command_palette_get_commands", workspace_id=workspace_id
+        flow_run = FlowRun.objects.create(
+            flow=Flow.objects.get(
+                name="command_palette_get_commands", workspace_id=workspace_id
+            ),
+            user_id=1,
+            workspace_id=get_workspace_id(),
         )
-        flow_run = run_flow(flow, request.user)
+        run_flow(flow_run, request.user)
         context["flows_data"] = flow_run.output_data["commands"]
 
         return context
