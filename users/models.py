@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 
 from base_model.models import BaseModel
-from users.after_create import users_after_create
 
 
 class User(AbstractUser, BaseModel):
@@ -11,5 +10,5 @@ class User(AbstractUser, BaseModel):
         if is_new:
             self.is_staff = True
         super().save(*args, **kwargs)
-        if is_new:
-            users_after_create(self)
+        # if is_new:
+        #     users_after_create(self)

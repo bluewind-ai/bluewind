@@ -14,6 +14,7 @@ class Function(WorkspaceRelated):
     file = models.OneToOneField(
         "files.File", on_delete=models.CASCADE, related_name="function"
     )
+    version_number = models.IntegerField()
 
     class Meta:
         unique_together = ["name", "workspace"]

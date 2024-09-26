@@ -1,6 +1,5 @@
 from django.db import models
 
-from files.after_create import files_after_create
 from workspaces.models import WorkspaceRelated
 
 
@@ -20,8 +19,8 @@ class File(WorkspaceRelated):
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         super().save(*args, **kwargs)
-        if is_new:
-            files_after_create(self)
+        # if is_new:
+        #     files_after_create(self)
 
     class Meta:
         ordering = ["-updated_at"]

@@ -1,31 +1,25 @@
-import json
 from asyncio.log import logger
 
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
-from django.contrib.contenttypes.models import ContentType
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import JSONField
-from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django_json_widget.widgets import JSONEditorWidget
 
-from action_runs.models import ActionRun
-from actions.models import Action
 from bluewind.context_variables import get_workspace_id
 from bluewind.utils import get_queryset
-from recordings.models import Recording
+
+# from recordings.models import Recording
 from users.models import User
 from workspaces.models import Workspace
 
-
-def get_latest_recording(workspace_id):
-    return (
-        Recording.objects.filter(workspace_id=workspace_id)
-        .order_by("-start_time")
-        .first()
-    )
+# def get_latest_recording(workspace_id):
+#     return (
+#         Recording.objects.filter(workspace_id=workspace_id)
+#         .order_by("-start_time")
+#         .first()
+#     )
 
 
 class CustomChangeList(ChangeList):
@@ -125,66 +119,66 @@ class InWorkspace(admin.ModelAdmin):
 
     #     return wrapped_action
 
-    def get_changelist_class(self, request):
-        return CustomChangeList
+    # def get_changelist_class(self, request):
+    #     return CustomChangeList
 
-    def get_changelist_instance(self, request):
-        cl = super().get_changelist_instance(request)
-        if self.list_editable:
-            FormSet = modelformset_factory(
-                self.model, fields=self.list_editable, extra=0
-            )
-            cl.formset = FormSet(queryset=cl.result_list)
-        else:
-            cl.formset = None
-        return cl
+    # def get_changelist_instance(self, request):
+    #     cl = super().get_changelist_instance(request)
+    #     if self.list_editable:
+    #         FormSet = modelformset_factory(
+    #             self.model, fields=self.list_editable, extra=0
+    #         )
+    #         cl.formset = FormSet(queryset=cl.result_list)
+    #     else:
+    #         cl.formset = None
+    #     return cl
 
-    def _log_get_request(self, request):
-        workspace_id = get_workspace_id()
-        content_type = ContentType.objects.get_for_model(self.model)
+    # def _log_get_request(self, request):
+    #     workspace_id = get_workspace_id()
+    #     content_type = ContentType.objects.get_for_model(self.model)
 
-        # Check if this list action should be recorded
-        try:
-            action = Action.objects.get(
-                content_type=content_type,
-                action_type=Action.ActionType.LIST,
-                workspace_id=workspace_id,
-            )
-            if not action.is_recorded:
-                return  # Exit the method early without logging
-        except Action.DoesNotExist:
-            pass  # If the action doesn't exist, we'll proceed with logging
+    #     # Check if this list action should be recorded
+    #     try:
+    #         action = Action.objects.get(
+    #             content_type=content_type,
+    #             action_type=Action.ActionType.LIST,
+    #             workspace_id=workspace_id,
+    #         )
+    #         if not action.is_recorded:
+    #             return  # Exit the method early without logging
+    #     except Action.DoesNotExist:
+    #         pass  # If the action doesn't exist, we'll proceed with logging
 
-        input_data = dict(request.GET.items())
+    #     input_data = dict(request.GET.items())
 
-        queryset = self.get_queryset(request)
+    #     queryset = self.get_queryset(request)
 
-        output_data = json.loads(
-            json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
-        )
+    #     output_data = json.loads(
+    #         json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+    #     )
 
-        list_view_action = Action.objects.get(
-            action_type=Action.ActionType.LIST,
-            content_type=content_type,
-            workspace_id=workspace_id,
-        )
+    #     list_view_action = Action.objects.get(
+    #         action_type=Action.ActionType.LIST,
+    #         content_type=content_type,
+    #         workspace_id=workspace_id,
+    #     )
 
-        latest_recording = (
-            Recording.objects.filter(workspace_id=workspace_id)
-            .order_by("-start_time")
-            .first()
-        )
+    #     latest_recording = (
+    #         Recording.objects.filter(workspace_id=workspace_id)
+    #         .order_by("-start_time")
+    #         .first()
+    #     )
 
-        ActionRun.objects.create(
-            user=request.user,
-            action=list_view_action,
-            model_name=content_type.model,
-            object_id=None,
-            action_input=input_data,
-            results=output_data,
-            workspace_id=workspace_id,
-            recording=latest_recording,
-        )
+    #     ActionRun.objects.create(
+    #         user=request.user,
+    #         action=list_view_action,
+    #         model_name=content_type.model,
+    #         object_id=None,
+    #         action_input=input_data,
+    #         results=output_data,
+    #         workspace_id=workspace_id,
+    #         recording=latest_recording,
+    #     )
 
 
 "cdscdsdss"

@@ -47,7 +47,7 @@ class Workspace(models.Model):
     admin_url_link.short_description = "Admin URL"
 
     def save(self, *args, **kwargs):
-        from recordings.models import Recording
+        # from recordings.models import Recording
 
         is_new = self.pk is None
         super().save(*args, **kwargs)
@@ -59,13 +59,13 @@ class Workspace(models.Model):
             # load_flows(self)
 
             # Create a new Recording for this workspace
-            Recording.objects.create(
-                name=f"Default Recording for {self.name}",
-                description=f"Automatically created recording for workspace {self.name}",
-                start_time=timezone.now(),
-                workspace=self,
-                user=self.user,  # Use the user who created the workspace
-            )
+            # Recording.objects.create(
+            #     name=f"Default Recording for {self.name}",
+            #     description=f"Automatically created recording for workspace {self.name}",
+            #     start_time=timezone.now(),
+            #     workspace=self,
+            #     user=self.user,  # Use the user who created the workspace
+            # )
 
             # Add the user who created the workspace to its users
             WorkspaceUser.objects.create(workspace=self, user=self.user)

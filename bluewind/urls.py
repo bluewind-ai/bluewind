@@ -7,7 +7,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
 from bluewind.admin_site import custom_admin_site
-from channels.models import oauth2callback
+
+# from channels.models import oauth2callback
 from function_calls.views import admin_next_view
 from health_check.views import health_check
 
@@ -31,8 +32,8 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("health/", health_check, name="health_check"),
     re_path(r"^favicon\.ico$", favicon_view),
-    path("oauth2callback/", oauth2callback, name="oauth2callback"),
-    path("accounts/", include("allauth.urls")),
+    # path("oauth2callback/", oauth2callback, name="oauth2callback"),
+    # path("accounts/", include("allauth.urls")),
     # DRF and DRF Spectacular paths
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
@@ -40,7 +41,7 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-    path("silk/", include("silk.urls", namespace="silk")),
+    # path("silk/", include("silk.urls", namespace="silk")),
     path("admin/next/", admin_next_view, name="admin_next"),
 ]
 

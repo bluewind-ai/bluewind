@@ -15,7 +15,7 @@ from django.utils.safestring import mark_safe
 from gevent import getcurrent
 
 from bluewind.context_variables import get_workspace_id
-from functions.go_next.v1.functions import go_next
+from functions.go_next.v1.functions import go_next_v1
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger("django.not_used")
@@ -53,7 +53,7 @@ def custom_json_dumps(data):
 class CustomAdminSite(AdminSite):
     def logout(self, request, extra_context=None):
         super().logout(request, extra_context)
-        return redirect("/workspaces/2/accounts/logout/")
+        return redirect("/workspaces/2/admin/next")
 
     def get_urls(self):
         urls = super().get_urls()
@@ -63,9 +63,13 @@ class CustomAdminSite(AdminSite):
         return custom_urls + urls
 
     def next_view(self, request):
-        return go_next(request)
+        return go_next_v1(request.user, Workspace.objects.get(pk=get_workspace_id()))
+
+    def has_permission(self, request):
+        return True
 
     def each_context(self, request):
+        return super().each_context(request)
         context = super().each_context(request)
         workspace_id = get_workspace_id()
 
