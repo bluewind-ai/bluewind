@@ -9,11 +9,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Model, QuerySet
 from django.http.response import HttpResponseRedirectBase
 from django.shortcuts import redirect
+from django.urls import path
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 from gevent import getcurrent
 
 from bluewind.context_variables import get_workspace_id
+from functions.go_next.v1.functions import go_next
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger("django.not_used")
@@ -52,6 +54,16 @@ class CustomAdminSite(AdminSite):
     def logout(self, request, extra_context=None):
         super().logout(request, extra_context)
         return redirect("/workspaces/2/accounts/logout/")
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path("next/", self.admin_view(self.next_view), name="admin_next"),
+        ]
+        return custom_urls + urls
+
+    def next_view(self, request):
+        return go_next(request)
 
     def each_context(self, request):
         context = super().each_context(request)

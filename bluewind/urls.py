@@ -8,6 +8,7 @@ from rest_framework.routers import DefaultRouter
 
 from bluewind.admin_site import custom_admin_site
 from channels.models import oauth2callback
+from function_calls.views import admin_next_view
 from health_check.views import health_check
 
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
@@ -40,6 +41,7 @@ urlpatterns = [
         name="swagger-ui",
     ),
     path("silk/", include("silk.urls", namespace="silk")),
+    path("admin/next/", admin_next_view, name="admin_next"),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

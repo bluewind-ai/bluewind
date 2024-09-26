@@ -103,7 +103,8 @@ INSTALLED_APPS = [
     "user_settings",
     "domain_names",
     "dns_records",
-    "testapp",
+    "functions",
+    "function_calls",
     "admin_autoregister",
 ]
 
@@ -178,7 +179,8 @@ APP_TYPE = {
     "user_settings": "custom",
     "domain_names": "custom",
     "dns_records": "custom",
-    "testapp": "custom",
+    "functions": "custom",
+    "function_calls": "custom",
     "silk": "third_party",
 }
 
@@ -300,7 +302,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # AllAuth Settings
 SITE_ID = 1
 LOGIN_URL = "/workspaces/2/accounts/login/"
-LOGIN_REDIRECT_URL = "/workspaces/2/admin"
+LOGIN_REDIRECT_URL = "/workspaces/2/admin/next"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
