@@ -1,88 +1,62 @@
+import json
 import logging
-import re
 
-from gevent import subprocess
+from django.template import Context, Template
 
 from flow_runs.models import FlowRun
-from flows.models import Flow
 
-# Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
-def handle_failed_flow_run(flow_run):
-    """
-    Deliver value to your or your business in a variety of ways.
+def handle_failed_flow_run(flow_run, issue, flow_run_1, django_models, flows):
+    template_string = """
+Django Models:
+{% for model in django_models %}
+{% if model.file.content %}
+--- Model {{ model.id }} ---
+{{ model.file.content|safe }}
 
-    Args:
-        flow_run (FlowRun): The current flow run object.
+{% endif %}
+{% endfor %}
 
-    Returns:
-        None
-    """
-    # FlowRun.objects.create(
-    #     flow=Flow.objects.get(name="check_if_files_are_synchronized_with_the_db"),
-    #     user=flow_run.user,
-    #     workspace_id=flow_run.workspace_id,
-    #     status=FlowRun.Status.READY_FOR_APPROVAL,
-    # )
+Flows:
+{% for flow in flows %}
+{% if flow.file.content %}
+--- Flow {{ flow.id }} ---
+{{ flow.file.content|safe }}
 
-    # FlowRun.objects.create(
-    #     flow=Flow.objects.get(name="synchronize_files_with_the_db"),
-    #     user=flow_run.user,
-    #     workspace_id=flow_run.workspace_id,
-    #     status=FlowRun.Status.READY_FOR_APPROVAL,
-    # )
+{% endif %}
+{% endfor %}
 
-    # FlowRun.objects.create(
-    #     flow=Flow.objects.get(name="quickly_create_a_new_flow"),
-    #     user=flow_run.user,
-    #     workspace_id=flow_run.workspace_id,
-    #     status=FlowRun.Status.READY_FOR_APPROVAL,
-    # )
+Input Data:
+{{ flow_run_1_input_data|safe }}
 
-    # FlowRun.objects.create(
-    #     flow=Flow.objects.get(name="rename_flow_runs_to_jobs"),
-    #     user=flow_run.user,
-    #     workspace_id=flow_run.workspace_id,
-    #     status=FlowRun.Status.READY_FOR_APPROVAL,
-    # )
+Output Data:
+{{ flow_run_1_output_data|safe }}
+"""
 
-    # FlowRun.objects.create(
-    #     flow=Flow.objects.get(name="rename_activate_flow_mode_to_disable_flow_mode"),
-    #     user=flow_run.user,
-    #     workspace_id=flow_run.workspace_id,
-    #     status=FlowRun.Status.READY_FOR_APPROVAL,
-    # )
-
-    # FlowRun.objects.create(
-    #     flow=Flow.objects.get(
-    #         name="stop_returning_exceptions_that_point_to_library_code"
-    #     ),
-    #     user=flow_run.user,
-    #     workspace_id=flow_run.workspace_id,
-    #     status=FlowRun.Status.READY_FOR_APPROVAL,
-    # )
-
-    # FlowRun.objects.create(
-    #     flow=Flow.objects.get(name="stop_using_the_flow_mode_by_toggling_create_a_dedicated_button_instead"),
-    #     user=flow_run.user,
-    #     workspace_id=flow_run.workspace_id,
-    #     status=FlowRun.Status.READY_FOR_APPROVAL,
-    # )
-
-    FlowRun.objects.create(
-        flow=Flow.objects.get(name="avoid_going_into_spam"),
-        user=flow_run.user,
-        workspace_id=flow_run.workspace_id,
-        status=FlowRun.Status.READY_FOR_APPROVAL,
+    # Pretty print the input and output data
+    flow_run_1_input_data = (
+        json.dumps(flow_run_1.input_data, indent=2) if flow_run_1.input_data else "None"
+    )
+    flow_run_1_output_data = (
+        json.dumps(flow_run_1.output_data, indent=2)
+        if flow_run_1.output_data
+        else "None"
     )
 
+    template = Template(template_string)
+    context = Context(
+        {
+            "django_models": django_models,
+            "flows": flows,
+            "flow_run_1_input_data": flow_run_1_input_data,
+            "flow_run_1_output_data": flow_run_1_output_data,
+            "issue": issue,
+        }
+    )
 
-def clean_log_entry(log_entry):
-    pattern = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} \[.*?\] \[.*?\] .*?: "
-    return re.sub(pattern, "", log_entry)
+    rendered_template = template.render(context)
 
-
-def run_bluewind():
-    subprocess.Popen("nohup python manage.py run_bluewind &", shell=True)
+    flow_run.status = FlowRun.Status.COMPLETED_READY_FOR_APPROVAL
+    return {"context": rendered_template}

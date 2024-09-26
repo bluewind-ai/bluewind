@@ -33,6 +33,8 @@ def run_flow(flow_run, input_data={}):
     #     # raise Exception("input_data is not a dictionary")
     #     input_data = model_to_dict(input_data)
     # else:
+    from django.db.models import QuerySet
+
     for field, value in input_data.items():
         if isinstance(value, list):
             deserialized_data[field] = list(map(model_to_dict, list(value)))
@@ -40,6 +42,11 @@ def run_flow(flow_run, input_data={}):
             deserialized_data[field] = model_to_dict(value)
         elif isinstance(value, (int, str, bool, float)):
             deserialized_data[field] = value
+        elif isinstance(value, QuerySet):
+            deserialized_data[field] = [
+                model_to_dict(item) if hasattr(item, "_meta") else item
+                for item in value
+            ]
         elif isinstance(value, object):
             deserialized_data[field] = model_to_dict(value)
         else:

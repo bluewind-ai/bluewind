@@ -103,6 +103,7 @@ INSTALLED_APPS = [
     "user_settings",
     "domain_names",
     "dns_records",
+    "testapp",
     "admin_autoregister",
 ]
 
@@ -177,6 +178,7 @@ APP_TYPE = {
     "user_settings": "custom",
     "domain_names": "custom",
     "dns_records": "custom",
+    "testapp": "custom",
     "silk": "third_party",
 }
 

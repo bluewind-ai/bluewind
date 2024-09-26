@@ -1,14 +1,13 @@
 import logging
 
 from django import forms
+from django_json_widget.widgets import JSONEditorWidget
 
 logger = logging.getLogger("django.not_used")
 
 
-class HandleFailedFlowRunOutputForm(forms.Form):
-    context = forms.CharField(
-        widget=forms.Textarea(attrs={"rows": 5, "cols": 40}),
-    )
+class ExtractContextFromFlowRunOutputForm(forms.Form):
+    input = forms.JSONField(widget=JSONEditorWidget)
 
     def __init__(self, *args, **kwargs):
         logger.debug("Initializing ExtractContextsForm")

@@ -230,6 +230,7 @@ class FlowRunAdmin(InWorkspace):
                     flow_to_run,
                     {"flow_run_1": flow_run_to_mark_as_failed},
                 )
+                return redirect("/workspaces/1/admin/users")
             else:
                 raise ValueError(f"Invalid real-flow: {real_flow}")
         extra_context = extra_context or {}

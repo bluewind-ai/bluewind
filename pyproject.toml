@@ -66,6 +66,7 @@ psycopg = {extras = ["binary"], version = "^3.2.2"}
 django-db-geventpool = "4.0.6"
 supervisor = "^4.2.5"
 chardet = "^5.2.0"
+dnspython = "^2.6.1"
 
 [tool.poetry.extras]
 argon2 = ["argon2-cffi",]

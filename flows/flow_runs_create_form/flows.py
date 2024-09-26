@@ -19,7 +19,7 @@ def flow_runs_create_form(request, flow_run, add_form_template, context, form=No
     FormClass = getattr(form_module, form_class_name)
 
     # Instantiate the form with any necessary arguments, such as 'workspace'
-    form = FormClass(workspace=get_workspace_id())
+    form = FormClass(workspace=get_workspace_id(), initial=flow_run.input_data)
 
     context.update(
         {

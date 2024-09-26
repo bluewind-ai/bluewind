@@ -5,10 +5,8 @@ from django import forms
 logger = logging.getLogger("django.not_used")
 
 
-class HandleFailedFlowRunOutputForm(forms.Form):
-    context = forms.CharField(
-        widget=forms.Textarea(attrs={"rows": 5, "cols": 40}),
-    )
+class ExtractContextFromFlowRunForm(forms.Form):
+    issue = forms.CharField(help_text="What was the issue?")
 
     def __init__(self, *args, **kwargs):
         logger.debug("Initializing ExtractContextsForm")

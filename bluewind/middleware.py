@@ -134,14 +134,21 @@ def flow_mode(request, get_response):
         flow_run = FlowRun.objects.filter(
             status=FlowRun.Status.MARKED_FAILED,
         ).first()
+
         if flow_run:
+            flow_run.status = FlowRun.Status.COMPLETED
+            flow_run.save()
             flow_run = FlowRun.objects.create(
                 flow=Flow.objects.get(name="handle_failed_flow_run"),
                 user_id=1,
+                input_data={
+                    "flow_run_1": flow_run.id,
+                    "flows": flow_run.flow.id,
+                },
                 workspace_id=get_workspace_id(),
                 status=FlowRun.Status.READY_FOR_APPROVAL,
             )
-            return redirect("/workspaces/1/admin/users")
+            return redirect("/workspaces/1/admin/user")
         flow_run = FlowRun.objects.filter(
             status=FlowRun.Status.COMPLETED_READY_FOR_APPROVAL,
         ).first()
