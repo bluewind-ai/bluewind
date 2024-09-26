@@ -101,6 +101,8 @@ INSTALLED_APPS = [
     "supervisord",
     "approvals",
     "user_settings",
+    "domain_names",
+    "dns_records",
     "admin_autoregister",
 ]
 
@@ -173,6 +175,8 @@ APP_TYPE = {
     "supervisord": "custom",
     "approvals": "custom",
     "user_settings": "custom",
+    "domain_names": "custom",
+    "dns_records": "custom",
     "silk": "third_party",
 }
 

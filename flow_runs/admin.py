@@ -218,6 +218,18 @@ class FlowRunAdmin(InWorkspace):
                     {"flow_run_1": flow_run_to_mark_as_successful},
                 )
                 return redirect("/workspaces/1/admin/users")
+            elif real_flow == "mark_flow_run_as_failed":
+                flow_run_to_mark_as_failed = FlowRun.objects.get(id=object_id)
+                flow_to_run = FlowRun.objects.create(
+                    flow=Flow.objects.get(name="mark_flow_run_as_failed"),
+                    user_id=1,
+                    workspace_id=get_workspace_id(),
+                    status=FlowRun.Status.READY_FOR_APPROVAL,
+                )
+                run_flow(
+                    flow_to_run,
+                    {"flow_run_1": flow_run_to_mark_as_failed},
+                )
             else:
                 raise ValueError(f"Invalid real-flow: {real_flow}")
         extra_context = extra_context or {}
@@ -239,5 +251,13 @@ class FlowRunAdmin(InWorkspace):
                 "css_class": "button",
                 "method": "get",
                 "url": "?real_flow=mark_flow_run_as_successful",
-            }
+            },
+            {
+                "name": "action1",
+                "label": "Mark Flow Run as Failed",
+                "title": "Mark Flow Run as Failed",
+                "css_class": "button",
+                "method": "get",
+                "url": "?real_flow=mark_flow_run_as_failed",
+            },
         ]

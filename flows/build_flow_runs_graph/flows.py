@@ -36,7 +36,7 @@ def build_flow_runs_graph(flow_run, flow_run_1):
         node_id_counter += 1
         return node["id"]
 
-    def add_flow_run_and_parents(flow_run_1, parent_id=None):
+    def add_flow_run_and_parents(flow_run_1):
         if flow_run_1.id in processed_flow_runs:
             return None
 
@@ -48,13 +48,8 @@ def build_flow_runs_graph(flow_run, flow_run_1):
         }
         flow_run_id = add_node(flow_run_1.flow.name, flow_run_1.status, extra_data)
 
-        if parent_id is not None:
-            edges.append({"from": parent_id, "to": flow_run_id})
-
         if flow_run_1.parent:
-            parent_flow_run_id = add_flow_run_and_parents(
-                flow_run_1.parent, flow_run_id
-            )
+            parent_flow_run_id = add_flow_run_and_parents(flow_run_1.parent)
             if parent_flow_run_id:
                 edges.append({"from": parent_flow_run_id, "to": flow_run_id})
 
@@ -62,5 +57,5 @@ def build_flow_runs_graph(flow_run, flow_run_1):
 
     add_flow_run_and_parents(flow_run_1)
 
-    flow_run.status = FlowRun.Status.COMPLETED_READY_FOR_APPROVAL
+    flow_run.status = FlowRun.Status.SUCCESSFUL
     return {"nodes": nodes, "edges": edges}

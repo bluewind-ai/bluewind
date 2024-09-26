@@ -24,6 +24,10 @@ class FlowRun(WorkspaceRelated):
             "marked-successful",
             "Marked Successful",
         )
+        MARKED_FAILED = (
+            "marked-failed",
+            "Marked Failed",
+        )
         SUCCESSFUL = (
             "successful",
             "Successful",

@@ -10,7 +10,7 @@ from flows.models import Flow
 logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
-def deliver_value(flow_run):
+def handle_failed_flow_run(flow_run):
     """
     Deliver value to your or your business in a variety of ways.
 
