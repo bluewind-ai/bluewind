@@ -1,6 +1,5 @@
 from asyncio.log import logger
 
-from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
 from django.db.models import JSONField
 from django.http import HttpResponseRedirect
@@ -28,7 +27,10 @@ class CustomChangeList(ChangeList):
         self.formset = None
 
 
-class InWorkspace(admin.ModelAdmin):
+from unfold.admin import ModelAdmin
+
+
+class InWorkspace(ModelAdmin):
     change_form_template = "admin/change_form.html"
 
     formfield_overrides = {

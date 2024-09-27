@@ -33,6 +33,7 @@ ASGI_APPLICATION = "bluewind.asgi.application"
 # Application Definition
 INSTALLED_APPS = [
     # Django core apps
+    "unfold",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -103,6 +104,7 @@ INSTALLED_APPS = [
 
 APP_TYPE = {
     # Django core apps
+    "unfold": "custom",
     "django.contrib.admin": "django",
     "django.contrib.auth": "django",
     "django.contrib.contenttypes": "django",

@@ -2,7 +2,6 @@ import json
 import logging
 
 from django import template
-from django.contrib.admin import AdminSite
 from django.contrib.admin.helpers import ActionForm, AdminForm
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
@@ -49,7 +48,10 @@ def custom_json_dumps(data):
     return escapejs(json_string)
 
 
-class CustomAdminSite(AdminSite):
+from unfold.sites import UnfoldAdminSite
+
+
+class CustomAdminSite(UnfoldAdminSite):
     def logout(self, request, extra_context=None):
         return super().logout(request, extra_context)
         return redirect("/workspaces/1/admin")
