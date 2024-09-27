@@ -1,0 +1,35 @@
+{% load i18n unfold %}
+
+<div class="mb-6">
+    <h3 class="font-semibold mb-2 text-font-important-light dark:text-font-important-dark">
+        {% blocktranslate with filter_title=title %} By {{ filter_title }} {% endblocktranslate %}
+    </h3>
+
+    {% for choice in choices %}
+        {% if choice.selected and spec.lookup_val.0 %}
+            <input type="hidden" name="{{ spec.lookup_kwarg }}" value="{{ spec.lookup_val.0 }}" />
+        {% endif %}
+    {% endfor %}
+
+    {% if spec|class_name == "BooleanFieldListFilter" %}
+        <ul class="border-l-4 border-gray-200 flex pl-4 py-2  dark:border-gray-700">
+            {% for choice in choices %}
+                <li class="{% if choice.selected %}font-medium text-primary-600 dark:text-primary-500 dark{% else %}hover:text-gray-700 dark:hover:text-gray-200{% endif %} pr-4">
+                    <a href="{{ choice.query_string|iriencode }}" title="{{ choice.display }}">
+                        {{ choice.display }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <ul class="border-l-4 border-gray-200 flex flex-col pl-4 py-4 dark:border-gray-700">
+            {% for choice in choices %}
+                <li class="mb-4 last:mb-0 {% if choice.selected %}font-medium text-primary-600 dark:text-primary-500 {% else %}hover:text-gray-700 dark:hover:text-gray-200{% endif %}">
+                    <a href="{{ choice.query_string|iriencode }}" title="{{ choice.display }}">
+                        {{ choice.display }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
