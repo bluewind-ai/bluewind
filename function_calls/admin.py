@@ -24,13 +24,17 @@ logger = logging.getLogger("django.not_used")
 
 class DummyDynamicForm(forms.Form):
     dynamic_field = forms.CharField(label="Dynamic Field", max_length=100)
+    status = forms.CharField(label="Status", disabled=True, required=False)
 
     def __init__(self, *args, **kwargs):
         function_call = kwargs.pop("function_call", None)
         super().__init__(*args, **kwargs)
 
         if function_call:
-            # Here you can add fields dynamically based on the function_call
+            # Add the status field
+            self.fields["status"].initial = function_call.status
+
+            # Here you can add other fields dynamically based on the function_call
             self.fields[f"custom_field_{function_call.id}"] = forms.CharField(
                 label=f"Custom Field for Function Call {function_call.id}",
                 initial={"key": "value"},
@@ -58,7 +62,6 @@ class OutputFormWidget(forms.Widget):
 @admin.register(FunctionCall)
 class FunctionCallAdmin(InWorkspace):
     change_form_template = "admin/function_calls/functioncall/change_form.html"
-    add_form_template = "admin/function_calls/functioncall/add_form.html"
 
     list_display = ["id", "function", "user", "status", "executed_at", "workspace"]
     list_filter = ["status", "function", "workspace"]
