@@ -92,6 +92,7 @@ class CustomAdminSite(AdminSite):
 
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
+            # raise Exception("This is an exception")
             if request.path == "/workspaces/1/admin/":
                 return master_v1(None)
             # raise Exception("This is an exception")

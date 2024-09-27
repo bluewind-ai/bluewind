@@ -84,14 +84,13 @@
 # from bluewind.middleware import redirect
 
 
-from django.shortcuts import redirect
-
-
 def admin_middleware(get_response):
     def middleware(request):
-        if request.path == "/":
-            # raise NotImplementedError("This middleware is not implemented")
-            return redirect("/workspaces/1/admin/")
+        # if request.path == "/":
+        # raise NotImplementedError("This middleware is not implemented")
+        # raise Exception("This is an exception")
+
+        # return redirect("/function-calls/function-call/123/")
         return get_response(request)
 
         # if request.path.startswith("/health/"):
