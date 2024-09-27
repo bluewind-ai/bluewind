@@ -12,7 +12,10 @@ from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 
 from base_model_admin.admin import InWorkspace
-from functions.handle_query_params.v1.functions import handle_query_params_v1
+from functions.handle_query_params.v1.functions import (
+    get_input_form,
+    handle_query_params_v1,
+)
 
 from .models import FunctionCall
 
@@ -23,22 +26,23 @@ logger = logging.getLogger("django.not_used")
 
 
 class DummyDynamicForm(forms.Form):
-    dynamic_field = forms.CharField(label="Dynamic Field", max_length=100)
     status = forms.CharField(label="Status", disabled=True, required=False)
 
     def __init__(self, *args, **kwargs):
-        function_call = kwargs.pop("function_call", None)
+        function_call = kwargs.pop("function_call")
+        input_form = get_input_form(function_call)
+
         super().__init__(*args, **kwargs)
 
-        if function_call:
-            # Add the status field
-            self.fields["status"].initial = function_call.status
+        # Add the status field
+        self.fields["status"].initial = function_call.status
 
-            # Here you can add other fields dynamically based on the function_call
-            self.fields[f"custom_field_{function_call.id}"] = forms.CharField(
-                label=f"Custom Field for Function Call {function_call.id}",
-                initial={"key": "value"},
-            )
+        # Iterate through the fields of the input form and add them to this form
+        for field_name, field in input_form.fields.items():
+            self.fields[field_name] = field
+            # # If you want to keep the values from the input form:
+            # if field_name in input_form.cleaned_data:
+            #     self.fields[field_name].initial = input_form.cleaned_data[field_name]
 
 
 class OutputFormWidget(forms.Widget):
@@ -78,7 +82,6 @@ class FunctionCallAdmin(InWorkspace):
                     "function",
                     "status",
                     "input_data",
-                    "output_data",
                     "user",
                     "workspace",
                     "executed_at",
@@ -121,6 +124,7 @@ class FunctionCallAdmin(InWorkspace):
             form = self.get_form(request, function_call, change=True)(
                 request.POST, request.FILES, instance=function_call
             )
+
             custom_form = DummyDynamicForm(request.POST, function_call=function_call)
             if "_save_custom" in request.POST:
                 if custom_form.is_valid():
