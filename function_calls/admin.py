@@ -162,8 +162,8 @@ class FunctionCallAdmin(InWorkspace):
     #     return super().get_form(request, obj, **kwargs)
 
     def get_custom_actions(self, request, object_id):
-        # Define your custom actions here
-        return [
+        function_call = self.get_object(request, object_id)
+        actions = [
             {
                 "name": "action1",
                 "label": "Mark Flow Run as Successful",
@@ -173,19 +173,25 @@ class FunctionCallAdmin(InWorkspace):
                 "url": "?real_flow=mark_function_call_as_successful",
             },
             {
-                "name": "action1",
+                "name": "action2",
                 "label": "Mark Flow Run as Failed",
                 "title": "Mark Flow Run as Failed",
                 "css_class": "button",
                 "method": "get",
                 "url": "?real_flow=mark_function_call_as_failed",
             },
-            {
-                "name": "action3",
-                "label": "Approve",
-                "title": "Approve",
-                "css_class": "button",
-                "method": "get",
-                "url": "?function=approve_function_call",
-            },
         ]
+
+        if function_call.status == FunctionCall.Status.READY_FOR_APPROVAL:
+            actions.append(
+                {
+                    "name": "action3",
+                    "label": "Approve",
+                    "title": "Approve",
+                    "css_class": "button",
+                    "method": "get",
+                    "url": "?function=approve_function_call",
+                }
+            )
+
+        return actions
