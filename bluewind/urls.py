@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.conf.urls.static import static
-from django.shortcuts import redirect
 from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
@@ -12,8 +11,8 @@ from health_check.views import health_check
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
 
-def redirect_to_admin(request):
-    return redirect("admin:index")
+# def redirect_to_admin(request):
+#     return redirect("/workspaces/2/admin")
 
 
 router = DefaultRouter()
@@ -21,7 +20,7 @@ router = DefaultRouter()
 urlpatterns = [
     # Redirect root to admin
     # path("", home, name="home"),
-    path("", redirect_to_admin, name="home"),
+    # path("", redirect_to_admin, name="home"),
     # Use custom_admin_site for /admin
     path("admin/", custom_admin_site.urls),
     # Existing paths
