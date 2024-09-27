@@ -151,6 +151,11 @@ def get_logging_config():
                 "level": "ERROR",
                 "propagate": False,
             },
+            "django.request": {
+                "handlers": ["console"],
+                "level": "ERROR",
+                "propagate": False,
+            },
             # "gunicorn.ERROR": {
             #     "handlers": ["console"],
             #     "level": "ERROR",

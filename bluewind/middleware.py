@@ -108,6 +108,8 @@ def process_response(response):
 
 def admin_middleware(get_response):
     def middleware(request):
+        if request.path.startswith("/favicon.ico"):
+            return get_response(request)
         if not request.path.startswith("/workspaces/"):
             request.path_info = f"/admin{request.path}"
             request.path = f"/workspaces/2/admin{request.path}"

@@ -378,3 +378,15 @@ warnings.filterwarnings(
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 SILKY_PYTHON_PROFILER = False
+
+
+UNFOLD = {
+    # "SITE_FAVICONS": [
+    #     {
+    #         "rel": "icon",
+    #         "sizes": "32x32",
+    #         "type": "image/svg+xml",
+    #         "href": lambda request: static("favicon.svg"),
+    #     },
+    # ]
+}
