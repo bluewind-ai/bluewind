@@ -389,10 +389,11 @@ from django.utils.translation import gettext_lazy as _
 UNFOLD = {
     "SITE_TITLE": "Bluewind",
     "SITE_HEADER": "Bluewind",
+    "SHOW_HISTORY": False,
+    "SHOW_VIEW_ON_SITE": False,
     "SIDEBAR": {
         "show_search": False,  # Search in applications and models names
         "show_all_applications": False,  # Dropdown with all applications and models,
-        "SHOW_VIEW_ON_SITE": False,
         "navigation": [
             {
                 "title": _("Navigation"),

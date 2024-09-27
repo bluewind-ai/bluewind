@@ -1,7 +1,91 @@
-{% extends 'unfold/base_site.html' %}
+{% extends "admin/base.html" %}
+
 {% load static %}
-cdscdscdscds
-{% block extrahead %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+{{ block.super }}
+<button id="toggleButton" onclick="sendRequest()" style="margin-left: 10px;">F</button>
+{% endblock %}
+
+{% block footer %}
     {{ block.super }}
-    <script src="{% static 'bluewind/js/custom_admin.js' %}"></script>
+    {% comment %} {% include 'json_editor.html' %} {% endcomment %}
+
+    <!-- Embed data for JavaScript -->
+    {% if flows_data %}
+        {{ flows_data|json_script:"initial-data" }}
+    {% else %}
+        <script>console.log('flows_data is not available in the context');</script>
+    {% endif %}
+
+    <script>
+        const initialDataElement = document.getElementById('initial-data');
+        console.log('initialDataElement:', initialDataElement);
+        try {
+            const initialData = JSON.parse(initialDataElement ? initialDataElement.textContent : '{}');
+            window.initialData = {
+                flows: initialData || []
+            };
+        } catch (error) {
+            window.initialData = { flows: [] };
+        }
+
+        function sendRequest() {
+            const url = 'http://127.0.0.1:8000/workspaces/1/admin/flow_runs/flowrun/add/?flow_mode=true';
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (response.headers.get("content-type").includes("application/json")) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+            })
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+    <script src="{% static 'bluewind/js/admin_shortcuts.js' %}"></script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('nav-sidebar');
+            if (sidebar) {
+                sidebar.classList.remove('nav-sidebar-expanded');
+                document.cookie = 'sidebar_collapsed=true; path=/';
+            }
+        });
+    <script src="{% static 'bluewind/static/bluewind/js/admin_shortcuts.js' %}"></script>
+    <script src="{% static 'bluewind/static/bluewind/js/custom_admin.js' %}"></script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+        console.log("Hello from custom_admin.js");
+        if (typeof Alpine !== "undefined") {
+          Alpine.store("layout", {
+            sidebarDesktopOpen: false,
+            sidebarMobileOpen: false,
+          });
+        }
+      });
+    </script>
 {% endblock %}
