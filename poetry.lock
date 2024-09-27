@@ -917,6 +917,20 @@ gprof2dot = ">=2017.09.19"
 sqlparse = "*"
 
 [[package]]
+name = "django-unfold"
+version = "0.39.0"
+description = "Modern Django admin theme for seamless interface development"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django_unfold-0.39.0-py3-none-any.whl", hash = "sha256:5393742d0755fc3983ee805ac27213cb7abbe06b563a0cdfd24103ff22480322"},
+    {file = "django_unfold-0.39.0.tar.gz", hash = "sha256:927218e8a14f951dd82212a980f3f02608a160f966da656d13ef51be887a610c"},
+]
+
+[package.dependencies]
+django = ">=3.2"
+
+[[package]]
 name = "django-widget-tweaks"
 version = "1.5.0"
 description = "Tweak the form field rendering in templates, not in python-level form definitions."
@@ -3003,4 +3017,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "8b09f95677b4232a6a5683ac198bec30782686121802635653c52df21180bdb2"
+content-hash = "bcf34530630be5447384e7b647256ee784e0521730070e678bd1a283730b73c1"

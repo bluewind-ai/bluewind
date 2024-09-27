@@ -1,9 +1,10 @@
-# Register your models here.
+# from django.contrib import admin
 
-from base_model_admin.admin import InWorkspace
+# from bluewind.admin_site import custom_admin_site
+# from domain_names.models import DomainName
+# from models.admin import ModelAdmin
 
 
-class DomainNameAdmin(InWorkspace):
-    list_display = ("name", "workspace")
-    search_fields = ("name",)
-    list_filter = ("workspace",)
+# @admin.register(DomainName, site=custom_admin_site)
+# class CustomAdminClass(ModelAdmin):
+#     pass

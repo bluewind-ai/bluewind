@@ -34,6 +34,7 @@ def autoregister():
         for model in app_config.get_models():
             admin_class = None
             model_name = model.__name__
+
             admin_class_name = f"{model_name}Admin"
 
             # Try to find a custom Admin class in the same module as the model

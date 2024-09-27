@@ -2,7 +2,6 @@ import json
 import logging
 
 from django import template
-from django.contrib.admin import AdminSite
 from django.contrib.admin.helpers import ActionForm, AdminForm
 from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
@@ -12,10 +11,9 @@ from django.shortcuts import redirect
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 from gevent import getcurrent
+from unfold.sites import UnfoldAdminSite
 
-from bluewind.context_variables import get_workspace_id
 from users.models import User
-from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger("django.not_used")
 
@@ -49,7 +47,7 @@ def custom_json_dumps(data):
     return escapejs(json_string)
 
 
-class CustomAdminSite(AdminSite):
+class CustomAdminSite(UnfoldAdminSite):
     def logout(self, request, extra_context=None):
         return super().logout(request, extra_context)
         return redirect("/workspaces/1/admin")
@@ -61,21 +59,21 @@ class CustomAdminSite(AdminSite):
 
     def each_context(self, request):
         context = super().each_context(request)
-        workspace_id = get_workspace_id()
+        # workspace_id = get_workspace_id()
 
-        if not workspace_id:
-            workspace = Workspace.objects.filter(
-                workspaceuser__user=request.user, workspaceuser__is_default=True
-            ).first()
+        # if not workspace_id:
+        #     workspace = Workspace.objects.filter(
+        #         workspaceuser__user=request.user, workspaceuser__is_default=True
+        #     ).first()
 
-            if not workspace:
-                workspace = Workspace.objects.create(name="Default Workspace")
-                WorkspaceUser.objects.create(
-                    user=request.user, workspace=workspace, is_default=True
-                )
+        #     if not workspace:
+        #         workspace = Workspace.objects.create(name="Default Workspace")
+        #         WorkspaceUser.objects.create(
+        #             user=request.user, workspace=workspace, is_default=True
+        #         )
 
-            redirect_url = f"/workspaces/{workspace.id}{request.path}"
-            context["redirect_url"] = redirect_url
+        #     redirect_url = f"/workspaces/{workspace.id}{request.path}"
+        #     context["redirect_url"] = redirect_url
 
         # flow_run = FlowRun.objects.create(
         #     flow=Flow.objects.get(
