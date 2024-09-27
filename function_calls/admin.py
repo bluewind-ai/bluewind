@@ -55,24 +55,10 @@ class OutputFormWidget(forms.Widget):
         return mark_safe(form.as_p())
 
 
-class FunctionCallForm(forms.ModelForm):
-    rendered_output = forms.Field(widget=OutputFormWidget(), required=False)
-
-    class Meta:
-        model = FunctionCall
-        fields = ["function"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["rendered_output"].label = "Rendered Output"
-        self.fields["rendered_output"].widget.function_call = self.instance
-
-
 @admin.register(FunctionCall)
 class FunctionCallAdmin(InWorkspace):
     change_form_template = "admin/function_calls/functioncall/change_form.html"
     add_form_template = "admin/function_calls/functioncall/add_form.html"
-    form = FunctionCallForm
 
     list_display = ["id", "function", "user", "status", "executed_at", "workspace"]
     list_filter = ["status", "function", "workspace"]
@@ -88,7 +74,6 @@ class FunctionCallAdmin(InWorkspace):
                 "fields": (
                     "function",
                     "status",
-                    "rendered_output",
                     "input_data",
                     "output_data",
                     "user",
@@ -106,12 +91,6 @@ class FunctionCallAdmin(InWorkspace):
     def get_actions(self, request):
         logger.debug("Getting actions for FunctionCallAdmin")
         return []
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if obj:
-            form.base_fields["rendered_output"].widget.function_call = obj
-        return form
 
     def save_model(self, request, obj, form, change):
         logger.debug(f"Save model called for object: {obj}, change: {change}")
