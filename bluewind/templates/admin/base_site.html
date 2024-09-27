@@ -20,7 +20,7 @@
 
 {% block footer %}
     {{ block.super }}
-    {% include 'json_editor.html' %}
+    {% comment %} {% include 'json_editor.html' %} {% endcomment %}
 
     <!-- Embed data for JavaScript -->
     {% if flows_data %}
