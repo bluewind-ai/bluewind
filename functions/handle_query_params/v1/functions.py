@@ -34,6 +34,16 @@ def handle_query_params_v1(query_params, function_call_id):
 
         input_form_module = importlib.import_module(f"{base_module}.input_forms")
         form_name = snake_to_camel_case_uppercase(function_call.function.name) + "Form"
-        input_form = getattr(input_form_module, form_name)
-        initial_data = function_call.input_data
-        return func()
+        input_form_class = getattr(input_form_module, form_name)
+
+        # Create an instance of the input form with the initial data
+        input_form = input_form_class(data=function_call.input_data)
+
+        # Validate the form
+        if input_form.is_valid():
+            # If the form is valid, pass the cleaned data to the function
+            return func(**input_form.cleaned_data)
+        else:
+            raise ValueError(f"Form is invalid: {input_form.errors}")
+    # Handle other cases if needed
+    return None
