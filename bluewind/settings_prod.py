@@ -379,14 +379,23 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 SILKY_PYTHON_PROFILER = False
 
+from django.utils.translation import gettext_lazy as _
 
 UNFOLD = {
-    # "SITE_FAVICONS": [
-    #     {
-    #         "rel": "icon",
-    #         "sizes": "32x32",
-    #         "type": "image/svg+xml",
-    #         "href": lambda request: static("favicon.svg"),
-    #     },
-    # ]
+    "SITE_TITLE": "Bluewind",
+    "SITE_HEADER": "Bluewind",
+    "SIDEBAR": {
+        "show_search": False,  # Search in applications and models names
+        "show_all_applications": False,  # Dropdown with all applications and models,
+        "SHOW_VIEW_ON_SITE": False,
+        "navigation": [
+            {
+                "title": _("Navigation"),
+                "separator": True,  # Top border
+                "collapsible": True,  # Collapsible group of links
+                "items": [],
+            },
+        ],
+    },
+    "TABS": [],
 }
