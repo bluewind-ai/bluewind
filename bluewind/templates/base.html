@@ -1,1 +1,10 @@
-<link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}My Django Site{% endblock %}</title>
+</head>
+<body>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

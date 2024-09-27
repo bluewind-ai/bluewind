@@ -7,7 +7,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
 from bluewind.admin_site import custom_admin_site
-from function_calls import without_admin
+from bluewind.homepage import home
 from health_check.views import health_check
 
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
@@ -21,7 +21,7 @@ router = DefaultRouter()
 
 urlpatterns = [
     # Redirect root to admin
-    path("", redirect_to_admin, name="home"),
+    path("", home, name="home"),
     # Use custom_admin_site for /admin
     path("admin/", custom_admin_site.urls),
     # Existing paths
@@ -36,11 +36,11 @@ urlpatterns = [
         name="swagger-ui",
     ),
     # Function call view
-    path(
-        "function_calls/<int:object_id>/",
-        without_admin.function_call_change_view,
-        name="function_call_change",
-    ),
+    # path(
+    #     "function_calls/<int:object_id>/",
+    #     without_admin.function_call_change_view,
+    #     name="function_call_change",
+    # ),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
