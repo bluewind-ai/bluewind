@@ -91,7 +91,7 @@ def admin_middleware(get_response):
     def middleware(request):
         if request.path == "/":
             # raise NotImplementedError("This middleware is not implemented")
-            return redirect("/workspaces/2/admin/")
+            return redirect("/workspaces/1/admin/")
         return get_response(request)
 
         # if request.path.startswith("/health/"):

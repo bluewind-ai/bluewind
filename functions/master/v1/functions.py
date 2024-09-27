@@ -18,3 +18,4 @@ def master_v1():
         return redirect(
             f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
         )
+    raise Exception("No function calls ready for approval")

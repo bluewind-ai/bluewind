@@ -44,7 +44,7 @@ def bluewind_function_v1():
             func(*args, **kwargs)
 
             return redirect(
-                f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
+                f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
             )
 
         return wrapper

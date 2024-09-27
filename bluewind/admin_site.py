@@ -15,6 +15,7 @@ from gevent import getcurrent
 
 from bluewind.context_variables import get_workspace_id
 from functions.go_next.v1.functions import go_next_v1
+from users.models import User
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger("django.not_used")
@@ -52,13 +53,14 @@ def custom_json_dumps(data):
 class CustomAdminSite(AdminSite):
     def logout(self, request, extra_context=None):
         super().logout(request, extra_context)
-        return redirect("/workspaces/2/admin/next")
+        return redirect("/workspaces/1/admin")
 
     def has_permission(self, request):
+        request.user = User.objects.get(pk=1)
+
         return True
 
     def each_context(self, request):
-        return super().each_context(request)
         context = super().each_context(request)
         workspace_id = get_workspace_id()
 
@@ -90,8 +92,10 @@ class CustomAdminSite(AdminSite):
 
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
-            if request.path == "/workspaces/2/admin/":
+            if request.path == "/workspaces/1/admin/":
                 return go_next_v1()
+            # raise Exception("This is an exception")
+
             logger.debug(f"Starting request handling in greenlet {id(getcurrent())}")
 
             logger.debug(f"Finished sleep in greenlet {id(getcurrent())}")
