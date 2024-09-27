@@ -5,7 +5,7 @@ from django import forms
 logger = logging.getLogger("django.not_used")
 
 
-class AvoidGoingIntoSpamForm(forms.Form):
+class AvoidGoingIntoV1SpamForm(forms.Form):
     def __init__(self, *args, **kwargs):
         logger.debug("Initializing ExtractContextsForm")
         self.workspace = kwargs.pop("workspace", None)

@@ -1,18 +1,17 @@
 # function_calls/admin.py
 
 import importlib
-import json
 import logging
+from urllib.parse import unquote
 
 from django import forms
 from django.contrib import admin, messages
-from django.http import JsonResponse
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 
 from base_model_admin.admin import InWorkspace
-from bluewind.context_variables import get_workspace_id
 from functions.handle_query_params.v1.functions import handle_query_params_v1
 
 from .models import FunctionCall
@@ -21,6 +20,21 @@ logger = logging.getLogger("django.not_used")
 
 
 logger = logging.getLogger("django.not_used")
+
+
+class DummyDynamicForm(forms.Form):
+    dynamic_field = forms.CharField(label="Dynamic Field", max_length=100)
+
+    def __init__(self, *args, **kwargs):
+        function_call = kwargs.pop("function_call", None)
+        super().__init__(*args, **kwargs)
+
+        if function_call:
+            # Here you can add fields dynamically based on the function_call
+            self.fields[f"custom_field_{function_call.id}"] = forms.CharField(
+                label=f"Custom Field for Function Call {function_call.id}",
+                initial={"key": "value"},
+            )
 
 
 class OutputFormWidget(forms.Widget):
@@ -111,135 +125,57 @@ class FunctionCallAdmin(InWorkspace):
             return
         super().save_model(request, obj, form, change)
 
-    def add_view(self, request):
-        if request.GET.get("flow_mode"):
-            function_call = FunctionCall.objects.create(
-                flow=Flow.objects.get(name="toggle_flow_mode"),
-                user_id=1,
-                workspace_id=get_workspace_id(),
-                status=FunctionCall.Status.RUNNING,
-            )
-            toggle_flow_mode(function_call)
-            return JsonResponse({"status": "success"})
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        redirect_response = handle_query_params_v1(
+            query_params=request.GET, function_call_id=object_id
+        )
+        if redirect_response:
+            return redirect_response
+        object_id = unquote(object_id)
 
-        logger.debug("Add view called for FunctionCallAdmin")
-        function_call_id = request.GET.get("function")
-        function_call = None
-
-        if not function_call_id:
-            real_flow = request.GET.get("real-flow")
-            if real_flow:
-                function_call = FunctionCall.objects.create(
-                    flow=Flow.objects.get(name=real_flow),
-                    user_id=1,
-                    workspace_id=get_workspace_id(),
-                    status=FunctionCall.Status.READY_FOR_APPROVAL,
-                )
-            else:
-                raise ValueError("Missing 'flow' query parameter")
-                logger.error("Missing 'flow' query parameter")
-                self.message_user(
-                    request, "Missing 'flow' query parameter.", level=messages.ERROR
-                )
-                return redirect(
-                    reverse(
-                        f"admin:{self.model._meta.app_label}_{self.model._meta.model_name}_changelist"
-                    )
-                )
-        else:
-            function_call = FunctionCall.objects.filter(id=function_call_id).first()
-        logger.debug(f"Flow Run retrieved: {function_call}")
+        function_call = self.get_object(request, object_id)
 
         if request.method == "POST":
-            logger.debug("POST request received in add view")
-            result = function_calls_create_view(request, function_call)
-            if result:
-                return result
-            # If create_view returns None, fall through to rendering the form again
+            form = DummyDynamicForm(request.POST, function_call=function_call)
+            if form.is_valid():
+                # Process the form data
+                messages.success(request, "Form processed successfully")
+                return redirect(".")
+        else:
+            form = DummyDynamicForm(function_call=function_call)
 
-        context = self.admin_site.each_context(request)
+        context = {
+            **self.admin_site.each_context(request),
+            "title": f"Change Function Call: {function_call}",
+            "form": form,
+            "object_id": object_id,
+            "original": function_call,
+            "is_popup": False,
+            "to_field": None,
+            "media": self.media,
+            "inline_admin_formsets": [],
+            "app_label": self.model._meta.app_label,
+            "opts": self.model._meta,
+            "add": False,
+            "change": True,
+            "has_view_permission": self.has_view_permission(request, function_call),
+            "has_add_permission": self.has_add_permission(request),
+            "has_change_permission": self.has_change_permission(request, function_call),
+            "has_delete_permission": self.has_delete_permission(request, function_call),
+            "has_editable_inline_admin_formsets": False,
+            "has_file_field": True,  # Adjust if your model has file fields
+            "has_absolute_url": False,  # Adjust if your model has get_absolute_url method
+            "form_url": form_url,
+            "content_type_id": ContentType.objects.get_for_model(self.model).pk,
+            "save_as": self.save_as,
+            "save_on_top": self.save_on_top,
+        }
 
-        # Generate the graph
-        build_function_calls_graph = FunctionCall.objects.create(
-            flow=Flow.objects.get(name="build_function_calls_graph"),
-            user_id=1,
-            workspace_id=get_workspace_id(),
-            status=FunctionCall.Status.READY_FOR_APPROVAL,
-        )
-        run_flow(build_function_calls_graph, {"function_call_1": function_call})
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return JsonResponse(forms.model_to_dict(build_function_calls_graph))
-        # raise ValueError(forms.model_to_dict(build_function_calls_graph))
-        # Add graph_data to the context
-        context["graph_data"] = json.dumps(build_function_calls_graph.output_data)
-
-        # Use TemplateResponse instead of directly calling function_calls_create_form
-        return function_calls_create_form(
-            request, function_call, self.add_form_template, context
-        )
-
-    # def get_form(self, request, obj=None, **kwargs):
-    #     form = super().get_form(request, obj, **kwargs)
-    #     if obj and obj.output_data:
-    #         output_form = self.get_output_form(obj)
-    #         if output_form:
-    #             form.base_fields["output_data"].widget = forms.Widget()
-    #             form.base_fields["output_data"].widget.render = (
-    #                 lambda name, value, attrs=None, renderer=None: output_form.as_p()
-    #             )
-    #     return form
-
-    def get_output_form(self, obj):
-        flow = obj.function
-        function_name = function.name
-        class_name = "".join(word.title() for word in function_name.split("_"))
-        module_name = f"functions.{function.name}.output_forms"
-
-        try:
-            form_module = importlib.import_module(module_name)
-            FormClass = getattr(form_module, f"{class_name}OutputForm")
-            return FormClass(initial=obj.output_data)
-        except (ImportError, AttributeError) as e:
-            logger.error(f"Failed to create output form: {e}")
-            return None
-
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        handle_query_params_v1(query_params=request.GET, function_call_id=object_id)
-        real_flow = request.GET.get("real_flow")
-        if real_flow:
-            if real_flow == "mark_function_call_as_successful":
-                function_call_to_mark_as_successful = FunctionCall.objects.get(
-                    id=object_id
-                )
-                flow_to_run = FunctionCall.objects.create(
-                    flow=Flow.objects.get(name="mark_function_call_as_successful"),
-                    user_id=1,
-                    workspace_id=get_workspace_id(),
-                    status=FunctionCall.Status.READY_FOR_APPROVAL,
-                )
-                run_flow(
-                    flow_to_run,
-                    {"function_call_1": function_call_to_mark_as_successful},
-                )
-                return redirect("/workspaces/1/admin/users")
-            elif real_flow == "mark_function_call_as_failed":
-                function_call_to_mark_as_failed = FunctionCall.objects.get(id=object_id)
-                flow_to_run = FunctionCall.objects.create(
-                    flow=Flow.objects.get(name="mark_function_call_as_failed"),
-                    user_id=1,
-                    workspace_id=get_workspace_id(),
-                    status=FunctionCall.Status.READY_FOR_APPROVAL,
-                )
-                run_flow(
-                    flow_to_run,
-                    {"function_call_1": function_call_to_mark_as_failed},
-                )
-                return redirect("/workspaces/1/admin/users")
-            else:
-                raise ValueError(f"Invalid real-flow: {real_flow}")
         extra_context = extra_context or {}
         extra_context["custom_actions"] = self.get_custom_actions(request, object_id)
-        return super().change_view(request, object_id, form_url, extra_context)
+        context.update(extra_context)
+
+        return TemplateResponse(request, self.change_form_template, context)
 
     # def get_form(self, request, obj=None, **kwargs):
     #     if obj and obj.status == "READY":

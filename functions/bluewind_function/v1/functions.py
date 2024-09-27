@@ -4,9 +4,9 @@ from django.db import transaction
 from django.shortcuts import redirect
 
 from bluewind.context_variables import (
-    get_parent_function_call_id,
+    get_approved_function_call,
     get_workspace_id,
-    set_parent_function_call_id,
+    set_approved_function_call,
 )
 from function_calls.models import FunctionCall
 from functions.get_function_or_create_from_file.functions import (
@@ -31,30 +31,37 @@ def bluewind_function_v1():
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            logger.debug(f"Running {func.__name__}")
             if func.__name__ == "handle_query_params_v1":
-                set_parent_function_call_id(kwargs.get("function_call_id"))
+                logger.debug(f"{func.__name__} called, do nothing and return")
                 return func(*args, **kwargs)
-            # raise Exception(func, args, kwargs)
 
-            function_call = kwargs.get("function_call", None)
-            if function_call:
+            if get_approved_function_call():
+                logger.debug(f"{func.__name__} approved, calling the function")
+                set_approved_function_call(None)
                 return func(*args, **kwargs)
+
+            logger.debug(
+                f"{func.__name__} not approved yet, asking for approval and redirecting"
+            )
+
             with transaction.atomic():
                 function = get_function_or_create_from_file(func.__name__)
+                assert function is not None, "function hasn't been found in the DB"
+                logger.debug(f"{func.__name__} found in the DB")
                 function_call = FunctionCall.objects.create(
                     function=function,
-                    parent_id=get_parent_function_call_id(),
+                    parent_id=None,
                     workspace_id=get_workspace_id(),
                     user_id=1,
                     status=FunctionCall.Status.READY_FOR_APPROVAL,
                 )
-                # raise Exception(function_call)
-                set_parent_function_call_id(function_call.id)
-
-                return redirect(
-                    f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
+                logger.debug(
+                    f"Create function call for {func.__name__} asking for approval"
                 )
+
+            return redirect(
+                f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
+            )
 
         return wrapper
 
