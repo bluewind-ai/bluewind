@@ -1,4 +1,6 @@
+console.log("Hello from admin_shortcuts.js");
 (function () {
+  console.log("Hello from admin_shortcuts.js");
   // We'll fetch the actions from the data provided in the template
   let actions = window.initialData ? window.initialData.flows : [];
   let selectedIndex = 0;

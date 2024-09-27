@@ -1,69 +1,7 @@
-{% extends "admin/base.html" %}
-
+{% extends 'unfold/base_site.html' %}
 {% load static %}
-
-{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
-
-{% block extrastyle %}
-{{ block.super }}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.css" rel="stylesheet" type="text/css">
-{% endblock %}
-
-{% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
-{% endblock %}
-
-{% block nav-global %}
-{{ block.super }}
-<button id="toggleButton" onclick="sendRequest()" style="margin-left: 10px;">F</button>
-{% endblock %}
-
-{% block footer %}
+cdscdscdscds
+{% block extrahead %}
     {{ block.super }}
-    {% comment %} {% include 'json_editor.html' %} {% endcomment %}
-
-    <!-- Embed data for JavaScript -->
-    {% if flows_data %}
-        {{ flows_data|json_script:"initial-data" }}
-    {% else %}
-        <script>console.log('flows_data is not available in the context');</script>
-    {% endif %}
-
-    <script>
-        const initialDataElement = document.getElementById('initial-data');
-        try {
-            const initialData = JSON.parse(initialDataElement ? initialDataElement.textContent : '{}');
-            window.initialData = {
-                flows: initialData || []
-            };
-        } catch (error) {
-            window.initialData = { flows: [] };
-        }
-
-        function sendRequest() {
-            const url = 'http://127.0.0.1:8000/workspaces/1/admin/flow_runs/flowrun/add/?flow_mode=true';
-
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => {
-                if (response.headers.get("content-type").includes("application/json")) {
-                    return response.json();
-                } else {
-                    return response.text();
-                }
-            })
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-    </script>
-
-    <script src="{% static 'bluewind/js/admin_shortcuts.js' %}"></script>
+    <script src="{% static 'bluewind/js/custom_admin.js' %}"></script>
 {% endblock %}

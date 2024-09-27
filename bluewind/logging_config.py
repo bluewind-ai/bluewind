@@ -153,7 +153,7 @@ def get_logging_config():
             },
             "django.request": {
                 "handlers": ["console"],
-                "level": "ERROR",
+                "level": "DEBUG",
                 "propagate": False,
             },
             # "gunicorn.ERROR": {
