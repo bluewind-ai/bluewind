@@ -34,6 +34,7 @@ ASGI_APPLICATION = "bluewind.asgi.application"
 INSTALLED_APPS = [
     # Django core apps
     "unfold",
+    "unfold.contrib.import_export",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     "admin_autoregister",
     "debug_toolbar",
     "django_json_widget",
+    "import_export",
     # "behave_django",
     # "channels",
     # "model_clone",
@@ -105,6 +107,8 @@ INSTALLED_APPS = [
 APP_TYPE = {
     # Django core apps
     "unfold": "custom",
+    "unfold.contrib.import_export": "custom",
+    "import_export": "third_party",
     "django.contrib.admin": "django",
     "django.contrib.auth": "django",
     "django.contrib.contenttypes": "django",

@@ -27,10 +27,18 @@ class CustomChangeList(ChangeList):
         self.formset = None
 
 
+from import_export.admin import ImportExportModelAdmin
 from unfold.admin import ModelAdmin
+from unfold.contrib.import_export.forms import (
+    ExportForm,
+    ImportForm,
+)
 
 
-class InWorkspace(ModelAdmin):
+class InWorkspace(ModelAdmin, ImportExportModelAdmin):
+    import_form_class = ImportForm
+    export_form_class = ExportForm
+
     change_form_template = "admin/change_form.html"
 
     formfield_overrides = {
