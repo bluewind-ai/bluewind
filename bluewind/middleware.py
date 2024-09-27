@@ -82,16 +82,49 @@
 
 
 # from bluewind.middleware import redirect
+import re
+
+
+def process_response(response):
+    if response.status_code in [301, 302, 307, 308] and "Location" in response:
+        location = response["Location"]
+        if location.startswith("/admin/"):
+            response["Location"] = location.replace("/admin/", "/", 1)
+    elif response.status_code == 200 and "text/html" in response.get(
+        "Content-Type", ""
+    ):
+        content = response.content.decode("utf-8")
+        pattern = r'href="(/admin/[^"]*)"'
+        content = re.sub(
+            pattern,
+            lambda m: f'href="{m.group(1).replace("/admin/", "/", 1)}"'
+            if m.group(1).startswith("/admin/")
+            else m.group(0),
+            content,
+        )
+        response.content = content.encode("utf-8")
+    return response
 
 
 def admin_middleware(get_response):
     def middleware(request):
+        if not request.path.startswith("/workspaces/"):
+            request.path_info = f"/admin{request.path}"
+            request.path = f"/workspaces/2/admin{request.path}"
+            # raise NotImplementedError(request.path_info, request.path)
+            # ('/workspaces/2/admin/', '/workspaces/2/admin/')
+
+            response = get_response(request)
+            return process_response(response)
+
+        return get_response(request)
+
         # if request.path == "/":
         # raise NotImplementedError("This middleware is not implemented")
         # raise Exception("This is an exception")
 
         # return redirect("/function-calls/function-call/123/")
-        return get_response(request)
+        # return get_response(request)
 
         # if request.path.startswith("/health/"):
         #     return get_response(request)

@@ -192,7 +192,7 @@ MIDDLEWARE = [
     # "bluewind.middleware.custom_middleware",
     # "silk.middleware.SilkyMiddleware",
     # "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
