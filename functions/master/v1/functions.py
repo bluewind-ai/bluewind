@@ -10,7 +10,7 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
 @bluewind_function_v1()
-def master_v1():
+def master_v1(function_call):
     function_call = FunctionCall.objects.filter(
         status=FunctionCall.Status.READY_FOR_APPROVAL,
     ).first()
@@ -18,4 +18,4 @@ def master_v1():
         return redirect(
             f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
         )
-    raise Exception("No function calls ready for approval")
+    avoid_going_into_spam()

@@ -261,4 +261,12 @@ class FlowRunAdmin(InWorkspace):
                 "method": "get",
                 "url": "?real_flow=mark_flow_run_as_failed",
             },
+            {
+                "name": "action3",
+                "label": "Approve",
+                "title": "Approve",
+                "css_class": "button",
+                "method": "get",
+                "url": "?function=approve_function_call",
+            },
         ]

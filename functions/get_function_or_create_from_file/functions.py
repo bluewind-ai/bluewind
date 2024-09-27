@@ -21,9 +21,7 @@ def get_function_or_create_from_file(function_name):
     parsed_function_name, version_number = match.groups()
     version_number = int(version_number)
 
-    function = Function.objects.filter(
-        name=parsed_function_name, version_number=version_number
-    ).first()
+    function = Function.objects.filter(name=function_name).first()
     if function:
         return function
 
@@ -63,8 +61,7 @@ def get_function_or_create_from_file(function_name):
 
         # Create Function object
         function = Function.objects.create(
-            name=parsed_function_name,
-            version_number=version_number,
+            name=function_name,
             file=file_obj,
             user_id=default_user_id,
             workspace_id=default_workspace_id,

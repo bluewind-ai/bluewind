@@ -1,4 +1,4 @@
-# flow_runs/admin.py
+# function_calls/admin.py
 
 import importlib
 import json
@@ -13,11 +13,7 @@ from django.utils.safestring import mark_safe
 
 from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import get_workspace_id
-from flows.flow_runs_create_form.flows import flow_runs_create_form
-from flows.flow_runs_create_view.flows import flow_runs_create_view
-from flows.models import Flow
-from flows.run_flow.flows import run_flow
-from flows.toggle_flow_mode.flows import toggle_flow_mode
+from functions.handle_query_params.v1.functions import handle_query_params_v1
 
 from .models import FunctionCall
 
@@ -29,16 +25,19 @@ logger = logging.getLogger("django.not_used")
 
 class OutputFormWidget(forms.Widget):
     def render(self, name, value, attrs=None, renderer=None):
-        flow_run = self.flow_run
-        flow = flow_run.flow
-        module_name = f"flows.{flow.name}.output_forms"
+        function_call = self.function_call
+        function = function_call.function
+        version = f"v{function.version_number}"
+        module_name = (
+            f"functions.{function.name_without_version}.{version}.output_forms"
+        )
         class_name = (
-            "".join(word.title() for word in flow.name.split("_")) + "OutputForm"
+            "".join(word.title() for word in function.name.split("_")) + "OutputForm"
         )
 
         form_module = importlib.import_module(module_name)
         FormClass = getattr(form_module, class_name)
-        form = FormClass(initial=flow_run.output_data)
+        form = FormClass(initial=function_call.output_data)
         return mark_safe(form.as_p())
 
 
@@ -52,18 +51,18 @@ class FunctionCallForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["rendered_output"].label = "Rendered Output"
-        self.fields["rendered_output"].widget.flow_run = self.instance
+        self.fields["rendered_output"].widget.function_call = self.instance
 
 
 @admin.register(FunctionCall)
 class FunctionCallAdmin(InWorkspace):
-    change_form_template = "admin/flow_runs/flowrun/change_form.html"
-    add_form_template = "admin/flow_runs/flowrun/add_form.html"
+    change_form_template = "admin/function_calls/functioncall/change_form.html"
+    add_form_template = "admin/function_calls/functioncall/add_form.html"
     form = FunctionCallForm
 
     list_display = ["id", "function", "user", "status", "executed_at", "workspace"]
     list_filter = ["status", "function", "workspace"]
-    search_fields = ["flow__name", "user__username", "workspace__name"]
+    search_fields = ["function__name", "user__username", "workspace__name"]
     ordering = ["-executed_at"]  # Most recent first
 
     readonly_fields = ["function", "status", "executed_at", "user", "workspace"]
@@ -97,7 +96,7 @@ class FunctionCallAdmin(InWorkspace):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj:
-            form.base_fields["rendered_output"].widget.flow_run = obj
+            form.base_fields["rendered_output"].widget.function_call = obj
         return form
 
     def save_model(self, request, obj, form, change):
@@ -114,23 +113,23 @@ class FunctionCallAdmin(InWorkspace):
 
     def add_view(self, request):
         if request.GET.get("flow_mode"):
-            flow_run = FunctionCall.objects.create(
+            function_call = FunctionCall.objects.create(
                 flow=Flow.objects.get(name="toggle_flow_mode"),
                 user_id=1,
                 workspace_id=get_workspace_id(),
                 status=FunctionCall.Status.RUNNING,
             )
-            toggle_flow_mode(flow_run)
+            toggle_flow_mode(function_call)
             return JsonResponse({"status": "success"})
 
         logger.debug("Add view called for FunctionCallAdmin")
-        flow_run_id = request.GET.get("function")
-        flow_run = None
+        function_call_id = request.GET.get("function")
+        function_call = None
 
-        if not flow_run_id:
+        if not function_call_id:
             real_flow = request.GET.get("real-flow")
             if real_flow:
-                flow_run = FunctionCall.objects.create(
+                function_call = FunctionCall.objects.create(
                     flow=Flow.objects.get(name=real_flow),
                     user_id=1,
                     workspace_id=get_workspace_id(),
@@ -148,12 +147,12 @@ class FunctionCallAdmin(InWorkspace):
                     )
                 )
         else:
-            flow_run = FunctionCall.objects.filter(id=flow_run_id).first()
-        logger.debug(f"Flow Run retrieved: {flow_run}")
+            function_call = FunctionCall.objects.filter(id=function_call_id).first()
+        logger.debug(f"Flow Run retrieved: {function_call}")
 
         if request.method == "POST":
             logger.debug("POST request received in add view")
-            result = flow_runs_create_view(request, flow_run)
+            result = function_calls_create_view(request, function_call)
             if result:
                 return result
             # If create_view returns None, fall through to rendering the form again
@@ -161,21 +160,23 @@ class FunctionCallAdmin(InWorkspace):
         context = self.admin_site.each_context(request)
 
         # Generate the graph
-        build_flow_runs_graph = FunctionCall.objects.create(
-            flow=Flow.objects.get(name="build_flow_runs_graph"),
+        build_function_calls_graph = FunctionCall.objects.create(
+            flow=Flow.objects.get(name="build_function_calls_graph"),
             user_id=1,
             workspace_id=get_workspace_id(),
             status=FunctionCall.Status.READY_FOR_APPROVAL,
         )
-        run_flow(build_flow_runs_graph, {"flow_run_1": flow_run})
+        run_flow(build_function_calls_graph, {"function_call_1": function_call})
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return JsonResponse(forms.model_to_dict(build_flow_runs_graph))
-        # raise ValueError(forms.model_to_dict(build_flow_runs_graph))
+            return JsonResponse(forms.model_to_dict(build_function_calls_graph))
+        # raise ValueError(forms.model_to_dict(build_function_calls_graph))
         # Add graph_data to the context
-        context["graph_data"] = json.dumps(build_flow_runs_graph.output_data)
+        context["graph_data"] = json.dumps(build_function_calls_graph.output_data)
 
-        # Use TemplateResponse instead of directly calling flow_runs_create_form
-        return flow_runs_create_form(request, flow_run, self.add_form_template, context)
+        # Use TemplateResponse instead of directly calling function_calls_create_form
+        return function_calls_create_form(
+            request, function_call, self.add_form_template, context
+        )
 
     # def get_form(self, request, obj=None, **kwargs):
     #     form = super().get_form(request, obj, **kwargs)
@@ -189,10 +190,10 @@ class FunctionCallAdmin(InWorkspace):
     #     return form
 
     def get_output_form(self, obj):
-        flow = obj.flow
-        function_name = flow.name
+        flow = obj.function
+        function_name = function.name
         class_name = "".join(word.title() for word in function_name.split("_"))
-        module_name = f"flows.{flow.name}.output_forms"
+        module_name = f"functions.{function.name}.output_forms"
 
         try:
             form_module = importlib.import_module(module_name)
@@ -203,32 +204,35 @@ class FunctionCallAdmin(InWorkspace):
             return None
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
+        handle_query_params_v1(query_params=request.GET, function_call_id=object_id)
         real_flow = request.GET.get("real_flow")
         if real_flow:
-            if real_flow == "mark_flow_run_as_successful":
-                flow_run_to_mark_as_successful = FunctionCall.objects.get(id=object_id)
+            if real_flow == "mark_function_call_as_successful":
+                function_call_to_mark_as_successful = FunctionCall.objects.get(
+                    id=object_id
+                )
                 flow_to_run = FunctionCall.objects.create(
-                    flow=Flow.objects.get(name="mark_flow_run_as_successful"),
+                    flow=Flow.objects.get(name="mark_function_call_as_successful"),
                     user_id=1,
                     workspace_id=get_workspace_id(),
                     status=FunctionCall.Status.READY_FOR_APPROVAL,
                 )
                 run_flow(
                     flow_to_run,
-                    {"flow_run_1": flow_run_to_mark_as_successful},
+                    {"function_call_1": function_call_to_mark_as_successful},
                 )
                 return redirect("/workspaces/1/admin/users")
-            elif real_flow == "mark_flow_run_as_failed":
-                flow_run_to_mark_as_failed = FunctionCall.objects.get(id=object_id)
+            elif real_flow == "mark_function_call_as_failed":
+                function_call_to_mark_as_failed = FunctionCall.objects.get(id=object_id)
                 flow_to_run = FunctionCall.objects.create(
-                    flow=Flow.objects.get(name="mark_flow_run_as_failed"),
+                    flow=Flow.objects.get(name="mark_function_call_as_failed"),
                     user_id=1,
                     workspace_id=get_workspace_id(),
                     status=FunctionCall.Status.READY_FOR_APPROVAL,
                 )
                 run_flow(
                     flow_to_run,
-                    {"flow_run_1": flow_run_to_mark_as_failed},
+                    {"function_call_1": function_call_to_mark_as_failed},
                 )
                 return redirect("/workspaces/1/admin/users")
             else:
@@ -251,7 +255,7 @@ class FunctionCallAdmin(InWorkspace):
                 "title": "Mark Flow Run as Successful",
                 "css_class": "button",
                 "method": "get",
-                "url": "?real_flow=mark_flow_run_as_successful",
+                "url": "?real_flow=mark_function_call_as_successful",
             },
             {
                 "name": "action1",
@@ -259,6 +263,14 @@ class FunctionCallAdmin(InWorkspace):
                 "title": "Mark Flow Run as Failed",
                 "css_class": "button",
                 "method": "get",
-                "url": "?real_flow=mark_flow_run_as_failed",
+                "url": "?real_flow=mark_function_call_as_failed",
+            },
+            {
+                "name": "action3",
+                "label": "Approve",
+                "title": "Approve",
+                "css_class": "button",
+                "method": "get",
+                "url": "?function=approve_function_call",
             },
         ]

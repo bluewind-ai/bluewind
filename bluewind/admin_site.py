@@ -14,7 +14,7 @@ from django.utils.safestring import mark_safe
 from gevent import getcurrent
 
 from bluewind.context_variables import get_workspace_id
-from functions.go_next.v1.functions import go_next_v1
+from functions.master.v1.functions import master_v1
 from users.models import User
 from workspaces.models import Workspace, WorkspaceUser
 
@@ -93,7 +93,7 @@ class CustomAdminSite(AdminSite):
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
             if request.path == "/workspaces/1/admin/":
-                return go_next_v1()
+                return master_v1(None)
             # raise Exception("This is an exception")
 
             logger.debug(f"Starting request handling in greenlet {id(getcurrent())}")

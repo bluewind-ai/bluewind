@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.db import models
 
@@ -14,7 +15,15 @@ class Function(WorkspaceRelated):
     file = models.OneToOneField(
         "files.File", on_delete=models.CASCADE, related_name="function"
     )
-    version_number = models.IntegerField()
 
     class Meta:
         unique_together = ["name", "workspace"]
+
+    @property
+    def name_without_version(self):
+        return re.sub(r"_v\d+$", "", self.name)
+
+    @property
+    def version_number(self):
+        match = re.search(r"_v(\d+)$", self.name)
+        return int(match.group(1)) if match else None
