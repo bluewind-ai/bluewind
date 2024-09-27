@@ -115,18 +115,30 @@ class FunctionCallAdmin(InWorkspace):
         function_call = self.get_object(request, object_id)
 
         if request.method == "POST":
-            form = DummyDynamicForm(request.POST, function_call=function_call)
-            if form.is_valid():
-                # Process the form data
+            form = self.get_form(request, function_call, change=True)(
+                request.POST, request.FILES, instance=function_call
+            )
+            custom_form = DummyDynamicForm(request.POST, function_call=function_call)
+            if "_save_custom" in request.POST:
+                if custom_form.is_valid():
+                    # Process the custom form data
+                    messages.success(request, "Custom form processed successfully")
+                    return redirect(".")
+            elif form.is_valid():
+                self.save_model(request, function_call, form, change=True)
                 messages.success(request, "Form processed successfully")
                 return redirect(".")
         else:
-            form = DummyDynamicForm(function_call=function_call)
+            form = self.get_form(request, function_call, change=True)(
+                instance=function_call
+            )
+            custom_form = DummyDynamicForm(function_call=function_call)
 
         context = {
             **self.admin_site.each_context(request),
             "title": f"Change Function Call: {function_call}",
             "form": form,
+            "custom_form": custom_form,
             "object_id": object_id,
             "original": function_call,
             "is_popup": False,
@@ -142,8 +154,8 @@ class FunctionCallAdmin(InWorkspace):
             "has_change_permission": self.has_change_permission(request, function_call),
             "has_delete_permission": self.has_delete_permission(request, function_call),
             "has_editable_inline_admin_formsets": False,
-            "has_file_field": True,  # Adjust if your model has file fields
-            "has_absolute_url": False,  # Adjust if your model has get_absolute_url method
+            "has_file_field": True,
+            "has_absolute_url": False,
             "form_url": form_url,
             "content_type_id": ContentType.objects.get_for_model(self.model).pk,
             "save_as": self.save_as,

@@ -18,6 +18,11 @@
         width: 50%;
         padding-left: 20px;
     }
+    .custom-form {
+        margin-top: 20px;
+        border-top: 1px solid #eee;
+        padding-top: 20px;
+    }
 </style>
 {% endblock %}
 
@@ -26,6 +31,18 @@
     <div id="mynetwork"></div>
     <div class="form-container">
         {{ block.super }}
+
+        <!-- Custom Form -->
+        <div class="custom-form">
+            <h2>Custom Form</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ custom_form.as_p }}
+                <div class="submit-row">
+                    <input type="submit" value="Save Custom Form" class="default" name="_save_custom">
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
