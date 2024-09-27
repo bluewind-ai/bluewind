@@ -28,21 +28,23 @@ logger = logging.getLogger("django.not_used")
 class DummyDynamicForm(forms.Form):
     status = forms.CharField(label="Status", disabled=True, required=False)
 
+    class Media:
+        js = ("admin/js/toggle_details.js",)
+
     def __init__(self, *args, **kwargs):
         function_call = kwargs.pop("function_call")
         input_form = get_input_form(function_call)
 
         super().__init__(*args, **kwargs)
 
-        # Add the status field
         self.fields["status"].initial = function_call.status
 
-        # Iterate through the fields of the input form and add them to this form
         for field_name, field in input_form.fields.items():
             self.fields[field_name] = field
-            # # If you want to keep the values from the input form:
-            # if field_name in input_form.cleaned_data:
-            #     self.fields[field_name].initial = input_form.cleaned_data[field_name]
+        self.detail_fields = ["status"]
+
+    def get_main_fields(self):
+        return [field for field in self.fields if field not in self.detail_fields]
 
 
 class OutputFormWidget(forms.Widget):
@@ -146,6 +148,7 @@ class FunctionCallAdmin(InWorkspace):
             "title": f"Change Function Call: {function_call}",
             "form": form,
             "custom_form": custom_form,
+            "custom_form_html": custom_form.as_p(),
             "object_id": object_id,
             "original": function_call,
             "is_popup": False,
