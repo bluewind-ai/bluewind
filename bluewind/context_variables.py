@@ -4,6 +4,7 @@ request_id_var = ContextVar("request_id")
 log_records_var = ContextVar("log_records")
 workspace_id_var = ContextVar("workspace_id")
 startup_mode_var = ContextVar("startup_mode", default=True)
+parent_function_call_id_var = ContextVar("startup_mode", default=None)
 
 
 def get_request_id():
@@ -41,3 +42,11 @@ def set_startup_mode(startup_mode):
 def get_user_id():
     # TODO
     return 1
+
+
+def get_parent_function_call_id():
+    return parent_function_call_id_var.get()
+
+
+def set_parent_function_call_id(parent_function_call_id):
+    parent_function_call_id_var.set(parent_function_call_id)

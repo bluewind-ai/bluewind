@@ -2,22 +2,20 @@ import logging
 
 from django.shortcuts import redirect
 
-from function_calls.models import FunctionCall
+from functions.master.v1.functions import master_v1
 
 # Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
-def go_next_v1(workspace, user):
-    return redirect("/workspaces/1/admin")
-    function_call = FunctionCall.objects.filter(
-        status=FunctionCall.Status.READY_FOR_APPROVAL,
-    ).first()
+def go_next_v1():
+    return master_v1()
 
     return redirect(
-        f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change?function_id={function_call.function.id}"
+        f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
     )
 
+    raise Exception("No function calls ready for approval")
     # function_call = FunctionCall.objects.filter(
     #     status=FunctionCall.Status.MARKED_FAILED,
     # ).first()

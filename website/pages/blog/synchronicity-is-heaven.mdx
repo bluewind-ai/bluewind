@@ -1,0 +1,23 @@
+---
+title: Synchronicity is heaven
+---
+
+# Synchronicity is heaven
+
+Every day I slowly build quicker, and any time I don't, I am trying to learn why.
+
+One pattern I have seen over and over again, is anytime I start doing things asynchronously, my ability to build fast drastically drops.
+
+Also, iterating with a web UI and going through the request response cycle is extremely productive.
+
+So I natually shifted my focus and the codebase to something very synchronous. It brings a lot of nice properties AI agents need anyway, like being able to be in the loop.
+
+After pushing this idea to the extreme, I realized the perfect setup for me is if things are synchronous by defaut AND any time I make a function call, I receive a request for approval in the UI.
+
+Very functional programming like. I am starting to wonder if it's possible to run my whole app on one function call, where each step of the call stack asks for approval.
+
+I am not seeking this for the sake of seeking it. I have seen how much more productive I am when I am constantly in the loop.
+
+One giant flow that is triggered by a function which calls other functions, each of which asks for approval from me.
+
+And I have the options to approve, reject, ignore, skip each one of them. But I can also approve one call from a function and say that all the calls from this function will be approved in the future.

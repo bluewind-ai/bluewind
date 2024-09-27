@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "functions",
     "function_calls",
     "files",
+    "admin_autoregister",
     # "behave_django",
     # "channels",
     # "model_clone",
@@ -97,7 +98,6 @@ INSTALLED_APPS = [
     # "user_settings",
     # "domain_names",
     # "dns_records",
-    # "admin_autoregister",
 ]
 
 APP_TYPE = {
@@ -117,6 +117,7 @@ APP_TYPE = {
     "functions": "custom",
     "function_calls": "custom",
     "files": "custom",
+    "admin_autoregister": "custom",
     # "behave_django": "third_party",
     # "channels": "third_party",
     # "model_clone": "third_party",
@@ -143,7 +144,6 @@ APP_TYPE = {
     # "rest_framework": "third_party",
     # "drf_spectacular": "third_party",
     # "drf_standardized_errors": "third_party",
-    # "admin_autoregister": "custom",
     # "incoming_http_requests": "custom",
     # "flow_runs": "custom",
     # "step_runs": "step_runs",
@@ -199,7 +199,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # DO NOT CHANGE THE ORDER OF THE MIDDLWARE BELOW
     # "allauth.account.middleware.AccountMiddleware",
-    # "bluewind.middleware.admin_middleware",
+    "bluewind.middleware.admin_middleware",
 ]
 
 # Templates Configuration

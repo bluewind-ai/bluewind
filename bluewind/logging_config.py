@@ -97,7 +97,7 @@ def get_logging_config():
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "pretty",
+                "formatter": "simple",
                 "stream": sys.stdout,
             },
             # "file": {

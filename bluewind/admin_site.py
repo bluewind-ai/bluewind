@@ -9,7 +9,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Model, QuerySet
 from django.http.response import HttpResponseRedirectBase
 from django.shortcuts import redirect
-from django.urls import path
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 from gevent import getcurrent
@@ -55,16 +54,6 @@ class CustomAdminSite(AdminSite):
         super().logout(request, extra_context)
         return redirect("/workspaces/2/admin/next")
 
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path("next/", self.admin_view(self.next_view), name="admin_next"),
-        ]
-        return custom_urls + urls
-
-    def next_view(self, request):
-        return go_next_v1(request.user, Workspace.objects.get(pk=get_workspace_id()))
-
     def has_permission(self, request):
         return True
 
@@ -101,6 +90,8 @@ class CustomAdminSite(AdminSite):
 
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
+            if request.path == "/workspaces/2/admin/":
+                return go_next_v1()
             logger.debug(f"Starting request handling in greenlet {id(getcurrent())}")
 
             logger.debug(f"Finished sleep in greenlet {id(getcurrent())}")

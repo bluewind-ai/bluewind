@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 
 from django.db import transaction
 
@@ -9,13 +10,26 @@ from functions.models import Function
 logger = logging.getLogger("django.not_used")
 
 
-def get_function_or_create_from_file(function_name, version_number):
+# @bluewind_function()
+def get_function_or_create_from_file(function_name):
+    # Parse function_name and version_number
+    match = re.match(r"(.+)_v(\d+)$", function_name)
+    if not match:
+        logger.error(f"Invalid function name format: {function_name}")
+        return None
+
+    parsed_function_name, version_number = match.groups()
+    version_number = int(version_number)
+
     function = Function.objects.filter(
-        name=function_name, version_number=version_number
+        name=parsed_function_name, version_number=version_number
     ).first()
     if function:
         return function
-    logger.debug(f"Processing function: {function_name}, version: {version_number}")
+
+    logger.debug(
+        f"Processing function: {parsed_function_name}, version: {version_number}"
+    )
 
     base_dir = os.environ.get("BASE_DIR", ".")
     default_user_id = 1
@@ -23,7 +37,11 @@ def get_function_or_create_from_file(function_name, version_number):
 
     # Construct the file path
     file_path = os.path.join(
-        base_dir, "functions", function_name, f"v{version_number}", "functions.py"
+        base_dir,
+        "functions",
+        parsed_function_name,
+        f"v{version_number}",
+        "functions.py",
     )
 
     if not os.path.exists(file_path):
@@ -45,13 +63,13 @@ def get_function_or_create_from_file(function_name, version_number):
 
         # Create Function object
         function = Function.objects.create(
-            name=function_name,
+            name=parsed_function_name,
             version_number=version_number,
             file=file_obj,
             user_id=default_user_id,
             workspace_id=default_workspace_id,
         )
 
-    logger.info(f"Created function: {function_name}, version: {version_number}")
+    logger.info(f"Created function: {parsed_function_name}, version: {version_number}")
 
     return function
