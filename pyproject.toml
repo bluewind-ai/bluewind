@@ -67,7 +67,6 @@ django-db-geventpool = "4.0.6"
 supervisor = "^4.2.5"
 chardet = "^5.2.0"
 dnspython = "^2.6.1"
-django-unfold = "^0.39.0"
 django-import-export = "^4.1.1"
 
 [tool.poetry.extras]
