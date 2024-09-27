@@ -75,14 +75,5 @@ def autoregister():
                 pass
 
     # Explicitly register the additional models
-    additional_models = [MigrationRecorder.Migration]
 
-    for model in additional_models:
-        try:
-            custom_admin_site.register(model)
-        except AlreadyRegistered:
-            pass
-        try:
-            admin.site.register(model)
-        except AlreadyRegistered:
-            pass
+    custom_admin_site.register(MigrationRecorder.Migration)
