@@ -33,7 +33,6 @@ ASGI_APPLICATION = "bluewind.asgi.application"
 # Application Definition
 INSTALLED_APPS = [
     # Django core apps
-    "unfold",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,12 +45,12 @@ INSTALLED_APPS = [
     "users",
     "workspace_users",
     "workspaces",
+    "functions",
+    "function_calls",
     "files",
     "admin_autoregister",
-    # "functions",
-    # "function_calls",
-    # "debug_toolbar",
-    # "django_json_widget",
+    "debug_toolbar",
+    "django_json_widget",
     # "behave_django",
     # "channels",
     # "model_clone",
@@ -104,7 +103,6 @@ INSTALLED_APPS = [
 
 APP_TYPE = {
     # Django core apps
-    "unfold": "custom",
     "django.contrib.admin": "django",
     "django.contrib.auth": "django",
     "django.contrib.contenttypes": "django",
@@ -117,12 +115,12 @@ APP_TYPE = {
     "users": "custom",
     "workspace_users": "custom",
     "workspaces": "custom",
+    "functions": "custom",
+    "function_calls": "custom",
     "files": "custom",
     "admin_autoregister": "custom",
-    # "functions": "custom",
-    # "function_calls": "custom",
-    # "debug_toolbar": "custom",
-    # "django_json_widget": "third_party",
+    "debug_toolbar": "custom",
+    "django_json_widget": "third_party",
     # "behave_django": "third_party",
     # "channels": "third_party",
     # "model_clone": "third_party",
@@ -192,7 +190,7 @@ MIDDLEWARE = [
     # "bluewind.middleware.custom_middleware",
     # "silk.middleware.SilkyMiddleware",
     # "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
