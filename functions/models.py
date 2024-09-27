@@ -26,4 +26,7 @@ class Function(WorkspaceRelated):
     @property
     def version_number(self):
         match = re.search(r"_v(\d+)$", self.name)
-        return int(match.group(1)) if match else None
+        return int(match.group(1))
+
+    def __str__(self):
+        return self.name

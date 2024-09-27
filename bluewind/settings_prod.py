@@ -244,6 +244,7 @@ DATABASES = {
             "MAX_CONNS": 100,  # Adjust based on your needs
             "REUSE_CONNS": 100,  # Adjust based on your needs
         },
+        "ATOMIC_REQUESTS": True,  # Add this line
     }
 }
 

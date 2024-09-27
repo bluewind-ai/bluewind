@@ -23,5 +23,4 @@ def handle_query_params_v1(query_params, function_call_id):
         module = importlib.import_module("functions.master.v1.functions")
         # raise Exception(module, func_name)
         func = getattr(module, func_name)
-
         return func(function_call=function_call)

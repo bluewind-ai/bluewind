@@ -12,23 +12,12 @@ logger = logging.getLogger("django.not_used")
 
 # @bluewind_function()
 def get_function_or_create_from_file(function_name):
-    # Parse function_name and version_number
-    match = re.match(r"(.+)_v(\d+)$", function_name)
-    if not match:
-        logger.error(f"Invalid function name format: {function_name}")
-        return None
-
-    parsed_function_name, version_number = match.groups()
-    version_number = int(version_number)
-
     function = Function.objects.filter(name=function_name).first()
     if function:
         return function
-
-    logger.debug(
-        f"Processing function: {parsed_function_name}, version: {version_number}"
-    )
-
+    name_without_version = re.sub(r"_v\d+$", "", function_name)
+    match = re.search(r"_v(\d+)$", function_name)
+    version_number = int(match.group(1))
     base_dir = os.environ.get("BASE_DIR", ".")
     default_user_id = 1
     default_workspace_id = 1
@@ -37,7 +26,7 @@ def get_function_or_create_from_file(function_name):
     file_path = os.path.join(
         base_dir,
         "functions",
-        parsed_function_name,
+        name_without_version,
         f"v{version_number}",
         "functions.py",
     )
@@ -67,6 +56,6 @@ def get_function_or_create_from_file(function_name):
             workspace_id=default_workspace_id,
         )
 
-    logger.info(f"Created function: {parsed_function_name}, version: {version_number}")
+    logger.info(f"Created function: {function_name}")
 
     return function
