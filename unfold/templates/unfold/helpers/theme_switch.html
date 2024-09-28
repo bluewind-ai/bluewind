@@ -1,4 +1,4 @@
-{% load i18n %}
+{% comment %} {% load i18n %}
 
 <div class="relative" x-data="{ openTheme: false }">
     <a class="block cursor-pointer leading-none hover:text-gray-700  dark:hover:text-gray-200" x-on:click="openTheme = !openTheme">
@@ -29,4 +29,4 @@
             <span class="leading-none self-center">{% trans "System" %}</span>
         </a>
     </nav>
-</div>
+</div> {% endcomment %}
