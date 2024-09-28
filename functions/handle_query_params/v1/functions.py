@@ -15,22 +15,18 @@ def snake_to_camel_case_uppercase(snake_str):
 
 
 @bluewind_function_v1()
-def handle_query_params_v1(query_params, function_call_id):
-    function_name = query_params.get("function")
-    if function_name == "approve_function_call":
-        function_call = FunctionCall.objects.get(id=function_call_id)
+def handle_query_params_v1(function_call_id):
+    function_call = FunctionCall.objects.get(id=function_call_id)
 
-        function_call.status = FunctionCall.Status.APPROVED
-        function_call.save()
-        # Assume the function is in the current module if no module is specified
-        func = get_function(function_call)
-        set_approved_function_call(function_call)
+    function_call.status = FunctionCall.Status.APPROVED
+    function_call.save()
+    # Assume the function is in the current module if no module is specified
+    func = get_function(function_call)
+    set_approved_function_call(function_call)
 
-        # Create an instance of the input form with the initial data
-        input_form = get_filled_input_form(function_call)
-        return func(**input_form.cleaned_data)
-    # Handle other cases if needed
-    return None
+    # Create an instance of the input form with the initial data
+    input_form = get_filled_input_form(function_call)
+    return func(**input_form.cleaned_data)
 
 
 def get_input_form(function_call):
