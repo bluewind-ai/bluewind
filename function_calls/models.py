@@ -52,6 +52,11 @@ class FunctionCall(WorkspaceRelated):
         blank=True,
         related_name="children",
     )
+    long_description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="A detailed description of the function call, its purpose, and any additional context.",
+    )
 
     def __str__(self):
         return f"{self.function.name} on {self.executed_at}"

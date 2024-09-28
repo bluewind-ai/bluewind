@@ -391,6 +391,7 @@ UNFOLD = {
     "SITE_HEADER": "Bluewind",
     "SHOW_HISTORY": False,
     "SHOW_VIEW_ON_SITE": False,
+    "SHOW_BREADCRUMBS": False,
     "SIDEBAR": {
         "show_search": False,  # Search in applications and models names
         "show_all_applications": False,  # Dropdown with all applications and models,

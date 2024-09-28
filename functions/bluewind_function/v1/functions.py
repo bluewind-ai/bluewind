@@ -59,7 +59,9 @@ def bluewind_function_v1():
                     f"Create function call for {func.__name__} asking for approval"
                 )
 
-            return redirect(f"/function-calls/functioncall/{function_call.id}/change")
+            return redirect(
+                f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
+            )
 
         return wrapper
 
