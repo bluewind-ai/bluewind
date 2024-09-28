@@ -7,6 +7,7 @@ from bluewind.context_variables import (
     get_workspace_id,
     set_approved_function_call,
 )
+from form_data.models import FormData
 from function_calls.models import FunctionCall
 from functions.get_function_or_create_from_file.v1.functions import (
     get_function_or_create_from_file_v1,
@@ -48,12 +49,27 @@ def bluewind_function_v1():
             logger.debug(
                 f"{func.__name__} not approved yet, asking for approval and redirecting"
             )
-
             with transaction.atomic():
                 input_form = get_input_form_or_create_from_file_v1(func)
+                input_form_data = None
+                if input_form:
+                    parameter_function_call = next(iter(kwargs.values()))
+                    input_form_data = parameter_function_call.output_form_data
                 output_form = get_output_form_or_create_from_file_v1(func)
-                # if output_form:
-                #     raise ValueError(f"Form not found for {func.__name__}")
+                output_form_data = None
+                status = FunctionCall.Status.READY_FOR_APPROVAL
+                if output_form:
+                    parameter_function_call = next(iter(kwargs.values()))
+                    output_form_data = FormData.objects.create(
+                        data={},
+                        form=input_form,
+                    )
+
+                    if (
+                        parameter_function_call.status
+                        not in FunctionCall.successful_terminal_stages()
+                    ):
+                        status = FunctionCall.Status.CONDITIONS_NOT_MET
                 function = get_function_or_create_from_file_v1(func.__name__)
                 assert function is not None, "function hasn't been found in the DB"
                 logger.debug(f"{func.__name__} found in the DB")
@@ -62,11 +78,10 @@ def bluewind_function_v1():
                     parent_id=None,
                     workspace_id=get_workspace_id(),
                     user_id=1,
-                    input_form=input_form,
-                    input_data={},
-                    output_form=output_form,
-                    output_data={},
-                    status=FunctionCall.Status.READY_FOR_APPROVAL,
+                    input_parameter_name="todo",
+                    input_form_data=input_form_data,
+                    output_form_data=output_form_data,
+                    status=status,
                 )
                 logger.debug(
                     f"Create function call for {func.__name__} asking for approval"

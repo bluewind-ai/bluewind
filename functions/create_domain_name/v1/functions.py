@@ -9,4 +9,4 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 
 @bluewind_function_v1()
 def create_domain_name_v1() -> CreateDomainNameV1:
-    pass
+    return CreateDomainNameV1()

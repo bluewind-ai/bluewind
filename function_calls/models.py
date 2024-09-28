@@ -41,23 +41,22 @@ class FunctionCall(WorkspaceRelated):
     state = models.JSONField(default=dict)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
-    input_data = models.JSONField(default=dict, blank=True)
-    input_form = models.ForeignKey(
-        "forms.Form",
+    input_parameter_name = models.CharField(max_length=255)
+    input_form_data = models.ForeignKey(
+        "form_data.FormData",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="input_function_calls",
+        related_name="function_calls_using_as_input",
+    )
+    output_form_data = models.ForeignKey(
+        "form_data.FormData",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="function_calls_using_as_output",
     )
 
-    output_data = models.JSONField(default=dict, blank=True)
-    output_form = models.ForeignKey(
-        "forms.Form",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="output_function_calls",
-    )
     executed_at = models.DateTimeField(null=True, blank=True)
     function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
     parent = models.ForeignKey(
@@ -67,10 +66,23 @@ class FunctionCall(WorkspaceRelated):
         blank=True,
         related_name="children",
     )
+
     thoughts = models.TextField(
         blank=True,
         null=True,
     )
+
+    @classmethod
+    def successful_terminal_stages(cls):
+        return [
+            cls.Status.COMPLETED,
+            cls.Status.MARKED_SUCCESSFUL,
+            cls.Status.SUCCESSFUL,
+        ]
+
+    @property
+    def is_successful_terminal_stage(self):
+        return self.status in self.successful_terminal_stages()
 
     def __str__(self):
         return f"{self.function.name} on {self.executed_at}"

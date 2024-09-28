@@ -20,7 +20,6 @@ class FunctionCallForm(forms.ModelForm):
             "state",
             "user",
             "workspace",
-            "input_data",
             "executed_at",
             "parent",
         ]
@@ -45,7 +44,12 @@ class FunctionCallAdmin(InWorkspace, admin.ModelAdmin):
         url_path="approve_function_call",
     )
     def approve_function_call(self, request: HttpRequest, object_id: int):
-        function_call = approve_function_call_v1(function_call_id=object_id)
+        approve_function_call_v1(function_call_id=object_id)
+        function_call = FunctionCall.objects.filter(
+            status=FunctionCall.Status.READY_FOR_APPROVAL
+        ).first()
+        if function_call.function.name == "create_domain_name_v1":
+            raise Exception("Function call not approved")
         return redirect(
             f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
         )

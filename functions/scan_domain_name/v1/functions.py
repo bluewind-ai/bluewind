@@ -1,5 +1,6 @@
 import dns.resolver
 
+from forms.create_domain_name.v1.forms import CreateDomainNameV1
 from functions.bluewind_function.v1.functions import bluewind_function_v1
 
 
@@ -52,7 +53,7 @@ def query_dns(domain, record_type):
 
 
 @bluewind_function_v1()
-def scan_domain_name_v1(domain_name):
+def scan_domain_name_v1(domain_name=CreateDomainNameV1):
     dns_records = {
         "A": [],
         "AAAA": [],

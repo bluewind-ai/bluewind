@@ -35,8 +35,9 @@ def get_input_form(function_call):
     form_name = snake_to_camel_case_uppercase(function_call.function.name) + "Form"
     input_form_class = getattr(input_form_module, form_name)
 
-    # Create an instance of the input form with the initial data
-    return input_form_class(data=function_call.input_data)
+    if function_call.input_form_data is None:
+        return input_form_class(data={})
+    return input_form_class(data=function_call.input_form_data.data)
 
 
 def get_filled_input_form(function_call):

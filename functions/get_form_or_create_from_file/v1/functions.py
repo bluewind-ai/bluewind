@@ -12,7 +12,6 @@ logger = logging.getLogger("django.not_used")
 
 def get_name_and_version_from_camel_case_name(camel_case_name):
     # Split the name and version
-    raise Exception(camel_case_name)
     match = re.match(r"(.+)V(\d+)$", camel_case_name)
 
     if not match:
