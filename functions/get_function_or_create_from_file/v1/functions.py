@@ -11,7 +11,7 @@ logger = logging.getLogger("django.not_used")
 
 
 # @bluewind_function()
-def get_function_or_create_from_file(function_name):
+def get_function_or_create_from_file_v1(function_name):
     function = Function.objects.filter(name=function_name).first()
     if function:
         return function

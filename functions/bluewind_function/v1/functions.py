@@ -8,8 +8,14 @@ from bluewind.context_variables import (
     set_approved_function_call,
 )
 from function_calls.models import FunctionCall
-from functions.get_function_or_create_from_file.functions import (
-    get_function_or_create_from_file,
+from functions.get_function_or_create_from_file.v1.functions import (
+    get_function_or_create_from_file_v1,
+)
+from functions.get_input_form_or_create_from_file.v1.functions import (
+    get_input_form_or_create_from_file_v1,
+)
+from functions.get_output_form_or_create_from_file.v1.functions import (
+    get_output_form_or_create_from_file_v1,
 )
 
 logger = logging.getLogger("django.not_used")
@@ -44,8 +50,11 @@ def bluewind_function_v1():
             )
 
             with transaction.atomic():
-                raise Exception(func.__annotations__.get("return"))
-                function = get_function_or_create_from_file(func.__name__)
+                input_form = get_input_form_or_create_from_file_v1(func)
+                output_form = get_output_form_or_create_from_file_v1(func)
+                # if output_form:
+                #     raise ValueError(f"Form not found for {func.__name__}")
+                function = get_function_or_create_from_file_v1(func.__name__)
                 assert function is not None, "function hasn't been found in the DB"
                 logger.debug(f"{func.__name__} found in the DB")
                 function_call = FunctionCall.objects.create(
@@ -53,6 +62,10 @@ def bluewind_function_v1():
                     parent_id=None,
                     workspace_id=get_workspace_id(),
                     user_id=1,
+                    input_form=input_form,
+                    input_data={},
+                    output_form=output_form,
+                    output_data={},
                     status=FunctionCall.Status.READY_FOR_APPROVAL,
                 )
                 logger.debug(
