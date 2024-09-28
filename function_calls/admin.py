@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base_model_admin.admin import InWorkspace
 from function_calls.models import FunctionCall
-from functions.handle_query_params.v1.functions import approve_function_call_v1
+from functions.approve_function_call.v1.functions import approve_function_call_v1
 from unfold.decorators import action
 
 
@@ -42,7 +42,7 @@ class FunctionCallAdmin(InWorkspace, admin.ModelAdmin):
 
     @action(
         description=_("Approve"),
-        url_path="retry-function-call",
+        url_path="approve_function_call",
     )
     def approve_function_call(self, request: HttpRequest, object_id: int):
         function_call = approve_function_call_v1(function_call_id=object_id)

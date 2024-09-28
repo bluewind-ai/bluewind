@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     "django_json_widget",
     "import_export",
     "domain_names",
+    "forms",
+    "form_data",
     # "behave_django",
     # "channels",
     # "model_clone",
@@ -106,8 +108,8 @@ INSTALLED_APPS = [
 
 APP_TYPE = {
     # Django core apps
-    "unfold": "custom",
-    "unfold.contrib.import_export": "custom",
+    "unfold": "third_party",
+    "unfold.contrib.import_export": "third_party",
     "import_export": "third_party",
     "django.contrib.admin": "django",
     "django.contrib.auth": "django",
@@ -127,7 +129,9 @@ APP_TYPE = {
     "admin_autoregister": "custom",
     "debug_toolbar": "custom",
     "django_json_widget": "third_party",
-    "domain_names": "third_party",
+    "domain_names": "custom",
+    "forms": "custom",
+    "form_data": "custom",
     # "behave_django": "third_party",
     # "channels": "third_party",
     # "model_clone": "third_party",

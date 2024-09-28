@@ -30,7 +30,7 @@ def bluewind_function_v1():
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            if func.__name__ == "handle_query_params_v1":
+            if func.__name__ == "approve_function_call_v1":
                 logger.debug(f"{func.__name__} called, do nothing and return")
                 return func(*args, **kwargs)
 
@@ -44,6 +44,7 @@ def bluewind_function_v1():
             )
 
             with transaction.atomic():
+                raise Exception(func.__annotations__.get("return"))
                 function = get_function_or_create_from_file(func.__name__)
                 assert function is not None, "function hasn't been found in the DB"
                 logger.debug(f"{func.__name__} found in the DB")

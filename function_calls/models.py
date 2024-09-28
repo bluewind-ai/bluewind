@@ -42,7 +42,7 @@ class FunctionCall(WorkspaceRelated):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     input_data = models.JSONField(default=dict, blank=True)
-    input_data = models.JSONField(default=dict, blank=True)
+    output_data = models.JSONField(default=dict, blank=True)
     executed_at = models.DateTimeField(null=True, blank=True)
     function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
     parent = models.ForeignKey(
