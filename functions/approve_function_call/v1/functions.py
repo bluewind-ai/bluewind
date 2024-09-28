@@ -15,7 +15,7 @@ def snake_to_camel_case_uppercase(snake_str):
 
 
 @bluewind_function_v1()
-def handle_query_params_v1(function_call_id):
+def approve_function_call_v1(function_call_id):
     function_call = FunctionCall.objects.get(id=function_call_id)
 
     function_call.status = FunctionCall.Status.APPROVED

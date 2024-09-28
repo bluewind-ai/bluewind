@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_json_widget",
     "import_export",
+    "domain_names",
     # "behave_django",
     # "channels",
     # "model_clone",
@@ -100,7 +101,6 @@ INSTALLED_APPS = [
     # "supervisord",
     # "approvals",
     # "user_settings",
-    # "domain_names",
     # "dns_records",
 ]
 
@@ -127,6 +127,7 @@ APP_TYPE = {
     "admin_autoregister": "custom",
     "debug_toolbar": "custom",
     "django_json_widget": "third_party",
+    "domain_names": "third_party",
     # "behave_django": "third_party",
     # "channels": "third_party",
     # "model_clone": "third_party",
@@ -172,7 +173,6 @@ APP_TYPE = {
     # "supervisord": "custom",
     # "approvals": "custom",
     # "user_settings": "custom",
-    # "domain_names": "custom",
     # "dns_records": "custom",
     # "silk": "third_party",
 }

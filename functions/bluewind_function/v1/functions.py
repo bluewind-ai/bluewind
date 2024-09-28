@@ -1,7 +1,6 @@
 import logging
 
 from django.db import transaction
-from django.shortcuts import redirect
 
 from bluewind.context_variables import (
     get_approved_function_call,
@@ -59,9 +58,7 @@ def bluewind_function_v1():
                     f"Create function call for {func.__name__} asking for approval"
                 )
 
-            return redirect(
-                f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
-            )
+                return function_call
 
         return wrapper
 

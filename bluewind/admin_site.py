@@ -96,7 +96,10 @@ class CustomAdminSite(UnfoldAdminSite):
         def inner(request, *args, **kwargs):
             # raise Exception("This is an exception")
             if request.path == "/workspaces/2/admin/":
-                return master_v1(None)
+                function_call = master_v1()
+                return redirect(
+                    f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
+                )
             # raise Exception("This is an exception")
 
             logger.debug(f"Starting request handling in greenlet {id(getcurrent())}")
