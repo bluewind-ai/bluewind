@@ -241,3 +241,6 @@ class Meta:
         ]
 
 prevent usage of this: it''s more verbous
+
+
+Ask the LLM: could the model be more restrictive? (for example allow only certain types of domains)

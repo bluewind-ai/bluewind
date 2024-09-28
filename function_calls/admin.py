@@ -49,6 +49,9 @@ class FunctionCallAdmin(InWorkspace, admin.ModelAdmin):
             status=FunctionCall.Status.READY_FOR_APPROVAL
         ).first()
         if function_call.function.name == "create_domain_name_v1":
+            return redirect(
+                f"/workspaces/2/admin/domain_names/domainname/add/?function_call={function_call.id}"
+            )
             raise Exception("Function call not approved")
         return redirect(
             f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"

@@ -55,21 +55,19 @@ def bluewind_function_v1():
                 if input_form:
                     parameter_function_call = next(iter(kwargs.values()))
                     input_form_data = parameter_function_call.output_form_data
-                output_form = get_output_form_or_create_from_file_v1(func)
-                output_form_data = None
-                status = FunctionCall.Status.READY_FOR_APPROVAL
-                if output_form:
-                    parameter_function_call = next(iter(kwargs.values()))
-                    output_form_data = FormData.objects.create(
-                        data={},
-                        form=input_form,
-                    )
-
                     if (
                         parameter_function_call.status
                         not in FunctionCall.successful_terminal_stages()
                     ):
                         status = FunctionCall.Status.CONDITIONS_NOT_MET
+                output_form = get_output_form_or_create_from_file_v1(func)
+                output_form_data = None
+                status = FunctionCall.Status.READY_FOR_APPROVAL
+                if output_form:
+                    output_form_data = FormData.objects.create(
+                        data={},
+                        form=output_form,
+                    )
                 function = get_function_or_create_from_file_v1(func.__name__)
                 assert function is not None, "function hasn't been found in the DB"
                 logger.debug(f"{func.__name__} found in the DB")
