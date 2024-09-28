@@ -52,10 +52,9 @@ class FunctionCall(WorkspaceRelated):
         blank=True,
         related_name="children",
     )
-    long_description = models.TextField(
+    thoughts = models.TextField(
         blank=True,
         null=True,
-        help_text="A detailed description of the function call, its purpose, and any additional context.",
     )
 
     def __str__(self):

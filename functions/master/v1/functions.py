@@ -9,4 +9,8 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 
 @bluewind_function_v1()
 def master_v1():
+    """
+    Summary:
+
+    """
     return avoid_going_into_spam_v1()
