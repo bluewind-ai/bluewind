@@ -13,5 +13,5 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 
 @bluewind_function_v1()
 def avoid_going_into_spam_v1():
-    test = create_domain_name_v1()
-    return scan_domain_name_v1(domain_name=test)
+    domain_name = create_domain_name_v1()
+    scan_domain_name_v1(domain_name=domain_name)

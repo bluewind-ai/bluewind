@@ -7,6 +7,9 @@ from django.utils.translation import gettext_lazy as _
 from base_model_admin.admin import InWorkspace
 from function_calls.models import FunctionCall
 from functions.approve_function_call.v1.functions import approve_function_call_v1
+from functions.get_allowed_actions_on_function_call.v1.functions import (
+    get_allowed_actions_on_function_call_v1,
+)
 from unfold.decorators import action
 
 
@@ -66,6 +69,24 @@ class FunctionCallAdmin(InWorkspace, admin.ModelAdmin):
         return redirect(
             f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
         )
+
+    def get_actions_detail(self, request, obj=None):
+        function_call = FunctionCall.objects.get(pk=obj)
+        actions = super().get_actions_detail(request, obj)
+        allowed_actions = get_allowed_actions_on_function_call_v1(function_call)
+        actions = [action for action in actions if action.path in allowed_actions]
+        # if self.function_call.status == FunctionCall.Status.READY_FOR_APPROVAL:
+        #     allowed_actions.append("approve_function_call
+        # new_actions = []
+        # for action in actions:
+        #     new_actions.append(action)
+        #     if action["description"] == "Approve":
+        #         action["url"] = (
+        #             f"/workspaces/2/admin/function_calls/functioncall/{obj.id}/approve_function_call"
+        #         )
+        # if random.random() < 0.5:  # 50% chance
+        #     return []
+        return actions
 
     # @action(
     #     description=_("Approve"),
