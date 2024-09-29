@@ -5,8 +5,10 @@ from django.db import transaction
 
 from bluewind.context_variables import (
     get_approved_function_call,
+    get_parent_function_call,
     get_workspace_id,
     set_approved_function_call,
+    set_parent_function_call,
 )
 from function_call_dependencies.models import FunctionCallDependency
 from function_calls.models import FunctionCall
@@ -60,7 +62,7 @@ def bluewind_function_v1():
                         raise Exception("todo")
 
                 set_approved_function_call(None)
-
+                set_parent_function_call(function_call)
                 result = func(*args, **kwargs)
                 if func.__name__ == "scan_domain_name_v1":
                     function_call.status = (
@@ -77,6 +79,7 @@ def bluewind_function_v1():
             logger.debug(
                 f"{func.__name__} not approved yet, asking for approval and redirecting"
             )
+
             with transaction.atomic():
                 # input_form = get_input_form_or_create_from_file_v1(func)
                 # input_form_data = None
@@ -101,7 +104,7 @@ def bluewind_function_v1():
                 logger.debug(f"{func.__name__} found in the DB")
                 function_call = FunctionCall.objects.create(
                     function=function,
-                    parent_id=None,
+                    parent=get_parent_function_call(),
                     workspace_id=get_workspace_id(),
                     user_id=1,
                     status=status,

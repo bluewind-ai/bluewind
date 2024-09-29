@@ -18,7 +18,18 @@ from unfold.decorators import action
 
 class ChildFunctionCallInline(admin.TabularInline):
     model = FunctionCall
-    extra = 1
+    extra = 0
+    fields = ("function",)
+    readonly_fields = ("function",)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class FunctionCallForm(forms.ModelForm):

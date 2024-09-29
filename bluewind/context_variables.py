@@ -4,8 +4,8 @@ request_id_var = ContextVar("request_id")
 log_records_var = ContextVar("log_records")
 workspace_id_var = ContextVar("workspace_id")
 startup_mode_var = ContextVar("startup_mode", default=True)
-parent_function_call_id_var = ContextVar("startup_mode", default=None)
-approved_function_call_var = ContextVar("startup_mode", default=None)
+parent_function_call_var = ContextVar("parent_function_call", default=None)
+approved_function_call_var = ContextVar("approved_function_call", default=None)
 
 
 def get_request_id():
@@ -45,17 +45,17 @@ def get_user_id():
     return 1
 
 
-def get_parent_function_call_id():
-    return parent_function_call_id_var.get()
-
-
-def set_parent_function_call_id(parent_function_call_id):
-    parent_function_call_id_var.set(parent_function_call_id)
-
-
 def get_approved_function_call():
     return approved_function_call_var.get()
 
 
 def set_approved_function_call(approved_function_call):
     approved_function_call_var.set(approved_function_call)
+
+
+def get_parent_function_call():
+    return parent_function_call_var.get()
+
+
+def set_parent_function_call(parent_function_call):
+    parent_function_call_var.set(parent_function_call)
