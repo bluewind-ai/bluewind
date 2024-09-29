@@ -2,6 +2,7 @@ import logging
 
 from django.db import transaction
 
+from function_call_dependencies.models import FunctionCallDependency
 from function_calls.models import FunctionCall
 
 logger = logging.getLogger("django.not_used")
@@ -27,6 +28,12 @@ def handle_function_call_after_save_v1(object):
         )
         object.function_call.status = FunctionCall.Status.COMPLETED
         object.function_call.save()
+        dependencies = FunctionCallDependency.objects.filter(
+            dependency=object.function_call,
+        )
+        for dependency in dependencies:
+            dependency.dependent.remaining_dependencies -= 1
+            dependency.dependent.save()
         # form_class = import_form_using_db_object_v1(output_form_data)
         # if form_class(data={"name": 1}).is_valid():
         #     raise Exception("Form is valid")

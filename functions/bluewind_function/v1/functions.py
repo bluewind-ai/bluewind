@@ -9,6 +9,9 @@ from bluewind.context_variables import (
 )
 from form_data.models import FormData
 from function_calls.models import FunctionCall
+from functions.build_function_dependencies.v1.functions import (
+    build_function_dependencies_v1,
+)
 from functions.get_function_or_create_from_file.v1.functions import (
     get_function_or_create_from_file_v1,
 )
@@ -43,6 +46,7 @@ def bluewind_function_v1():
 
             if get_approved_function_call():
                 logger.debug(f"{func.__name__} approved, calling the function")
+
                 set_approved_function_call(None)
 
                 return func(*args, **kwargs)
@@ -82,6 +86,11 @@ def bluewind_function_v1():
                     output_form_data=output_form_data,
                     status=status,
                 )
+                remaining_dependencies = build_function_dependencies_v1(
+                    function_call, kwargs
+                )
+                function_call.remaining_dependencies = remaining_dependencies
+                function_call.save()
                 logger.debug(
                     f"Create function call for {func.__name__} asking for approval"
                 )

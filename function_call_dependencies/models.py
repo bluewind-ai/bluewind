@@ -1,16 +1,18 @@
 from django.db import models
 from django.forms import ValidationError
 
-from functions.models import Function
-
 
 # Create your models here.
-class FunctionDependency(models.Model):
+class FunctionCallDependency(models.Model):
     dependent = models.ForeignKey(
-        Function, on_delete=models.CASCADE, related_name="dependency_relations"
+        "function_calls.FunctionCall",
+        on_delete=models.CASCADE,
+        related_name="dependency_relations",
     )
     dependency = models.ForeignKey(
-        Function, on_delete=models.CASCADE, related_name="dependent_relations"
+        "function_calls.FunctionCall",
+        on_delete=models.CASCADE,
+        related_name="dependent_relations",
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
