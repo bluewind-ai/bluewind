@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # Django core apps
     "unfold",
     "unfold.contrib.import_export",
+    "unfold.contrib.inlines",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
     "function_call_dependencies",
     "function_variables",
     "models",
+    "test_inlines",
     # # "behave_django",
     # "channels",
     # "model_clone",
@@ -111,8 +113,10 @@ INSTALLED_APPS = [
 APP_TYPE = {
     # Django core apps
     "unfold": "third_party",
+    "unfold.contrib.inlines": "third_party",
     "unfold.contrib.import_export": "third_party",
     "import_export": "third_party",
+    "test_inlines": "custom",
     "django.contrib.admin": "django",
     "django.contrib.auth": "django",
     "django.contrib.contenttypes": "django",
