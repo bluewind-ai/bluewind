@@ -14,11 +14,12 @@ class FunctionCallForm(forms.ModelForm):
     class Meta:
         model = FunctionCall
         fields = [
-            "thoughts",
             "status",
             "function",
             "state",
+            "output_data",
             "user",
+            "thoughts",
             "workspace",
             "executed_at",
             "parent",
@@ -46,6 +47,15 @@ class FunctionCallAdmin(InWorkspace, admin.ModelAdmin):
     def approve_function_call(self, request: HttpRequest, object_id: int):
         approve_function_call_v1(function_call_id=object_id)
         function_call = FunctionCall.objects.filter(
+            status=FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
+        ).first()
+
+        if function_call:
+            return redirect(
+                f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
+            )
+
+        function_call = FunctionCall.objects.filter(
             status=FunctionCall.Status.READY_FOR_APPROVAL
         ).first()
         if function_call.function.name == "create_domain_name_v1":
@@ -56,6 +66,16 @@ class FunctionCallAdmin(InWorkspace, admin.ModelAdmin):
         return redirect(
             f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
         )
+
+    # @action(
+    #     description=_("Approve"),
+    #     url_path="mark_function_call_as_failed",
+    # )
+    # def mark_function_call_as_failed(self, request: HttpRequest, object_id: int):
+    #     mark_function_call_as_failed_v1(function_call_id=object_id)
+    #     return redirect(
+    #         f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
+    #     )
 
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         # Add your permission logic here

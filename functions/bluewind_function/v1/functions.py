@@ -61,12 +61,17 @@ def bluewind_function_v1():
 
                 set_approved_function_call(None)
 
-                func(*args, **kwargs)
-                if func.__name__ == "master_v1":
-                    # raise Exception(function_call.status)
-                    pass
+                result = func(*args, **kwargs)
+                if func.__name__ == "scan_domain_name_v1":
+                    function_call.status = (
+                        FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
+                    )
+                    function_call.output_data = result
+                    function_call.save()
+                    return
                 function_call.status = FunctionCall.Status.COMPLETED
                 function_call.save()
+
                 return
 
             logger.debug(

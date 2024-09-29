@@ -13,7 +13,25 @@ def fetch_subdomains(domain):
     Returns:
         list: A list of specified subdomains.
     """
-    return [domain, f"_dmarc.{domain}", f"google._domainkey.{domain}"]
+    return [
+        domain,
+        f"_dmarc.{domain}",
+        f"google._domainkey.{domain}",
+        f"resend._domainkey.{domain}",
+        f"mailgun._domainkey.{domain}",
+        f"sendgrid._domainkey.{domain}",
+        f"amazonses._domainkey.{domain}",
+        f"mailchimp._domainkey.{domain}",
+        f"mandrill._domainkey.{domain}",
+        f"postmark._domainkey.{domain}",
+        f"sparkpost._domainkey.{domain}",
+        f"sendinblue._domainkey.{domain}",
+        f"outlook._domainkey.{domain}",
+        f"zoho._domainkey.{domain}",
+        f"protonmail._domainkey.{domain}",
+        f"fastmail._domainkey.{domain}",
+        f"www.{domain}",
+    ]
 
 
 def query_dns(domain, record_type):
@@ -86,5 +104,4 @@ def scan_domain_name_v1(domain_name="DomainName"):
     # Remove duplicates and sort
     for record_type in dns_records:
         dns_records[record_type] = sorted(list(set(dns_records[record_type])))
-
     return dns_records
