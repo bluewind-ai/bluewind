@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib import admin
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
@@ -13,7 +12,13 @@ from functions.go_next.v1.functions import go_next_v1
 from functions.handle_mark_function_call_as_successful.v1.functions import (
     handle_mark_function_call_as_successful_v1,
 )
+from unfold import admin
 from unfold.decorators import action
+
+
+class ChildFunctionCallInline(admin.TabularInline):
+    model = FunctionCall
+    extra = 1
 
 
 class FunctionCallForm(forms.ModelForm):
@@ -32,10 +37,10 @@ class FunctionCallForm(forms.ModelForm):
         ]
 
 
-@admin.register(FunctionCall)
-class FunctionCallAdmin(InWorkspace, admin.ModelAdmin):
+class FunctionCallAdmin(InWorkspace):
     form = FunctionCallForm
     actions_detail = ["approve_function_call", "mark_function_call_as_successful"]
+    inlines = [ChildFunctionCallInline]
 
     def has_add_permission(self, request):
         return False
