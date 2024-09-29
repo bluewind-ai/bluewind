@@ -17,8 +17,8 @@ class FunctionCall(WorkspaceRelated):
         RUNNING = "running", "Running"
         COMPLETED = "completed", "Completed"
         COMPLETED_READY_FOR_APPROVAL = (
-            "completed-waiting-for-approval",
-            "Completed Waiting for Approval",
+            "completed-ready-for-approval",
+            "Completed Ready for Approval",
         )
         MARKED_SUCCESSFUL = (
             "marked-successful",
