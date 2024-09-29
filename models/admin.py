@@ -9,6 +9,4 @@ from .models import Model
 
 @admin.register(Model)
 class ModelAdmin(InWorkspace):
-    list_display = ("app", "workspace", "file")
-    list_filter = ("app", "workspace")
-    search_fields = ("app", "file__path")
+    pass

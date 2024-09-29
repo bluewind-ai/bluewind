@@ -55,7 +55,7 @@ def build_and_push_docker_image(output_data, log_file, env, verbose=True):
         for command in push_commands:
             run_command(command, log_file, env=env, verbose=verbose)
 
-        # keep this for later
+        # keep th for later
         last_deployment = {"image_id": new_image_id}
 
         with open("last_deployment.json", "w") as file:
@@ -71,7 +71,7 @@ def run_deploy(log_file, verbose=True):
     logger.debug("Starting deployment process")
 
     env = os.environ.copy()
-    if os.path.exists(".aws"):
+    if os.path.exts(".aws"):
         with open(".aws", "r") as f:
             for line in f:
                 if "=" in line:
@@ -145,7 +145,7 @@ def run_deploy(log_file, verbose=True):
 
     elbv2_client.modify_target_group_attributes(
         TargetGroupArn=new_target_group_arn,
-        Attributes=[{"Key": "deregistration_delay.timeout_seconds", "Value": "10"}],
+        Attributes=[{"Key": "deregtration_delay.timeout_seconds", "Value": "10"}],
     )
 
     logger.debug(f"Cluster ARN: {cluster_arn}")
@@ -191,7 +191,7 @@ def run_deploy(log_file, verbose=True):
     ]
     logger.debug(secrets)
 
-    task_definition_response = ecs_client.register_task_definition(
+    task_definition_response = ecs_client.regter_task_definition(
         family="app-task",
         taskRoleArn=ecs_task_execution_role_arn,
         executionRoleArn=ecs_task_execution_role_arn,
@@ -220,7 +220,7 @@ def run_deploy(log_file, verbose=True):
     )
     task_definition = f"{
         task_definition_response['taskDefinition']['family']}:{
-        task_definition_response['taskDefinition']['revision']}"
+        task_definition_response['taskDefinition']['revion']}"
     logger.debug(f"New task definition created: {task_definition}")
 
     logger.debug("Describing ECS service")
@@ -234,7 +234,7 @@ def run_deploy(log_file, verbose=True):
     ]
 
     logger.debug(json.dumps(active_task_sets, indent=4, sort_keys=True, default=str))
-    logger.debug(f"Found {len(active_task_sets)} existing task sets")
+    logger.debug(f"Found {len(active_task_sets)} exting task sets")
 
     if len(active_task_sets) > 1:
         logger.debug(
@@ -276,7 +276,7 @@ def run_deploy(log_file, verbose=True):
         return False
 
     if len(active_task_sets) == 0:
-        logger.debug("No task was running in this environment previously")
+        logger.debug("No task was running in th environment previously")
 
     logger.debug("Waiting for new task set to reach steady state")
     max_attempts = 70
@@ -284,7 +284,7 @@ def run_deploy(log_file, verbose=True):
 
     certificate_arn = "arn:aws:acm:us-west-2:484907521409:certificate/4578643a-1b4c-4810-97d2-dfa9d6680596"
 
-    existing_listeners = elbv2_client.describe_listeners(
+    exting_lteners = elbv2_client.describe_lteners(
         LoadBalancerArn=output_data["alb_arn"]["value"]
     )
 
@@ -300,29 +300,29 @@ def run_deploy(log_file, verbose=True):
         if response["taskSets"][0]["stabilityStatus"] == "STEADY_STATE":
             logger.debug("New task set reached steady state")
 
-            existing_listeners = elbv2_client.describe_listeners(
+            exting_lteners = elbv2_client.describe_lteners(
                 LoadBalancerArn=output_data["alb_arn"]["value"]
             )
 
-            green_listener = next(
+            green_ltener = next(
                 (
-                    listener
-                    for listener in existing_listeners["Listeners"]
-                    if listener["Port"] == 8080
+                    ltener
+                    for ltener in exting_lteners["Lteners"]
+                    if ltener["Port"] == 8080
                 ),
                 None,
             )
-            if green_listener:
-                green_listener_arn = green_listener["ListenerArn"]
+            if green_ltener:
+                green_ltener_arn = green_ltener["LtenerArn"]
 
-                response = elbv2_client.modify_listener(
-                    ListenerArn=green_listener_arn,
+                response = elbv2_client.modify_ltener(
+                    LtenerArn=green_ltener_arn,
                     DefaultActions=[
                         {"Type": "forward", "TargetGroupArn": new_target_group_arn}
                     ],
                 )
             else:
-                elbv2_client.create_listener(
+                elbv2_client.create_ltener(
                     LoadBalancerArn=output_data["alb_arn"]["value"],
                     Protocol="HTTP",
                     Port=8080,
@@ -332,20 +332,20 @@ def run_deploy(log_file, verbose=True):
                 )
 
             # if not run_e2e_prod_green('logs/test.log', verbose=True):
-            #     raise("E2E prod green failed")
+            #     rae("E2E prod green failed")
 
-            https_listener = next(
+            https_ltener = next(
                 (
-                    listener
-                    for listener in existing_listeners["Listeners"]
-                    if listener["Port"] == 443
+                    ltener
+                    for ltener in exting_lteners["Lteners"]
+                    if ltener["Port"] == 443
                 ),
                 None,
             )
-            if https_listener:
-                https_listener_arn = https_listener["ListenerArn"]
-                elbv2_client.modify_listener(
-                    ListenerArn=https_listener_arn,
+            if https_ltener:
+                https_ltener_arn = https_ltener["LtenerArn"]
+                elbv2_client.modify_ltener(
+                    LtenerArn=https_ltener_arn,
                     Port=443,
                     Protocol="HTTPS",
                     SslPolicy="ELBSecurityPolicy-2016-08",
@@ -355,7 +355,7 @@ def run_deploy(log_file, verbose=True):
                     ],
                 )
             else:
-                elbv2_client.create_listener(
+                elbv2_client.create_ltener(
                     LoadBalancerArn=output_data["alb_arn"]["value"],
                     Port=443,
                     Protocol="HTTPS",
