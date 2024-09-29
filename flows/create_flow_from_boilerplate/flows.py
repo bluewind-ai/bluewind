@@ -91,7 +91,7 @@ def create_flow_from_boilerplate(flow_run, flow_name, flow_to_clone):
     def to_snake_case(string):
         return re.sub(r"(?<!^)(?=[A-Z])", "_", string).lower()
 
-    def to_camel_case(string):
+    def to_camel_case_v1(string):
         components = string.split("_")
         return components[0] + "".join(x.title() for x in components[1:])
 

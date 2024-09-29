@@ -10,10 +10,9 @@ def build_function_call_dependencies_v1(function_call, kwargs):
     if kwargs == {}:
         return
     dependency_count = 0
-    for value in set(kwargs.values()):
+    for key, value in kwargs.items():
         FunctionCallDependency.objects.create(
-            dependency=value,
-            dependent=function_call,
+            dependency=value, dependent=function_call, name=key
         )
         dependency_count += 1
     return dependency_count

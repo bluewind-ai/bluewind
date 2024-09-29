@@ -14,6 +14,8 @@ class FunctionCallDependency(models.Model):
         on_delete=models.CASCADE,
         related_name="dependent_relations",
     )
+    data = models.JSONField(default=dict, blank=True)
+    name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -26,6 +28,3 @@ class FunctionCallDependency(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.dependent.name} depends on {self.dependency.name}"

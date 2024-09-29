@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 
 from base_model_admin.admin import InWorkspace
 from domain_names.models import DomainName
+from function_calls.models import FunctionCall
 
 
 class DomainNameForm(forms.ModelForm):
@@ -43,8 +44,13 @@ class DomainNameAdmin(InWorkspace):
             function_call_id = request_post.get("function_call")
             if function_call_id:
                 super().add_view(request, form_url, extra_context)
+                function_to_approve = FunctionCall.objects.filter(
+                    status=FunctionCall.Status.READY_FOR_APPROVAL
+                ).first()
+                if not function_to_approve:
+                    raise Exception("No function to approve")
                 return redirect(
-                    f"/workspaces/2/admin/function_calls/functioncall/{function_call_id}/change"
+                    f"/workspaces/2/admin/function_calls/functioncall/{function_to_approve.id}/change"
                 )
 
         return super().add_view(request, form_url, extra_context)

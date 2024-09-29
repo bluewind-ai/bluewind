@@ -25,8 +25,9 @@ def approve_function_call_v1(function_call_id):
     set_approved_function_call(function_call)
 
     # Create an instance of the input form with the initial data
-    input_form = get_filled_input_form(function_call)
-    return func(**input_form.cleaned_data)
+    return func()
+    # input_form = get_filled_input_form(function_call)
+    # return func(**input_form.cleaned_data)
 
 
 def get_input_form(function_call):
