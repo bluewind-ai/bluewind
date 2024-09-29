@@ -100,11 +100,11 @@ def get_logging_config():
                 "formatter": "pretty",
                 "stream": sys.stdout,
             },
-            # "file": {
-            #     "class": "logging.FileHandler",
-            #     "filename": os.path.join(BASE_DIR, "logs", "app.log"),
-            #     "formatter": "pretty",
-            # },
+            "file": {
+                "class": "logging.FileHandler",
+                "filename": os.path.join(BASE_DIR, "logs", "app.log"),
+                "formatter": "simple",
+            },
         },
         "loggers": {
             "django": {
@@ -169,6 +169,11 @@ def get_logging_config():
             "django.always_used": {
                 "handlers": ["console"],
                 "level": "ERROR",
+                "propagate": False,
+            },
+            "django.to_file": {
+                "handlers": ["file"],
+                "level": "DEBUG",
                 "propagate": False,
             },
         },
