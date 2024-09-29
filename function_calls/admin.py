@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib import admin
 from django.http import HttpRequest
-from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
 
 from base_model_admin.admin import InWorkspace
@@ -9,6 +8,10 @@ from function_calls.models import FunctionCall
 from functions.approve_function_call.v1.functions import approve_function_call_v1
 from functions.get_allowed_actions_on_function_call.v1.functions import (
     get_allowed_actions_on_function_call_v1,
+)
+from functions.go_next.v1.functions import go_next_v1
+from functions.handle_mark_function_call_as_successful.v1.functions import (
+    handle_mark_function_call_as_successful_v1,
 )
 from unfold.decorators import action
 
@@ -32,7 +35,7 @@ class FunctionCallForm(forms.ModelForm):
 @admin.register(FunctionCall)
 class FunctionCallAdmin(InWorkspace, admin.ModelAdmin):
     form = FunctionCallForm
-    actions_detail = ["approve_function_call"]
+    actions_detail = ["approve_function_call", "mark_function_call_as_successful"]
 
     def has_add_permission(self, request):
         return False
@@ -49,43 +52,21 @@ class FunctionCallAdmin(InWorkspace, admin.ModelAdmin):
     )
     def approve_function_call(self, request: HttpRequest, object_id: int):
         approve_function_call_v1(function_call_id=object_id)
-        function_call = FunctionCall.objects.filter(
-            status=FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
-        ).first()
+        return go_next_v1()
 
-        if function_call:
-            return redirect(
-                f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
-            )
-
-        function_call = FunctionCall.objects.filter(
-            status=FunctionCall.Status.READY_FOR_APPROVAL
-        ).first()
-        if function_call.function.name == "create_domain_name_v1":
-            return redirect(
-                f"/workspaces/2/admin/domain_names/domainname/add/?function_call={function_call.id}"
-            )
-            raise Exception("Function call not approved")
-        return redirect(
-            f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
-        )
+    @action(
+        description=_("Mark function call as successful"),
+        url_path="mark_function_call_as_successful",
+    )
+    def mark_function_call_as_successful(self, request: HttpRequest, object_id: int):
+        return handle_mark_function_call_as_successful_v1(function_call_id=object_id)
 
     def get_actions_detail(self, request, obj=None):
         function_call = FunctionCall.objects.get(pk=obj)
         actions = super().get_actions_detail(request, obj)
         allowed_actions = get_allowed_actions_on_function_call_v1(function_call)
         actions = [action for action in actions if action.path in allowed_actions]
-        # if self.function_call.status == FunctionCall.Status.READY_FOR_APPROVAL:
-        #     allowed_actions.append("approve_function_call
-        # new_actions = []
-        # for action in actions:
-        #     new_actions.append(action)
-        #     if action["description"] == "Approve":
-        #         action["url"] = (
-        #             f"/workspaces/2/admin/function_calls/functioncall/{obj.id}/approve_function_call"
-        #         )
-        # if random.random() < 0.5:  # 50% chance
-        #     return []
+
         return actions
 
     # @action(
