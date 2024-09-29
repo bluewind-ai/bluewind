@@ -59,6 +59,7 @@ class FunctionCall(WorkspaceRelated):
 
     executed_at = models.DateTimeField(null=True, blank=True)
     function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
+    remaining_dependencies = models.IntegerField(default=0)
     parent = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,

@@ -3,8 +3,6 @@ from django.shortcuts import redirect
 
 from base_model_admin.admin import InWorkspace
 from domain_names.models import DomainName
-from function_calls.models import FunctionCall
-from functions.serialize_form_data.v1.functions import serialize_form_data_v1
 
 
 class DomainNameForm(forms.ModelForm):
@@ -40,21 +38,16 @@ class DomainNameAdmin(InWorkspace):
         return form
 
     def add_view(self, request, form_url="", extra_context=None):
-        if request.POST:
-            # raise Exception(request.POST)
-            form = self.get_form(request)(request.POST)
-            serialized_data = serialize_form_data_v1(form)
+        request_post = request.POST
+        if request_post:
+            function_call_id = request_post.get("function_call")
+            if function_call_id:
+                super().add_view(request, form_url, extra_context)
+                return redirect(
+                    f"/workspaces/2/admin/function_calls/functioncall/{function_call_id}/change"
+                )
 
-            function_call = FunctionCall.objects.filter(
-                status=FunctionCall.Status.READY_FOR_APPROVAL
-            ).first()
-
-            super().add_view(request, form_url, extra_context)
-            return redirect(
-                f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
-            )
-        else:
-            return super().add_view(request, form_url, extra_context)
+        return super().add_view(request, form_url, extra_context)
 
 
 # def handle_function_call_after_save_v1(object):
