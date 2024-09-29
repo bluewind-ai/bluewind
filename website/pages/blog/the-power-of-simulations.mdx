@@ -1,0 +1,43 @@
+---
+title: The power of simulations
+---
+
+# The power of simulations
+
+You're free to imagine whatever you want. In software, the equivalent is having a system you completely own, with no third party dependencies.
+
+What does this enable? Simulations. The same way you can simulate scenarios in your brain because you own it, it's now possible for your software to create its own world.
+
+What are the benefits? Networks calls are expensive, flaky, brittle, fragile, slow. Simulating them allows you to run scenarios fast.
+
+Which in turn allows you to iterate fast.
+
+We had an interesting challenges when working on AutoGPT: the tests were really expensive to run. At the same time we had to run them, because:
+
+1- gpt-4 was was not deterministic (even at temperature 0).
+2- sometimes the prompt changed
+3- same as 2, but more specific: sometimes the actions returned different thigns (which in turn changed the prompt)
+
+I built a cassettes system that would record the network calls and replay them.
+
+And anytime an HTTP request was about to be made, we would check the cassettes. If there was no cassettes, an HTTP call would be made.
+
+This type of systems is very very powerful if it can be maintained. And maintenance was indeed challenging.
+
+I think the "cassettes" paradigm is here to stay because it allows us to simulate the outside world with real data.
+
+I am over obsessed about building the right tooling for bluewind right now.
+
+The best customer platform is the best software engineer. And the best software engineer is the best black box software engineer.
+
+Which means my customer platform needs to master tests so I can start black boxing features.
+
+Black boxing means: defining scenarios and the expectations associated with them, and having the software become a consequence of these scenarios.
+
+If done right, black boxing allows business stakeholders to build software faster, and oftentimes better than engineers.
+
+Once we reach a state where true black boxing is possible, we can start performing "level 2 work" defining, correcting, monitoring, adjusting the behavior of our business applications, and having it self-correct, and eventually even anticipate our corrections (To anticipate corrections, we will need to define what a good correction is. I call this level 3, which means writing scenarios that define how the scenarios should be written, given a certain requirement. Level 3 tests the tester, you could say)
+
+I keep dreaming about this day when I will produce 10X more business value than I do today. I know it's coming. There is a lot of grunt work required to get there.
+
+The loop is about to get closed. The flywheel is about to start spinning. And it's unstoppable. And it will spin faster thanks to simulations.
