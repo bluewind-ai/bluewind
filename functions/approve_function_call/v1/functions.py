@@ -17,17 +17,10 @@ def snake_to_camel_case_uppercase(snake_str):
 @bluewind_function_v1()
 def approve_function_call_v1(function_call_id):
     function_call = FunctionCall.objects.get(id=function_call_id)
-
-    function_call.status = FunctionCall.Status.APPROVED
-    function_call.save()
-    # Assume the function is in the current module if no module is specified
     func = get_function(function_call)
     set_approved_function_call(function_call)
 
-    # Create an instance of the input form with the initial data
     return func()
-    # input_form = get_filled_input_form(function_call)
-    # return func(**input_form.cleaned_data)
 
 
 def get_input_form(function_call):

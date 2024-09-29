@@ -1,4 +1,5 @@
 import importlib
+import json
 import logging
 
 from django.db import transaction
@@ -63,15 +64,20 @@ def bluewind_function_v1():
 
                 set_approved_function_call(None)
                 set_parent_function_call(function_call)
+                function_call.status = FunctionCall.Status.RUNNING
                 result = func(*args, **kwargs)
-                if func.__name__ == "scan_domain_name_v1":
+                if not FunctionCall.objects.filter(parent_id=function_call.id).exists():
+                    # if this function call has no children, then it's automatically completed after it ran.
                     function_call.status = (
                         FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
                     )
-                    function_call.output_data = result
-                    function_call.save()
-                    return
-                function_call.status = FunctionCall.Status.COMPLETED
+
+                try:
+                    if result is not None:
+                        json.dumps(result)
+                        function_call.output_data = result
+                except:
+                    pass
                 function_call.save()
 
                 return

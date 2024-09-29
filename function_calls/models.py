@@ -13,7 +13,6 @@ class FunctionCall(WorkspaceRelated):
     class Status(models.TextChoices):
         CONDITIONS_NOT_MET = "conditions-not-met", "Conditions Not Met"
         READY_FOR_APPROVAL = "ready-for-approval", "Ready for Approval"
-        APPROVED = "approved", "Approved"
         RUNNING = "running", "Running"
         COMPLETED = "completed", "Completed"
         COMPLETED_READY_FOR_APPROVAL = (
@@ -61,6 +60,7 @@ class FunctionCall(WorkspaceRelated):
     executed_at = models.DateTimeField(null=True, blank=True)
     function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
     remaining_dependencies = models.IntegerField(default=0)
+
     parent = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
@@ -80,6 +80,15 @@ class FunctionCall(WorkspaceRelated):
             cls.Status.COMPLETED,
             cls.Status.MARKED_SUCCESSFUL,
             cls.Status.SUCCESSFUL,
+        ]
+
+    @classmethod
+    def uncompleted_stages(cls):
+        return [
+            cls.Status.CONDITIONS_NOT_MET,
+            cls.Status.RUNNING,
+            cls.Status.READY_FOR_APPROVAL,
+            cls.Status.COMPLETED_READY_FOR_APPROVAL,
         ]
 
     @property
