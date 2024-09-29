@@ -60,7 +60,8 @@ def bluewind_function_v1():
 
                 set_approved_function_call(None)
 
-                return func(*args, **kwargs)
+                func(*args, **kwargs)
+                # function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
 
             logger.debug(
                 f"{func.__name__} not approved yet, asking for approval and redirecting"
