@@ -1,7 +1,7 @@
 import dns.resolver
 
-from forms.create_domain_name.v1.forms import CreateDomainNameV1
-from functions.bluewind_function.v1.functions import bluewind_function_v1
+from flow_runs.models import FlowRun
+from flows.models import Flow
 
 
 def fetch_subdomains(domain):
@@ -42,8 +42,7 @@ def query_dns(domain, record_type):
                     rdata.refresh} {
                         rdata.retry} {
                             rdata.expire} {
-                                rdata.minimum}"
-            ]
+                                rdata.minimum}"]
         elif record_type == "TXT":
             return [b"".join(rdata.strings).decode("utf-8") for rdata in answers]
         else:
@@ -52,9 +51,24 @@ def query_dns(domain, record_type):
         return []
 
 
-@bluewind_function_v1()
-def scan_domain_name_v1(domain_name=CreateDomainNameV1):
-    raise NotImplementedError(domain_name)
+def scan_domain_name(flow_run, domain_name):
+    """
+    Check DNS records for the domain and specified subdomains.
+
+    Args:
+        flow_run (FlowRun): The current flow run object.
+        domain_name (str): The domain name to scan.
+
+    Returns:
+        dict: A dictionary containing DNS records for the domain and specified subdomains.
+    """
+    FlowRun.objects.create(
+        flow=Flow.objects.get(name="avoid_going_into_spam"),
+        user=flow_run.user,
+        workspace_id=flow_run.workspace_id,
+        status=FlowRun.Status.READY_FOR_APPROVAL,
+    )
+
     dns_records = {
         "A": [],
         "AAAA": [],
@@ -84,5 +98,7 @@ def scan_domain_name_v1(domain_name=CreateDomainNameV1):
     # Remove duplicates and sort
     for record_type in dns_records:
         dns_records[record_type] = sorted(list(set(dns_records[record_type])))
+
+    flow_run.status = FlowRun.Status.COMPLETED_READY_FOR_APPROVAL
 
     return dns_records

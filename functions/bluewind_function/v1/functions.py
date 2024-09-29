@@ -44,6 +44,7 @@ def bluewind_function_v1():
             if get_approved_function_call():
                 logger.debug(f"{func.__name__} approved, calling the function")
                 set_approved_function_call(None)
+
                 return func(*args, **kwargs)
 
             logger.debug(
