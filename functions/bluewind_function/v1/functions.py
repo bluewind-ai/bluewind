@@ -43,6 +43,7 @@ def bluewind_function_v1():
             if get_approved_function_call():
                 logger.debug(f"{func.__name__} approved, calling the function")
                 function_call = get_approved_function_call()
+
                 function_call_dependencies = FunctionCallDependency.objects.filter(
                     dependent=function_call
                 )
@@ -61,7 +62,12 @@ def bluewind_function_v1():
                 set_approved_function_call(None)
 
                 func(*args, **kwargs)
-                # function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
+                if func.__name__ == "master_v1":
+                    # raise Exception(function_call.status)
+                    pass
+                function_call.status = FunctionCall.Status.COMPLETED
+                function_call.save()
+                return
 
             logger.debug(
                 f"{func.__name__} not approved yet, asking for approval and redirecting"
@@ -101,6 +107,11 @@ def bluewind_function_v1():
                 if remaining_dependencies:
                     function_call.remaining_dependencies = remaining_dependencies
                 function_call.save()
+                if func.__name__ == "master_v1":
+                    # raise Exception(
+                    #     f"Create function call for {func.__name__} asking for approval"
+                    # )
+                    pass
                 logger.debug(
                     f"Create function call for {func.__name__} asking for approval"
                 )

@@ -391,7 +391,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 SILKY_PYTHON_PROFILER = False
 
-from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
 UNFOLD = {
@@ -413,7 +412,4 @@ UNFOLD = {
         ],
     },
     "TABS": [],
-    "SCRIPTS": [
-        lambda request: static("bluewind/static/bluewind/js/custom_admin.js"),
-    ],
 }
