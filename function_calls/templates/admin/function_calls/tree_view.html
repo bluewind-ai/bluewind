@@ -11,24 +11,23 @@
         #header, #container, #content, #content-main {
             padding: 0 !important;
             margin: 0 !important;
-            left: 32px !important;
+            left: 200px !important;
             position: absolute !important;
-            width: calc(100% - 32px) !important;
+            width: calc(100% - 200px) !important;
         }
-        #header { top: 0 !important; height: 40px !important; }
-        #container { top: 40px !important; bottom: 0 !important; overflow: auto !important; }
-        .jstree-default .jstree-anchor { padding: 0 1px !important; line-height: 16px !important; height: 16px !important; }
-        .jstree-default .jstree-node { min-height: 16px !important; line-height: 16px !important; }
-        #tree .jstree-wholerow { height: 16px !important; }
-        #tree { font-size: 8px !important; }
-        .change-link { font-size: 6px !important; padding: 0 1px !important; }
+        #header { top: 0 !important; height: 50px !important; }
+        #container { top: 50px !important; bottom: 0 !important; overflow: auto !important; }
+        .jstree-default .jstree-anchor { padding: 2px 4px !important; line-height: 24px !important; height: 24px !important; }
+        .jstree-default .jstree-node { min-height: 24px !important; line-height: 24px !important; }
+        #tree .jstree-wholerow { height: 24px !important; }
+        #tree { font-size: 12px !important; }
+        .change-link { font-size: 10px !important; padding: 0 2px !important; margin-left: 4px !important; }
     </style>
 {% endblock %}
 
 {% block content %}
-    <div class="fixed left-0 top-0 h-full z-50 w-8 bg-white border-r shadow-lg overflow-hidden">
-        <div class="text-[7px] px-0.5 py-0.5 border-b">Tree</div>
-        <div id="tree" class="overflow-y-auto h-[calc(100%-16px)]"></div>
+    <div class="fixed left-0 top-0 h-full z-50 w-50 bg-white border-r shadow-lg overflow-hidden">
+        <div id="tree" class="overflow-y-auto h-[calc(100%-32px)]"></div>
     </div>
 
     <script>
@@ -49,7 +48,7 @@
                     var node = data.instance.get_node(this);
                     var changeUrl = node.data.change_url;
                     $(this).find('.jstree-anchor').first().after(
-                        '<a href="' + changeUrl + '" class="change-link">➜</a>'
+                        '<a href="' + changeUrl + '" class="change-link">🔗</a>'
                     );
                 });
             });
