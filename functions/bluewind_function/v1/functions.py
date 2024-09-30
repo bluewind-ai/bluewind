@@ -132,6 +132,7 @@ def bluewind_function_v1(is_making_network_calls=False, redirect=None):
                 function = get_function_or_create_from_file_v1(func.__name__)
                 assert function is not None, "function hasn't been found in the DB"
                 logger.debug(f"{func.__name__} found in the DB")
+
                 function_call = FunctionCall.objects.create(
                     function=function,
                     tn_parent=get_parent_function_call(),

@@ -2,7 +2,7 @@ import json
 
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, render
-from django.urls import path
+from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from treenode.admin import TreeNodeModelAdmin
@@ -122,14 +122,32 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
 
+    import json
+
+    from django.urls import reverse
+
     def tree_view(self, request, object_id):
         function_call = get_object_or_404(FunctionCall, id=object_id)
+
+        def format_node(node):
+            change_url = reverse(
+                "admin:function_calls_functioncall_change", args=[node["id"]]
+            )
+            return {
+                "id": str(node["id"]),
+                "text": f"{node['function_name']} ({node['status']})",
+                "children": [format_node(child) for child in node["children"]],
+                "data": {"change_url": change_url},
+            }
+
+        tree_data = format_node(function_call.whole_tree)
+
         context = self.admin_site.each_context(request)
         context.update(
             {
                 "title": f"Tree View for Function Call {object_id}",
                 "function_call": function_call,
-                "tree_json": json.dumps(self.get_tree_json(function_call), indent=2),
+                "tree_json": json.dumps([tree_data]),
             }
         )
         return render(request, "admin/function_calls/tree_view.html", context)

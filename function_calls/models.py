@@ -78,8 +78,53 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         blank=True,
         null=True,
     )
-    whole_tree = models.JSONField(default=dict, blank=True, null=True)
-    is_root = models.BooleanField(default=False)
+    whole_tree = models.JSONField()
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        if is_new:
+            # For new instances, set an initial whole_tree before saving
+            self.whole_tree = self.to_dict()
+
+        super().save(*args, **kwargs)
+
+        # Rebuild and update the whole tree
+        whole_tree, nodes = self.rebuild_whole_tree()
+        self.whole_tree = whole_tree
+
+        # Save again with the updated whole_tree
+        super().save(update_fields=["whole_tree"])
+
+        # Update other nodes if not a new instance
+        if not is_new:
+            self.bulk_update_whole_tree(whole_tree, nodes)
+
+    def to_dict(self):
+        return {
+            "id": self.id if self.id else None,
+            "function_name": str(self),
+            "status": self.status,
+            "children": [child.to_dict() for child in self.get_children()]
+            if self.id
+            else [],
+        }
+
+    def rebuild_whole_tree(self):
+        root = self.get_root()
+        tree_dict = root.to_dict()
+        nodes = [root] + list(root.get_descendants())
+        return tree_dict, nodes
+
+    def bulk_update_whole_tree(self, whole_tree, nodes):
+        for node in nodes:
+            node.whole_tree = whole_tree
+        FunctionCall.objects.bulk_update(nodes, ["whole_tree"])
+
+    @classmethod
+    def rebuild_all_trees(cls):
+        for root in cls.objects.filter(tn_parent__isnull=True):
+            whole_tree, nodes = root.rebuild_whole_tree()
+            root.bulk_update_whole_tree(whole_tree, nodes)
 
     @classmethod
     def successful_terminal_stages(cls):
@@ -103,40 +148,12 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         return self.status in self.successful_terminal_stages()
 
     def __str__(self):
-        return f"{self.function.name} on {self.executed_at}"
+        return f"{self.function.name}"
 
     @property
     def parent(self):
-        return super().parent
+        return super().tn_parent
 
     @parent.setter
     def parent(self, value):
-        self.parent_id = value.id if value else None
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-
-        if is_new and not self.parent:
-            self.is_root = True
-
-        super().save(*args, **kwargs)
-
-        if self.is_root:
-            self.build_whole_tree()
-
-    def build_whole_tree(self):
-        tree = self._build_subtree(self)
-        self.whole_tree = tree
-        self.save()
-
-    def _build_subtree(self, node):
-        subtree = {
-            "id": node.id,
-            "function": node.function.id if node.function else None,
-            "children": [],
-        }
-
-        for child in node.tn_children.all():
-            subtree["children"].append(self._build_subtree(child))
-
-        return subtree
+        self.tn_parent_id = value.id if value else None

@@ -1,5 +1,18 @@
 {% extends "admin/base_site.html" %}
-{% load i18n unfold %}
+{% load i18n unfold static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+    <style>
+        .jstree-node .nav-icon {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
     {% component "unfold/components/container.html" %}
@@ -8,9 +21,44 @@
                 Tree View for Function Call {{ function_call.id }}
             {% endcomponent %}
             {% component "unfold/components/text.html" %}
-                <!-- Here you can add the actual tree view representation -->
-                This is where you would display the tree structure for function call {{ function_call.id }}.
+                <div id="tree"></div>
             {% endcomponent %}
         {% endcomponent %}
     {% endcomponent %}
+
+    <script>
+        $(function () {
+            $('#tree').jstree({
+                'core' : {
+                    'data' : {{ tree_json|safe }},
+                    'themes': {
+                        'icons': false
+                    },
+                    'animation': 0  // Disable animations
+                },
+                'plugins': ['wholerow']
+            }).on('ready.jstree', function(e, data) {
+                // Add navigation icon to each node
+                data.instance.get_container_ul().find('li').each(function() {
+                    var node = data.instance.get_node(this);
+                    var changeUrl = node.data.change_url;
+                    $(this).find('.jstree-anchor').first().after(
+                        '<span class="nav-icon" data-url="' + changeUrl + '">🔗</span>'
+                    );
+                });
+            });
+
+            // Handle click on navigation icon
+            $(document).on('click', '.nav-icon', function(e) {
+                e.stopPropagation();
+                window.location.href = $(this).data('url');
+            });
+
+            // Open/close folders instantly on click
+            $('#tree').on('click', '.jstree-anchor', function(e) {
+                var node = $('#tree').jstree(true).get_node($(this));
+                $('#tree').jstree(true).toggle_node(node);
+            });
+        });
+    </script>
 {% endblock %}
