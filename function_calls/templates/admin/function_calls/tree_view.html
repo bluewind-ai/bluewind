@@ -59,6 +59,15 @@
                 var node = $('#tree').jstree(true).get_node($(this));
                 $('#tree').jstree(true).toggle_node(node);
             });
+
+            // Handle double-click on nodes to open change view
+            $('#tree').on('dblclick', '.jstree-anchor', function(e) {
+                e.preventDefault();
+                var node = $('#tree').jstree(true).get_node($(this));
+                if (node.data && node.data.change_url) {
+                    window.location.href = node.data.change_url;
+                }
+            });
         });
     </script>
 {% endblock %}

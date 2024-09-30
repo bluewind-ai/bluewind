@@ -4,11 +4,11 @@
 
 {% block base %}
     <div id="page" class="flex min-h-screen">
-        {% comment %} {% if not is_popup and is_nav_sidebar_enabled %}
+        {% if not is_popup and is_nav_sidebar_enabled %}
             {% block nav-sidebar %}
                 {% include "admin/nav_sidebar.html" %}
             {% endblock %}
-        {% endif %} {% endcomment %}
+        {% endif %}
 
         <div id="main" class="flex-grow min-w-0">
             {% include "unfold/helpers/header.html" %}
