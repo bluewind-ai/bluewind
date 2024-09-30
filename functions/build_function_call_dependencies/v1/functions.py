@@ -9,14 +9,13 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
 
 
-def build_function_call_dependencies_v1(function_call, kwargs, args):
+def build_function_call_dependencies_v1(function_call, kwargs):
     # raise NotImplementedError(function_call)
-    debugger(
-        function_call,
-        kwargs,
-        args,
-        skip=1,
-    )
+    # debugger(
+    #     kwargs,
+    #     args,
+    #     skip=1,
+    # )
 
     if kwargs == {}:
         return

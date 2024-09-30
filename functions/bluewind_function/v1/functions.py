@@ -49,12 +49,19 @@ def bluewind_function_v1(is_making_network_calls=False):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            debugger("cdnjcndsjk")
+            if args:
+                raise Exception("args not supported")
+            # debugger(
+            #     func,
+            #     kwargs,
+            #     args,
+            #     skip=3,
+            # )
             set_is_function_call_magic(False)
 
             if func.__name__ == "approve_function_call_v1":
                 logger.debug(f"{func.__name__} called, do nothing and return")
-                return func(*args, **kwargs)
+                return func(**kwargs)
 
             if get_approved_function_call():
                 logger.debug(f"{func.__name__} approved, calling the function")
@@ -64,7 +71,6 @@ def bluewind_function_v1(is_making_network_calls=False):
                     dependent=function_call
                 )
                 for dependency in function_call_dependencies:
-                    raise Exception(dependency.name, kwargs, args)
                     model_name = to_camel_case_v1(dependency.name)
                     domain_name_module = importlib.import_module("domain_names.models")
                     domain_name_class = getattr(domain_name_module, model_name)
@@ -81,9 +87,9 @@ def bluewind_function_v1(is_making_network_calls=False):
                 function_call.status = FunctionCall.Status.RUNNING
                 set_is_function_call_magic(True)
                 if is_making_network_calls:
-                    result = handle_network_calls_v1(func, args, kwargs, function_call)
+                    result = handle_network_calls_v1(func, kwargs, function_call)
                 else:
-                    result = func(*args, **kwargs)
+                    result = func(**kwargs)
                 if not FunctionCall.objects.filter(parent_id=function_call.id).exists():
                     function_call.status = (
                         FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
@@ -133,7 +139,7 @@ def bluewind_function_v1(is_making_network_calls=False):
                     status=status,
                 )
                 remaining_dependencies = build_function_call_dependencies_v1(
-                    function_call, kwargs, args
+                    function_call, kwargs
                 )
                 if remaining_dependencies:
                     function_call.remaining_dependencies = remaining_dependencies
