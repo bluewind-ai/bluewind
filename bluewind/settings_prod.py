@@ -3,6 +3,10 @@ import os
 import warnings
 from pathlib import Path
 
+import colored_traceback
+import colored_traceback.always
+
+colored_traceback.add_hook()
 import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent

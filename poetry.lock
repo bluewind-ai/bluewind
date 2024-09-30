@@ -571,6 +571,21 @@ files = [
 ]
 
 [[package]]
+name = "colored-traceback"
+version = "0.4.2"
+description = "Automatically color uncaught exception tracebacks"
+optional = false
+python-versions = "*"
+files = [
+    {file = "colored-traceback-0.4.2.tar.gz", hash = "sha256:ecbc8e41f0712ea81931d7cd436b8beb9f3eff1595d2498f183e0ef69b56fe84"},
+    {file = "colored_traceback-0.4.2-py3-none-any.whl", hash = "sha256:8ad752a5b3c4e50bccd99d4a2d01e16d80926b519e07a85437ecbf8b4f8ce884"},
+]
+
+[package.dependencies]
+colorama = {version = "*", markers = "os_name == \"nt\""}
+pygments = "*"
+
+[[package]]
 name = "colorlog"
 version = "6.8.2"
 description = "Add colours to the output of Python's logging module."
@@ -3063,4 +3078,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "787795a1082853e36844a7ec203d393cba85e6cbc8854994a99d79df531ca82b"
+content-hash = "dbc886feeed90b846a87547d1549d48358c576f223b974e970e8909c338d20bb"
