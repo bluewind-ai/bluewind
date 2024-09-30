@@ -2,9 +2,6 @@
   "python.analysis.extraPaths": ["${workspaceFolder}"],
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": ["tests"],
-  "workbench.colorCustomizations": {
-    "terminal.ansiYellow": "#1E1E1E"
-  },
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true,

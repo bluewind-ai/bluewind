@@ -1,9 +1,9 @@
+import logging
 import os
 import sys
 import traceback
 from pathlib import Path
 
-from colorlog import ColoredFormatter
 from django.conf import settings
 
 from bluewind.context_variables import (
@@ -16,7 +16,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 os.environ["BASE_DIR"] = str(BASE_DIR)
 
 
-class CleanTracebackFormatter(ColoredFormatter):
+# Define a custom traceback formatter
+class CleanTracebackFormatter(logging.Formatter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.project_root = str(settings.BASE_DIR)
@@ -51,14 +52,18 @@ class CombinedFormatter(CleanTracebackFormatter):
         return pathname.replace("/bluewind/bluewind/", "")
 
     def format(self, record):
+        # record.pathname = self.clean_pathname(record.pathname)
+        # First, attach the request ID using ContextAwareRequestIDFormatter
         if request_id_var.get(None) is None:
             record.request_id = "no_request_id"
             return super().format(record)
         record.request_id = get_request_id()
         formatted_record = super().format(record)
 
+        # Apply the custom traceback formatting from CleanTracebackFormatter
         if record.exc_info:
             record.exc_text = self.formatException(record.exc_info)
+            # Ensure that the formatted traceback is added to the message
             formatted_record += f"\n{record.exc_text}"
 
         log_entry = {
@@ -69,6 +74,8 @@ class CombinedFormatter(CleanTracebackFormatter):
             "message": record.getMessage(),
         }
         log_records = get_log_records()
+        # with open("logs/logging.log", "a") as f:
+        #     f.write(str(log_entry) + "/n")
         log_records.append(log_entry)
 
         return formatted_record
@@ -79,18 +86,9 @@ def get_logging_config():
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "colored": {
+            "pretty": {
                 "()": CombinedFormatter,
-                "format": "%(log_color)s%(asctime)s [%(levelname)s] [%(request_id)s] %(name)s: %(message)s (%(pathname)s:%(lineno)d)",
-                "log_colors": {
-                    "DEBUG": "cyan",
-                    "INFO": "green",
-                    "WARNING": "yellow",
-                    "ERROR": "red",
-                    "CRITICAL": "red,bg_white",
-                },
-                "secondary_log_colors": {},
-                "style": "%",
+                "format": "%(asctime)s [%(levelname)s] [%(request_id)s] %(name)s: %(message)s (%(pathname)s:%(lineno)d)",
             },
             "simple": {
                 "format": "[{levelname}] {asctime} {module} {message}",
@@ -100,7 +98,7 @@ def get_logging_config():
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "colored",
+                "formatter": "pretty",
                 "stream": sys.stdout,
             },
             "file": {
@@ -159,6 +157,16 @@ def get_logging_config():
                 "level": "DEBUG",
                 "propagate": False,
             },
+            # "gunicorn.ERROR": {
+            #     "handlers": ["console"],
+            #     "level": "ERROR",
+            #     "propagate": False,
+            # },
+            # "gunicorn.access": {
+            #     "handlers": ["console"],
+            #     "level": "ERROR",
+            #     "propagate": False,
+            # },
             "django.always_used": {
                 "handlers": ["console"],
                 "level": "ERROR",

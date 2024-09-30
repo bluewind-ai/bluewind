@@ -68,8 +68,6 @@ supervisor = "^4.2.5"
 chardet = "^5.2.0"
 dnspython = "^2.6.1"
 django-import-export = "^4.1.1"
-colorama = "^0.4.6"
-colored-traceback = "^0.4.2"
 
 [tool.poetry.extras]
 argon2 = ["argon2-cffi",]
