@@ -40,8 +40,20 @@ class CleanTracebackFormatter(ColoredFormatter):
                         line=frame.line,
                     )
                 )
-        lines = ["Traceback (most recent call last):\n"]
-        lines.extend(traceback.format_list(clean_tb))
+
+        # Add explicit color codes
+        RED = "\033[31m"
+        YELLOW = "\033[33m"
+        CYAN = "\033[36m"
+        RESET = "\033[0m"
+
+        lines = [f"{RED}Traceback (most recent call last):{RESET}\n"]
+        for frame in clean_tb:
+            lines.append(
+                f'{YELLOW}  File "{frame.filename}", line {frame.lineno}, in {frame.name}{RESET}\n'
+            )
+            if frame.line:
+                lines.append(f"{CYAN}    {frame.line.strip()}{RESET}\n")
         lines.extend(traceback.format_exception_only(type, value))
         return "".join(lines)
 
