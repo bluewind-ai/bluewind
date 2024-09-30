@@ -2,6 +2,7 @@
 import logging
 
 from django.db import models
+from treenode.models import TreeNodeModel
 
 from users.models import User
 from workspaces.models import Workspace, WorkspaceRelated
@@ -9,7 +10,9 @@ from workspaces.models import Workspace, WorkspaceRelated
 logger = logging.getLogger("django.not_used")
 
 
-class FunctionCall(WorkspaceRelated):
+class FunctionCall(WorkspaceRelated, TreeNodeModel):
+    node_order_by = ["executed_at"]
+
     class Status(models.TextChoices):
         CONDITIONS_NOT_MET = "conditions-not-met", "Conditions Not Met"
         READY_FOR_APPROVAL = "ready-for-approval", "Ready for Approval"
@@ -34,6 +37,10 @@ class FunctionCall(WorkspaceRelated):
 
     class OutputType(models.TextChoices):
         QUERY_SET = "queryset", "queryset"
+
+    class Meta(TreeNodeModel.Meta):
+        verbose_name = "Function Call"
+        verbose_name_plural = "Function Calls"
 
     status = models.CharField(
         max_length=35,

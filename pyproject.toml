@@ -69,6 +69,7 @@ chardet = "^5.2.0"
 dnspython = "^2.6.1"
 django-import-export = "^4.1.1"
 mypy = "^1.11.2"
+django-treenode = "^0.22.1"
 
 [tool.poetry.extras]
 argon2 = ["argon2-cffi",]

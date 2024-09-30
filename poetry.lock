@@ -973,6 +973,17 @@ gprof2dot = ">=2017.09.19"
 sqlparse = "*"
 
 [[package]]
+name = "django-treenode"
+version = "0.22.1"
+description = "probably the best abstract model/admin for your tree based stuff."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django_treenode-0.22.1-py3-none-any.whl", hash = "sha256:2759300b4560f09bea42aba6a0f11c4b20f6b36dfc484a1f807587a7206bdfe1"},
+    {file = "django_treenode-0.22.1.tar.gz", hash = "sha256:0618693ef3e9e150d2bdc0d828fba8335b2fe376a2faed0d1e3310f9fe1db2bc"},
+]
+
+[[package]]
 name = "django-widget-tweaks"
 version = "1.5.0"
 description = "Tweak the form field rendering in templates, not in python-level form definitions."
@@ -3311,4 +3322,4 @@ bcrypt = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "86b371959134dd00d898e1289b4c08dd74aebcf170f2489966030444e3e35716"
+content-hash = "55c0204f6cdcb6c878889be3113cda8dc082a259ad5229f1ce59f015dac4e76c"
