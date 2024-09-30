@@ -1,4 +1,3 @@
-import json
 import logging
 from functools import wraps
 
@@ -23,6 +22,7 @@ from functions.build_kwargs_from_dependencies.v1.functions import (
 from functions.get_function_or_create_from_file.v1.functions import (
     get_function_or_create_from_file_v1,
 )
+from functions.get_parameter_names.v1.functions import get_parameter_names_v1
 from functions.handle_network_calls.v1.functions import handle_network_calls_v1
 
 logger = logging.getLogger("django.temp")
@@ -49,12 +49,19 @@ def bluewind_function_v1(is_making_network_calls=False):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            raise_debug(
-                func.__name__,
-                kwargs,
-                args,
-                skip=4,
-            )
+            if func.__name__ == "scan_domain_name_v1":
+                # raise_debug(
+                #     func.__name__,
+                #     kwargs,
+                #     args,
+                # )
+                parameter_names = get_parameter_names_v1(func)
+                for kwarg in kwargs:
+                    if kwarg not in parameter_names:
+                        raise_debug(
+                            f"The function {func.__name__} uses a kwarg '{kwarg}' which doesn't exist"
+                        )
+
             if args:
                 raise Exception("args not supported")
             # raise_debug(
@@ -73,31 +80,25 @@ def bluewind_function_v1(is_making_network_calls=False):
                 logger.debug(f"{func.__name__} approved, calling the function")
                 function_call = get_approved_function_call()
 
-                new_kwargs = build_kwargs_from_dependencies_v1(function_call, kwargs)
+                new_kwargs = build_kwargs_from_dependencies_v1(function_call)
 
                 set_approved_function_call(None)
                 set_parent_function_call(function_call)
                 function_call.status = FunctionCall.Status.RUNNING
+                function_call.input_data = kwargs
                 set_is_function_call_magic(True)
                 if is_making_network_calls:
                     result = handle_network_calls_v1(func, new_kwargs, function_call)
+                    # raise_debug(result, "after_network", func)
                 else:
-                    # raise_debug(
-                    #     kwargs,
-                    #     new_kwargs,
-                    # )
                     result = func(**new_kwargs)
                 if not FunctionCall.objects.filter(parent_id=function_call.id).exists():
                     function_call.status = (
                         FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
                     )
+                    function_call.output_data = result
+                # raise_debug(func, result, "result")
 
-                try:
-                    if result is not None:
-                        json.dumps(result)
-                        function_call.output_data = result
-                except:
-                    pass
                 function_call.save()
 
                 return

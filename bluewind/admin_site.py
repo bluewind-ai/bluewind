@@ -88,7 +88,6 @@ class CustomAdminSite(UnfoldAdminSite):
         #     workspace_id=get_workspace_id(),
         # )
         # run_flow(flow_run, request.user)
-        # context["flows_data"] = flow_run.output_data["commands"]
 
         return context
 

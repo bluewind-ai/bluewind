@@ -1,6 +1,5 @@
 import dns.resolver
 
-from domain_names.models import DomainName
 from functions.bluewind_function.v1.functions import bluewind_function_v1
 
 
@@ -74,8 +73,16 @@ def query_dns(domain, record_type):
 
 
 @bluewind_function_v1(is_making_network_calls=True)
-def scan_domain_name_v1(*, domain_name: DomainName, **kwargs):
-    domain_name = domain_name.name
+def scan_domain_name_v1(domain_names):
+    dns_records = {}
+    # raise_debug(domain_names)
+    for domain_name in domain_names:
+        dns_records = scan_individual_domain_name(domain_name)
+
+    return dns_records
+
+
+def scan_individual_domain_name(domain_name):
     dns_records = {
         "A": [],
         "AAAA": [],
@@ -102,7 +109,7 @@ def scan_domain_name_v1(*, domain_name: DomainName, **kwargs):
                         [f"{subdomain}: {result}" for result in results]
                     )
 
-    # Remove duplicates and sort
+        # Remove duplicates and sort
     for record_type in dns_records:
         dns_records[record_type] = sorted(list(set(dns_records[record_type])))
     return dns_records

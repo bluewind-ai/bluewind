@@ -12,17 +12,20 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
 
 
-def build_kwargs_from_dependencies_v1(function_call, kwargs):
+def build_kwargs_from_dependencies_v1(function_call):
     new_kwargs = {}
     function_call_dependencies = FunctionCallDependency.objects.filter(
         dependent=function_call
     )
-
     for dependency in function_call_dependencies:
-        # raise_debug(function_call, dependency.dependency.output_type, skip=0)
+        # raise_debug(
+        #     dependency.dependency.output_data,
+        #     function_call,
+        #     dependency.dependency.output_type,
+        # )
         if dependency.dependency.output_type != FunctionCall.OutputType.QUERY_SET:
+            new_kwargs[dependency.name] = dependency.dependency.output_data
             continue
-
         for key, value in dependency.dependency.output_data.items():
             model_name = to_camel_case_v1(key)
             domain_name_module = importlib.import_module("domain_names.models")
@@ -33,6 +36,6 @@ def build_kwargs_from_dependencies_v1(function_call, kwargs):
                     domain_name_class.objects.filter(id__in=ids)
                 )
             else:
-                debugger(dependency.dependency.output_data)
+                raise_debug(dependency.dependency.output_data)
 
     return new_kwargs

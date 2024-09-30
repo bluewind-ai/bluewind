@@ -1,17 +1,13 @@
 import logging
 
-from django.forms import model_to_dict
+from function_calls.models import FunctionCall
 
 logger = logging.getLogger("django.temp")
 
 
 def handle_network_calls_v1(func, kwargs, function_call):
-    data = model_to_dict(kwargs["domain_name"])
-    del data["id"]
-    del data["workspace"]
-    del data["user"]
-    del data["user"]
-    raise Exception(
-        model_to_dict(kwargs["domain_name"]),
-    )
+    cached_data = FunctionCall.objects.filter(input_data=kwargs).first()
+    if cached_data:
+        return cached_data.output_data
+    # raise_debug(kwargs, function_call)
     return func(**kwargs)
