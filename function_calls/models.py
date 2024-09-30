@@ -1,4 +1,3 @@
-# workspaces/models.py
 import logging
 
 from django.db import models
@@ -11,8 +10,6 @@ logger = logging.getLogger("django.not_used")
 
 
 class FunctionCall(WorkspaceRelated, TreeNodeModel):
-    # node_order_by = ["executed_at"]
-
     class Status(models.TextChoices):
         CONDITIONS_NOT_MET = "conditions-not-met", "Conditions Not Met"
         READY_FOR_APPROVAL = "ready-for-approval", "Ready for Approval"
@@ -72,17 +69,17 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     output_data = models.JSONField(default=dict, blank=True)
     output_type = models.CharField(
         max_length=35,
-        choices=Status.choices,
+        choices=OutputType.choices,
     )
-
     executed_at = models.DateTimeField(null=True, blank=True)
     function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
     remaining_dependencies = models.IntegerField(default=0)
-
     thoughts = models.TextField(
         blank=True,
         null=True,
     )
+    whole_tree = models.JSONField(default=dict, blank=True, null=True)
+    is_root = models.BooleanField(default=False)
 
     @classmethod
     def successful_terminal_stages(cls):
@@ -117,10 +114,29 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         self.parent_id = value.id if value else None
 
     def save(self, *args, **kwargs):
-        if self.id:
-            before = FunctionCall.objects.get(id=self.id).executed_at
-            after = self.executed_at
-            if before is not None and before != after:
-                raise_debug(self, before, after)
+        is_new = self.pk is None
 
-        return super().save(*args, **kwargs)
+        if is_new and not self.parent:
+            self.is_root = True
+
+        super().save(*args, **kwargs)
+
+        if self.is_root:
+            self.build_whole_tree()
+
+    def build_whole_tree(self):
+        tree = self._build_subtree(self)
+        self.whole_tree = tree
+        self.save()
+
+    def _build_subtree(self, node):
+        subtree = {
+            "id": node.id,
+            "function": node.function.id if node.function else None,
+            "children": [],
+        }
+
+        for child in node.tn_children.all():
+            subtree["children"].append(self._build_subtree(child))
+
+        return subtree

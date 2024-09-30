@@ -9,20 +9,20 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("workspace_users", "0001_initial"),
+        ("function_variables", "0004_initial"),
         ("workspaces", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="workspaceuser",
+            model_name="functionvariable",
             name="workspace",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to="workspaces.workspace"
             ),
         ),
         migrations.AlterUniqueTogether(
-            name="workspaceuser",
-            unique_together={("user", "workspace")},
+            name="functionvariable",
+            unique_together={("function", "name")},
         ),
     ]

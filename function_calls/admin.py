@@ -1,9 +1,12 @@
-from django import forms
+import json
+
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, render
 from django.urls import path
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from treenode.admin import TreeNodeModelAdmin
+from treenode.forms import TreeNodeForm
 
 from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import set_is_function_call_magic
@@ -18,9 +21,10 @@ from functions.handle_mark_function_call_as_successful.v1.functions import (
 )
 from functions.restart.v1.functions import restart_v1
 from unfold.decorators import action
+from unfold.widgets import UnfoldAdminTextareaWidget
 
 
-class FunctionCallForm(forms.ModelForm):
+class FunctionCallForm(TreeNodeForm):
     class Meta:
         model = FunctionCall
         fields = [
@@ -43,6 +47,19 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     list_display = ("function", "status", "executed_at", "id")
     list_display_links = ("indented_title",)
 
+    readonly_fields = ["whole_tree"]
+
+    def whole_tree(self, obj):
+        if obj:
+            json_data = json.dumps(obj.get_tree_json(), indent=2)
+            widget = UnfoldAdminTextareaWidget()
+            return mark_safe(
+                widget.render("whole_tree", json_data, attrs={"readonly": "readonly"})
+            )
+        return ""
+
+    whole_tree.short_description = "Whole Tree"
+
     def has_add_permission(self, request):
         return False
 
@@ -51,6 +68,26 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    # def get_form(self, request, obj=None, **kwargs):
+    #     form = super().get_form(request, obj, **kwargs)
+    #     if obj:
+    #         form.base_fields["whole_tree"].initial = self.get_whole_tree(obj)
+    #     return form
+
+    def whole_tree(self, obj):
+        # if obj:
+        #     raise_debug(JSONField())
+        #     return JSONField().prepare_value(obj.get_tree_json())
+        return {"ok": "ok"}
+
+    def get_tree_json(self, node):
+        return {
+            "id": node.id,
+            "function": node.function,
+            "status": node.status,
+            "children": [self.get_tree_json(child) for child in node.get_children()],
+        }
 
     @action(
         description=_("Approve"),
@@ -92,8 +129,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
             {
                 "title": f"Tree View for Function Call {object_id}",
                 "function_call": function_call,
-                # You might want to add more context data here,
-                # such as the actual tree structure of the function call
+                "tree_json": json.dumps(self.get_tree_json(function_call), indent=2),
             }
         )
         return render(request, "admin/function_calls/tree_view.html", context)

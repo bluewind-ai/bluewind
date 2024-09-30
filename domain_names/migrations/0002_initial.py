@@ -9,18 +9,20 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("function_variables", "0001_initial"),
-        ("functions", "0001_initial"),
+        ("domain_names", "0001_initial"),
+        ("function_calls", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="functionvariable",
-            name="function",
+            model_name="domainname",
+            name="function_call",
             field=models.ForeignKey(
+                blank=True,
+                null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name="variables",
-                to="functions.function",
+                related_name="domain_names",
+                to="function_calls.functioncall",
             ),
         ),
     ]
