@@ -51,7 +51,7 @@ def bluewind_function_v1(is_making_network_calls=False):
         def wrapper(*args, **kwargs):
             if args:
                 raise Exception("args not supported")
-            # debugger(
+            # raise_debug(
             #     func,
             #     kwargs,
             #     args,
@@ -76,7 +76,7 @@ def bluewind_function_v1(is_making_network_calls=False):
                 if is_making_network_calls:
                     result = handle_network_calls_v1(func, new_kwargs, function_call)
                 else:
-                    # debugger(
+                    # raise_debug(
                     #     kwargs,
                     #     new_kwargs,
                     # )

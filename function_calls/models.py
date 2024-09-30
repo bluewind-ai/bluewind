@@ -32,6 +32,9 @@ class FunctionCall(WorkspaceRelated):
             "Successful",
         )
 
+    class OutputType(models.TextChoices):
+        QUERY_SET = "queryset", "queryset"
+
     status = models.CharField(
         max_length=35,
         choices=Status.choices,
@@ -57,6 +60,10 @@ class FunctionCall(WorkspaceRelated):
     )
     input_data = models.JSONField(default=dict, blank=True)
     output_data = models.JSONField(default=dict, blank=True)
+    output_type = models.CharField(
+        max_length=35,
+        choices=Status.choices,
+    )
 
     executed_at = models.DateTimeField(null=True, blank=True)
     function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)

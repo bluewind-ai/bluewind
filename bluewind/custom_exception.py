@@ -22,11 +22,11 @@ class Debugger(Exception):
 
 
 @receiver(request_started)
-def reset_debugger_counts(sender, **kwargs):
+def reset_raise_debug_counts(sender, **kwargs):
     from bluewind.context_variables import set_exception_count
 
     set_exception_count(0)
 
 
-def debugger(*values, skip=0):
+def raise_debug(*values, skip=0):
     return Debugger(*values, skip=skip)()

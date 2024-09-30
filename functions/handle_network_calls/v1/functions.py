@@ -6,6 +6,7 @@ logger = logging.getLogger("django.temp")
 
 
 def handle_network_calls_v1(func, kwargs, function_call):
+    raise_debug(func, kwargs, function_call)
     data = model_to_dict(kwargs["domain_name"])
     del data["id"]
     del data["workspace"]

@@ -14,6 +14,8 @@ def handle_function_call_after_save_v1(object):
         object.function_call.output_data = {
             "domain_name": [object.id],
         }
+        object.function_call.output_type = FunctionCall.OutputType.QUERY_SET
+
         object.function_call.save()
         dependencies = FunctionCallDependency.objects.filter(
             dependency=object.function_call,
