@@ -2,6 +2,7 @@ import logging
 from contextvars import ContextVar
 
 # from bluewind.custom_exception import debugger
+from bluewind.custom_exception import debugger
 from function_call_dependencies.models import FunctionCallDependency  # noqa: F401
 
 # Patch standard library
@@ -10,6 +11,8 @@ is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
 
 
 def build_function_call_dependencies_v1(function_call, kwargs, args):
+    debugger(function_call)
+
     if kwargs == {}:
         return
     dependency_count = 0

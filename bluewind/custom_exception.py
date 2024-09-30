@@ -1,3 +1,4 @@
+import builtins
 import logging
 from contextvars import ContextVar
 
@@ -35,5 +36,8 @@ def reset_debugger_counts(sender, **kwargs):
     set_exception_count(0)
 
 
-def debugger(*values, skip):
+def debugger(*values, skip=0):
     return Debugger(*values, skip=skip)()
+
+
+setattr(builtins, "debugger", debugger)

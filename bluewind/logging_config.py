@@ -29,6 +29,7 @@ class CleanTracebackFormatter(logging.Formatter):
             if (
                 self.project_root in frame.filename
                 and "site-packages" not in frame.filename
+                and "custom_exception.py" not in frame.filename
             ):
                 relative_filename = os.path.relpath(frame.filename, self.project_root)
                 clean_path = f"/{relative_filename}"
