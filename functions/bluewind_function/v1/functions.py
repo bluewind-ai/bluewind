@@ -2,6 +2,7 @@ import logging
 from functools import wraps
 
 from django.db import transaction
+from django.utils import timezone
 
 from bluewind.context_variables import (
     get_approved_function_call,
@@ -85,6 +86,7 @@ def bluewind_function_v1(is_making_network_calls=False):
                 set_approved_function_call(None)
                 set_parent_function_call(function_call)
                 function_call.status = FunctionCall.Status.RUNNING
+                function_call.executed_at = timezone.now()
                 function_call.input_data = kwargs
                 set_is_function_call_magic(True)
                 if is_making_network_calls:

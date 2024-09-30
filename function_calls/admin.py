@@ -1,6 +1,8 @@
-from django import forms
 from django.http import HttpRequest
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from treenode.admin import TreeNodeModelAdmin
+from treenode.forms import TreeNodeForm
 
 from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import set_is_function_call_magic
@@ -15,23 +17,8 @@ from functions.handle_mark_function_call_as_successful.v1.functions import (
 )
 from unfold.decorators import action
 
-# class ChildFunctionCallInline(admin.TabularInline):
-#     model = FunctionCall
-#     extra = 0
-#     fields = ("function",)
-#     readonly_fields = ("function",)
 
-#     def has_add_permission(self, request, obj=None):
-#         return False
-
-#     def has_change_permission(self, request, obj=None):
-#         return False
-
-#     def has_delete_permission(self, request, obj=None):
-#         return False
-
-
-class FunctionCallForm(forms.ModelForm):
+class FunctionCallForm(TreeNodeForm):
     class Meta:
         model = FunctionCall
         fields = [
@@ -47,10 +34,24 @@ class FunctionCallForm(forms.ModelForm):
         ]
 
 
-class FunctionCallAdmin(InWorkspace):
+class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     form = FunctionCallForm
     actions_detail = ["approve_function_call", "mark_function_call_as_successful"]
-    # inlines = [ChildFunctionCallInline]
+
+    list_display = (
+        "indented_title",
+        "function",
+        "status",
+        "executed_at",
+    )
+    list_display_links = ("indented_title",)
+
+    def indented_title(self, obj):
+        return format_html(
+            '<div style="text-indent:{}px">{}</div>', obj.depth * 20, str(obj)
+        )
+
+    indented_title.short_description = "Function Call"
 
     def has_add_permission(self, request):
         return False
@@ -77,26 +78,12 @@ class FunctionCallAdmin(InWorkspace):
         return handle_mark_function_call_as_successful_v1(function_call_id=object_id)
 
     def get_actions_detail(self, request, obj=None):
-        # raise Exception(type(FunctionCall.objects.create()))
         set_is_function_call_magic(False)
-        obj
         function_call = FunctionCall.objects.get(pk=obj)
         actions = super().get_actions_detail(request, obj)
         allowed_actions = get_allowed_actions_on_function_call_v1(function_call)
         actions = [action for action in actions if action.path in allowed_actions]
-
         return actions
 
-    # @action(
-    #     description=_("Approve"),
-    #     url_path="mark_function_call_as_failed",
-    # )
-    # def mark_function_call_as_failed(self, request: HttpRequest, object_id: int):
-    #     mark_function_call_as_failed_v1(function_call_id=object_id)
-    #     return redirect(
-    #         f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
-    #     )
-
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
-        # Add your permission logic here
         return request.user.is_superuser
