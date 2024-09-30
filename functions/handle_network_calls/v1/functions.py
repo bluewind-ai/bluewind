@@ -14,3 +14,4 @@ def handle_network_calls_v1(func, kwargs, function_call):
     raise Exception(
         model_to_dict(kwargs["domain_name"]),
     )
+    return func(**kwargs)

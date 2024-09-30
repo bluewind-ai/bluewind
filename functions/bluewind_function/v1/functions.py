@@ -1,4 +1,3 @@
-import importlib
 import json
 import logging
 from functools import wraps
@@ -14,16 +13,17 @@ from bluewind.context_variables import (
     set_is_function_call_magic,
     set_parent_function_call,
 )
-from function_call_dependencies.models import FunctionCallDependency
 from function_calls.models import FunctionCall
 from functions.build_function_call_dependencies.v1.functions import (
     build_function_call_dependencies_v1,
+)
+from functions.build_kwargs_from_dependencies.v1.functions import (
+    build_kwargs_from_dependencies_v1,
 )
 from functions.get_function_or_create_from_file.v1.functions import (
     get_function_or_create_from_file_v1,
 )
 from functions.handle_network_calls.v1.functions import handle_network_calls_v1
-from functions.to_camel_case.v1.functions import to_camel_case_v1
 
 logger = logging.getLogger("django.temp")
 
@@ -67,29 +67,20 @@ def bluewind_function_v1(is_making_network_calls=False):
                 logger.debug(f"{func.__name__} approved, calling the function")
                 function_call = get_approved_function_call()
 
-                function_call_dependencies = FunctionCallDependency.objects.filter(
-                    dependent=function_call
-                )
-                for dependency in function_call_dependencies:
-                    model_name = to_camel_case_v1(dependency.name)
-                    domain_name_module = importlib.import_module("domain_names.models")
-                    domain_name_class = getattr(domain_name_module, model_name)
-                    ids = dependency.dependency.output_data["domain_name"]
-                    if len(ids) == 1:
-                        kwargs[dependency.name] = domain_name_class.objects.get(
-                            id__in=ids
-                        )
-                    else:
-                        raise Exception("todo")
+                new_kwargs = build_kwargs_from_dependencies_v1(function_call, kwargs)
 
                 set_approved_function_call(None)
                 set_parent_function_call(function_call)
                 function_call.status = FunctionCall.Status.RUNNING
                 set_is_function_call_magic(True)
                 if is_making_network_calls:
-                    result = handle_network_calls_v1(func, kwargs, function_call)
+                    result = handle_network_calls_v1(func, new_kwargs, function_call)
                 else:
-                    result = func(**kwargs)
+                    # debugger(
+                    #     kwargs,
+                    #     new_kwargs,
+                    # )
+                    result = func(**new_kwargs)
                 if not FunctionCall.objects.filter(parent_id=function_call.id).exists():
                     function_call.status = (
                         FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
