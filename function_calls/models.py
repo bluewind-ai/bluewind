@@ -42,6 +42,8 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         verbose_name = "Function Call"
         verbose_name_plural = "Function Calls"
 
+    treenode_display_field = "function"
+
     status = models.CharField(
         max_length=35,
         choices=Status.choices,

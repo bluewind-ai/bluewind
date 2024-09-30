@@ -47,11 +47,19 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     list_display_links = ("indented_title",)
 
     def indented_title(self, obj):
+        print(f"Depth: {obj.depth}, Object: {obj}")  # Debug print
         return format_html(
-            '<div style="text-indent:{}px">{}</div>', obj.depth * 20, str(obj)
+            '<div style="text-indent:{}px">{} ({})</div>',
+            obj.depth * 20,
+            str(obj),
+            obj.get_descendant_count(),
         )
 
     indented_title.short_description = "Function Call"
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.get_descendants(include_self=True)
 
     def has_add_permission(self, request):
         return False
@@ -87,3 +95,9 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
+
+
+# Don't forget to register your admin class
+from django.contrib import admin
+
+admin.site.register(FunctionCall, FunctionCallAdmin)
