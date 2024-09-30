@@ -1,5 +1,7 @@
 from django import forms
 from django.http import HttpRequest
+from django.shortcuts import get_object_or_404, render
+from django.urls import path
 from django.utils.translation import gettext_lazy as _
 from treenode.admin import TreeNodeModelAdmin
 
@@ -82,3 +84,27 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
+
+    def tree_view(self, request, object_id):
+        function_call = get_object_or_404(FunctionCall, id=object_id)
+        context = self.admin_site.each_context(request)
+        context.update(
+            {
+                "title": f"Tree View for Function Call {object_id}",
+                "function_call": function_call,
+                # You might want to add more context data here,
+                # such as the actual tree structure of the function call
+            }
+        )
+        return render(request, "admin/function_calls/tree_view.html", context)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "<path:object_id>/tree_view/",
+                self.admin_site.admin_view(self.tree_view),
+                name="function_call_tree_view",
+            ),
+        ]
+        return custom_urls + urls

@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% load i18n unfold %}
+
+{% block content %}
+    {% component "unfold/components/container.html" %}
+        {% component "unfold/components/card.html" %}
+            {% component "unfold/components/title.html" %}
+                Function Calls Blank Page
+            {% endcomponent %}
+            {% component "unfold/components/text.html" %}
+                This is a blank page in the function_calls app.
+            {% endcomponent %}
+        {% endcomponent %}
+    {% endcomponent %}
+{% endblock %}
