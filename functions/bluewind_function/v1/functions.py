@@ -1,14 +1,17 @@
 import importlib
 import json
 import logging
+from functools import wraps
 
 from django.db import transaction
 
 from bluewind.context_variables import (
     get_approved_function_call,
+    get_is_function_call_magic,
     get_parent_function_call,
     get_workspace_id,
     set_approved_function_call,
+    set_is_function_call_magic,
     set_parent_function_call,
 )
 from function_call_dependencies.models import FunctionCallDependency
@@ -19,26 +22,35 @@ from functions.build_function_call_dependencies.v1.functions import (
 from functions.get_function_or_create_from_file.v1.functions import (
     get_function_or_create_from_file_v1,
 )
+from functions.handle_network_calls.v1.functions import handle_network_calls_v1
 from functions.to_camel_case.v1.functions import to_camel_case_v1
-
-logger = logging.getLogger("django.not_used")
-
-
-import logging
-from functools import wraps
-
-logger = logging.getLogger("django.not_used")
-
-
-import logging
 
 logger = logging.getLogger("django.temp")
 
 
-def bluewind_function_v1():
+class MagicFunctionCall:
+    def __init__(self, function_call):
+        self._function_call = function_call
+        self._accessed_attribute = None
+
+    def __getattr__(self, name):
+        if get_is_function_call_magic() or hasattr(self._function_call, name):
+            self._accessed_attribute = name
+            return self
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
+
+    def get_accessed_attribute(self):
+        return self._accessed_attribute
+
+
+def bluewind_function_v1(is_making_network_calls=False):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+            set_is_function_call_magic(False)
+
             if func.__name__ == "approve_function_call_v1":
                 logger.debug(f"{func.__name__} called, do nothing and return")
                 return func(*args, **kwargs)
@@ -51,13 +63,14 @@ def bluewind_function_v1():
                     dependent=function_call
                 )
                 for dependency in function_call_dependencies:
+                    raise Exception(dependency.name, kwargs, args)
                     model_name = to_camel_case_v1(dependency.name)
                     domain_name_module = importlib.import_module("domain_names.models")
                     domain_name_class = getattr(domain_name_module, model_name)
-                    ids = dependency.data["domain_name"]
+                    ids = dependency.dependency.output_data["domain_name"]
                     if len(ids) == 1:
                         kwargs[dependency.name] = domain_name_class.objects.get(
-                            id__in=dependency.data["domain_name"]
+                            id__in=ids
                         )
                     else:
                         raise Exception("todo")
@@ -65,9 +78,12 @@ def bluewind_function_v1():
                 set_approved_function_call(None)
                 set_parent_function_call(function_call)
                 function_call.status = FunctionCall.Status.RUNNING
-                result = func(*args, **kwargs)
+                set_is_function_call_magic(True)
+                if is_making_network_calls:
+                    result = handle_network_calls_v1(func, args, kwargs, function_call)
+                else:
+                    result = func(*args, **kwargs)
                 if not FunctionCall.objects.filter(parent_id=function_call.id).exists():
-                    # if this function call has no children, then it's automatically completed after it ran.
                     function_call.status = (
                         FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
                     )
@@ -116,7 +132,7 @@ def bluewind_function_v1():
                     status=status,
                 )
                 remaining_dependencies = build_function_call_dependencies_v1(
-                    function_call, kwargs
+                    function_call, kwargs, args
                 )
                 if remaining_dependencies:
                     function_call.remaining_dependencies = remaining_dependencies

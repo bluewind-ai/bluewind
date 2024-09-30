@@ -3,6 +3,7 @@ from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
 from base_model_admin.admin import InWorkspace
+from bluewind.context_variables import set_is_function_call_magic
 from function_calls.models import FunctionCall
 from functions.approve_function_call.v1.functions import approve_function_call_v1
 from functions.get_allowed_actions_on_function_call.v1.functions import (
@@ -78,6 +79,9 @@ class FunctionCallAdmin(InWorkspace):
         return handle_mark_function_call_as_successful_v1(function_call_id=object_id)
 
     def get_actions_detail(self, request, obj=None):
+        # raise Exception(type(FunctionCall.objects.create()))
+        set_is_function_call_magic(False)
+        obj
         function_call = FunctionCall.objects.get(pk=obj)
         actions = super().get_actions_detail(request, obj)
         allowed_actions = get_allowed_actions_on_function_call_v1(function_call)

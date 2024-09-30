@@ -6,6 +6,7 @@ workspace_id_var = ContextVar("workspace_id")
 startup_mode_var = ContextVar("startup_mode", default=True)
 parent_function_call_var = ContextVar("parent_function_call", default=None)
 approved_function_call_var = ContextVar("approved_function_call", default=None)
+is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
 
 
 def get_request_id():
@@ -59,3 +60,11 @@ def get_parent_function_call():
 
 def set_parent_function_call(parent_function_call):
     parent_function_call_var.set(parent_function_call)
+
+
+def get_is_function_call_magic():
+    return is_function_call_magic_var.get()
+
+
+def set_is_function_call_magic(is_function_call_magic):
+    is_function_call_magic_var.set(is_function_call_magic)

@@ -12,7 +12,7 @@ from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 from gevent import getcurrent
 
-from bluewind.context_variables import get_workspace_id
+from bluewind.context_variables import get_workspace_id, set_is_function_call_magic
 from functions.master.v1.functions import master_v1
 from users.models import User
 from workspaces.models import Workspace, WorkspaceUser
@@ -110,7 +110,7 @@ class CustomAdminSite(UnfoldAdminSite):
                 return redirect(context["redirect_url"])
 
             response = view(request, *args, **kwargs)
-
+            set_is_function_call_magic(False)
             # if isinstance(response, TemplateResponse):
             #     # Convert the context data to JSON
             #     json_data = json.dumps(

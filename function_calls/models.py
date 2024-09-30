@@ -55,6 +55,7 @@ class FunctionCall(WorkspaceRelated):
         blank=True,
         related_name="function_calls_using_as_output",
     )
+    input_data = models.JSONField(default=dict, blank=True)
     output_data = models.JSONField(default=dict, blank=True)
 
     executed_at = models.DateTimeField(null=True, blank=True)

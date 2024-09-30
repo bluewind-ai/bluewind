@@ -35,7 +35,7 @@ def go_next_v1():
         return redirect(
             f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
         )
-    raise Exception("WE ARE DONE")
+    # raise Exception("WE ARE DONE")
     master_v1()
     function_call = FunctionCall.objects.filter(
         status=FunctionCall.Status.READY_FOR_APPROVAL
