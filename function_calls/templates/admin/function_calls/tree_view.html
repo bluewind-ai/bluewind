@@ -7,21 +7,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
     <style>
-        #content-main { margin-left: 12rem; }
+        body, html { margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
+        #header, #container, #content, #content-main {
+            padding: 0 !important;
+            margin: 0 !important;
+            left: 32px !important;
+            position: absolute !important;
+            width: calc(100% - 32px) !important;
+        }
+        #header { top: 0 !important; height: 40px !important; }
+        #container { top: 40px !important; bottom: 0 !important; overflow: auto !important; }
+        .jstree-default .jstree-anchor { padding: 0 1px !important; line-height: 16px !important; height: 16px !important; }
+        .jstree-default .jstree-node { min-height: 16px !important; line-height: 16px !important; }
+        #tree .jstree-wholerow { height: 16px !important; }
+        #tree { font-size: 8px !important; }
+        .change-link { font-size: 6px !important; padding: 0 1px !important; }
     </style>
 {% endblock %}
 
 {% block content %}
-    {% component "unfold/components/flex.html" with class="fixed left-0 top-0 h-full z-50" %}
-        {% component "unfold/components/card.html" with class="w-48 h-full overflow-y-auto border-r shadow-lg bg-white" %}
-            {% component "unfold/components/title.html" with class="text-xs px-2 py-1" %}
-                Function Call Tree
-            {% endcomponent %}
-            {% component "unfold/components/text.html" with class="p-0" %}
-                <div id="tree" class="text-xs"></div>
-            {% endcomponent %}
-        {% endcomponent %}
-    {% endcomponent %}
+    <div class="fixed left-0 top-0 h-full z-50 w-8 bg-white border-r shadow-lg overflow-hidden">
+        <div class="text-[7px] px-0.5 py-0.5 border-b">Tree</div>
+        <div id="tree" class="overflow-y-auto h-[calc(100%-16px)]"></div>
+    </div>
 
     <script>
         $(function () {
@@ -29,7 +37,9 @@
                 'core' : {
                     'data' : {{ tree_json|safe }},
                     'themes': {
-                        'icons': false
+                        'icons': false,
+                        'variant': 'small',
+                        'stripes': false
                     },
                     'animation': 0
                 },
@@ -39,27 +49,14 @@
                     var node = data.instance.get_node(this);
                     var changeUrl = node.data.change_url;
                     $(this).find('.jstree-anchor').first().after(
-                        '<span class="ml-1 cursor-pointer text-xs" data-url="' + changeUrl + '">🔗</span>'
+                        '<a href="' + changeUrl + '" class="change-link">➜</a>'
                     );
                 });
-            });
-
-            $(document).on('click', '[data-url]', function(e) {
-                e.stopPropagation();
-                window.location.href = $(this).data('url');
             });
 
             $('#tree').on('click', '.jstree-anchor', function(e) {
                 var node = $('#tree').jstree(true).get_node($(this));
                 $('#tree').jstree(true).toggle_node(node);
-            });
-
-            $('#tree').on('dblclick', '.jstree-anchor', function(e) {
-                e.preventDefault();
-                var node = $('#tree').jstree(true).get_node($(this));
-                if (node.data && node.data.change_url) {
-                    window.location.href = node.data.change_url;
-                }
             });
         });
     </script>
