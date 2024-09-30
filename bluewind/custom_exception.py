@@ -1,17 +1,7 @@
-import builtins
-import logging
-from contextvars import ContextVar
-
 from django.core.signals import request_started
 from django.dispatch import receiver
 
-# from bluewind.custom_exception import debugger
 from bluewind.context_variables import get_exception_count, set_exception_count
-from function_call_dependencies.models import FunctionCallDependency  # noqa: F401
-
-# Patch standard library
-logger = logging.getLogger("django.not_used")  # noqa: F821
-is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
 
 
 class Debugger(Exception):
@@ -25,7 +15,7 @@ class Debugger(Exception):
 
     def __call__(self):
         exception_count = get_exception_count()
-        if exception_count == self.skip + 1:
+        if exception_count == self.skip:
             raise Exception(self.format_message())
         else:
             set_exception_count(exception_count + 1)
@@ -33,11 +23,10 @@ class Debugger(Exception):
 
 @receiver(request_started)
 def reset_debugger_counts(sender, **kwargs):
+    from bluewind.context_variables import set_exception_count
+
     set_exception_count(0)
 
 
 def debugger(*values, skip=0):
     return Debugger(*values, skip=skip)()
-
-
-setattr(builtins, "debugger", debugger)

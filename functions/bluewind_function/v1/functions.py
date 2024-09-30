@@ -49,6 +49,7 @@ def bluewind_function_v1(is_making_network_calls=False):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+            debugger("cdnjcndsjk")
             set_is_function_call_magic(False)
 
             if func.__name__ == "approve_function_call_v1":
