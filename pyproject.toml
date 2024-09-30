@@ -68,6 +68,7 @@ supervisor = "^4.2.5"
 chardet = "^5.2.0"
 dnspython = "^2.6.1"
 django-import-export = "^4.1.1"
+mypy = "^1.11.2"
 
 [tool.poetry.extras]
 argon2 = ["argon2-cffi",]
@@ -85,7 +86,7 @@ markers = "sys_platform == 'win32'"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "F811"]
-ignore = ["E501"]
+ignore = ["E501"] # Line too long
 extend-ignore = ["E402"]  # Moved here from [tool.ruff]
 
 [tool.ruff.lint.isort]
@@ -129,3 +130,31 @@ in-place = true
 recursive = true
 aggressive = 3
 ignore-local-config = true
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+files = "functions/**/*.py"
+
+# Strict mode
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+strict_concatenate = true
+
+# Additional checks
+enable_error_code = ["truthy-bool", "redundant-expr", "unused-awaitable"]
+warn_incomplete_stub = true
+
+# Miscellaneous
+show_error_codes = true
+pretty = true

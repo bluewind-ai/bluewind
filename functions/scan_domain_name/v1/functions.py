@@ -74,7 +74,7 @@ def query_dns(domain, record_type):
 
 
 @bluewind_function_v1(is_making_network_calls=True)
-def scan_domain_name_v1(domain_name: DomainName):
+def scan_domain_name_v1(*, domain_name: DomainName, **kwargs):
     domain_name = domain_name.name
     dns_records = {
         "A": [],

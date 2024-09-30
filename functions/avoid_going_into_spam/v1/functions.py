@@ -16,4 +16,6 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 def avoid_going_into_spam_v1():
     domain_name = create_domain_name_v1()
     loaded_domain_names = load_domain_names_v1(domain_names=domain_name)
-    raw_dns_records = scan_domain_name_v1(loaded_domain_names=loaded_domain_names)
+    raw_dns_records = scan_domain_name_v1(
+        loaded_domcdscdscdscsdain_names=loaded_domain_names
+    )

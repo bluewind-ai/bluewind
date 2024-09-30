@@ -49,6 +49,12 @@ def bluewind_function_v1(is_making_network_calls=False):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+            raise_debug(
+                func.__name__,
+                kwargs,
+                args,
+                skip=4,
+            )
             if args:
                 raise Exception("args not supported")
             # raise_debug(
