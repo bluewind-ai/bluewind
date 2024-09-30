@@ -2,7 +2,6 @@ from django.http import HttpRequest
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from treenode.admin import TreeNodeModelAdmin
-from treenode.forms import TreeNodeForm
 
 from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import set_is_function_call_magic
@@ -17,25 +16,24 @@ from functions.handle_mark_function_call_as_successful.v1.functions import (
 )
 from unfold.decorators import action
 
-
-class FunctionCallForm(TreeNodeForm):
-    class Meta:
-        model = FunctionCall
-        fields = [
-            "status",
-            "function",
-            "state",
-            "output_data",
-            "user",
-            "thoughts",
-            "workspace",
-            "executed_at",
-            "parent",
-        ]
+# class FunctionCallForm(TreeNodeForm):
+#     class Meta:
+#         model = FunctionCall
+#         fields = [
+#             "status",
+#             "function",
+#             "state",
+#             "output_data",
+#             "user",
+#             "thoughts",
+#             "workspace",
+#             "executed_at",
+#             "parent",
+#         ]
 
 
 class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
-    form = FunctionCallForm
+    # form = FunctionCallForm
     actions_detail = ["approve_function_call", "mark_function_call_as_successful"]
 
     list_display = (
@@ -47,19 +45,15 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     list_display_links = ("indented_title",)
 
     def indented_title(self, obj):
-        print(f"Depth: {obj.depth}, Object: {obj}")  # Debug print
         return format_html(
-            '<div style="text-indent:{}px">{} ({})</div>',
-            obj.depth * 20,
-            str(obj),
-            obj.get_descendant_count(),
+            '<div style="text-indent:{}px">{}</div>', obj.tn_depth * 20, str(obj)
         )
 
     indented_title.short_description = "Function Call"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.get_descendants(include_self=True)
+        return qs.select_related("parent").order_by("tn_order")
 
     def has_add_permission(self, request):
         return False
@@ -95,9 +89,3 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
-
-
-# Don't forget to register your admin class
-from django.contrib import admin
-
-admin.site.register(FunctionCall, FunctionCallAdmin)
