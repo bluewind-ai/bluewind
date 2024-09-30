@@ -46,7 +46,7 @@ class MagicFunctionCall:
         return self._accessed_attribute
 
 
-def bluewind_function_v1(is_making_network_calls=False):
+def bluewind_function_v1(is_making_network_calls=False, redirect=None):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
