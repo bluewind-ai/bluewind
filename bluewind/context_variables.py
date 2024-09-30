@@ -7,6 +7,7 @@ startup_mode_var = ContextVar("startup_mode", default=True)
 parent_function_call_var = ContextVar("parent_function_call", default=None)
 approved_function_call_var = ContextVar("approved_function_call", default=None)
 is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
+exception_count_var = ContextVar("exception_count", default=0)
 
 
 def get_request_id():
@@ -68,3 +69,11 @@ def get_is_function_call_magic():
 
 def set_is_function_call_magic(is_function_call_magic):
     is_function_call_magic_var.set(is_function_call_magic)
+
+
+def get_exception_count():
+    return exception_count_var.get()
+
+
+def set_exception_count(exception_count):
+    exception_count_var.set(exception_count)
