@@ -65,12 +65,7 @@ def bluewind_function_v1(is_making_network_calls=False):
 
             if args:
                 raise Exception("args not supported")
-            # raise_debug(
-            #     func,
-            #     kwargs,
-            #     args,
-            #     skip=3,
-            # )
+
             set_is_function_call_magic(False)
 
             if func.__name__ == "approve_function_call_v1":
@@ -80,27 +75,33 @@ def bluewind_function_v1(is_making_network_calls=False):
             if get_approved_function_call():
                 logger.debug(f"{func.__name__} approved, calling the function")
                 function_call = get_approved_function_call()
+                # raise_debug("1", function_call, function_call.output_data)
 
                 new_kwargs = build_kwargs_from_dependencies_v1(function_call)
 
                 set_approved_function_call(None)
                 set_parent_function_call(function_call)
                 function_call.status = FunctionCall.Status.RUNNING
+                # get difference in time between the 2
+                if function_call.executed_at:
+                    duration = timezone.now() - function_call.executed_at
+                    raise_debug(duration)
                 function_call.executed_at = timezone.now()
                 function_call.input_data = kwargs
-                set_is_function_call_magic(True)
                 if is_making_network_calls:
                     result = handle_network_calls_v1(func, new_kwargs, function_call)
                     # raise_debug(result, "after_network", func)
                 else:
                     result = func(**new_kwargs)
-                if not FunctionCall.objects.filter(parent_id=function_call.id).exists():
+
+                if not FunctionCall.objects.filter(tn_parent=function_call).exists():
+                    if result == None:
+                        result = {}
                     function_call.status = (
                         FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
                     )
                     function_call.output_data = result
-                # raise_debug(func, result, "result")
-
+                # raise_debug(function_call, function_call.output_data)
                 function_call.save()
 
                 return
@@ -133,11 +134,12 @@ def bluewind_function_v1(is_making_network_calls=False):
                 logger.debug(f"{func.__name__} found in the DB")
                 function_call = FunctionCall.objects.create(
                     function=function,
-                    parent=get_parent_function_call(),
+                    tn_parent=get_parent_function_call(),
                     workspace_id=get_workspace_id(),
                     user_id=1,
                     status=status,
                 )
+                # raise_debug(func)
                 remaining_dependencies = build_function_call_dependencies_v1(
                     function_call, kwargs
                 )

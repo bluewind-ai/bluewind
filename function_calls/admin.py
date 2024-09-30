@@ -1,5 +1,5 @@
+from django import forms
 from django.http import HttpRequest
-from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from treenode.admin import TreeNodeModelAdmin
 
@@ -14,46 +14,32 @@ from functions.go_next.v1.functions import go_next_v1
 from functions.handle_mark_function_call_as_successful.v1.functions import (
     handle_mark_function_call_as_successful_v1,
 )
+from functions.restart.v1.functions import restart_v1
 from unfold.decorators import action
 
-# class FunctionCallForm(TreeNodeForm):
-#     class Meta:
-#         model = FunctionCall
-#         fields = [
-#             "status",
-#             "function",
-#             "state",
-#             "output_data",
-#             "user",
-#             "thoughts",
-#             "workspace",
-#             "executed_at",
-#             "parent",
-#         ]
+
+class FunctionCallForm(forms.ModelForm):
+    class Meta:
+        model = FunctionCall
+        fields = [
+            "status",
+            "function",
+            "input_data",
+            "output_data",
+            "executed_at",
+        ]
 
 
 class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
-    # form = FunctionCallForm
-    actions_detail = ["approve_function_call", "mark_function_call_as_successful"]
+    form = FunctionCallForm
+    actions_detail = [
+        "approve_function_call",
+        "mark_function_call_as_successful",
+        "restart",
+    ]
 
-    list_display = (
-        "indented_title",
-        "function",
-        "status",
-        "executed_at",
-    )
+    list_display = ("function", "status", "executed_at", "id")
     list_display_links = ("indented_title",)
-
-    def indented_title(self, obj):
-        return format_html(
-            '<div style="text-indent:{}px">{}</div>', obj.tn_depth * 20, str(obj)
-        )
-
-    indented_title.short_description = "Function Call"
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related("parent").order_by("tn_order")
 
     def has_add_permission(self, request):
         return False
@@ -78,6 +64,13 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     )
     def mark_function_call_as_successful(self, request: HttpRequest, object_id: int):
         return handle_mark_function_call_as_successful_v1(function_call_id=object_id)
+
+    @action(
+        description=_("Restart"),
+        url_path="restart",
+    )
+    def restart(self, request: HttpRequest, object_id: int):
+        return restart_v1()
 
     def get_actions_detail(self, request, obj=None):
         set_is_function_call_magic(False)

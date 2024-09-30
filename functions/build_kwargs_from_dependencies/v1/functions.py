@@ -26,6 +26,7 @@ def build_kwargs_from_dependencies_v1(function_call):
         if dependency.dependency.output_type != FunctionCall.OutputType.QUERY_SET:
             new_kwargs[dependency.name] = dependency.dependency.output_data
             continue
+
         for key, value in dependency.dependency.output_data.items():
             model_name = to_camel_case_v1(key)
             domain_name_module = importlib.import_module("domain_names.models")

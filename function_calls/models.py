@@ -11,7 +11,7 @@ logger = logging.getLogger("django.not_used")
 
 
 class FunctionCall(WorkspaceRelated, TreeNodeModel):
-    node_order_by = ["executed_at"]
+    # node_order_by = ["executed_at"]
 
     class Status(models.TextChoices):
         CONDITIONS_NOT_MET = "conditions-not-met", "Conditions Not Met"
@@ -34,6 +34,7 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
             "successful",
             "Successful",
         )
+        CANCELLED = "cancelled", "Cancelled"
 
     class OutputType(models.TextChoices):
         QUERY_SET = "queryset", "queryset"
@@ -78,14 +79,6 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
     remaining_dependencies = models.IntegerField(default=0)
 
-    parent = models.ForeignKey(
-        "self",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="children",
-    )
-
     thoughts = models.TextField(
         blank=True,
         null=True,
@@ -114,3 +107,20 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
 
     def __str__(self):
         return f"{self.function.name} on {self.executed_at}"
+
+    @property
+    def parent(self):
+        return super().parent
+
+    @parent.setter
+    def parent(self, value):
+        self.parent_id = value.id if value else None
+
+    def save(self, *args, **kwargs):
+        if self.id:
+            before = FunctionCall.objects.get(id=self.id).executed_at
+            after = self.executed_at
+            if before is not None and before != after:
+                raise_debug(self, before, after)
+
+        return super().save(*args, **kwargs)

@@ -10,13 +10,6 @@ is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
 
 
 def build_function_call_dependencies_v1(function_call, kwargs):
-    # raise NotImplementedError(function_call)
-    # raise_debug(
-    #     kwargs,
-    #     args,
-    #     skip=1,
-    # )
-
     if kwargs == {}:
         return
     dependency_count = 0

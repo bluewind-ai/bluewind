@@ -1,9 +1,6 @@
 # Create your models here.
 from django.db import models
 
-from functions.handle_function_call_after_save.v1.functions import (
-    handle_function_call_after_save_v1,
-)
 from workspaces.models import WorkspaceRelated
 
 
@@ -23,6 +20,6 @@ class DomainName(WorkspaceRelated):
     class Meta:
         unique_together = ("workspace", "name")
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        handle_function_call_after_save_v1(self)
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     # handle_function_call_after_save_v1(self)

@@ -39,18 +39,20 @@ class DomainNameAdmin(InWorkspace):
         return form
 
     def add_view(self, request, form_url="", extra_context=None):
+        response = super().add_view(request, form_url, extra_context)
+        if not response.status_code == 302:
+            return response
         request_post = request.POST
-        if request_post:
-            function_call_id = request_post.get("function_call")
-            if function_call_id:
-                super().add_view(request, form_url, extra_context)
-                function_to_approve = FunctionCall.objects.filter(
-                    status=FunctionCall.Status.READY_FOR_APPROVAL
-                ).first()
-                if not function_to_approve:
-                    raise Exception("No function to approve")
-                return redirect(
-                    f"/workspaces/2/admin/function_calls/functioncall/{function_to_approve.id}/change"
-                )
-
-        return super().add_view(request, form_url, extra_context)
+        if not request_post:
+            return response
+        function_call_id = request_post.get("function_call")
+        if not function_call_id:
+            return response
+        function_to_approve = FunctionCall.objects.filter(
+            status=FunctionCall.Status.READY_FOR_APPROVAL
+        ).first()
+        if not function_to_approve:
+            raise Exception("No function to approve")
+        return redirect(
+            f"/workspaces/2/admin/function_calls/functioncall/{function_to_approve.id}/change"
+        )
