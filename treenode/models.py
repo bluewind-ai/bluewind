@@ -141,6 +141,7 @@ class TreeNodeModel(models.Model):
         with no_signals():
             if not cascade:
                 children_qs = self.get_children_queryset()
+                raise_debug(children_qs)
                 children_qs.update(tn_parent=None)
             self.__class__.objects.filter(pk=self.pk).delete()
         self.update_tree()
