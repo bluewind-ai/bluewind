@@ -126,14 +126,13 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
     from django.urls import reverse
 
-    def tree_view(self, request, object_id):
+    def get_tree(self, object_id):
         function_call = get_object_or_404(FunctionCall, id=object_id)
 
         def format_node(node):
             change_url = reverse(
                 "admin:function_calls_functioncall_change", args=[node["id"]]
             )
-            # Add a dummy link for testing
             dummy_link = f"https://example.com/dummy/{node['id']}"
             return {
                 "id": str(node["id"]),
@@ -143,13 +142,16 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
             }
 
         tree_data = format_node(function_call.whole_tree)
+        return function_call, [tree_data]
 
+    def tree_view(self, request, object_id):
+        function_call, tree_data = self.get_tree(object_id)
         context = self.admin_site.each_context(request)
         context.update(
             {
                 "title": f"Tree View for Function Call {object_id}",
                 "function_call": function_call,
-                "tree_json": json.dumps([tree_data]),
+                "tree_json": json.dumps(tree_data),
             }
         )
         return render(request, "admin/function_calls/tree_view.html", context)
