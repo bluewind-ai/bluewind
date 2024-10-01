@@ -32,7 +32,9 @@
 
     <script>
         $(function () {
-            $('#tree').jstree({
+            console.log("Script starting");
+
+            var tree = $('#tree').jstree({
                 'core' : {
                     'data' : {{ tree_json|safe }},
                     'themes': {
@@ -44,19 +46,41 @@
                 },
                 'plugins': ['wholerow']
             }).on('ready.jstree', function(e, data) {
-                data.instance.get_container_ul().find('li').each(function() {
-                    var node = data.instance.get_node(this);
-                    var changeUrl = node.data.change_url;
-                    $(this).find('.jstree-anchor').first().after(
-                        '<a href="' + changeUrl + '" class="change-link">🔗</a>'
-                    );
-                });
+                console.log("Tree is ready");
             });
 
-            $('#tree').on('click', '.jstree-anchor', function(e) {
-                var node = $('#tree').jstree(true).get_node($(this));
-                $('#tree').jstree(true).toggle_node(node);
+            var clickTimer = null;
+            var preventSimpleClick = false;
+
+            $(document).on('click', '#tree .jstree-anchor', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var $node = $(this);
+                var nodeId = $node.closest('li').attr('id');
+                console.log("Click on node:", nodeId);
+
+                if (clickTimer) {
+                    clearTimeout(clickTimer);
+                    clickTimer = null;
+                    preventSimpleClick = true;
+                    console.log("Double click detected on node:", nodeId);
+                    var changeUrl = "/workspaces/2/admin/function_calls/functioncall/" + nodeId + "/change/";
+                    console.log("Attempting to navigate to:", changeUrl);
+                    window.location.href = changeUrl;
+                } else {
+                    clickTimer = setTimeout(function() {
+                        clickTimer = null;
+                        if (!preventSimpleClick) {
+                            console.log("Single click on node:", nodeId);
+                            tree.jstree('toggle_node', $node);
+                        }
+                        preventSimpleClick = false;
+                    }, 130);  // Reduced from 300ms to 200ms
+                }
             });
+
+            console.log("Event handlers set up");
         });
     </script>
 {% endblock %}

@@ -133,11 +133,13 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
             change_url = reverse(
                 "admin:function_calls_functioncall_change", args=[node["id"]]
             )
+            # Add a dummy link for testing
+            dummy_link = f"https://example.com/dummy/{node['id']}"
             return {
                 "id": str(node["id"]),
                 "text": f"{node['function_name']} ({node['status']})",
                 "children": [format_node(child) for child in node["children"]],
-                "data": {"change_url": change_url},
+                "data": {"change_url": change_url, "dummy_link": dummy_link},
             }
 
         tree_data = format_node(function_call.whole_tree)
