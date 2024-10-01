@@ -21,6 +21,5 @@ class Model(WorkspaceRelated):
         return self.app.plural_name
 
     def save(self, *args, **kwargs):
-        raise_debug(self, "model", skip=0)
         super().save(*args, **kwargs)
         # update_entity_v1(self)

@@ -47,7 +47,14 @@ def check_if_we_use_skip_in_different_place():
     previous_file, previous_line = (
         get_file_and_line_where_debugger_with_skipped_option_was_called()
     )
-    # raise Exception("ncdjskjncds")
+    set_file_and_line_where_debugger_with_skipped_option_was_called(
+        (
+            file,
+            line,
+        )
+    )
+    if (previous_file, previous_line) == (None, None):
+        return
     if (previous_file, previous_line) != (
         file,
         line,
@@ -55,12 +62,6 @@ def check_if_we_use_skip_in_different_place():
         raise Exception(
             f"you can't use skip on raise_debug() in different parts of the code. It can only be used once. you asked it here: {file}:{line}. But it was also called here: {previous_file}:{previous_line}",
         )
-    set_file_and_line_where_debugger_with_skipped_option_was_called(
-        (
-            file,
-            line,
-        )
-    )
 
 
 def get_caller_info(depth=2):

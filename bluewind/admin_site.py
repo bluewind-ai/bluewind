@@ -13,6 +13,7 @@ from django.utils.safestring import mark_safe
 from gevent import getcurrent
 
 from bluewind.context_variables import get_workspace_id, set_is_function_call_magic
+from domain_names.models import DomainName
 from functions.master.v1.functions import master_v1
 from users.models import User
 from workspaces.models import Workspace, WorkspaceUser
@@ -94,6 +95,8 @@ class CustomAdminSite(UnfoldAdminSite):
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
             # raise Exception("This is an exception")
+            DomainName.objects.create(name="test")
+            raise_debug("This is a debug message")
             if request.path == "/workspaces/2/admin/":
                 function_call = master_v1()
                 return redirect(

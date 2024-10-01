@@ -9,7 +9,10 @@ from django.forms import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
 
-from bluewind.context_variables import get_startup_mode, get_workspace_id
+from bluewind.context_variables import (
+    get_startup_mode,
+    get_workspace_id,
+)
 from functions.update_entity.v1.functions import update_entity_v1
 from users.models import User
 from workspace_users.models import WorkspaceUser
