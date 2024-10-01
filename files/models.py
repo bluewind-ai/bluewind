@@ -18,6 +18,7 @@ class File(WorkspaceRelated):
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
+        raise_debug(self, self.path, skip=1)
         super().save(*args, **kwargs)
         # if is_new:
         #     files_after_create(self)

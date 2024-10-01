@@ -99,3 +99,10 @@ def custom_exception_handler(exc, context):
         return Response({"detail": "Not found"}, status=status.HTTP_404_NOT_FOUND)
 
     return response
+
+
+def snake_case(s):
+    """
+    Helper function to convert CamelCase to snake_case.
+    """
+    return "".join(["_" + c.lower() if c.isupper() else c for c in s]).lstrip("_")

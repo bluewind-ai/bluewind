@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 
 from bluewind.context_variables import get_startup_mode, get_workspace_id
+from functions.update_entity.v1.functions import update_entity_v1
 from users.models import User
 from workspace_users.models import WorkspaceUser
 
@@ -143,30 +144,8 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
-        return super().save(*args, **kwargs)
-
-    # self.update_entity()
-
-    # def update_entity(self):
-    #     model_str = f"{self._meta.app_label}.{self._meta.object_name}"
-
-    #     if model_str in DO_NOT_LOG:
-    #         return
-
-    #     Entity = apps.get_model("entity", "Entity")
-    #     content_type = self.get_model_instance()
-    #     name = str(self)[:255]  # Truncate to 255 characters
-
-    #     Entity.objects.update_or_create(
-    #         workspace_id=get_workspace_id,
-    #         content_type=content_type,
-    #         object_id=self.pk,
-    #         defaults={
-    #             "name": name,
-    #             "updated_at": models.functions.Now(),
-    #             "user": self.user,
-    #         },
-    #     )
+        super().save(*args, **kwargs)
+        update_entity_v1(self)
 
     def get_model_instance(self):
         return ContentType.objects.get_for_model(self.__class__)

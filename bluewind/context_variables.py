@@ -8,6 +8,9 @@ parent_function_call_var = ContextVar("parent_function_call", default=None)
 approved_function_call_var = ContextVar("approved_function_call", default=None)
 is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
 exception_count_var = ContextVar("exception_count", default=0)
+file_and_line_where_debugger_with_skipped_option_was_called_var = ContextVar(
+    "file_and_line_where_debugger_with_skipped_option_was_called", default=(None, None)
+)
 
 
 def get_request_id():
@@ -77,3 +80,15 @@ def get_exception_count():
 
 def set_exception_count(exception_count):
     exception_count_var.set(exception_count)
+
+
+def get_file_and_line_where_debugger_with_skipped_option_was_called():
+    return file_and_line_where_debugger_with_skipped_option_was_called_var.get()
+
+
+def set_file_and_line_where_debugger_with_skipped_option_was_called(
+    file_and_line_where_debugger_with_skipped_option_was_called,
+):
+    file_and_line_where_debugger_with_skipped_option_was_called_var.set(
+        file_and_line_where_debugger_with_skipped_option_was_called
+    )

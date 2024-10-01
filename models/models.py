@@ -1,7 +1,6 @@
 # models/models.py
 from django.db import models
 
-from files.models import File
 from workspaces.models import WorkspaceRelated
 
 
@@ -12,7 +11,16 @@ class Model(WorkspaceRelated):
     """
 
     # app = models.ForeignKey(App, on_delete=models.CASCADE, related_name="models")
-    file = models.OneToOneField(File, on_delete=models.CASCADE, related_name="model")
+    singular_name = models.CharField(max_length=255)
+    plural_name = models.CharField(max_length=255)
+    file = models.OneToOneField(
+        "files.File", on_delete=models.CASCADE, related_name="model"
+    )
 
     def __str__(self):
         return self.app.plural_name
+
+    def save(self, *args, **kwargs):
+        raise_debug(self, "model", skip=0)
+        super().save(*args, **kwargs)
+        # update_entity_v1(self)

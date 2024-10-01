@@ -10,13 +10,6 @@ from models.models import Model
 temp_logger = logging.getLogger("django.not_used")
 
 
-def snake_case(s):
-    """
-    Helper function to convert CamelCase to snake_case.
-    """
-    return "".join(["_" + c.lower() if c.isupper() else c for c in s]).lstrip("_")
-
-
 def register_all_models(workspace):
     """
     Register all models currently registered in the Django app registry.

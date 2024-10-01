@@ -32,8 +32,7 @@ def get_function_or_create_from_file_v1(function_name):
     )
 
     if not os.path.exists(file_path):
-        logger.error(f"File not found: {file_path}")
-        return None
+        raise_debug(f"File does not exist: {file_path}")
 
     # Read file content
     with open(file_path, "r") as file:

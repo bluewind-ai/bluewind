@@ -61,6 +61,7 @@ def files_load_all():
     files_to_create = [f for f in files_to_create if f.path not in existing_paths]
 
     with transaction.atomic():
+        raise_debug("cndjskncdjsk")
         created_files = File.objects.bulk_create(files_to_create)
         for existing_file in existing_files:
             for new_file in files_to_create:
