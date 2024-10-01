@@ -166,3 +166,14 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
             ),
         ]
         return custom_urls + urls
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        function_call, tree_data = self.get_tree(object_id)
+        extra_context["tree_json"] = json.dumps(tree_data)
+        return super().change_view(
+            request,
+            object_id,
+            form_url,
+            extra_context=extra_context,
+        )
