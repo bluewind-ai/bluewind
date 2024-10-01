@@ -134,9 +134,14 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
                 "admin:function_calls_functioncall_change", args=[node["id"]]
             )
             dummy_link = f"https://example.com/dummy/{node['id']}"
+
+            # Get the FunctionCall object to access the get_status_emoji method
+            node_obj = FunctionCall.objects.get(id=node["id"])
+            emoji = node_obj.get_status_emoji()
+
             return {
                 "id": str(node["id"]),
-                "text": f"{node['function_name']} ({node['status']})",
+                "text": f"{node['function_name']} {emoji}",
                 "children": [format_node(child) for child in node["children"]],
                 "data": {"change_url": change_url, "dummy_link": dummy_link},
             }

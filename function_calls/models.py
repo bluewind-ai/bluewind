@@ -157,3 +157,17 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     @parent.setter
     def parent(self, value):
         self.tn_parent_id = value.id if value else None
+
+    def get_status_emoji(self):
+        emoji_map = {
+            self.Status.CONDITIONS_NOT_MET: "🔄",
+            self.Status.READY_FOR_APPROVAL: "🟡",
+            self.Status.RUNNING: "🔄",
+            self.Status.COMPLETED: "🟢",
+            self.Status.COMPLETED_READY_FOR_APPROVAL: "🟠",
+            self.Status.MARKED_SUCCESSFUL: "🟢",
+            self.Status.MARKED_FAILED: "🔴",
+            self.Status.SUCCESSFUL: "🟢",
+            self.Status.CANCELLED: "🚫",
+        }
+        return emoji_map.get(self.status, "")

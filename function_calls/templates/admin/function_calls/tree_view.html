@@ -36,6 +36,11 @@
         $(function () {
             console.log("Script starting");
 
+            // Extract the node ID from the current URL
+            var currentPath = window.location.pathname;
+            var matches = currentPath.match(/\/functioncall\/(\d+)\/change\//);
+            var currentNodeId = matches ? matches[1] : null;
+
             var tree = $('#tree').jstree({
                 'core' : {
                     'data' : {{ tree_json|safe }},
@@ -45,16 +50,16 @@
                         'stripes': false
                     },
                     'animation': 0,
-                    'multiple': false  // Disable multiple selection
+                    'multiple': false
                 },
                 'plugins': ['wholerow']
             }).on('ready.jstree', function(e, data) {
                 console.log("Tree is ready");
-                // Expand all nodes
                 data.instance.open_all();
 
-                // Select node with ID 17
-                data.instance.select_node('17');
+                if (currentNodeId) {
+                    data.instance.select_node(currentNodeId);
+                }
             });
 
             var clickTimer = null;
@@ -81,9 +86,10 @@
                         clickTimer = null;
                         if (!preventSimpleClick) {
                             console.log("Single click on node:", nodeId);
-                            // We're not toggling nodes, just reselecting node 17
-                            tree.jstree('deselect_all');
-                            tree.jstree('select_node', '17');
+                            if (currentNodeId) {
+                                tree.jstree('deselect_all');
+                                tree.jstree('select_node', currentNodeId);
+                            }
                         }
                         preventSimpleClick = false;
                     }, 170);
