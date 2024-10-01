@@ -224,6 +224,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # DO NOT CHANGE THE ORDER OF THE MIDDLWARE BELOW
     # "allauth.account.middleware.AccountMiddleware",
+    "bluewind.middleware.context_variables_middleware",
     "bluewind.middleware.admin_middleware",
 ]
 

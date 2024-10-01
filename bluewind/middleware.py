@@ -84,6 +84,10 @@
 # from bluewind.middleware import redirect
 import re
 
+from bluewind.context_variables import (
+    set_is_update_entity_function_already_in_the_call_stack,
+)
+
 
 def process_response(response):
     if response.status_code in [301, 302, 307, 308] and "Location" in response:
@@ -121,45 +125,14 @@ def admin_middleware(get_response):
 
         return get_response(request)
 
-        # if request.path == "/":
-        # raise NotImplementedError("This middleware is not implemented")
-        # raise Exception("This is an exception")
+    return middleware
 
-        # return redirect("/function-calls/function-call/123/")
-        # return get_response(request)
 
-        # if request.path.startswith("/health/"):
-        #     return get_response(request)
-        # if request.path.startswith("/silk/"):
-        #     return get_response(request)
-        # if request.path == "/":
-        #     return redirect("/workspaces/2/accounts/login/")
-        # if request.path == "/workspaces/2/accounts/login/":
-        #     return get_response(request)
-        # if not request.user.is_authenticated:
-        #     return redirect("/workspaces/2/accounts/login/")
-
-        # workspace_id = get_workspace_id()
-        # # if "/workspaces/1/admin/flow_runs/flowrun/add" in request.path:
-        # #     return get_response(request)
-        # if WorkspaceUser.objects.filter(
-        #     user_id=request.user.id, workspace_id=workspace_id
-        # ):  # User asks for a workspace he has access to
-        #     if workspace_id == 2:
-        #         return redirect("/workspaces/1/admin/")
-        #     return flow_mode(request, get_response)
-        #     return get_response(request)
-        # if (
-        #     WorkspaceUser.objects.filter(user_id=request.user.id).count() == 0
-        # ):  # User has no workspace
-        #     workspace = Workspace.objects.create(name=request.user.username)
-        #     WorkspaceUser.objects.create(
-        #         user=request.user, workspace=workspace, is_default=True
-        #     )
-        #     redirect_url = f"/workspaces/{workspace.id}/admin/"
-        #     return redirect(redirect_url)
-
-        # return HttpResponseNotFound("Page not found")
+def context_variables_middleware(get_response):
+    def middleware(request):
+        response = get_response(request)
+        set_is_update_entity_function_already_in_the_call_stack(False)
+        return response
 
     return middleware
 
