@@ -46,9 +46,12 @@
                     },
                     'animation': 0
                 },
-                'plugins': ['wholerow']
+                'plugins': ['wholerow', 'state'],
+                'state' : { 'key' : 'your_unique_key' }
             }).on('ready.jstree', function(e, data) {
                 console.log("Tree is ready");
+                // Expand all nodes
+                data.instance.open_all();
             });
 
             var clickTimer = null;
@@ -76,7 +79,8 @@
                         clickTimer = null;
                         if (!preventSimpleClick) {
                             console.log("Single click on node:", nodeId);
-                            tree.jstree('toggle_node', $node);
+                            // Remove this line as we don't want to toggle nodes anymore
+                            // tree.jstree('toggle_node', $node);
                         }
                         preventSimpleClick = false;
                     }, 170);
