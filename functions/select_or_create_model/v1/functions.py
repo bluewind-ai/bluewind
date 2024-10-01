@@ -49,8 +49,9 @@ def select_or_create_model_v1(model_instance):
             plural_name=model_instance._meta.app_label,
             singular_name=singular_model_name,
             file=file_obj,
+            user_id=1,
+            workspace_id=2,
         )
-    raise_debug("cndjsnckjds")
     # raise_debug(
     #     File.objects.filter(
     #         path=file_path,

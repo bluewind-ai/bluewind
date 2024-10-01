@@ -28,7 +28,7 @@ def update_entity_v1(instance):
     name = str(instance)[:255]  # Truncate to 255 characters
 
     Entity.objects.update_or_create(
-        workspace_id=get_workspace_id,
+        workspace_id=get_workspace_id(),
         content_type=content_type,
         object_id=instance.pk,
         defaults={
