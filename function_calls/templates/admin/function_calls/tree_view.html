@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
         body, html { margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
         #header, #container, #content, #content-main {
@@ -22,12 +23,17 @@
         #tree .jstree-wholerow { height: 24px !important; }
         #tree { font-size: 12px !important; }
         .change-link { font-size: 10px !important; padding: 0 2px !important; margin-left: 4px !important; }
+        #content-area { position: absolute; left: 200px; top: 50px; right: 0; bottom: 0; overflow: auto; }
     </style>
 {% endblock %}
 
 {% block content %}
     <div class="fixed left-0 top-0 h-full z-50 w-50 bg-white border-r shadow-lg overflow-hidden">
         <div id="tree" class="overflow-y-auto h-[calc(100%-32px)]"></div>
+    </div>
+
+    <div id="content-area">
+        <!-- This is where the loaded content will appear -->
     </div>
 
     <script>
@@ -66,8 +72,11 @@
                     preventSimpleClick = true;
                     console.log("Double click detected on node:", nodeId);
                     var changeUrl = "/workspaces/2/admin/function_calls/functioncall/" + nodeId + "/change/";
-                    console.log("Attempting to navigate to:", changeUrl);
-                    window.location.href = changeUrl;
+                    console.log("Attempting to load:", changeUrl);
+
+                    htmx.ajax('GET', changeUrl, '#content-area').then(() => {
+                        history.pushState(null, '', changeUrl);
+                    });
                 } else {
                     clickTimer = setTimeout(function() {
                         clickTimer = null;
@@ -76,7 +85,7 @@
                             tree.jstree('toggle_node', $node);
                         }
                         preventSimpleClick = false;
-                    }, 130);  // Reduced from 300ms to 200ms
+                    }, 170);
                 }
             });
 
