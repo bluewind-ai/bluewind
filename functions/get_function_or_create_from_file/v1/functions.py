@@ -4,6 +4,7 @@ import re
 
 from django.db import transaction
 
+from bluewind.context_variables import get_function, get_function_call
 from files.models import File
 from functions.models import Function
 
@@ -45,6 +46,8 @@ def get_function_or_create_from_file_v1(function_name):
             content=content,
             user_id=default_user_id,
             workspace_id=default_workspace_id,
+            function=get_function(),
+            function_call=get_function_call(),
         )
 
         # Create Function object
@@ -53,6 +56,8 @@ def get_function_or_create_from_file_v1(function_name):
             file=file_obj,
             user_id=default_user_id,
             workspace_id=default_workspace_id,
+            function=get_function(),
+            function_call=get_function_call(),
         )
 
     logger.info(f"Created function: {function_name}")

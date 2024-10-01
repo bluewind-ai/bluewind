@@ -12,6 +12,12 @@ DB_NAME=${DB_NAME:-appbluewinddb}
 DB_USERNAME=${DB_USERNAME:-dbadmin}
 DB_PASSWORD=${DB_PASSWORD:-zYx8mQTqAe9r8A99thazK}
 
+# Stop and restart PostgreSQL service
+brew services stop postgresql@16
+brew services start postgresql@16
+
+echo "PostgreSQL service restarted."
+
 # Check if the role exists, if not create it
 PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "DO
 \$do\$
@@ -24,7 +30,17 @@ END
 
 echo "Role check/creation completed."
 
-PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
+# Terminate existing connections
+PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = '$DB_NAME'
+  AND pid <> pg_backend_pid();"
+
+echo "Existing connections terminated."
+
+# Drop and recreate the database
+PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USERNAME -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME WITH (FORCE);"
 PGPASSWORD=$DB_PASSWORD createdb -h $DB_HOST -p $DB_PORT -U $DB_USERNAME $DB_NAME
 
 echo "Database dropped (if existed) and recreated."

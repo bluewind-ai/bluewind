@@ -122,6 +122,11 @@ class WorkspaceRelatedMeta(models.base.ModelBase):
 class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
     workspace = models.ForeignKey("workspaces.Workspace", on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    function_call = models.ForeignKey(
+        "function_calls.FunctionCall", on_delete=models.CASCADE
+    )
+    function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     objects = WorkspaceRelatedManager()
 
     class Meta:

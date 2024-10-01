@@ -1,8 +1,8 @@
 import logging
 
 from django.db import models
-from treenode.models import TreeNodeModel
 
+from treenode.models import TreeNodeModel
 from users.models import User
 from workspaces.models import Workspace, WorkspaceRelated
 
@@ -72,7 +72,9 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         choices=OutputType.choices,
     )
     executed_at = models.DateTimeField(null=True, blank=True)
-    function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
+    function = models.ForeignKey(
+        "functions.Function", on_delete=models.CASCADE, related_name="function_calls"
+    )
     remaining_dependencies = models.IntegerField(default=0)
     thoughts = models.TextField(
         blank=True,

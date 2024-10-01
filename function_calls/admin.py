@@ -5,8 +5,6 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from treenode.admin import TreeNodeModelAdmin
-from treenode.forms import TreeNodeForm
 
 from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import set_is_function_call_magic
@@ -20,6 +18,8 @@ from functions.handle_mark_function_call_as_successful.v1.functions import (
     handle_mark_function_call_as_successful_v1,
 )
 from functions.restart.v1.functions import restart_v1
+from treenode.admin import TreeNodeModelAdmin
+from treenode.forms import TreeNodeForm
 from unfold.decorators import action
 from unfold.widgets import UnfoldAdminTextareaWidget
 
@@ -29,7 +29,7 @@ class FunctionCallForm(TreeNodeForm):
         model = FunctionCall
         fields = [
             "status",
-            "function",
+            # "function",
             "input_data",
             "output_data",
             "executed_at",
@@ -44,7 +44,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         "restart",
     ]
 
-    list_display = ("function", "status", "executed_at", "id")
+    list_display = ("status", "executed_at", "id")
     list_display_links = ("indented_title",)
 
     readonly_fields = ["whole_tree"]

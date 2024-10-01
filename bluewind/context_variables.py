@@ -4,6 +4,7 @@ request_id_var = ContextVar("request_id")
 log_records_var = ContextVar("log_records")
 workspace_id_var = ContextVar("workspace_id")
 startup_mode_var = ContextVar("startup_mode", default=True)
+
 parent_function_call_var = ContextVar("parent_function_call", default=None)
 approved_function_call_var = ContextVar("approved_function_call", default=None)
 is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
@@ -15,6 +16,8 @@ file_and_line_where_debugger_with_skipped_option_was_called_var = ContextVar(
 is_update_entity_function_already_in_the_call_stack_var = ContextVar(
     "is_update_entity_function_already_in_the_call_stack", default=False
 )
+function_call_var = ContextVar("function_call", default=None)
+function_var = ContextVar("function_var", default=None)
 
 
 def get_request_id():
@@ -108,3 +111,23 @@ def set_is_update_entity_function_already_in_the_call_stack(
     is_update_entity_function_already_in_the_call_stack_var.set(
         is_update_entity_function_already_in_the_call_stack
     )
+
+
+def get_function_call():
+    return function_call_var.get()
+
+
+def set_function_call(
+    function_call,
+):
+    function_call_var.set(function_call)
+
+
+def get_function():
+    return function_var.get()
+
+
+def set_function(
+    function,
+):
+    function_var.set(function)

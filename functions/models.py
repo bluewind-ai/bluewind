@@ -13,7 +13,22 @@ class Function(WorkspaceRelated):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     file = models.OneToOneField(
-        "files.File", on_delete=models.CASCADE, related_name="function"
+        "files.File", on_delete=models.CASCADE, related_name="related_function"
+    )
+    function = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="related_functions",
+    )
+
+    function_call = models.ForeignKey(
+        "function_calls.FunctionCall",
+        on_delete=models.CASCADE,
+        related_name="related_functions",
+        null=True,
+        blank=True,
     )
 
     class Meta:

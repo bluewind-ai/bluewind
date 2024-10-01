@@ -9,7 +9,7 @@ from workspaces.models import WorkspaceRelated
 
 
 class DiffRelatedEntities(WorkspaceRelated):
-    diff = models.OneToOneField(
+    diff = models.Field(
         "workspace_diffs.WorkspaceDiff",
         on_delete=models.CASCADE,
         related_name="related_entities",

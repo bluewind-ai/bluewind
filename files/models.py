@@ -12,6 +12,13 @@ class File(WorkspaceRelated):
     updated_at = models.DateTimeField(
         auto_now=True, help_text="Timestamp when the file was last updated."
     )
+    function = models.OneToOneField(
+        "functions.Function",
+        on_delete=models.CASCADE,
+        related_name="related_file",
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.path
