@@ -73,27 +73,9 @@
                 var nodeId = $node.closest('li').attr('id');
                 console.log("Click on node:", nodeId);
 
-                if (clickTimer) {
-                    clearTimeout(clickTimer);
-                    clickTimer = null;
-                    preventSimpleClick = true;
-                    console.log("Double click detected on node:", nodeId);
-                    var changeUrl = "/workspaces/2/admin/function_calls/functioncall/" + nodeId + "/change/";
-                    console.log("Attempting to navigate to:", changeUrl);
-                    window.location.href = changeUrl;
-                } else {
-                    clickTimer = setTimeout(function() {
-                        clickTimer = null;
-                        if (!preventSimpleClick) {
-                            console.log("Single click on node:", nodeId);
-                            if (currentNodeId) {
-                                tree.jstree('deselect_all');
-                                tree.jstree('select_node', currentNodeId);
-                            }
-                        }
-                        preventSimpleClick = false;
-                    }, 170);
-                }
+                var changeUrl = "/workspaces/2/admin/function_calls/functioncall/" + nodeId + "/change/";
+                console.log("Attempting to navigate to:", changeUrl);
+                window.location.href = changeUrl;
             });
 
             console.log("Event handlers set up");

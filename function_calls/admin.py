@@ -67,7 +67,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         return False  # Allow viewing, but saving will be prevented
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return True
 
     # def get_form(self, request, obj=None, **kwargs):
     #     form = super().get_form(request, obj, **kwargs)
