@@ -1,5 +1,4 @@
 def push_logs_to_db(user_id, workspace_id, log_records):
-    from django.db import transaction
     from django.utils import timezone
 
     from app_logs.models import AppLog
@@ -36,5 +35,4 @@ def push_logs_to_db(user_id, workspace_id, log_records):
             )
         )
 
-    with transaction.atomic():
-        AppLog.objects.bulk_create(log_entries)
+    AppLog.objects.bulk_create(log_entries)

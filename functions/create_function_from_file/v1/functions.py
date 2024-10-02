@@ -2,8 +2,6 @@ import logging
 import os
 import re
 
-from django.db import transaction
-
 from files.models import File
 from functions.bluewind_function.v1.functions import bluewind_function_v1
 from functions.models import Function
@@ -37,17 +35,16 @@ def create_function_from_file_v1(function_name):
         content = file.read()
 
     # Create File object
-    with transaction.atomic():
-        file_obj = File.objects.create(
-            path=file_path,
-            content=content,
-        )
+    file_obj = File.objects.create(
+        path=file_path,
+        content=content,
+    )
 
-        # Create Function object
-        function = Function.objects.create(
-            name=function_name,
-            file=file_obj,
-        )
+    # Create Function object
+    function = Function.objects.create(
+        name=function_name,
+        file=file_obj,
+    )
 
     logger.info(f"Created function: {function_name}")
 

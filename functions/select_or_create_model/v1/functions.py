@@ -1,8 +1,6 @@
 import logging
 import os
 
-from django.db import transaction
-
 from bluewind.context_variables import get_function
 from bluewind.utils import snake_case
 
@@ -34,20 +32,19 @@ def select_or_create_model_v1(model_instance):
     # Read file content
     with open(file_path, "r") as file:
         content = file.read()
-    with transaction.atomic():
-        file_obj = File.objects.create(
-            path=file_path,
-            content=content,
-            user_id=1,
-            workspace_id=2,
-        )
+    file_obj = File.objects.create(
+        path=file_path,
+        content=content,
+        user_id=1,
+        workspace_id=2,
+    )
 
-        # Create Function object
-        model = Model.objects.create(
-            plural_name=model_instance._meta.app_label,
-            singular_name=singular_model_name,
-            file=file_obj,
-            function=get_function(),
-            user_id=1,
-            workspace_id=2,
-        )
+    # Create Function object
+    model = Model.objects.create(
+        plural_name=model_instance._meta.app_label,
+        singular_name=singular_model_name,
+        file=file_obj,
+        function=get_function(),
+        user_id=1,
+        workspace_id=2,
+    )

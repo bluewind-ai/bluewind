@@ -1,4 +1,4 @@
-from django.db import models, transaction
+from django.db import models
 from django.utils import timezone
 
 from action_runs.models import ActionRun
@@ -58,17 +58,16 @@ class StepRun(WorkspaceRelated):
 
         action_input = self.flow_run.state.get("action_input", {})
 
-        with transaction.atomic():
-            self.action_run = ActionRun.objects.create(
-                workspace=self.workspace,
-                action=self.step.action,
-                step_run=self,
-                user=self.flow_run.user,
-                model_name=self.step.action.content_type.model,
-                action_input=action_input,
-            )
-            self.end_date = timezone.now()
-            self.save(update_fields=["action_run", "end_date"])
+        self.action_run = ActionRun.objects.create(
+            workspace=self.workspace,
+            action=self.step.action,
+            step_run=self,
+            user=self.flow_run.user,
+            model_name=self.step.action.content_type.model,
+            action_input=action_input,
+        )
+        self.end_date = timezone.now()
+        self.save(update_fields=["action_run", "end_date"])
 
         self.action_run.save()
 

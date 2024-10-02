@@ -54,5 +54,5 @@ class DomainNameAdmin(InWorkspace):
         if not function_to_approve:
             raise Exception("No function to approve")
         return redirect(
-            f"/workspaces/2/admin/function_calls/functioncall/{function_to_approve.id}/change"
+            f"/workspaces/1/admin/function_calls/functioncall/{function_to_approve.id}/change"
         )

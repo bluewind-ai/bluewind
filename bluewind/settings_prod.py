@@ -214,6 +214,7 @@ MIDDLEWARE = [
     # "silk.middleware.SilkyMiddleware",
     # "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
     # "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "bluewind.middleware.context_variables_middleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -224,7 +225,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # DO NOT CHANGE THE ORDER OF THE MIDDLWARE BELOW
     # "allauth.account.middleware.AccountMiddleware",
-    "bluewind.middleware.context_variables_middleware",
     "bluewind.middleware.admin_middleware",
 ]
 
@@ -313,8 +313,8 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # AllAuth Settings
 SITE_ID = 1
-# LOGIN_URL = "/workspaces/2/accounts/login/"
-# LOGIN_REDIRECT_URL = "/workspaces/2/admin/next"
+# LOGIN_URL = "/workspaces/1/accounts/login/"
+# LOGIN_REDIRECT_URL = "/workspaces/1/admin/next"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"

@@ -3,7 +3,7 @@ from contextvars import ContextVar
 request_id_var = ContextVar("request_id")
 log_records_var = ContextVar("log_records")
 workspace_id_var = ContextVar("workspace_id")
-startup_mode_var = ContextVar("startup_mode", default=True)
+startup_mode_var = ContextVar("startup_mode")
 
 parent_function_call_var = ContextVar("parent_function_call", default=None)
 approved_function_call_var = ContextVar("approved_function_call", default=None)
@@ -71,14 +71,6 @@ def get_parent_function_call():
 
 def set_parent_function_call(parent_function_call):
     parent_function_call_var.set(parent_function_call)
-
-
-def get_is_function_call_magic():
-    return is_function_call_magic_var.get()
-
-
-def set_is_function_call_magic(is_function_call_magic):
-    is_function_call_magic_var.set(is_function_call_magic)
 
 
 def get_exception_count():

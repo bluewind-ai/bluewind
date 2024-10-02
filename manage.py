@@ -26,4 +26,8 @@ def main():
 
 
 if __name__ == "__main__":
+    from bluewind.context_variables import set_startup_mode
+
+    set_startup_mode(True)
     main()
+    set_startup_mode(False)

@@ -85,7 +85,17 @@
 import re
 
 from bluewind.context_variables import (
+    set_approved_function_call,
+    set_exception_count,
+    set_file_and_line_where_debugger_with_skipped_option_was_called,
+    set_function,
+    set_function_call,
     set_is_update_entity_function_already_in_the_call_stack,
+    set_log_records,
+    set_parent_function_call,
+    set_request_id,
+    set_startup_mode,
+    set_workspace_id,
 )
 
 
@@ -116,9 +126,9 @@ def admin_middleware(get_response):
             return get_response(request)
         if not request.path.startswith("/workspaces/"):
             request.path_info = f"/admin{request.path}"
-            request.path = f"/workspaces/2/admin{request.path}"
+            request.path = f"/workspaces/1/admin{request.path}"
             # raise NotImplementedError(request.path_info, request.path)
-            # ('/workspaces/2/admin/', '/workspaces/2/admin/')
+            # ('/workspaces/1/admin/', '/workspaces/1/admin/')
 
             response = get_response(request)
             return process_response(response)
@@ -130,8 +140,34 @@ def admin_middleware(get_response):
 
 def context_variables_middleware(get_response):
     def middleware(request):
-        response = get_response(request)
+        # Set initial values for all context variables
+        set_request_id(None)
+        set_log_records([])
+        # set_workspace_id(None)
+        set_startup_mode(True)
+        set_parent_function_call(None)
+        set_approved_function_call(None)
+        set_function_call(None)
+        set_function(None)
+        set_exception_count(0)
+        set_file_and_line_where_debugger_with_skipped_option_was_called((None, None))
         set_is_update_entity_function_already_in_the_call_stack(False)
+
+        response = get_response(request)
+
+        # Reset all context variables after the response
+        set_request_id(None)
+        set_log_records(None)
+        set_workspace_id(None)
+        set_startup_mode(True)  # Reset to default value
+        set_parent_function_call(None)
+        set_approved_function_call(None)
+        set_function_call(None)
+        set_function(None)
+        set_exception_count(0)
+        set_file_and_line_where_debugger_with_skipped_option_was_called((None, None))
+        set_is_update_entity_function_already_in_the_call_stack(False)
+
         return response
 
     return middleware

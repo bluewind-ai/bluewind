@@ -13,4 +13,5 @@ def master_v1():
 
     """
     bootstrap_v1()
+
     avoid_going_into_spam_v1()

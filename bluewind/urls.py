@@ -12,7 +12,7 @@ favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
 
 # def redirect_to_admin(request):
-#     return redirect("/workspaces/2/admin")
+#     return redirect("/workspaces/1/admin")
 
 
 router = DefaultRouter()

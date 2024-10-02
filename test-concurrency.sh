@@ -4,7 +4,7 @@
 make_request() {
     local id=$1
     local start_time=$(date +%s.%N)
-    local response=$(curl -s -w "\n%{http_code}" "http://127.0.0.1:8000/workspaces/2/accounts/login/")
+    local response=$(curl -s -w "\n%{http_code}" "http://127.0.0.1:8000/workspaces/1/accounts/login/")
     local end_time=$(date +%s.%N)
     local body=$(echo "$response" | sed '$d' | tr -d '\n' | cut -c1-50) # Truncate body to first 50 characters
     local status_code=$(echo "$response" | tail -n1)

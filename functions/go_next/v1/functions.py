@@ -21,7 +21,7 @@ def go_next_v1():
 
     if function_call:
         return redirect(
-            f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
+            f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
         )
 
     function_call = FunctionCall.objects.filter(
@@ -30,10 +30,10 @@ def go_next_v1():
     if function_call:
         if function_call.function.name == "create_domain_name_v1":
             return redirect(
-                f"/workspaces/2/admin/domain_names/domainname/add/?function_call={function_call.id}"
+                f"/workspaces/1/admin/domain_names/domainname/add/?function_call={function_call.id}"
             )
         return redirect(
-            f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
+            f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
         )
     # raise Exception("WE ARE DONE")
     return restart_v1()

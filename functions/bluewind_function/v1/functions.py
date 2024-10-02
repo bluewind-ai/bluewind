@@ -1,7 +1,6 @@
 import logging
 from functools import wraps
 
-from django.db import transaction
 from django.utils import timezone
 
 from bluewind.context_variables import (
@@ -72,36 +71,39 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
 
 
 def ask_for_approval(func, kwargs):
-    with transaction.atomic():
-        status = FunctionCall.Status.READY_FOR_APPROVAL
-        from functions.get_function_or_create_from_file.v1.functions import (
-            get_function_or_create_from_file_v1,
-        )
+    status = FunctionCall.Status.READY_FOR_APPROVAL
+    from functions.get_function_or_create_from_file.v1.functions import (
+        get_function_or_create_from_file_v1,
+    )
 
-        function = get_function_or_create_from_file_v1(function_name=func.__name__)
-        assert function is not None, "function hasn't been found in the DB"
-        logger.debug(f"{func.__name__} found in the DB")
-        function_call = FunctionCall.objects.create(
-            function=function,
-            tn_parent=get_parent_function_call(),
-            workspace_id=get_workspace_id(),
-            user_id=1,
-            status=status,
-        )
-        remaining_dependencies = build_function_call_dependencies_v1(
-            function_call, kwargs
-        )
-        if remaining_dependencies:
-            function_call.remaining_dependencies = remaining_dependencies
-        function_call.save()
-        if func.__name__ == "master_v1":
-            # raise Exception(
-            #     f"Create function call for {func.__name__} asking for approval"
-            # )
-            pass
-        logger.debug(f"Create function call for {func.__name__} asking for approval")
+    function = get_function_or_create_from_file_v1(function_name=func.__name__)
+    assert function is not None, "function hasn't been found in the DB"
+    logger.debug(f"{func.__name__} found in the DB")
+    # raise Exception(f"Create function call for {func.__name__} asking for approval")
+    # from django.db import connections
 
-        return function_call
+    # for conn in connections.all():
+    #     conn.close_if_unusable_or_obsolete()
+
+    function_call = FunctionCall.objects.create(
+        function=function,
+        tn_parent=get_parent_function_call(),
+        workspace_id=get_workspace_id(),
+        user_id=1,
+        status=status,
+    )
+    remaining_dependencies = build_function_call_dependencies_v1(function_call, kwargs)
+    if remaining_dependencies:
+        function_call.remaining_dependencies = remaining_dependencies
+    function_call.save()
+    if func.__name__ == "master_v1":
+        # raise Exception(
+        #     f"Create function call for {func.__name__} asking for approval"
+        # )
+        pass
+    logger.debug(f"Create function call for {func.__name__} asking for approval")
+
+    return function_call
 
 
 def check_kwargs_valid(func, kwargs):

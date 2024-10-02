@@ -2,8 +2,6 @@ import json
 import logging
 import os
 
-from django.db import transaction
-
 from apps.models import App
 from files.models import File
 from flows.is_ignored_by_git.flows import is_ignored_by_git
@@ -60,77 +58,76 @@ def files_load_all():
 
     files_to_create = [f for f in files_to_create if f.path not in existing_paths]
 
-    with transaction.atomic():
-        created_files = File.objects.bulk_create(files_to_create)
-        for existing_file in existing_files:
-            for new_file in files_to_create:
-                if existing_file.path == new_file.path:
-                    existing_file.content = new_file.content
-                    files_to_update.append(existing_file)
-                    break
-        File.objects.bulk_update(files_to_update, ["content"])
+    created_files = File.objects.bulk_create(files_to_create)
+    for existing_file in existing_files:
+        for new_file in files_to_create:
+            if existing_file.path == new_file.path:
+                existing_file.content = new_file.content
+                files_to_update.append(existing_file)
+                break
+    File.objects.bulk_update(files_to_update, ["content"])
 
-        # Replace bulk_create with get_or_create for apps
-        apps_created = []
-        for app_name, app in apps_to_create.items():
-            app_obj, created = App.objects.get_or_create(
-                plural_name=app.plural_name,
-                workspace_id=app.workspace_id,
-                defaults={"user_id": app.user_id},
+    # Replace bulk_create with get_or_create for apps
+    apps_created = []
+    for app_name, app in apps_to_create.items():
+        app_obj, created = App.objects.get_or_create(
+            plural_name=app.plural_name,
+            workspace_id=app.workspace_id,
+            defaults={"user_id": app.user_id},
+        )
+        if created:
+            apps_created.append(app_obj)
+
+    for file_obj in created_files + list(existing_files):
+        app_name = os.path.basename(os.path.dirname(file_obj.path))
+        app, _ = App.objects.get_or_create(
+            plural_name=f"{app_name}",
+            workspace_id=default_workspace_id,
+            defaults={
+                "user_id": default_user_id,
+            },
+        )
+
+        if file_obj.path.endswith("models.py"):
+            model, created = Model.objects.get_or_create(
+                file=file_obj,
+                defaults={
+                    "app": app,
+                    "user_id": default_user_id,
+                    "workspace_id": default_workspace_id,
+                },
             )
-            if created:
-                apps_created.append(app_obj)
 
-        for file_obj in created_files + list(existing_files):
-            app_name = os.path.basename(os.path.dirname(file_obj.path))
-            app, _ = App.objects.get_or_create(
-                plural_name=f"{app_name}",
+            if created:
+                models_created.append(model)
+            else:
+                if model.app != app:
+                    model.app = app
+                    model.save()
+                    models_updated.append(model)
+
+        elif file_obj.path.endswith("flows.py"):
+            flow_name = os.path.basename(os.path.dirname(file_obj.path))
+            flow, created = Flow.objects.get_or_create(
+                name=flow_name,
                 workspace_id=default_workspace_id,
                 defaults={
+                    "file": file_obj,
                     "user_id": default_user_id,
                 },
             )
 
-            if file_obj.path.endswith("models.py"):
-                model, created = Model.objects.get_or_create(
-                    file=file_obj,
-                    defaults={
-                        "app": app,
-                        "user_id": default_user_id,
-                        "workspace_id": default_workspace_id,
-                    },
-                )
-
-                if created:
-                    models_created.append(model)
-                else:
-                    if model.app != app:
-                        model.app = app
-                        model.save()
-                        models_updated.append(model)
-
-            elif file_obj.path.endswith("flows.py"):
-                flow_name = os.path.basename(os.path.dirname(file_obj.path))
-                flow, created = Flow.objects.get_or_create(
-                    name=flow_name,
-                    workspace_id=default_workspace_id,
-                    defaults={
-                        "file": file_obj,
-                        "user_id": default_user_id,
-                    },
-                )
-
-                if created:
-                    flows_created.append(flow)
-                else:
-                    # Update existing flow if necessary
-                    updated = False
-                    if flow.file != file_obj:
-                        flow.file = file_obj
-                        updated = True
-                    if updated:
-                        flow.save()
-                        flows_updated.append(flow)
+            if created:
+                flows_created.append(flow)
+            else:
+                # Update existing flow if necessary
+                updated = False
+                if flow.file != file_obj:
+                    flow.file = file_obj
+                    updated = True
+                if updated:
+                    flow.save()
+                    flows_updated.append(flow)
 
     return (
         existing_files,

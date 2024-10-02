@@ -2,8 +2,6 @@ import logging
 import os
 import re
 
-from django.db import transaction
-
 from files.models import File
 from forms.models import Form
 
@@ -59,20 +57,19 @@ def get_form_or_create_from_file_v1(form_object):
         content = file.read()
 
     # Create File object and Form object
-    with transaction.atomic():
-        file_obj = File.objects.create(
-            path=file_path,
-            content=content,
-            user_id=default_user_id,
-            workspace_id=default_workspace_id,
-        )
+    file_obj = File.objects.create(
+        path=file_path,
+        content=content,
+        user_id=default_user_id,
+        workspace_id=default_workspace_id,
+    )
 
-        form = Form.objects.create(
-            name=form_name,
-            file=file_obj,
-            user_id=default_user_id,
-            workspace_id=default_workspace_id,
-        )
+    form = Form.objects.create(
+        name=form_name,
+        file=file_obj,
+        user_id=default_user_id,
+        workspace_id=default_workspace_id,
+    )
 
     logger.info(f"Created form: {form_name}")
 

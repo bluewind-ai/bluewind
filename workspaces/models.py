@@ -10,14 +10,10 @@ from django.utils import timezone
 from django.utils.html import format_html
 
 from bluewind.context_variables import (
-    get_function,
-    get_function_call,
     get_startup_mode,
     get_workspace_id,
 )
-from functions.update_entity.v1.functions import update_entity_v1
 from users.models import User
-from workspace_users.models import WorkspaceUser
 
 
 class Workspace(models.Model):
@@ -29,7 +25,7 @@ class Workspace(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     users = models.ManyToManyField(
-        User, through="workspace_users.WorkspaceUser", related_name="workspaces"
+        "users.User", through="workspace_users.WorkspaceUser", related_name="workspaces"
     )
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="owned_workspaces"
@@ -51,30 +47,6 @@ class Workspace(models.Model):
         return format_html('<a href="{}">{}</a>', url, url)
 
     admin_url_link.short_description = "Admin URL"
-
-    def save(self, *args, **kwargs):
-        # from recordings.models import Recording
-
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-
-        if is_new:
-            # register_all_models(self)
-            # register_actions_and_models(self)
-
-            # load_flows(self)
-
-            # Create a new Recording for this workspace
-            # Recording.objects.create(
-            #     name=f"Default Recording for {self.name}",
-            #     description=f"Automatically created recording for workspace {self.name}",
-            #     start_time=timezone.now(),
-            #     workspace=self,
-            #     user=self.user,  # Use the user who created the workspace
-            # )
-
-            # Add the user who created the workspace to its users
-            WorkspaceUser.objects.create(workspace=self, user=self.user)
 
 
 class WorkspaceAdmin(admin.ModelAdmin):
@@ -154,45 +126,48 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
 
     def save(self, *args, **kwargs):
         self.user_id = 1
-        self.workspace_id = get_workspace_id()
-        is_super_function_file = (
-            self.__class__.__name__ == "File"
-            and self.path
-            == "/Users/merwanehamadi/code/bluewind/functions/master/v1/functions.py"
-        )
-
-        is_super_function = (
-            self.__class__.__name__ == "Function" and self.name == "master_v1"
-        )
-
-        is_super_function_call = (
-            self.__class__.__name__ == "FunctionCall"
-            and self.function.name == "master_v1"
-        )
-
-        if is_super_function:
-            self.function = None
-            self.function_call = None
-            super().save(*args, **kwargs)
-            return
-        if is_super_function_file:
-            self.function = None
-            self.function_call = None
-
-            super().save(*args, **kwargs)
-
-            return
-        if is_super_function_call:
-            self.tn_parent = None
-            super().save(*args, **kwargs)
-            return
-        self.function_id = get_function().id
-        if not self.function_call_id:
-            self.function_call_id = get_function_call().id
-        # raise_debug(self.__class__.__name__, get_function(), self.function)
+        self.workspace_id = 1
+        self.function_id = 1
+        self.function_call_id = 1
 
         super().save(*args, **kwargs)
-        update_entity_v1(self)
+        # is_super_function_file = (
+        #     self.__class__.__name__ == "File"
+        #     and self.path
+        #     == "/Users/merwanehamadi/code/bluewind/functions/master/v1/functions.py"
+        # )
+
+        # is_super_function = (
+        #     self.__class__.__name__ == "Function" and self.name == "master_v1"
+        # )
+
+        # is_super_function_call = (
+        #     self.__class__.__name__ == "FunctionCall"
+        #     and self.function.name == "master_v1"
+        # )
+
+        # if is_super_function:
+        #     self.function = None
+        #     self.function_call = None
+        #     super().save(*args, **kwargs)
+        #     return
+        # if is_super_function_file:
+        #     self.function = None
+        #     self.function_call = None
+        #     # raise_debug(self.__class__.__name__, get_function(), self.function)
+        #     super().save(*args, **kwargs)
+
+        #     return
+        # if is_super_function_call:
+        #     self.tn_parent = None
+        #     super().save(*args, **kwargs)
+        #     return
+        # self.function_id = get_function().id
+        # if not self.function_call_id:
+        #     self.function_call_id = get_function_call().id
+        # raise_debug(self.__class__.__name__, get_function(), self.function)
+
+        # update_entity_v1(self)
 
     def get_model_instance(self):
         return ContentType.objects.get_for_model(self.__class__)

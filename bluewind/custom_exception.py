@@ -23,6 +23,12 @@ class Debugger(Exception):
     def __call__(self):
         exception_count = get_exception_count()
         if exception_count == self.skip:
+            # from django.db import connection
+
+            # connection.close()
+            # from django_db_geventpool.utils import close_connection_pool
+
+            # close_connection_pool()
             raise Exception(self.format_message())
         else:
             set_exception_count(exception_count + 1)

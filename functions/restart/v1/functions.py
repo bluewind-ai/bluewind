@@ -19,5 +19,5 @@ def restart_v1():
         status=FunctionCall.Status.READY_FOR_APPROVAL
     ).first()
     return redirect(
-        f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
+        f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
     )

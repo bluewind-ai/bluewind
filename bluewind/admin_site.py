@@ -12,11 +12,11 @@ from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 from gevent import getcurrent
 
-from bluewind.context_variables import get_workspace_id, set_is_function_call_magic
+from bluewind.context_variables import get_workspace_id
 from functions.go_next.v1.functions import go_next_v1
 from functions.master.v1.functions import master_v1
 from users.models import User
-from workspaces.models import Workspace, WorkspaceUser
+from workspaces.models import Workspace
 
 logger = logging.getLogger("django.not_used")
 
@@ -71,11 +71,11 @@ class CustomAdminSite(UnfoldAdminSite):
                 workspaceuser__user=request.user, workspaceuser__is_default=True
             ).first()
 
-            if not workspace:
-                workspace = Workspace.objects.create(name="Default Workspace")
-                WorkspaceUser.objects.create(
-                    user=request.user, workspace=workspace, is_default=True
-                )
+            # if not workspace:
+            #     workspace = Workspace.objects.create(name="Default Workspace")
+            #     WorkspaceUser.objects.create(
+            #         user=request.user, workspace=workspace, is_default=True
+            #     )
 
             redirect_url = f"/workspaces/{workspace.id}{request.path}"
             context["redirect_url"] = redirect_url
@@ -94,10 +94,10 @@ class CustomAdminSite(UnfoldAdminSite):
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
             # raise Exception("This is an exception")
-            if request.path == "/workspaces/2/admin/":
+            if request.path == "/workspaces/1/admin/":
                 master_v1()
                 return redirect(
-                    "/workspaces/2/admin/function_calls/functioncall/1/change"
+                    "/workspaces/1/admin/function_calls/functioncall/1/change"
                 )
                 return go_next_v1()
 
@@ -111,7 +111,6 @@ class CustomAdminSite(UnfoldAdminSite):
                 return redirect(context["redirect_url"])
 
             response = view(request, *args, **kwargs)
-            set_is_function_call_magic(False)
             # if isinstance(response, TemplateResponse):
             #     # Convert the context data to JSON
             #     json_data = json.dumps(
