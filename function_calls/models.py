@@ -2,6 +2,7 @@ import logging
 
 from django.db import models
 
+from bluewind.utils import snake_case_to_spaced_camel_case
 from treenode.models import TreeNodeModel
 from users.models import User
 from workspaces.models import Workspace, WorkspaceRelated
@@ -155,7 +156,7 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         return self.status in self.successful_terminal_stages()
 
     def __str__(self):
-        return f"{self.function.name}"
+        return f"{snake_case_to_spaced_camel_case(self.function.name)}"
 
     @property
     def parent(self):

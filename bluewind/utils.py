@@ -106,3 +106,7 @@ def snake_case(s):
     Helper function to convert CamelCase to snake_case.
     """
     return "".join(["_" + c.lower() if c.isupper() else c for c in s]).lstrip("_")
+
+
+def snake_case_to_spaced_camel_case(text):
+    return text.replace("_", " ").title()
