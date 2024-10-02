@@ -56,31 +56,49 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Create superuser
-python manage.py createsuperuser --noinput --username wayne@bluewind.ai --email wayne@bluewind.ai
+# python manage.py createsuperuser --noinput --username wayne@bluewind.ai --email wayne@bluewind.ai
 
-# Set password for superuser
-python manage.py shell -c "
-from django.contrib.auth import get_user_model;
-User = get_user_model();
-user = User.objects.get(username='wayne@bluewind.ai');
-user.set_password('W5\$HZ?9iSnw7BDaasLBD');
-user.save()"
+# # Set password for superuser
+# python manage.py shell -c "
+# from django.contrib.auth import get_user_model;
+# User = get_user_model();
+# user = User.objects.get(username='wayne@bluewind.ai');
+# user.set_password('W5\$HZ?9iSnw7BDaasLBD');
+# user.save()"
 
-# Create Workspace, WorkspaceUser, and Anonymous User
-python manage.py shell -c "
-from workspaces.models import Workspace, WorkspaceUser;
-from django.contrib.auth import get_user_model;
-User = get_user_model();
+# # Create Workspace, WorkspaceUser, and Anonymous User
+# python manage.py shell -c "
+# from workspaces.models import Workspace, WorkspaceUser;
+# from files.models import File
+# from functions.models import Function
+# from django.contrib.auth import get_user_model;
+# User = get_user_model();
 
-# Superuser creation and workspace association
-superuser = User.objects.get(username='wayne@bluewind.ai');
-superuser_workspace = Workspace.objects.create(name='superuser', user=superuser);
+# # Superuser creation and workspace association
+# superuser = User.objects.get(username='wayne@bluewind.ai');
+# superuser_workspace = Workspace.objects.create(name='superuser', user=superuser);
+# superuser_function_file = File.objects.create(
+#    path='/Users/merwanehamadi/code/bluewind/functions/superuser_function/v1/functions',
+#    content='I am the Alpha and the Omega, the First and the Last, the Beginning and the End.',
+#    user_id=1,
+#    workspace_id=1,
+#    function=None,
+#    function_call=None,
+# )
+# # superuser_function = Function.objects.create(
+# #    name='superuser_function_v1',
+# #    file=superuser_function_file,
+# #    user_id=1,
+# #    workspace_id=1,
+# #    function_id=1,
+# #    function_call=get_function_call(),
+# # )
 
-# Anonymous user creation and workspace association
-anonymous_user = User.objects.create_user(username='anonymous_user', email='anonymous@example.com', password='AnonymousSecurePassword123!');
+# # Anonymous user creation and workspace association
+# anonymous_user = User.objects.create_user(username='anonymous_user', email='anonymous@example.com', password='AnonymousSecurePassword123!');
 
-anonymous_workspace = Workspace.objects.create(name='Anonymous Workspace', user=superuser);
-WorkspaceUser.objects.create(user=anonymous_user, workspace=anonymous_workspace, is_default=True)"
+# anonymous_workspace = Workspace.objects.create(name='Anonymous Workspace', user=superuser);
+# WorkspaceUser.objects.create(user=anonymous_user, workspace=anonymous_workspace, is_default=True)"
 
 echo "Database setup and initial data creation completed."
 

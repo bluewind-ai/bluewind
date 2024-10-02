@@ -3,12 +3,15 @@ import os
 
 from django.db import transaction
 
+from bluewind.context_variables import get_function
 from bluewind.utils import snake_case
+from functions.bluewind_function.v1.functions import bluewind_function_v1
 
 # Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
+@bluewind_function_v1()
 def select_or_create_model_v1(model_instance):
     from files.models import File
     from models.models import Model  # noqa: F401
@@ -49,6 +52,7 @@ def select_or_create_model_v1(model_instance):
             plural_name=model_instance._meta.app_label,
             singular_name=singular_model_name,
             file=file_obj,
+            function=get_function(),
             user_id=1,
             workspace_id=2,
         )

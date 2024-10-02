@@ -10,6 +10,8 @@ from django.utils import timezone
 from django.utils.html import format_html
 
 from bluewind.context_variables import (
+    get_function,
+    get_function_call,
     get_startup_mode,
     get_workspace_id,
 )
@@ -152,7 +154,47 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+        filtered_kwargs = self._filter_workspace_fields(**kwargs)
+        self.user_id = 1
+        self.workspace_id = get_workspace_id()
+        is_super_function_file = (
+            self.__class__.__name__ == "File"
+            and self.path
+            == "/Users/merwanehamadi/code/bluewind/functions/superuser_function/v1/functions"
+        )
+        is_super_function = (
+            self.__class__.__name__ == "Function"
+            and self.name == "superuser_function_v1"
+        )
+
+        is_super_function_call = (
+            self.__class__.__name__ == "FunctionCall"
+            and self.function.name == "superuser_function_v1"
+        )
+
+        if is_super_function:
+            self.function = None
+            self.function_call = None
+            super().save(*args, **filtered_kwargs)
+            return
+
+        if is_super_function_file:
+            self.function = None
+            self.function_call = None
+            super().save(*args, **filtered_kwargs)
+
+            return
+        if is_super_function_call:
+            self.tn_parent = None
+            super().save(*args, **filtered_kwargs)
+            return
+
+        self.function_id = get_function().id
+        try:
+            self.function_call_id = get_function_call().id
+        except:
+            raise_debug(self)
+        super().save(*args, **filtered_kwargs)
         update_entity_v1(self)
 
     def get_model_instance(self):

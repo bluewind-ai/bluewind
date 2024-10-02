@@ -17,18 +17,16 @@ class File(WorkspaceRelated):
         on_delete=models.CASCADE,
         related_name="related_file",
         null=True,
-        blank=True,
+    )
+    function_call = models.OneToOneField(
+        "function_calls.FunctionCall",
+        on_delete=models.CASCADE,
+        related_name="related_file",
+        null=True,
     )
 
     def __str__(self):
         return self.path
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-
-        super().save(*args, **kwargs)
-        # if is_new:
-        #     files_after_create(self)
 
     class Meta:
         ordering = ["-updated_at"]

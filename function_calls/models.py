@@ -75,6 +75,9 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     function = models.ForeignKey(
         "functions.Function", on_delete=models.CASCADE, related_name="function_calls"
     )
+    function_call = models.ForeignKey(
+        "function_calls.FunctionCall", on_delete=models.CASCADE, null=True, blank=True
+    )
     remaining_dependencies = models.IntegerField(default=0)
     thoughts = models.TextField(
         blank=True,
@@ -85,7 +88,6 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     def save(self, *args, **kwargs):
         is_new = self._state.adding
         if is_new:
-            # For new instances, set an initial whole_tree before saving
             self.whole_tree = self.to_dict()
 
         super().save(*args, **kwargs)
@@ -112,7 +114,10 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         }
 
     def rebuild_whole_tree(self):
-        root = self.get_root()
+        if self.function.name != "superuser_function_v1":
+            root = self.get_root()
+        else:
+            root = self
         tree_dict = root.to_dict()
         nodes = [root] + list(root.get_descendants())
         return tree_dict, nodes
