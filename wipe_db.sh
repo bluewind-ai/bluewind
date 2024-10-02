@@ -77,17 +77,17 @@ python manage.py migrate
 # # Superuser creation and workspace association
 # superuser = User.objects.get(username='wayne@bluewind.ai');
 # superuser_workspace = Workspace.objects.create(name='superuser', user=superuser);
-# superuser_function_file = File.objects.create(
-#    path='/Users/merwanehamadi/code/bluewind/functions/superuser_function/v1/functions',
+# master_v1_function_file = File.objects.create(
+#    path='/Users/merwanehamadi/code/bluewind/functions/master_v1_function/v1/functions',
 #    content='I am the Alpha and the Omega, the First and the Last, the Beginning and the End.',
 #    user_id=1,
 #    workspace_id=1,
 #    function=None,
 #    function_call=None,
 # )
-# # superuser_function = Function.objects.create(
-# #    name='superuser_function_v1',
-# #    file=superuser_function_file,
+# # master_v1_function = Function.objects.create(
+# #    name='master_v1',
+# #    file=master_v1_function_file,
 # #    user_id=1,
 # #    workspace_id=1,
 # #    function_id=1,

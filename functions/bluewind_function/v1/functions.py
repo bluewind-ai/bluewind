@@ -50,6 +50,9 @@ def bluewind_function_v1(is_making_network_calls=False, redirect=None):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+            if func.__name__ == "master_v1":
+                return func(*args, **kwargs)
+            return func(*args, **kwargs)
             if func.__name__ == "scan_domain_name_v1":
                 # raise_debug(
                 #     func.__name__,

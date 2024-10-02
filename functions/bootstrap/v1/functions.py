@@ -6,14 +6,17 @@ from django.db import transaction
 from django.shortcuts import redirect
 
 from bluewind.context_variables import set_function, set_function_call
-from files.models import File
 from function_calls.models import FunctionCall
-from functions.models import Function
+from functions.bluewind_function.v1.functions import bluewind_function_v1
+from functions.create_function_from_file.v1.functions import (
+    create_function_from_file_v1,
+)
 from workspaces.models import Workspace, WorkspaceUser
 
 logger = logging.getLogger("django.not_used")
 
 
+@bluewind_function_v1()
 def bootstrap_v1():
     # Run the createsuperuser command
     with transaction.atomic():
@@ -31,21 +34,19 @@ def bootstrap_v1():
 
         # Rest of your function remains the same
         superuser_workspace = Workspace.objects.create(name="superuser", user=superuser)
-        superuser_function_file = File.objects.create(
-            path="/Users/merwanehamadi/code/bluewind/functions/superuser_function/v1/functions",
-            content="I am the Alpha and the Omega, the First and the Last, the Beginning and the End.",
-        )
-        superuser_function = Function.objects.create(
-            name="superuser_function_v1",
-            file=superuser_function_file,
-        )
-        set_function(superuser_function)
+        master_v1_function = create_function_from_file_v1("master_v1")
+
+        # master_v1_function = Function.objects.create(
+        #     name="master_v1",
+        #     file=master_v1_function_file,
+        # )
+        set_function(master_v1_function)
 
         status = FunctionCall.Status.READY_FOR_APPROVAL
-        superuser_function_call = FunctionCall.objects.create(
-            status=status, function=superuser_function
+        master_v1_function_call = FunctionCall.objects.create(
+            status=status, function=master_v1_function
         )
-        set_function_call(superuser_function_call)
+        set_function_call(master_v1_function_call)
 
         # Anonymous user creation and workspace association
         anonymous_user = User.objects.create_user(
@@ -60,7 +61,7 @@ def bootstrap_v1():
         WorkspaceUser.objects.create(
             user=anonymous_user, workspace=anonymous_workspace, is_default=True
         )
-
-        return redirect(
-            f"/workspaces/1/admin/function_calls/functioncall/{superuser_function_call.id}/change"
-        )
+    raise_debug(superuser, User.objects.filter(pk=1).first())
+    return redirect(
+        f"/workspaces/2/admin/function_calls/functioncall/{master_v1_function_call.id}/change"
+    )

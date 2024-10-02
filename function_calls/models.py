@@ -114,7 +114,7 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         }
 
     def rebuild_whole_tree(self):
-        if self.function.name != "superuser_function_v1":
+        if self.function.name != "master_v1":
             root = self.get_root()
         else:
             root = self

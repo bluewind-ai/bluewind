@@ -3,7 +3,6 @@ import logging
 
 from bluewind.context_variables import set_approved_function_call
 from function_calls.models import FunctionCall
-from functions.bluewind_function.v1.functions import bluewind_function_v1
 
 # Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
@@ -14,9 +13,9 @@ def snake_to_camel_case_uppercase(snake_str):
     return "".join(x.capitalize() for x in components)
 
 
-@bluewind_function_v1()
 def approve_function_call_v1(function_call_id):
     function_call = FunctionCall.objects.get(id=function_call_id)
+    raise_debug(function_call)
     func = get_function(function_call)
     set_approved_function_call(function_call)
 

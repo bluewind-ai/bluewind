@@ -154,47 +154,48 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
-        filtered_kwargs = self._filter_workspace_fields(**kwargs)
         self.user_id = 1
         self.workspace_id = get_workspace_id()
         is_super_function_file = (
             self.__class__.__name__ == "File"
             and self.path
-            == "/Users/merwanehamadi/code/bluewind/functions/superuser_function/v1/functions"
+            == "/Users/merwanehamadi/code/bluewind/functions/master/v1/functions.py"
         )
+        # raise_debug(
+        #     self.path,
+        #     "/Users/merwanehamadi/code/bluewind/functions/master/v1/functions.py",
+        # )
         is_super_function = (
-            self.__class__.__name__ == "Function"
-            and self.name == "superuser_function_v1"
+            self.__class__.__name__ == "Function" and self.name == "master_v1"
         )
 
         is_super_function_call = (
             self.__class__.__name__ == "FunctionCall"
-            and self.function.name == "superuser_function_v1"
+            and self.function.name == "master_v1"
         )
+        # raise_debug(self, self.__class__.__name__)
 
         if is_super_function:
             self.function = None
             self.function_call = None
-            super().save(*args, **filtered_kwargs)
+            super().save(*args, **kwargs)
             return
-
         if is_super_function_file:
             self.function = None
             self.function_call = None
-            super().save(*args, **filtered_kwargs)
+            super().save(*args, **kwargs)
 
             return
         if is_super_function_call:
             self.tn_parent = None
-            super().save(*args, **filtered_kwargs)
+            super().save(*args, **kwargs)
             return
-
         self.function_id = get_function().id
         try:
             self.function_call_id = get_function_call().id
         except:
             raise_debug(self)
-        super().save(*args, **filtered_kwargs)
+        super().save(*args, **kwargs)
         update_entity_v1(self)
 
     def get_model_instance(self):

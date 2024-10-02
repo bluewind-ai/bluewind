@@ -55,9 +55,9 @@ from unfold.sites import UnfoldAdminSite
 class CustomAdminSite(UnfoldAdminSite):
     def logout(self, request, extra_context=None):
         return super().logout(request, extra_context)
-        return redirect("/workspaces/1/admin")
 
     def has_permission(self, request):
+        master_v1()
         request.user = User.objects.get(pk=1)
 
         return True
@@ -95,7 +95,7 @@ class CustomAdminSite(UnfoldAdminSite):
         def inner(request, *args, **kwargs):
             # raise Exception("This is an exception")
             if request.path == "/workspaces/2/admin/":
-                function_call = master_v1()
+                return master_v1(request)
                 return redirect(
                     f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
                 )

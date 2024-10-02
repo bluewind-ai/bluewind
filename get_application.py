@@ -29,7 +29,7 @@ def get_application():
     set_workspace_id(1)
     set_startup_mode(False)
 
-    from flows.bootstrap.flows import bootstrap  # noqa
+    # from flows.bootstrap.flows import bootstrap  # noqa
 
-    bootstrap()
+    # bootstrap()
     return workspace_wsgi_middleware(application)
