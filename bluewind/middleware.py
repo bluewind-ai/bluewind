@@ -133,11 +133,14 @@ def admin_middleware(get_response):
             request.path = f"/workspaces/1/admin{request.path}"
             if request.path == "/workspaces/1/admin/":
                 try:
-                    with transaction.atomic():
-                        master_v1()
+                    transaction.set_autocommit(False)
+                    master_v1()
+                    transaction.commit()
                 except BaseException as e:
-                    transaction
+                    transaction.rollback()
                     raise e
+                finally:
+                    transaction.set_autocommit(True)
                 return redirect(
                     "/workspaces/1/admin/function_calls/functioncall/1/change"
                 )
