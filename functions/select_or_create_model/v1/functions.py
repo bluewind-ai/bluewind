@@ -19,7 +19,6 @@ def select_or_create_model_v1(model_instance):
     # raise_debug(model_instance._meta.app_label)
     plural_model_name = model_instance._meta.app_label
     model = Model.objects.filter(plural_name=model_instance._meta.app_label).first()
-    # raise_debug(model, model_instance, plural_model_name, skip=2)
     if model:
         return model
     singular_model_name = snake_case(model_instance.__class__.__name__)
@@ -39,7 +38,6 @@ def select_or_create_model_v1(model_instance):
     with open(file_path, "r") as file:
         content = file.read()
     with transaction.atomic():
-        # raise_debug(file_path, skip=0)
         file_obj = File.objects.create(
             path=file_path,
             content=content,

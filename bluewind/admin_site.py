@@ -13,6 +13,7 @@ from django.utils.safestring import mark_safe
 from gevent import getcurrent
 
 from bluewind.context_variables import get_workspace_id, set_is_function_call_magic
+from functions.go_next.v1.functions import go_next_v1
 from functions.master.v1.functions import master_v1
 from users.models import User
 from workspaces.models import Workspace, WorkspaceUser
@@ -57,7 +58,6 @@ class CustomAdminSite(UnfoldAdminSite):
         return super().logout(request, extra_context)
 
     def has_permission(self, request):
-        master_v1()
         request.user = User.objects.get(username="wayne@bluewind.ai")
 
         return True
@@ -95,7 +95,8 @@ class CustomAdminSite(UnfoldAdminSite):
         def inner(request, *args, **kwargs):
             # raise Exception("This is an exception")
             if request.path == "/workspaces/2/admin/":
-                return master_v1()
+                master_v1()
+                return go_next_v1()
                 return redirect(
                     f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
                 )

@@ -1,16 +1,19 @@
 import logging
 
-from functions.create_function_from_file.v1.functions import (
-    create_function_from_file_v1,
-)
+from functions.bluewind_function.v1.functions import bluewind_function_v1
 from functions.models import Function
 
 logger = logging.getLogger("django.not_used")
 
 
+@bluewind_function_v1()
 def get_function_or_create_from_file_v1(function_name):
     function = Function.objects.filter(name=function_name).first()
     if function:
         return function
 
-    return create_function_from_file_v1(function_name)
+    from functions.create_function_from_file.v1.functions import (
+        create_function_from_file_v1,
+    )
+
+    return create_function_from_file_v1(function_name=function_name)

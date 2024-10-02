@@ -2,7 +2,6 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.shortcuts import redirect
 
 from bluewind.context_variables import set_function, set_function_call
 from function_calls.models import FunctionCall
@@ -26,8 +25,7 @@ def bootstrap_v1():
 
         # Rest of your function remains the same
         superuser_workspace = Workspace.objects.create(name="superuser", user=superuser)
-        master_v1_function = create_function_from_file_v1("master_v1")
-
+        master_v1_function = create_function_from_file_v1(function_name="master_v1")
         # master_v1_function = Function.objects.create(
         #     name="master_v1",
         #     file=master_v1_function_file,
@@ -58,6 +56,3 @@ def bootstrap_v1():
     #     User.objects.filter(username="wayne@bluewind.ai").first(),
     #     get_workspace_id(),
     # )
-    return redirect(
-        f"/workspaces/2/admin/function_calls/functioncall/{master_v1_function_call.id}/change"
-    )

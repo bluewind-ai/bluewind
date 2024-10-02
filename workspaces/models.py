@@ -183,7 +183,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         if is_super_function_file:
             self.function = None
             self.function_call = None
-            raise_debug("test", skip=0)
+
             super().save(*args, **kwargs)
 
             return

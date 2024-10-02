@@ -15,7 +15,7 @@ def snake_to_camel_case_uppercase(snake_str):
 
 def approve_function_call_v1(function_call_id):
     function_call = FunctionCall.objects.get(id=function_call_id)
-    raise_debug(function_call)
+    # raise_debug(function_call)
     func = get_function(function_call)
     set_approved_function_call(function_call)
 

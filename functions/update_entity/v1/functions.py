@@ -10,7 +10,6 @@ from bluewind.do_not_log import DO_NOT_LOG
 
 
 def update_entity_v1(instance):
-    raise_debug(instance)
     from functions.select_or_create_model.v1.functions import select_or_create_model_v1
 
     if (

@@ -5,11 +5,13 @@ import re
 from django.db import transaction
 
 from files.models import File
+from functions.bluewind_function.v1.functions import bluewind_function_v1
 from functions.models import Function
 
 logger = logging.getLogger("django.not_used")
 
 
+@bluewind_function_v1()
 def create_function_from_file_v1(function_name):
     name_without_version = re.sub(r"_v\d+$", "", function_name)
     match = re.search(r"_v(\d+)$", function_name)
