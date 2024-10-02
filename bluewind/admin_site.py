@@ -7,16 +7,10 @@ from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Model, QuerySet
 from django.http.response import HttpResponseRedirectBase
-from django.shortcuts import redirect
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
-from gevent import getcurrent
 
-from bluewind.context_variables import get_workspace_id
-from functions.go_next.v1.functions import go_next_v1
-from functions.master.v1.functions import master_v1
 from users.models import User
-from workspaces.models import Workspace
 
 logger = logging.getLogger("django.not_used")
 
@@ -54,78 +48,20 @@ from unfold.sites import UnfoldAdminSite
 
 
 class CustomAdminSite(UnfoldAdminSite):
-    def logout(self, request, extra_context=None):
-        return super().logout(request, extra_context)
-
     def has_permission(self, request):
         request.user = User.objects.get(username="wayne@bluewind.ai")
 
         return True
 
-    def each_context(self, request):
-        context = super().each_context(request)
-        workspace_id = get_workspace_id()
+    # def admin_view(self, view, cacheable=False):
+    #     def inner(request, *args, **kwargs):
+    #         if request.path == "/workspaces/1/admin/":
+    #             master_v1()
+    #             return redirect(
+    #                 "/workspaces/1/admin/function_calls/functioncall/1/change"
+    #             )
 
-        if not workspace_id:
-            workspace = Workspace.objects.filter(
-                workspaceuser__user=request.user, workspaceuser__is_default=True
-            ).first()
-
-            # if not workspace:
-            #     workspace = Workspace.objects.create(name="Default Workspace")
-            #     WorkspaceUser.objects.create(
-            #         user=request.user, workspace=workspace, is_default=True
-            #     )
-
-            redirect_url = f"/workspaces/{workspace.id}{request.path}"
-            context["redirect_url"] = redirect_url
-
-        # flow_run = FlowRun.objects.create(
-        #     flow=Flow.objects.get(
-        #         name="command_palette_get_commands", workspace_id=workspace_id
-        #     ),
-        #     user_id=1,
-        #     workspace_id=get_workspace_id(),
-        # )
-        # run_flow(flow_run, request.user)
-
-        return context
-
-    def admin_view(self, view, cacheable=False):
-        def inner(request, *args, **kwargs):
-            # raise Exception("This is an exception")
-            if request.path == "/workspaces/1/admin/":
-                master_v1()
-                return redirect(
-                    "/workspaces/1/admin/function_calls/functioncall/1/change"
-                )
-                return go_next_v1()
-
-            # raise Exception("This is an exception")
-
-            logger.debug(f"Starting request handling in greenlet {id(getcurrent())}")
-
-            logger.debug(f"Finished sleep in greenlet {id(getcurrent())}")
-            context = self.each_context(request)
-            if "redirect_url" in context:
-                return redirect(context["redirect_url"])
-
-            response = view(request, *args, **kwargs)
-            # if isinstance(response, TemplateResponse):
-            #     # Convert the context data to JSON
-            #     json_data = json.dumps(
-            #         response.context_data, cls=MyJsonEncoder, ensure_ascii=False
-            #     )
-
-            #     # Add the JSON data to the context
-            #     response.context_data["json_data"] = json_data
-
-            return response
-
-        return super().admin_view(inner, cacheable)
-
-    def is_ajax(self, request):
-        return request.headers.get("x-requested-with") == "XMLHttpRequest"
+    #     return super().admin_view(inner, cacheable)
 
 
 custom_admin_site = CustomAdminSite(name="customadmin")

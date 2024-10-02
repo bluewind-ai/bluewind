@@ -84,6 +84,9 @@
 # from bluewind.middleware import redirect
 import re
 
+from django.db import transaction
+from django.shortcuts import redirect
+
 from bluewind.context_variables import (
     set_approved_function_call,
     set_exception_count,
@@ -97,6 +100,7 @@ from bluewind.context_variables import (
     set_startup_mode,
     set_workspace_id,
 )
+from functions.master.v1.functions import master_v1
 
 
 def process_response(response):
@@ -127,9 +131,16 @@ def admin_middleware(get_response):
         if not request.path.startswith("/workspaces/"):
             request.path_info = f"/admin{request.path}"
             request.path = f"/workspaces/1/admin{request.path}"
-            # raise NotImplementedError(request.path_info, request.path)
-            # ('/workspaces/1/admin/', '/workspaces/1/admin/')
-
+            if request.path == "/workspaces/1/admin/":
+                try:
+                    with transaction.atomic():
+                        master_v1()
+                except BaseException as e:
+                    transaction
+                    raise e
+                return redirect(
+                    "/workspaces/1/admin/function_calls/functioncall/1/change"
+                )
             response = get_response(request)
             return process_response(response)
 
@@ -140,6 +151,9 @@ def admin_middleware(get_response):
 
 def context_variables_middleware(get_response):
     def middleware(request):
+        # with transaction.atomic():  # noqa: F821
+        # transaction.set_autocommit(False)
+
         # Set initial values for all context variables
         set_request_id(None)
         set_log_records([])
@@ -152,9 +166,12 @@ def context_variables_middleware(get_response):
         set_exception_count(0)
         set_file_and_line_where_debugger_with_skipped_option_was_called((None, None))
         set_is_update_entity_function_already_in_the_call_stack(False)
-
-        response = get_response(request)
-
+        try:
+            response = get_response(request)
+        except BaseException:
+            raise Exception("Error in middleware")
+        # raise Exception(response.status_code)
+        # raise_debug(response.status_code)
         # Reset all context variables after the response
         set_request_id(None)
         set_log_records(None)

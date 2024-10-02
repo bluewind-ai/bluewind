@@ -2,6 +2,7 @@ import logging
 
 from django.db import models
 
+from bluewind.context_variables import get_function, get_function_call
 from bluewind.utils import snake_case_to_spaced_camel_case
 from treenode.models import TreeNodeModel
 from users.models import User
@@ -87,6 +88,8 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     whole_tree = models.JSONField()
 
     def save(self, *args, **kwargs):
+        self.function = get_function()
+        self.tn_parent = get_function_call()
         is_new = self._state.adding
         if is_new:
             self.whole_tree = self.to_dict()
@@ -119,6 +122,7 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
             root = self.get_root()
         else:
             root = self
+
         tree_dict = root.to_dict()
         nodes = [root] + list(root.get_descendants())
         return tree_dict, nodes

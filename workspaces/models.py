@@ -10,6 +10,8 @@ from django.utils import timezone
 from django.utils.html import format_html
 
 from bluewind.context_variables import (
+    get_function,
+    get_function_call,
     get_startup_mode,
     get_workspace_id,
 )
@@ -125,47 +127,21 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
+        function = get_function()
+        if function:
+            self.function = function
+        else:
+            self.function = None
+
+        function_call = get_function_call()
+        if function_call:
+            self.function_call = function_call
+        else:
+            self.function_call = None
         self.user_id = 1
-        self.workspace_id = 1
-        self.function_id = 1
-        self.function_call_id = 1
+        self.workspace_id = get_workspace_id()
 
         super().save(*args, **kwargs)
-        # is_super_function_file = (
-        #     self.__class__.__name__ == "File"
-        #     and self.path
-        #     == "/Users/merwanehamadi/code/bluewind/functions/master/v1/functions.py"
-        # )
-
-        # is_super_function = (
-        #     self.__class__.__name__ == "Function" and self.name == "master_v1"
-        # )
-
-        # is_super_function_call = (
-        #     self.__class__.__name__ == "FunctionCall"
-        #     and self.function.name == "master_v1"
-        # )
-
-        # if is_super_function:
-        #     self.function = None
-        #     self.function_call = None
-        #     super().save(*args, **kwargs)
-        #     return
-        # if is_super_function_file:
-        #     self.function = None
-        #     self.function_call = None
-        #     # raise_debug(self.__class__.__name__, get_function(), self.function)
-        #     super().save(*args, **kwargs)
-
-        #     return
-        # if is_super_function_call:
-        #     self.tn_parent = None
-        #     super().save(*args, **kwargs)
-        #     return
-        # self.function_id = get_function().id
-        # if not self.function_call_id:
-        #     self.function_call_id = get_function_call().id
-        # raise_debug(self.__class__.__name__, get_function(), self.function)
 
         # update_entity_v1(self)
 

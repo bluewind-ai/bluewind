@@ -5,8 +5,6 @@ from django.utils import timezone
 
 from bluewind.context_variables import (
     get_approved_function_call,
-    get_parent_function_call,
-    get_workspace_id,
     set_approved_function_call,
     set_parent_function_call,
 )
@@ -86,12 +84,9 @@ def ask_for_approval(func, kwargs):
     #     conn.close_if_unusable_or_obsolete()
 
     function_call = FunctionCall.objects.create(
-        function=function,
-        tn_parent=get_parent_function_call(),
-        workspace_id=get_workspace_id(),
-        user_id=1,
         status=status,
     )
+    raise_debug("cndsjkncjkds")
     remaining_dependencies = build_function_call_dependencies_v1(function_call, kwargs)
     if remaining_dependencies:
         function_call.remaining_dependencies = remaining_dependencies
