@@ -81,7 +81,6 @@ def ask_for_approval(func, kwargs):
         function = get_function_or_create_from_file_v1(function_name=func.__name__)
         assert function is not None, "function hasn't been found in the DB"
         logger.debug(f"{func.__name__} found in the DB")
-
         function_call = FunctionCall.objects.create(
             function=function,
             tn_parent=get_parent_function_call(),

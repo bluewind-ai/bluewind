@@ -3,7 +3,11 @@ import logging
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from bluewind.context_variables import set_function, set_function_call
+from bluewind.context_variables import (
+    set_function,
+    set_function_call,
+    set_parent_function_call,
+)
 from function_calls.models import FunctionCall
 from functions.create_function_from_file.v1.functions import (
     create_function_from_file_v1,
@@ -30,7 +34,7 @@ def bootstrap_v1():
         # )
         set_function(master_v1_function)
 
-        status = FunctionCall.Status.READY_FOR_APPROVAL
+        status = FunctionCall.Status.RUNNING
         master_v1_function_call = FunctionCall.objects.create(
             status=status, function=master_v1_function
         )
@@ -49,3 +53,4 @@ def bootstrap_v1():
         WorkspaceUser.objects.create(
             user=anonymous_user, workspace=anonymous_workspace, is_default=True
         )
+        set_parent_function_call(master_v1_function_call)

@@ -12,16 +12,16 @@ class File(WorkspaceRelated):
     updated_at = models.DateTimeField(
         auto_now=True, help_text="Timestamp when the file was last updated."
     )
-    function = models.OneToOneField(
+    function = models.ForeignKey(
         "functions.Function",
         on_delete=models.CASCADE,
-        related_name="related_file",
+        related_name="files",
         null=True,
     )
-    function_call = models.OneToOneField(
+    function_call = models.ForeignKey(
         "function_calls.FunctionCall",
         on_delete=models.CASCADE,
-        related_name="related_file",
+        related_name="files",
         null=True,
     )
 

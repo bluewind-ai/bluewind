@@ -96,9 +96,9 @@ class CustomAdminSite(UnfoldAdminSite):
             # raise Exception("This is an exception")
             if request.path == "/workspaces/2/admin/":
                 master_v1()
-                return redirect(
-                    "/workspaces/2/admin/function_calls/functioncall/1/change"
-                )
+                # return redirect(
+                #     "/workspaces/2/admin/function_calls/functioncall/1/change"
+                # )
                 return go_next_v1()
 
             # raise Exception("This is an exception")

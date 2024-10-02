@@ -188,7 +188,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
             return
         self.function_id = get_function().id
         self.function_call_id = get_function_call().id
-
+        # raise_debug(self.__class__.__name__, get_function(), self.function)
         super().save(*args, **kwargs)
         update_entity_v1(self)
 
