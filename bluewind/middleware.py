@@ -132,18 +132,11 @@ def admin_middleware(get_response):
             request.path_info = f"/admin{request.path}"
             request.path = f"/workspaces/1/admin{request.path}"
             if request.path == "/workspaces/1/admin/":
-                try:
-                    transaction.set_autocommit(False)
+                with transaction.atomic():
                     master_v1()
-                    transaction.commit()
-                except BaseException as e:
-                    transaction.rollback()
-                    raise e
-                finally:
-                    transaction.set_autocommit(True)
-                return redirect(
-                    "/workspaces/1/admin/function_calls/functioncall/1/change"
-                )
+                    return redirect(
+                        "/workspaces/1/admin/function_calls/functioncall/1/change"
+                    )
             response = get_response(request)
             return process_response(response)
 
@@ -173,20 +166,20 @@ def context_variables_middleware(get_response):
             response = get_response(request)
         except BaseException:
             raise Exception("Error in middleware")
-        # raise Exception(response.status_code)
-        # raise_debug(response.status_code)
-        # Reset all context variables after the response
-        set_request_id(None)
-        set_log_records(None)
-        set_workspace_id(None)
-        set_startup_mode(True)  # Reset to default value
-        set_parent_function_call(None)
-        set_approved_function_call(None)
-        set_function_call(None)
-        set_function(None)
-        set_exception_count(0)
-        set_file_and_line_where_debugger_with_skipped_option_was_called((None, None))
-        set_is_update_entity_function_already_in_the_call_stack(False)
+        finally:
+            set_request_id(None)
+            set_log_records(None)
+            set_workspace_id(None)
+            set_startup_mode(True)  # Reset to default value
+            set_parent_function_call(None)
+            set_approved_function_call(None)
+            set_function_call(None)
+            set_function(None)
+            set_exception_count(0)
+            set_file_and_line_where_debugger_with_skipped_option_was_called(
+                (None, None)
+            )
+            set_is_update_entity_function_already_in_the_call_stack(False)
 
         return response
 

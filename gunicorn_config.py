@@ -1,5 +1,5 @@
 bind = "127.0.0.1:8000"
-worker_class = "gevent"
+worker_class = "sync"
 workers = 1
 worker_connections = 10000
 max_requests = 10000

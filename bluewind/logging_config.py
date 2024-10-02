@@ -127,7 +127,7 @@ def get_logging_config():
                 "propagate": False,
             },
             "django.db.backends": {
-                "level": "ERROR",
+                "level": "DEBUG",
                 "handlers": ["console"],
                 "propagate": False,
             },
@@ -179,6 +179,6 @@ def get_logging_config():
         },
         "root": {
             "handlers": ["console"],
-            "level": "ERROR",
+            "level": "DEBUG",
         },
     }

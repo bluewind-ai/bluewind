@@ -77,6 +77,7 @@ def ask_for_approval(func, kwargs):
     function = get_function_or_create_from_file_v1(function_name=func.__name__)
     assert function is not None, "function hasn't been found in the DB"
     logger.debug(f"{func.__name__} found in the DB")
+    raise Exception(f"Create function call for {func.__name__} asking for approval")
     # raise Exception(f"Create function call for {func.__name__} asking for approval")
     # from django.db import connections
 
@@ -86,11 +87,12 @@ def ask_for_approval(func, kwargs):
     function_call = FunctionCall.objects.create(
         status=status,
     )
-    raise_debug("cndsjkncjkds")
+
     remaining_dependencies = build_function_call_dependencies_v1(function_call, kwargs)
     if remaining_dependencies:
         function_call.remaining_dependencies = remaining_dependencies
     function_call.save()
+
     if func.__name__ == "master_v1":
         # raise Exception(
         #     f"Create function call for {func.__name__} asking for approval"
