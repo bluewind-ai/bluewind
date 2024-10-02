@@ -5,24 +5,21 @@ from django.db import transaction
 
 from bluewind.context_variables import get_function
 from bluewind.utils import snake_case
-from functions.bluewind_function.v1.functions import bluewind_function_v1
 
 # Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
-@bluewind_function_v1()
+# @bluewind_function_v1()
 def select_or_create_model_v1(model_instance):
     from files.models import File
     from models.models import Model  # noqa: F401
 
-    # raise_debug(model_instance._meta.app_label)
     plural_model_name = model_instance._meta.app_label
     model = Model.objects.filter(plural_name=model_instance._meta.app_label).first()
     if model:
         return model
     singular_model_name = snake_case(model_instance.__class__.__name__)
-    # raise_debug(singular_model_name, plural_model_name)
     base_dir = os.environ.get("BASE_DIR", ".")
 
     # Construct the file path
@@ -32,7 +29,7 @@ def select_or_create_model_v1(model_instance):
         "models.py",
     )
     if not os.path.exists(file_path):
-        raise_debug(f"File does not exist: {file_path}")
+        raise Exception(f"File does not exist: {file_path}")
 
     # Read file content
     with open(file_path, "r") as file:
@@ -54,9 +51,3 @@ def select_or_create_model_v1(model_instance):
             user_id=1,
             workspace_id=2,
         )
-    # raise_debug(
-    #     File.objects.filter(
-    #         path=file_path,
-    #     ).first()
-    # )
-    # raise_debug("cdnsjkcds")

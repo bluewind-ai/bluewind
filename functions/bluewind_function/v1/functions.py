@@ -43,7 +43,6 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
 
     if get_approved_function_call():
         function_call = get_approved_function_call()
-        # raise_debug("1", function_call, function_call.output_data)
 
         new_kwargs = build_kwargs_from_dependencies_v1(function_call)
 
@@ -53,12 +52,10 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
         # get difference in time between the 2
         if function_call.executed_at:
             duration = timezone.now() - function_call.executed_at
-            raise_debug(duration)
         function_call.executed_at = timezone.now()
         function_call.input_data = kwargs
         if is_making_network_calls:
             result = handle_network_calls_v1(func, new_kwargs, function_call)
-            # raise_debug(result, "after_network", func)
         else:
             result = func(**new_kwargs)
 
@@ -67,7 +64,6 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
                 result = {}
             function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
             function_call.output_data = result
-        # raise_debug(function_call, function_call.output_data)
         function_call.save()
 
         return
@@ -77,24 +73,7 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
 
 def ask_for_approval(func, kwargs):
     with transaction.atomic():
-        # input_form = get_input_form_or_create_from_file_v1(func)
-        # input_form_data = None
-        # if input_form:
-        #     parameter_function_call = next(iter(kwargs.values()))
-        #     input_form_data = parameter_function_call.output_form_data
-        #     if (
-        #         parameter_function_call.status
-        #         not in FunctionCall.successful_terminal_stages()
-        #     ):
-        # output_form = get_output_form_or_create_from_file_v1(func)
-        # output_form_data = None
-        # if output_form:
-        #     output_form_data = FormData.objects.create(
-        #         data={},
-        #         form=output_form,
-        #     )
         status = FunctionCall.Status.READY_FOR_APPROVAL
-        # get_output_variable_or_create_from_file_v1(func)
         from functions.get_function_or_create_from_file.v1.functions import (
             get_function_or_create_from_file_v1,
         )
@@ -110,7 +89,6 @@ def ask_for_approval(func, kwargs):
             user_id=1,
             status=status,
         )
-        # raise_debug(func)
         remaining_dependencies = build_function_call_dependencies_v1(
             function_call, kwargs
         )
@@ -131,7 +109,7 @@ def check_kwargs_valid(func, kwargs):
     parameter_names = get_parameter_names_v1(func)
     for kwarg in kwargs:
         if kwarg not in parameter_names:
-            raise_debug(
+            raise Exception(
                 f"The function {func.__name__} uses a kwarg '{kwarg}' which doesn't exist"
             )
 

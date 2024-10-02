@@ -15,12 +15,10 @@ def handle_function_call_after_save_v1(object):
         object.function_call.output_data = {
             "domain_name": [object.id],
         }
-        # raise_debug(object.function_call.output_data)
         object.function_call.executed_at = timezone.now()
         object.function_call.output_type = FunctionCall.OutputType.QUERY_SET
 
         object.function_call.save()
-        # raise_debug(object.function_call.output_data)
         dependencies = FunctionCallDependency.objects.filter(
             dependency=object.function_call,
         )

@@ -18,11 +18,6 @@ def build_kwargs_from_dependencies_v1(function_call):
         dependent=function_call
     )
     for dependency in function_call_dependencies:
-        # raise_debug(
-        #     dependency.dependency.output_data,
-        #     function_call,
-        #     dependency.dependency.output_type,
-        # )
         if dependency.dependency.output_type != FunctionCall.OutputType.QUERY_SET:
             new_kwargs[dependency.name] = dependency.dependency.output_data
             continue
@@ -37,6 +32,8 @@ def build_kwargs_from_dependencies_v1(function_call):
                     domain_name_class.objects.filter(id__in=ids)
                 )
             else:
-                raise_debug(dependency.dependency.output_data)
+                raise ValueError(
+                    f"Expected 1 object, but got {len(ids)} objects for {key}"
+                )
 
     return new_kwargs

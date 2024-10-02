@@ -75,12 +75,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     #         form.base_fields["whole_tree"].initial = self.get_whole_tree(obj)
     #     return form
 
-    def whole_tree(self, obj):
-        # if obj:
-        #     raise_debug(JSONField())
-        #     return JSONField().prepare_value(obj.get_tree_json())
-        return {"ok": "ok"}
-
     def get_tree_json(self, node):
         return {
             "id": node.id,

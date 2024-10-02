@@ -5,7 +5,6 @@ from django.db import transaction
 
 from bluewind.context_variables import set_function, set_function_call
 from function_calls.models import FunctionCall
-from functions.bluewind_function.v1.functions import bluewind_function_v1
 from functions.create_function_from_file.v1.functions import (
     create_function_from_file_v1,
 )
@@ -14,7 +13,6 @@ from workspaces.models import Workspace, WorkspaceUser
 logger = logging.getLogger("django.not_used")
 
 
-@bluewind_function_v1()
 def bootstrap_v1():
     # Run the createsuperuser command
     with transaction.atomic():
@@ -51,8 +49,3 @@ def bootstrap_v1():
         WorkspaceUser.objects.create(
             user=anonymous_user, workspace=anonymous_workspace, is_default=True
         )
-    # raise_debug(
-    #     superuser.id,
-    #     User.objects.filter(username="wayne@bluewind.ai").first(),
-    #     get_workspace_id(),
-    # )

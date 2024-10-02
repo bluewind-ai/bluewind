@@ -105,7 +105,6 @@ class WorkspaceRelatedManager(models.Manager):
 
         # Apply select_related for all foreign key fields
         queryset = queryset.select_related(*foreign_key_fields)
-        # raise_debug("ncdscdsnjk")
         if not get_startup_mode():
             return queryset.filter(workspace_id=get_workspace_id())
         return queryset
@@ -161,10 +160,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
             and self.path
             == "/Users/merwanehamadi/code/bluewind/functions/master/v1/functions.py"
         )
-        # raise_debug(
-        #     self.path,
-        #     "/Users/merwanehamadi/code/bluewind/functions/master/v1/functions.py",
-        # )
+
         is_super_function = (
             self.__class__.__name__ == "Function" and self.name == "master_v1"
         )
@@ -173,7 +169,6 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
             self.__class__.__name__ == "FunctionCall"
             and self.function.name == "master_v1"
         )
-        # raise_debug(self, self.__class__.__name__)
 
         if is_super_function:
             self.function = None
@@ -192,10 +187,8 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
             super().save(*args, **kwargs)
             return
         self.function_id = get_function().id
-        try:
-            self.function_call_id = get_function_call().id
-        except:
-            raise_debug(self)
+        self.function_call_id = get_function_call().id
+
         super().save(*args, **kwargs)
         update_entity_v1(self)
 
