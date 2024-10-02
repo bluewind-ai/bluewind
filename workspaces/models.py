@@ -105,7 +105,7 @@ class WorkspaceRelatedManager(models.Manager):
 
         # Apply select_related for all foreign key fields
         queryset = queryset.select_related(*foreign_key_fields)
-
+        # raise_debug("ncdscdsnjk")
         if not get_startup_mode():
             return queryset.filter(workspace_id=get_workspace_id())
         return queryset
@@ -183,6 +183,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         if is_super_function_file:
             self.function = None
             self.function_call = None
+            raise_debug("test", skip=0)
             super().save(*args, **kwargs)
 
             return

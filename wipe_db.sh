@@ -56,49 +56,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Create superuser
-# python manage.py createsuperuser --noinput --username wayne@bluewind.ai --email wayne@bluewind.ai
-
-# # Set password for superuser
-# python manage.py shell -c "
-# from django.contrib.auth import get_user_model;
-# User = get_user_model();
-# user = User.objects.get(username='wayne@bluewind.ai');
-# user.set_password('W5\$HZ?9iSnw7BDaasLBD');
-# user.save()"
-
-# # Create Workspace, WorkspaceUser, and Anonymous User
-# python manage.py shell -c "
-# from workspaces.models import Workspace, WorkspaceUser;
-# from files.models import File
-# from functions.models import Function
-# from django.contrib.auth import get_user_model;
-# User = get_user_model();
-
-# # Superuser creation and workspace association
-# superuser = User.objects.get(username='wayne@bluewind.ai');
-# superuser_workspace = Workspace.objects.create(name='superuser', user=superuser);
-# master_v1_function_file = File.objects.create(
-#    path='/Users/merwanehamadi/code/bluewind/functions/master_v1_function/v1/functions',
-#    content='I am the Alpha and the Omega, the First and the Last, the Beginning and the End.',
-#    user_id=1,
-#    workspace_id=1,
-#    function=None,
-#    function_call=None,
-# )
-# # master_v1_function = Function.objects.create(
-# #    name='master_v1',
-# #    file=master_v1_function_file,
-# #    user_id=1,
-# #    workspace_id=1,
-# #    function_id=1,
-# #    function_call=get_function_call(),
-# # )
-
-# # Anonymous user creation and workspace association
-# anonymous_user = User.objects.create_user(username='anonymous_user', email='anonymous@example.com', password='AnonymousSecurePassword123!');
-
-# anonymous_workspace = Workspace.objects.create(name='Anonymous Workspace', user=superuser);
-# WorkspaceUser.objects.create(user=anonymous_user, workspace=anonymous_workspace, is_default=True)"
+python manage.py createsuperuser --noinput --username wayne@bluewind.ai --email wayne@bluewind.ai
 
 echo "Database setup and initial data creation completed."
 

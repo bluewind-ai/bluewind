@@ -1,7 +1,6 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from django.core.management import call_command
 from django.db import transaction
 from django.shortcuts import redirect
 
@@ -20,13 +19,6 @@ logger = logging.getLogger("django.not_used")
 def bootstrap_v1():
     # Run the createsuperuser command
     with transaction.atomic():
-        call_command(
-            "createsuperuser",
-            "--noinput",
-            username="wayne@bluewind.ai",
-            email="wayne@bluewind.ai",
-        )
-
         User = get_user_model()
         superuser = User.objects.get(username="wayne@bluewind.ai")
         superuser.set_password("admin")
@@ -61,7 +53,11 @@ def bootstrap_v1():
         WorkspaceUser.objects.create(
             user=anonymous_user, workspace=anonymous_workspace, is_default=True
         )
-    raise_debug(superuser, User.objects.filter(pk=1).first())
+    # raise_debug(
+    #     superuser.id,
+    #     User.objects.filter(username="wayne@bluewind.ai").first(),
+    #     get_workspace_id(),
+    # )
     return redirect(
         f"/workspaces/2/admin/function_calls/functioncall/{master_v1_function_call.id}/change"
     )

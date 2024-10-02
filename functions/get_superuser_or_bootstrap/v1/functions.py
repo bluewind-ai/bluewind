@@ -9,7 +9,7 @@ logger = logging.getLogger("django.not_used")
 
 @bluewind_function_v1()
 def get_superuser_or_bootstrap_v1():
-    superuser = User.objects.filter(pk=1).first()
+    superuser = User.objects.filter(username="wayne@bluewind.ai").first()
     if superuser:
         return superuser
     bootstrap_v1()

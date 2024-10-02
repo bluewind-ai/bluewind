@@ -58,7 +58,7 @@ class CustomAdminSite(UnfoldAdminSite):
 
     def has_permission(self, request):
         master_v1()
-        request.user = User.objects.get(pk=1)
+        request.user = User.objects.get(username="wayne@bluewind.ai")
 
         return True
 
@@ -95,7 +95,7 @@ class CustomAdminSite(UnfoldAdminSite):
         def inner(request, *args, **kwargs):
             # raise Exception("This is an exception")
             if request.path == "/workspaces/2/admin/":
-                return master_v1(request)
+                return master_v1()
                 return redirect(
                     f"/workspaces/2/admin/function_calls/functioncall/{function_call.id}/change"
                 )
