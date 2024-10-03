@@ -1,6 +1,7 @@
 import logging
 
 from django.db import models
+from django.utils import timezone
 
 from bluewind.context_variables import get_function, get_function_call
 from bluewind.utils import snake_case_to_spaced_camel_case
@@ -82,11 +83,21 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         super().save(*args, **kwargs)
 
     def to_dict(self):
+        children = self.get_children(cache=False)
+
+        def sort_key(child):
+            if child.executed_at is None:
+                return timezone.make_aware(timezone.datetime.max)
+            return child.executed_at
+
+        sorted_children = sorted(children, key=sort_key)
+
         return {
             "id": self.id if self.id else None,
             "function_name": str(self),
             "status": self.status,
-            "children": [child.to_dict() for child in self.get_children(cache=False)]
+            "executed_at": self.executed_at.isoformat() if self.executed_at else None,
+            "children": [child.to_dict() for child in sorted_children]
             if self.id
             else [],
         }

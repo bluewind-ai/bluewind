@@ -1,5 +1,7 @@
 import logging
 
+from django.utils import timezone
+
 from bluewind.context_variables import (
     set_function,
     set_function_call,
@@ -25,12 +27,16 @@ def bootstrap_v1():
 
     status = FunctionCall.Status.RUNNING
     master_v1_function_call = FunctionCall.objects.create(
-        status=status, function=master_v1_function, tn_parent=None
+        status=status,
+        function=master_v1_function,
+        tn_parent=None,
+        executed_at=timezone.now(),
     )
     set_function_call(master_v1_function_call)
     status = FunctionCall.Status.COMPLETED
     FunctionCall.objects.create(
         status=status,
+        executed_at=timezone.now(),
         function=create_function_from_file_v1(function_name="bootstrap_v1"),
         tn_parent=master_v1_function_call,
     )

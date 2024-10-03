@@ -73,7 +73,7 @@
                 var nodeId = $node.closest('li').attr('id');
                 console.log("Click on node:", nodeId);
 
-                var changeUrl = "/admin/function_calls/functioncall/" + nodeId + "/change/";
+                var changeUrl = "/function_calls/functioncall/" + nodeId + "/change/";
                 console.log("Attempting to navigate to:", changeUrl);
                 window.location.href = changeUrl;
             });
