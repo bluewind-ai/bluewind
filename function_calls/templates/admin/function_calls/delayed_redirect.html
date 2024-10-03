@@ -12,10 +12,12 @@
         <p>You will be redirected in <span id="countdown">3</span> seconds...</p>
     </div>
 
-    <div hx-get="{{ redirect_url }}"
-         hx-trigger="load delay:1s"
-         hx-push-url="true">
-    </div>
+    <body hx-get="{{ redirect_url }}"
+          hx-trigger="load delay:3s"
+          hx-push-url="true"
+          hx-target="body"
+          hx-swap="outerHTML">
+    </body>
 
     <script>
         let countdown = 3;
