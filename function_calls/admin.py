@@ -1,6 +1,5 @@
 import json
 
-from django import forms
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, reverse
@@ -18,33 +17,10 @@ from functions.handle_mark_function_call_as_successful.v1.functions import (
 )
 from functions.restart.v1.functions import restart_v1
 from treenode.admin import TreeNodeModelAdmin
-from treenode.forms import TreeNodeForm
 from unfold.decorators import action
 
 
-class FunctionCallForm(TreeNodeForm):
-    name = forms.CharField(max_length=255)  # Add custom name field
-
-    class Meta:
-        model = FunctionCall
-        fields = [
-            "name",
-            "status",
-            # "function",
-            "input_data",
-            "output_data",
-            "executed_at",
-        ]
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     if self.instance:
-    #         # Pre-populate the name field with the current value
-    #         self.fields["name"].initial = str(self.instance)
-
-
 class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
-    form = FunctionCallForm
     actions_detail = [
         "approve_function_call",
         "mark_function_call_as_successful",
@@ -55,19 +31,30 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     list_display_links = ("indented_title",)
 
     readonly_fields = [
+        "name",
+        "whole_tree",
+        "status",
+        "input_data",
+        "output_data",
+        "executed_at",
+    ]
+
+    fields = [
+        "name",
+        "status",
+        "input_data",
+        "output_data",
+        "executed_at",
         "whole_tree",
     ]
 
-    def get_readonly_fields(self, request, obj=None):
-        if obj:  # editing an existing object
-            return self.readonly_fields + ["name"]
-        return self.readonly_fields
+    def name(self, obj):
+        return str(obj)
+
+    name.short_description = "Name"
 
     def whole_tree(self, obj):
         return obj.get_whole_tree()
-
-    def name(self, obj):
-        return str(obj)
 
     whole_tree.short_description = "Whole Tree"
 
@@ -75,7 +62,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
-        return False  # Allow viewing, but saving will be prevented
+        return True  # Allow viewing
 
     def has_delete_permission(self, request, obj=None):
         return True

@@ -1,7 +1,7 @@
 import importlib
 import logging
 
-from bluewind.context_variables import set_approved_function_call
+from bluewind.context_variables import set_approved_function_call, set_function_call
 from function_calls.models import FunctionCall
 
 # Patch standard library
@@ -16,6 +16,7 @@ def snake_to_camel_case_uppercase(snake_str):
 def approve_function_call_v1(function_call_id):
     function_call = FunctionCall.objects.get(id=function_call_id)
     func = get_function(function_call)
+    set_function_call(function_call)
     set_approved_function_call(function_call)
 
     return func()
