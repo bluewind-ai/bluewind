@@ -1,6 +1,23 @@
 #!/bin/bash
 
 # Load environment variables
+stop_gunicorn() {
+   echo "Stopping Gunicorn..."
+   pkill -f gunicorn
+   if pgrep -f gunicorn >/dev/null; then
+      echo "Gunicorn still running, force killing..."
+      pkill -9 -f gunicorn
+   fi
+   if pgrep -f gunicorn >/dev/null; then
+      echo "Failed to stop Gunicorn"
+      exit 1
+   fi
+   echo "Gunicorn stopped successfully"
+}
+
+# Stop Gunicorn
+stop_gunicorn
+
 set -a
 . ./.env
 set +a
@@ -54,5 +71,5 @@ echo "Privileges granted to $DB_USERNAME."
 # Run Django management commands
 python manage.py makemigrations
 python manage.py migrate
-
+stop_gunicorn
 gunicorn -c gunicorn_config.py bluewind.wsgi:application

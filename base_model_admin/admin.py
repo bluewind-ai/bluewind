@@ -1,8 +1,6 @@
 from django.contrib.admin.views.main import ChangeList
-from django.db.models import JSONField
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django_json_widget.widgets import JSONEditorWidget
 
 # from recordings.models import Recording
 
@@ -20,24 +18,11 @@ class CustomChangeList(ChangeList):
         self.formset = None
 
 
-from import_export.admin import ImportExportModelAdmin
-
 from unfold.admin import ModelAdmin
-from unfold.contrib.import_export.forms import (
-    ExportForm,
-    ImportForm,
-)
 
 
-class InWorkspace(ModelAdmin, ImportExportModelAdmin):
-    import_form_class = ImportForm
-    export_form_class = ExportForm
-
+class InWorkspace(ModelAdmin):
     change_form_template = "admin/change_form.html"
-
-    formfield_overrides = {
-        JSONField: {"widget": JSONEditorWidget},
-    }
 
     actions = ["custom_action"]
 

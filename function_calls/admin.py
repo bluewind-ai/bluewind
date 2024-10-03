@@ -88,7 +88,15 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         url_path="restart",
     )
     def restart(self, request: HttpRequest, object_id: int):
-        return restart_v1()
+        restart_v1()
+        context = self.admin_site.each_context(request)
+        context.update(
+            {
+                "title": "Redirecting...",
+                "redirect_url": "/",
+            }
+        )
+        return render(request, "admin/function_calls/delayed_redirect.html", context)
 
     def get_actions_detail(self, request, obj=None):
         function_call = FunctionCall.objects.get(pk=obj)
@@ -143,6 +151,11 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
                 self.admin_site.admin_view(self.tree_view),
                 name="function_call_tree_view",
             ),
+            path(
+                "go_next",
+                self.admin_site.admin_view(self.go_next),
+                name="go_next",
+            ),
         ]
         return custom_urls + urls
 
@@ -156,3 +169,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
             form_url,
             extra_context=extra_context,
         )
+
+    def go_next(self, request, object_id):
+        return go_next_v1()
