@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import warnings
 from pathlib import Path
 
@@ -253,6 +254,11 @@ DB_PASSWORD = os.environ["DB_PASSWORD"]
 DB_HOST = os.environ["DB_HOST"]
 DB_PORT = os.environ["DB_PORT"]
 DB_NAME = os.environ["DB_NAME"]
+is_migration_command = len(sys.argv) > 1 and sys.argv[1] in [
+    "migrate",
+    "makemigrations",
+    "createsuperuser",
+]
 
 DATABASES = {
     "default": {
@@ -262,14 +268,14 @@ DATABASES = {
         "PASSWORD": DB_PASSWORD,
         "HOST": DB_HOST,
         "PORT": DB_PORT,
-        # "AUTOCOMMIT": False,  # Add this line to disable autocommits
+        "AUTOCOMMIT": True,
         # "CONN_MAX_AGE": 0,
         "OPTIONS": {
             "sslmode": "disable",
             # "MAX_CONNS": 100,  # Adjust based on your needs
             # "REUSE_CONNS": 100,  # Adjust based on your needs
         },
-        # "ATOMIC_REQUESTS": True,  # Add this line
+        "ATOMIC_REQUESTS": True,  # Add this line
     }
 }
 
