@@ -9,6 +9,7 @@ logger = logging.getLogger("django.temp")
 
 
 def handle_function_call_after_save_v1(object):
+    raise_debug("njnjkcc")
     object.function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
     object.function_call.output_data = {
         "domain_name": [object.id],

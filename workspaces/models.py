@@ -123,7 +123,6 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
-        # raise_debug("cdnsjkcnds", 8)
         if self.__class__.__name__ == "FunctionCall":
             super().save(*args, **kwargs)
             return
@@ -139,8 +138,6 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         else:
             self.function_call = None
 
-        # if self.__class__.__name__ == "File":
-        #     raise_debug(self, Workspace.objects.all().count())
         self.user_id = 1
 
         super().save(*args, **kwargs)

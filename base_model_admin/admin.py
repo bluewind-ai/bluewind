@@ -2,6 +2,8 @@ from django.contrib.admin.views.main import ChangeList
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+from users.models import User
+
 # from recordings.models import Recording
 
 # def get_latest_recording(workspace_id):
@@ -50,24 +52,10 @@ class InWorkspace(ModelAdmin):
         # def get_queryset(self, request):
         #     return get_queryset(self, request)
 
-        # def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        #     workspace = get_workspace()
-        #     workspace = get_workspace()
-
-        #     if db_field.name == "workspace":
-        #         logger.debug("Handling workspace field")
-        #         workspace = Workspace.objects.get(id=workspace_id)
-        #         logger.debug(f"Found workspace: {workspace}")
-        #         kwargs["queryset"] = Workspace.objects.filter(id=workspace_id)
-        #         kwargs["initial"] = workspace
-        #     elif db_field.name == "user":  # Add this condition
-        #         kwargs["initial"] = request.user
-        #         kwargs["queryset"] = User.objects.filter(id=request.user.id)
-        #     elif hasattr(db_field.related_model, "workspace"):
-        #         logger.debug(f"Handling related field: {db_field.name}")
-        #         kwargs["queryset"] = db_field.related_model.objects.filter(
-        #             workspace=get_workspace()
-        #         )
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "user":  # Add this condition
+            kwargs["initial"] = request.user
+            kwargs["queryset"] = User.objects.filter(id=request.user.id)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

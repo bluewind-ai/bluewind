@@ -4,6 +4,7 @@ from django import forms
 from django.shortcuts import redirect
 
 from base_model_admin.admin import InWorkspace
+from bluewind.context_variables import set_function, set_function_call
 from domain_names.models import DomainName
 from function_calls.admin import get_function_call_whole_tree_v1
 from function_calls.models import FunctionCall
@@ -43,6 +44,7 @@ class DomainNameAdmin(InWorkspace):
         if request_get:
             extra_context = self.get_add_view(request, extra_context)
         response = super().add_view(request, form_url, extra_context)
+
         if not response.status_code == 302:
             return response
         request_post = request.POST
@@ -51,13 +53,16 @@ class DomainNameAdmin(InWorkspace):
         function_call_id = request_post.get("function_call")
         if not function_call_id:
             return response
-        function_to_approve = FunctionCall.objects.filter(
+        function_call_to_approve = FunctionCall.objects.filter(
             status=FunctionCall.Status.READY_FOR_APPROVAL
         ).first()
-        if not function_to_approve:
+
+        set_function(function_call_to_approve.function)
+        set_function_call(function_call_to_approve)
+        if not function_call_to_approve:
             raise Exception("No function to approve")
         return redirect(
-            f"/admin/function_calls/functioncall/{function_to_approve.id}/change"
+            f"/admin/function_calls/functioncall/{function_call_to_approve.id}/change"
         )
 
     def get_add_view(self, request, extra_context=None):

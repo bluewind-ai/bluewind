@@ -36,10 +36,23 @@
         $(function () {
             console.log("Script starting");
 
+            // Function to get URL parameters
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+
             // Extract the node ID from the current URL
             var currentPath = window.location.pathname;
             var matches = currentPath.match(/\/functioncall\/(\d+)\/change\//);
             var currentNodeId = matches ? matches[1] : null;
+
+            // If not found in the path, look for it in query parameters
+            if (!currentNodeId) {
+                currentNodeId = getUrlParameter('function_call');
+            }
 
             var tree = $('#tree').jstree({
                 'core' : {
@@ -61,9 +74,6 @@
                     data.instance.select_node(currentNodeId);
                 }
             });
-
-            var clickTimer = null;
-            var preventSimpleClick = false;
 
             $(document).on('click', '#tree .jstree-anchor', function(e) {
                 e.preventDefault();
