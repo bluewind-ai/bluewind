@@ -69,9 +69,9 @@ class CustomAdminSite(UnfoldAdminSite):
 
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
-            # raise_debug(request.path)
+            context = self.each_context(request)
             if request.path_info == "/":
-                return go_next_v1()
+                return go_next_v1(request, context)
 
             response = view(request, *args, **kwargs)
             return response

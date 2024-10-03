@@ -14,7 +14,7 @@ def snake_to_camel_case_uppercase(snake_str):
     return "".join(x.capitalize() for x in components)
 
 
-def handle_mark_function_call_as_successful_v1(function_call_id):
+def handle_mark_function_call_as_successful_v1(request, context, function_call_id):
     function_call = FunctionCall.objects.get(id=int(function_call_id))
     function_call.status = FunctionCall.Status.MARKED_SUCCESSFUL
     if not FunctionCall.objects.filter(
@@ -29,4 +29,4 @@ def handle_mark_function_call_as_successful_v1(function_call_id):
             function_call.parent.save()
 
     function_call.save()
-    return go_next_v1()
+    return go_next_v1(request, context)

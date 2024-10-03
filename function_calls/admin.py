@@ -81,21 +81,27 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     )
     def approve_function_call(self, request: HttpRequest, object_id: int):
         approve_function_call_v1(function_call_id=object_id)
-        return go_next_v1()
+        context = self.admin_site.each_context(request)
+        return go_next_v1(request, context)
 
     @action(
         description=_("Mark function call as successful"),
         url_path="mark_function_call_as_successful",
     )
     def mark_function_call_as_successful(self, request: HttpRequest, object_id: int):
-        return handle_mark_function_call_as_successful_v1(function_call_id=object_id)
+        context = self.admin_site.each_context(request)
+        return handle_mark_function_call_as_successful_v1(
+            request, context, function_call_id=object_id
+        )
 
     @action(
         description=_("Restart"),
         url_path="restart",
     )
     def restart(self, request: HttpRequest, object_id: int):
-        return new_method(request, self.admin_site)
+        context = self.admin_site.each_context(request)
+
+        return new_method(request, context)
 
     def get_actions_detail(self, request, obj=None):
         function_call = FunctionCall.objects.get(pk=obj)
@@ -174,14 +180,13 @@ def get_function_call_whole_tree_v1(function_call_id):
     return function_call, [tree_data]
 
 
-def new_method(request, admin_site):
+def new_method(request, context):
     restart_v1()
-
-    context = admin_site.each_context(request)
     context.update(
         {
             "title": "Redirecting...",
             "redirect_url": "/",
         }
     )
+
     return render(request, "admin/function_calls/delayed_redirect.html", context)
