@@ -1,4 +1,5 @@
 import json
+from typing import Union
 
 from django import forms
 from django.http import HttpRequest
@@ -31,6 +32,7 @@ class DomainNameAdmin(InWorkspace):
     actions_detail = [
         "approve_function_call",
     ]
+    actions_submit_line = ["changeform_submitline_action"]
 
     def get_actions_detail(self, request, obj=None):
         actions = super().get_actions_detail(request, obj)
@@ -99,3 +101,20 @@ class DomainNameAdmin(InWorkspace):
         approve_function_call_v1(function_call_id=object_id)
         context = self.admin_site.each_context(request)
         return go_next_v1(request, context)
+
+    @action(
+        description=_("Changeform submitline action"),
+        permissions=["changeform_submitline_action"],
+    )
+    def changeform_submitline_action(self, request: HttpRequest, object_id: int):
+        """
+        If instance is modified in any way, it also needs to be saved, since this handler is invoked after instance is saved.
+        """
+        raise_debug("ncjdks")
+        pass
+
+    def has_changeform_submitline_action_permission(
+        self, request: HttpRequest, object_id: Union[str, int]
+    ):
+        raise_debug("ncjdks")
+        pass

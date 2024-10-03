@@ -128,7 +128,7 @@ def admin_middleware(get_response):
         set_request_id(None)
         set_log_records([])
         set_workspace(None)
-        set_startup_mode(True)
+        set_startup_mode(False)
         set_parent_function_call(None)
         set_approved_function_call(None)
         set_function_call(None)
@@ -147,7 +147,7 @@ def admin_middleware(get_response):
             set_request_id(None)
             set_log_records(None)
             set_workspace(None)
-            set_startup_mode(True)  # Reset to default value
+            set_startup_mode(False)  # Reset to default value
             set_parent_function_call(None)
             set_approved_function_call(None)
             set_function_call(None)
@@ -168,9 +168,9 @@ def context_variables_middleware(get_response):
 
         # Set initial values for all context variables
         set_request_id(None)
+        set_startup_mode(False)
         set_log_records([])
         set_workspace(None)
-        set_startup_mode(True)
         set_parent_function_call(None)
         set_approved_function_call(None)
         set_function_call(None)
@@ -186,7 +186,7 @@ def context_variables_middleware(get_response):
             set_request_id(None)
             set_log_records(None)
             set_workspace(None)
-            set_startup_mode(True)  # Reset to default value
+            set_startup_mode(False)  # Reset to default value
             set_parent_function_call(None)
             set_approved_function_call(None)
             set_function_call(None)
