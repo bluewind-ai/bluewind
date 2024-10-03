@@ -86,10 +86,24 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         null=True,
     )
     whole_tree = models.JSONField()
+    # def save(self, *args, **kwargs):
+    #         if not self.function:
+    #             self.function = get_function()
+    #         if not self.tn_parent:
+    #             self.tn_parent = get_function_call()
+    #         raise_debug(self.tn_parent, skip=3)
 
+    #         super().save(*args, **kwargs)
+    #         self.whole_tree = {
+    #             "id": self.id,
+    #             "function_name": "master_v1",
+    #         }
+    #         super().save(update_fields=["whole_tree"])
     def save(self, *args, **kwargs):
-        self.function = get_function()
-        self.tn_parent = get_function_call()
+        if not self.function:
+            self.function = get_function()
+        if not self.tn_parent:
+            self.tn_parent = get_function_call()
 
         is_new = self._state.adding
         if is_new:
@@ -98,7 +112,6 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         super().save(*args, **kwargs)
 
         # Rebuild and update the whole tree
-        # raise_debug("1")
         whole_tree, nodes = self.rebuild_whole_tree()
         self.whole_tree = whole_tree
 

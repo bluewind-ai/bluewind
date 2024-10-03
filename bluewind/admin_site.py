@@ -14,7 +14,6 @@ from gevent import getcurrent
 
 from bluewind.context_variables import get_workspace_id
 from functions.go_next.v1.functions import go_next_v1
-from functions.master.v1.functions import master_v1
 from users.models import User
 from workspaces.models import Workspace
 
@@ -91,10 +90,6 @@ class CustomAdminSite(UnfoldAdminSite):
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
             if request.path == "/workspaces/1/admin/":
-                master_v1()
-                return redirect(
-                    "/workspaces/1/admin/function_calls/functioncall/1/change"
-                )
                 return go_next_v1()
 
             # raise Exception("This is an exception")

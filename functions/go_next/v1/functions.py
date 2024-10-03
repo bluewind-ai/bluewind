@@ -3,7 +3,7 @@ import logging
 from django.shortcuts import redirect
 
 from function_calls.models import FunctionCall
-from functions.restart.v1.functions import restart_v1
+from functions.master.v1.functions import master_v1
 
 # Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
@@ -35,5 +35,6 @@ def go_next_v1():
         return redirect(
             f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
         )
-    # raise Exception("WE ARE DONE")
-    return restart_v1()
+
+    master_v1()
+    return go_next_v1()

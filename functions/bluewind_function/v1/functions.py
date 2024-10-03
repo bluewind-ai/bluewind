@@ -86,11 +86,13 @@ def ask_for_approval(func, kwargs):
 
     function_call = FunctionCall.objects.create(
         status=status,
+        function=function,
     )
 
     remaining_dependencies = build_function_call_dependencies_v1(function_call, kwargs)
     if remaining_dependencies:
         function_call.remaining_dependencies = remaining_dependencies
+    # raise_debug(function_call)
     function_call.save()
 
     if func.__name__ == "master_v1":

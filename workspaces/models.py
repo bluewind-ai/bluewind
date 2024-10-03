@@ -125,7 +125,6 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
-        raise_debug("Workspace", skip=10)
         function = get_function()
         if function:
             self.function = function

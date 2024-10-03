@@ -134,7 +134,8 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
             return {
                 "id": str(node["id"]),
                 "text": f"{node['function_name']} {emoji}",
-                "children": [format_node(child) for child in node["children"]],
+                "children": [],
+                # "children": [format_node(child) for child in node["children"]],
                 "data": {"change_url": change_url, "dummy_link": dummy_link},
             }
 
