@@ -71,42 +71,15 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         blank=True,
         null=True,
     )
-    whole_tree = models.JSONField()
-    # def save(self, *args, **kwargs):
-    #         if not self.function:
-    #             self.function = get_function()
-    #         if not self.tn_parent:
-    #             self.tn_parent = get_function_call()
-    #         raise_debug(self.tn_parent, skip=3)
 
-    #         super().save(*args, **kwargs)
-    #         self.whole_tree = {
-    #             "id": self.id,
-    #             "function_name": "master_v1",
-    #         }
-    #         super().save(update_fields=["whole_tree"])
     def save(self, *args, **kwargs):
         if not self.function:
             self.function = get_function()
         if not self.tn_parent:
             self.tn_parent = get_function_call()
 
-        is_new = self._state.adding
-        if is_new:
-            self.whole_tree = self.to_dict()
         self.user_id = 1
         super().save(*args, **kwargs)
-
-        # Rebuild and update the whole tree
-        whole_tree, nodes = self.rebuild_whole_tree()
-        self.whole_tree = whole_tree
-
-        # Save again with the updated whole_tree
-        super().save(update_fields=["whole_tree"])
-
-        # Update other nodes if not a new instance
-        if not is_new:
-            self.bulk_update_whole_tree(whole_tree, nodes)
 
     def to_dict(self):
         return {
@@ -118,27 +91,13 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
             else [],
         }
 
-    def rebuild_whole_tree(self):
+    def get_whole_tree(self):
         if self.function.name != "master_v1":
             root = self.get_root(cache=False)
-
         else:
             root = self
 
-        tree_dict = root.to_dict()
-        nodes = [root] + list(root.get_descendants(cache=False))
-        return tree_dict, nodes
-
-    def bulk_update_whole_tree(self, whole_tree, nodes):
-        for node in nodes:
-            node.whole_tree = whole_tree
-        FunctionCall.objects.bulk_update(nodes, ["whole_tree"])
-
-    @classmethod
-    def rebuild_all_trees(cls):
-        for root in cls.objects.filter(tn_parent__isnull=True):
-            whole_tree, nodes = root.rebuild_whole_tree()
-            root.bulk_update_whole_tree(whole_tree, nodes)
+        return root.to_dict()
 
     @classmethod
     def successful_terminal_stages(cls):

@@ -112,6 +112,8 @@ class UnfoldAdminReadonlyField(helpers.AdminReadonlyField):
         )
         try:
             f, attr, value = lookup_field(field, obj, model_admin)
+            if field == "whole_tree":
+                return prettify_json(value)
         except (AttributeError, ValueError, ObjectDoesNotExist):
             result_repr = self.empty_value_display
         else:

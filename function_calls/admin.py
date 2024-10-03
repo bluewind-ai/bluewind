@@ -3,7 +3,6 @@ import json
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, reverse
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from base_model_admin.admin import InWorkspace
@@ -20,7 +19,6 @@ from functions.restart.v1.functions import restart_v1
 from treenode.admin import TreeNodeModelAdmin
 from treenode.forms import TreeNodeForm
 from unfold.decorators import action
-from unfold.widgets import UnfoldAdminTextareaWidget
 
 
 class FunctionCallForm(TreeNodeForm):
@@ -49,13 +47,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     readonly_fields = ["whole_tree"]
 
     def whole_tree(self, obj):
-        if obj:
-            json_data = json.dumps(obj.get_tree_json(), indent=2)
-            widget = UnfoldAdminTextareaWidget()
-            return mark_safe(
-                widget.render("whole_tree", json_data, attrs={"readonly": "readonly"})
-            )
-        return ""
+        return obj.get_whole_tree()
 
     whole_tree.short_description = "Whole Tree"
 
@@ -67,12 +59,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return True
-
-    # def get_form(self, request, obj=None, **kwargs):
-    #     form = super().get_form(request, obj, **kwargs)
-    #     if obj:
-    #         form.base_fields["whole_tree"].initial = self.get_whole_tree(obj)
-    #     return form
 
     def get_tree_json(self, node):
         return {
@@ -114,10 +100,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
 
-    import json
-
-    from django.urls import reverse
-
     def get_tree(self, object_id):
         function_call = get_object_or_404(FunctionCall, id=object_id)
 
@@ -138,7 +120,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
                 "data": {"change_url": change_url, "dummy_link": dummy_link},
             }
 
-        tree_data = format_node(function_call.whole_tree)
+        tree_data = format_node(function_call.get_whole_tree())
         return function_call, [tree_data]
 
     def tree_view(self, request, object_id):
