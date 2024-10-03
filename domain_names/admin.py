@@ -106,15 +106,17 @@ class DomainNameAdmin(InWorkspace):
         description=_("Changeform submitline action"),
         permissions=["changeform_submitline_action"],
     )
-    def changeform_submitline_action(self, request: HttpRequest, object_id: int):
+    def changeform_submitline_action(self, request: HttpRequest, obj: int):
         """
         If instance is modified in any way, it also needs to be saved, since this handler is invoked after instance is saved.
         """
-        raise_debug("ncjdks")
-        pass
+        approve_function_call_v1(function_call_id=obj.function_call_id)
+        context = self.admin_site.each_context(request)
+
+        obj.save()
+        return go_next_v1(request, context)
 
     def has_changeform_submitline_action_permission(
-        self, request: HttpRequest, object_id: Union[str, int]
+        self, request: HttpRequest, object_id: Union[str, int] = None
     ):
-        raise_debug("ncjdks")
-        pass
+        return True
