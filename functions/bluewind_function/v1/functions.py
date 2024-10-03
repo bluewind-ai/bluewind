@@ -93,6 +93,8 @@ def ask_for_approval(func, kwargs):
     remaining_dependencies = build_function_call_dependencies_v1(function_call, kwargs)
     if remaining_dependencies:
         function_call.remaining_dependencies = remaining_dependencies
+        function_call.status = FunctionCall.Status.CONDITIONS_NOT_MET
+
     # raise_debug(function_call)
     function_call.save()
 

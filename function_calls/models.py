@@ -86,9 +86,12 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         children = self.get_children(cache=False)
 
         def sort_key(child):
-            if child.executed_at is None:
-                return timezone.make_aware(timezone.datetime.max)
-            return child.executed_at
+            return (
+                child.executed_at
+                if child.executed_at is not None
+                else timezone.make_aware(timezone.datetime.max),
+                child.id or float("inf"),
+            )
 
         sorted_children = sorted(children, key=sort_key)
 
