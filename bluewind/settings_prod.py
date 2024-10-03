@@ -258,6 +258,7 @@ is_migration_command = len(sys.argv) > 1 and sys.argv[1] in [
     "migrate",
     "makemigrations",
     "createsuperuser",
+    "create_superuser_workspace",
 ]
 
 DATABASES = {

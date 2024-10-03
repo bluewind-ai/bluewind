@@ -12,10 +12,8 @@ from django.utils.html import format_html
 from bluewind.context_variables import (
     get_function,
     get_function_call,
-    get_startup_mode,
     get_workspace_id,
 )
-from users.models import User
 
 
 class Workspace(models.Model):
@@ -54,34 +52,34 @@ class Workspace(models.Model):
 class WorkspaceAdmin(admin.ModelAdmin):
     readonly_fields = ("admin_url_link",)
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        workspace_id = get_workspace_id()
-        logger.debug(f"formfield_for_foreignkey: workspace_id = {workspace_id}")
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     workspace_id = get_workspace_id()
+    #     logger.debug(f"formfield_for_foreignkey: workspace_id = {workspace_id}")
 
-        if db_field.name == "user":  # Add this condition
-            kwargs["initial"] = request.user
-            kwargs["queryset"] = User.objects.filter(id=request.user.id)
+    #     if db_field.name == "user":  # Add this condition
+    #         kwargs["initial"] = request.user
+    #         kwargs["queryset"] = User.objects.filter(id=request.user.id)
 
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 logger = logging.getLogger(__name__)
 
 
-class WorkspaceRelatedManager(models.Manager):
-    def get_queryset(self):
-        queryset = super().get_queryset()
+# class WorkspaceRelatedManager(models.Manager):
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
 
-        # Get all foreign key field names
-        foreign_key_fields = [
-            f.name for f in self.model._meta.fields if isinstance(f, models.ForeignKey)
-        ]
+#         # Get all foreign key field names
+#         foreign_key_fields = [
+#             f.name for f in self.model._meta.fields if isinstance(f, models.ForeignKey)
+#         ]
 
-        # Apply select_related for all foreign key fields
-        queryset = queryset.select_related(*foreign_key_fields)
-        if not get_startup_mode():
-            return queryset.filter(workspace_id=get_workspace_id())
-        return queryset
+#         # Apply select_related for all foreign key fields
+#         queryset = queryset.select_related(*foreign_key_fields)
+#         if not get_startup_mode():
+#             return queryset.filter(workspace_id=get_workspace_id())
+#         return queryset
 
 
 class WorkspaceRelatedMeta(models.base.ModelBase):
@@ -102,7 +100,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
     )
     function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    objects = WorkspaceRelatedManager()
+    # objects = WorkspaceRelatedManager()
 
     class Meta:
         abstract = True
@@ -127,7 +125,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
-        # raise_debug("Workspace", skip=0)
+        raise_debug("Workspace", skip=10)
         function = get_function()
         if function:
             self.function = function

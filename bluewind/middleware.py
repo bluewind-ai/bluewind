@@ -186,8 +186,8 @@ def context_variables_middleware(get_response):
         set_is_update_entity_function_already_in_the_call_stack(False)
         try:
             response = get_response(request)
-        except BaseException:
-            raise Exception("Error in middleware")
+        except BaseException as e:
+            raise e
         finally:
             set_request_id(None)
             set_log_records(None)
