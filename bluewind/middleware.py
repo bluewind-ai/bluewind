@@ -96,6 +96,7 @@ from bluewind.context_variables import (
     set_startup_mode,
     set_workspace,
 )
+from bluewind.views import favicon_view
 
 # def process_response(response):
 #     if response.status_code in [301, 302, 307, 308] and "Location" in response:
@@ -137,7 +138,7 @@ def admin_middleware(get_response):
         set_is_update_entity_function_already_in_the_call_stack(False)
         try:
             if request.path.startswith("/favicon.ico"):
-                return get_response(request)
+                return favicon_view(request)
 
             return get_response(request)
         except BaseException as e:
