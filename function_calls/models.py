@@ -90,6 +90,7 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     def save(self, *args, **kwargs):
         self.function = get_function()
         self.tn_parent = get_function_call()
+
         is_new = self._state.adding
         if is_new:
             self.whole_tree = self.to_dict()
@@ -97,6 +98,7 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         super().save(*args, **kwargs)
 
         # Rebuild and update the whole tree
+        # raise_debug("1")
         whole_tree, nodes = self.rebuild_whole_tree()
         self.whole_tree = whole_tree
 
@@ -112,19 +114,20 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
             "id": self.id if self.id else None,
             "function_name": str(self),
             "status": self.status,
-            "children": [child.to_dict() for child in self.get_children()]
+            "children": [child.to_dict() for child in self.get_children(cache=False)]
             if self.id
             else [],
         }
 
     def rebuild_whole_tree(self):
         if self.function.name != "master_v1":
-            root = self.get_root()
+            root = self.get_root(cache=False)
+
         else:
             root = self
 
         tree_dict = root.to_dict()
-        nodes = [root] + list(root.get_descendants())
+        nodes = [root] + list(root.get_descendants(cache=False))
         return tree_dict, nodes
 
     def bulk_update_whole_tree(self, whole_tree, nodes):

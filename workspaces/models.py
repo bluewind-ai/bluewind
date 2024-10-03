@@ -127,6 +127,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
+        # raise_debug("Workspace", skip=0)
         function = get_function()
         if function:
             self.function = function
@@ -142,8 +143,6 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         self.workspace_id = get_workspace_id()
 
         super().save(*args, **kwargs)
-
-        # update_entity_v1(self)
 
     def get_model_instance(self):
         return ContentType.objects.get_for_model(self.__class__)

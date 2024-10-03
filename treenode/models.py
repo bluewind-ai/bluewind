@@ -314,6 +314,12 @@ class TreeNodeModel(models.Model):
 
     def get_root(self, cache=True):
         root_pk = self.get_root_pk()
+        if cache:
+            try:
+                return query_cache(self.__class__, pk=root_pk)
+            except CacheError:
+                pass
+
         return self.__class__.objects.get(pk=root_pk)
 
     def get_root_pk(self):

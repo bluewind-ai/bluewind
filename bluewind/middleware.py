@@ -84,9 +84,6 @@
 # from bluewind.middleware import redirect
 import re
 
-from django.db import transaction
-from django.shortcuts import redirect
-
 from bluewind.context_variables import (
     set_approved_function_call,
     set_exception_count,
@@ -100,7 +97,6 @@ from bluewind.context_variables import (
     set_startup_mode,
     set_workspace_id,
 )
-from functions.master.v1.functions import master_v1
 
 
 def process_response(response):
@@ -126,21 +122,47 @@ def process_response(response):
 
 def admin_middleware(get_response):
     def middleware(request):
-        if request.path.startswith("/favicon.ico"):
-            return get_response(request)
-        if not request.path.startswith("/workspaces/"):
-            request.path_info = f"/admin{request.path}"
-            request.path = f"/workspaces/1/admin{request.path}"
-            if request.path == "/workspaces/1/admin/":
-                with transaction.atomic():
-                    master_v1()
-                    return redirect(
-                        "/workspaces/1/admin/function_calls/functioncall/1/change"
-                    )
-            response = get_response(request)
-            return process_response(response)
+        # with transaction.atomic():  # noqa: F821
+        # transaction.set_autocommit(False)
 
-        return get_response(request)
+        # Set initial values for all context variables
+        set_request_id(None)
+        set_log_records([])
+        # set_workspace_id(None)
+        set_startup_mode(True)
+        set_parent_function_call(None)
+        set_approved_function_call(None)
+        set_function_call(None)
+        set_function(None)
+        set_exception_count(0)
+        set_file_and_line_where_debugger_with_skipped_option_was_called((None, None))
+        set_is_update_entity_function_already_in_the_call_stack(False)
+        try:
+            if request.path.startswith("/favicon.ico"):
+                return get_response(request)
+            if not request.path.startswith("/workspaces/"):
+                request.path_info = f"/admin{request.path}"
+                request.path = f"/workspaces/1/admin{request.path}"
+                response = get_response(request)
+                return process_response(response)
+
+            return get_response(request)
+        except BaseException as e:
+            raise e
+        finally:
+            set_request_id(None)
+            set_log_records(None)
+            set_workspace_id(None)
+            set_startup_mode(True)  # Reset to default value
+            set_parent_function_call(None)
+            set_approved_function_call(None)
+            set_function_call(None)
+            set_function(None)
+            set_exception_count(0)
+            set_file_and_line_where_debugger_with_skipped_option_was_called(
+                (None, None)
+            )
+            set_is_update_entity_function_already_in_the_call_stack(False)
 
     return middleware
 

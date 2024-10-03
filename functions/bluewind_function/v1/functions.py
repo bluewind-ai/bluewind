@@ -77,7 +77,7 @@ def ask_for_approval(func, kwargs):
     function = get_function_or_create_from_file_v1(function_name=func.__name__)
     assert function is not None, "function hasn't been found in the DB"
     logger.debug(f"{func.__name__} found in the DB")
-    raise Exception(f"Create function call for {func.__name__} asking for approval")
+    # raise Exception(f"Create function call for {func.__name__} asking for approval")
     # raise Exception(f"Create function call for {func.__name__} asking for approval")
     # from django.db import connections
 

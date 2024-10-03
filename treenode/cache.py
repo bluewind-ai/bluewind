@@ -2,7 +2,8 @@ import logging
 from collections import defaultdict
 
 from django.conf import settings
-from django.core.cache import cache as default_cache, caches
+from django.core.cache import cache as default_cache
+from django.core.cache import caches
 
 from treenode.exceptions import CacheError
 from treenode.utils import split_pks
@@ -11,14 +12,17 @@ logger = logging.getLogger(__name__)
 
 
 def _get_cache():
+    raise CacheError("Cache should never be hit")
     return caches["treenode"] if "treenode" in settings.CACHES else default_cache
 
 
 def _get_cache_name():
+    raise CacheError("Cache should never be hit")
     return "treenode" if "treenode" in settings.CACHES else "default"
 
 
 def _get_cached_collection(key, dict_cls):
+    raise CacheError("Cache should never be hit")
     c = _get_cache()
     value = c.get(key, None)
     if value is None:
@@ -28,18 +32,21 @@ def _get_cached_collection(key, dict_cls):
 
 
 def _get_cached_collections():
+    raise CacheError("Cache should never be hit")
     ls = _get_cached_collection("treenode_list", list)
     d = _get_cached_collection("treenode_dict", dict)
     return (ls, d)
 
 
 def _set_cached_collections(ls, d):
+    raise CacheError("Cache should never be hit")
     c = _get_cache()
     c.set("treenode_list", ls)
     c.set("treenode_dict", d)
 
 
 def clear_cache(cls):
+    raise CacheError("Cache should never be hit")
     ls, d = _get_cached_collections()
     del ls[cls][:]
     d[cls].clear()
@@ -47,6 +54,7 @@ def clear_cache(cls):
 
 
 def query_cache(cls, pk=None, pks=None):
+    raise CacheError("Cache should never be hit")
     ls, d = _get_cached_collections()
     if not ls[cls] or not d[cls]:
         update_cache(cls)
@@ -60,6 +68,7 @@ def query_cache(cls, pk=None, pks=None):
 
 
 def update_cache(cls):
+    raise CacheError("Cache should never be hit")
     objs = list(cls.objects.all())
     ls, d = _get_cached_collections()
     ls[cls] = objs

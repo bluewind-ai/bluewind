@@ -2,7 +2,6 @@ import logging
 import os
 import re
 
-from bluewind.context_variables import set_function
 from files.models import File
 from functions.bluewind_function.v1.functions import bluewind_function_v1
 from functions.models import Function
@@ -48,6 +47,5 @@ def create_function_from_file_v1(function_name):
     )
 
     logger.info(f"Created function: {function_name}")
-    set_function(function)
 
     return function
