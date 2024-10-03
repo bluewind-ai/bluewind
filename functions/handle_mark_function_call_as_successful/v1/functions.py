@@ -22,8 +22,8 @@ def handle_mark_function_call_as_successful_v1(function_call_id):
         tn_parent_id=function_call.tn_parent_id,
         status__in=FunctionCall.uncompleted_stages(),
     ).exists():
-        if function_call.parent:
-            function_call.parent.status = (
+        if function_call.tn_parent:
+            function_call.tn_parent.status = (
                 FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
             )
             function_call.parent.save()

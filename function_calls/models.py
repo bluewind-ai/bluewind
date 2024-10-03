@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 
-from bluewind.context_variables import get_function, get_function_call
+from bluewind.context_variables import get_function, get_function_call, get_workspace_id
 from bluewind.utils import snake_case_to_spaced_camel_case
 from treenode.models import TreeNodeModel
 from users.models import User
@@ -108,7 +108,8 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         is_new = self._state.adding
         if is_new:
             self.whole_tree = self.to_dict()
-
+        self.user_id = 1
+        self.workspace_id = get_workspace_id()
         super().save(*args, **kwargs)
 
         # Rebuild and update the whole tree

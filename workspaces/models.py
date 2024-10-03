@@ -125,6 +125,9 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
+        if self.__class__.__name__ == "FunctionCall":
+            super().save(*args, **kwargs)
+            return
         function = get_function()
         if function:
             self.function = function
