@@ -59,7 +59,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     whole_tree.short_description = "Whole Tree"
 
     def has_add_permission(self, request):
-        return False
+        return True
 
     def has_change_permission(self, request, obj=None):
         return True  # Allow viewing

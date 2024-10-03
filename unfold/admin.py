@@ -423,6 +423,7 @@ class ModelAdmin(ModelAdminMixin, BaseModelAdmin):
             extra_context = {}
 
         actions = []
+        raise_debug("cndsjkncjkds")
         if object_id:
             for action in self.get_actions_detail(request, object_id):
                 actions.append(

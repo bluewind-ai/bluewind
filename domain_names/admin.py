@@ -1,13 +1,18 @@
 import json
 
 from django import forms
+from django.http import HttpRequest
 from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
 
 from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import set_function, set_function_call
 from domain_names.models import DomainName
 from function_calls.admin import get_function_call_whole_tree_v1
 from function_calls.models import FunctionCall
+from functions.approve_function_call.v1.functions import approve_function_call_v1
+from functions.go_next.v1.functions import go_next_v1
+from unfold.decorators import action
 
 
 class DomainNameForm(forms.ModelForm):
@@ -23,6 +28,13 @@ class DomainNameForm(forms.ModelForm):
 
 class DomainNameAdmin(InWorkspace):
     form = DomainNameForm
+    actions_detail = [
+        "approve_function_call",
+    ]
+
+    def get_actions_detail(self, request, obj=None):
+        actions = super().get_actions_detail(request, obj)
+        return actions
 
     def get_changeform_initial_data(self, request):
         initial = super().get_changeform_initial_data(request)
@@ -78,3 +90,12 @@ class DomainNameAdmin(InWorkspace):
             extra_context["tree_json"] = json.dumps(tree_data)
             return extra_context
         return extra_context
+
+    @action(
+        description=_("Approve"),
+        url_path="approve_function_call",
+    )
+    def approve_function_call(self, request: HttpRequest, object_id: int):
+        approve_function_call_v1(function_call_id=object_id)
+        context = self.admin_site.each_context(request)
+        return go_next_v1(request, context)
