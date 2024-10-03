@@ -115,31 +115,8 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
 
-    def get_tree(self, object_id):
-        function_call = get_object_or_404(FunctionCall, id=object_id)
-
-        def format_node(node):
-            change_url = reverse(
-                "admin:function_calls_functioncall_change", args=[node["id"]]
-            )
-            dummy_link = f"https://example.com/dummy/{node['id']}"
-
-            # Get the FunctionCall object to access the get_status_emoji method
-            node_obj = FunctionCall.objects.get(id=node["id"])
-            emoji = node_obj.get_status_emoji()
-
-            return {
-                "id": str(node["id"]),
-                "text": f"{node['function_name']} {emoji}",
-                "children": [format_node(child) for child in node["children"]],
-                "data": {"change_url": change_url, "dummy_link": dummy_link},
-            }
-
-        tree_data = format_node(function_call.get_whole_tree())
-        return function_call, [tree_data]
-
     def tree_view(self, request, object_id):
-        function_call, tree_data = self.get_tree(object_id)
+        function_call, tree_data = get_function_call_whole_tree_v1(object_id)
         context = self.admin_site.each_context(request)
         context.update(
             {
@@ -168,7 +145,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
-        function_call, tree_data = self.get_tree(object_id)
+        function_call, tree_data = get_function_call_whole_tree_v1(object_id)
         extra_context["tree_json"] = json.dumps(tree_data)
         return super().change_view(
             request,
@@ -179,3 +156,27 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
     def go_next(self, request, object_id):
         return go_next_v1()
+
+
+def get_function_call_whole_tree_v1(function_call_id):
+    function_call = get_object_or_404(FunctionCall, id=function_call_id)
+
+    def format_node(node):
+        change_url = reverse(
+            "admin:function_calls_functioncall_change", args=[node["id"]]
+        )
+        dummy_link = f"https://example.com/dummy/{node['id']}"
+
+        # Get the FunctionCall object to access the get_status_emoji method
+        node_obj = FunctionCall.objects.get(id=node["id"])
+        emoji = node_obj.get_status_emoji()
+
+        return {
+            "id": str(node["id"]),
+            "text": f"{node['function_name']} {emoji}",
+            "children": [format_node(child) for child in node["children"]],
+            "data": {"change_url": change_url, "dummy_link": dummy_link},
+        }
+
+    tree_data = format_node(function_call.get_whole_tree())
+    return function_call, [tree_data]

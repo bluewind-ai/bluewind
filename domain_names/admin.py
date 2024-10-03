@@ -1,8 +1,11 @@
+import json
+
 from django import forms
 from django.shortcuts import redirect
 
 from base_model_admin.admin import InWorkspace
 from domain_names.models import DomainName
+from function_calls.admin import get_function_call_whole_tree_v1
 from function_calls.models import FunctionCall
 
 
@@ -36,6 +39,9 @@ class DomainNameAdmin(InWorkspace):
         return form
 
     def add_view(self, request, form_url="", extra_context=None):
+        request_get = request.GET
+        if request_get:
+            extra_context = self.get_add_view(request, extra_context)
         response = super().add_view(request, form_url, extra_context)
         if not response.status_code == 302:
             return response
@@ -53,3 +59,16 @@ class DomainNameAdmin(InWorkspace):
         return redirect(
             f"/admin/function_calls/functioncall/{function_to_approve.id}/change"
         )
+
+    def get_add_view(self, request, extra_context=None):
+        request_get = request.GET
+        if request_get:
+            function_call_id = request_get.get("function_call")
+            if not function_call_id:
+                return extra_context
+
+            extra_context = extra_context or {}
+            _, tree_data = get_function_call_whole_tree_v1(function_call_id)
+            extra_context["tree_json"] = json.dumps(tree_data)
+            return extra_context
+        return extra_context
