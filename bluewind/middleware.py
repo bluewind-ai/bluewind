@@ -101,17 +101,17 @@ from bluewind.views import favicon_view
 # def process_response(response):
 #     if response.status_code in [301, 302, 307, 308] and "Location" in response:
 #         location = response["Location"]
-#         if location.startswith("/admin/"):
-#             response["Location"] = location.replace("/admin/", "/", 1)
+#         if location.startswith("/"):
+#             response["Location"] = location.replace("/", "/", 1)
 #     elif response.status_code == 200 and "text/html" in response.get(
 #         "Content-Type", ""
 #     ):
 #         content = response.content.decode("utf-8")
-#         pattern = r'href="(/admin/[^"]*)"'
+#         pattern = r'href="(/[^"]*)"'
 #         content = re.sub(
 #             pattern,
-#             lambda m: f'href="{m.group(1).replace("/admin/", "/", 1)}"'
-#             if m.group(1).startswith("/admin/")
+#             lambda m: f'href="{m.group(1).replace("/", "/", 1)}"'
+#             if m.group(1).startswith("/")
 #             else m.group(0),
 #             content,
 #         )

@@ -12,7 +12,7 @@ use django-ajax-datatable
 should you name table.id or table.uuid, if you use uuids?
 easy redirect after id change
 
-Should you be able to delete your workspace? Probably, see clickup. The problem is that my admin page depends on a workspace. The workspace resource should be under /admin/settings or something. This way after deleting your workspace, you remain on the page.
+Should you be able to delete your workspace? Probably, see clickup. The problem is that my admin page depends on a workspace. The workspace resource should be under /settings or something. This way after deleting your workspace, you remain on the page.
 
 I have very dangerous tests that should never run in production and others that are very important to run regularly in production
 
@@ -43,7 +43,7 @@ Opportunities for challengers: get visibility from Django community
 
 buttons at the top to save
 no db logs in console but it still needs to be pushed to DB
-don't allow /admin/ without workspaces and without making sure user is logged in
+don't allow / without workspaces and without making sure user is logged in
 PR campaigns: this french immigrant is building an app that does everything, maybe find something different than french immigrant, more memorable.
 add new rule: log a lot. but please use logger(django.temp)
 evolution of number of queries for the same basic action.

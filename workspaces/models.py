@@ -39,7 +39,7 @@ class Workspace(models.Model):
         return self.name
 
     def get_admin_url(self):
-        return f"/workspaces/{self.id}/admin/"
+        return f"/workspaces/{self.id}/"
 
     def admin_url_link(self):
         url = self.get_admin_url()

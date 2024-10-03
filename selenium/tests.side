@@ -10,7 +10,7 @@
       "id": "68882a0e-f730-40f3-be41-566464f13927",
       "comment": "",
       "command": "open",
-      "target": "/admin/login/",
+      "target": "/login/",
       "targets": [],
       "value": ""
     }, {
@@ -110,7 +110,7 @@
         ["css=p > a", "css:finder"],
         ["xpath=//a[contains(text(),'Log in again')]", "xpath:link"],
         ["xpath=//div[@id='content']/p[2]/a", "xpath:idRelative"],
-        ["xpath=(//a[contains(@href, '/admin/')])[3]", "xpath:href"],
+        ["xpath=(//a[contains(@href, '/')])[3]", "xpath:href"],
         ["xpath=//p[2]/a", "xpath:position"],
         ["xpath=//a[contains(.,'Log in again')]", "xpath:innerText"]
       ],
@@ -193,7 +193,7 @@
         ["css=p > a", "css:finder"],
         ["xpath=//a[contains(text(),'Log in again')]", "xpath:link"],
         ["xpath=//div[@id='content']/p[2]/a", "xpath:idRelative"],
-        ["xpath=(//a[contains(@href, '/admin/')])[3]", "xpath:href"],
+        ["xpath=(//a[contains(@href, '/')])[3]", "xpath:href"],
         ["xpath=//p[2]/a", "xpath:position"],
         ["xpath=//a[contains(.,'Log in again')]", "xpath:innerText"]
       ],

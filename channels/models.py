@@ -483,12 +483,12 @@ def oauth2callback(request):
         messages.success(request, f"Successfully connected Gmail for {channel.email}")
 
         # Redirect back to the change list view for the specific workspace
-        return redirect(f"/workspaces/{workspace_id}/admin/channels/channel/")
+        return redirect(f"/workspaces/{workspace_id}/channels/channel/")
 
     except Exception as e:
         logger.error(f"Error in oauth2callback: {str(e)}")
         messages.error(request, f"Error connecting Gmail: {str(e)}")
-        return redirect(f"/workspaces/{workspace_id}/admin/channels/channel/")
+        return redirect(f"/workspaces/{workspace_id}/channels/channel/")
 
     finally:
         # Clean up session variables
