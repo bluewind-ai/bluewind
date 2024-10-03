@@ -40,30 +40,31 @@ class DomainNameAdmin(InWorkspace):
         return form
 
     def add_view(self, request, form_url="", extra_context=None):
-        request_get = request.GET
-        if request_get:
+        function_call_id = None
+        function_call_to_approve = None
+        request_post = request.POST
+        if request_post:
+            function_call_id = request_post.get("function_call")
+
+            if function_call_id:
+                function_call_to_approve = FunctionCall.objects.filter(
+                    status=FunctionCall.Status.READY_FOR_APPROVAL
+                ).first()
+
+                set_function(function_call_to_approve.function)
+                set_function_call(function_call_to_approve)
+        else:
             extra_context = self.get_add_view(request, extra_context)
+
         response = super().add_view(request, form_url, extra_context)
 
         if not response.status_code == 302:
             return response
-        request_post = request.POST
-        if not request_post:
-            return response
-        function_call_id = request_post.get("function_call")
-        if not function_call_id:
-            return response
-        function_call_to_approve = FunctionCall.objects.filter(
-            status=FunctionCall.Status.READY_FOR_APPROVAL
-        ).first()
-
-        set_function(function_call_to_approve.function)
-        set_function_call(function_call_to_approve)
-        if not function_call_to_approve:
-            raise Exception("No function to approve")
-        return redirect(
-            f"/admin/function_calls/functioncall/{function_call_to_approve.id}/change"
-        )
+        if function_call_to_approve:
+            return redirect(
+                f"/function_calls/functioncall/{function_call_to_approve.id}/change"
+            )
+        return response
 
     def get_add_view(self, request, extra_context=None):
         request_get = request.GET
