@@ -17,7 +17,6 @@ class Entity(WorkspaceRelated):
 
     class Meta:
         verbose_name_plural = "Entities"
-        unique_together = ("workspace", "content_type", "object_id")
 
     def __str__(self):
         return f"{self.name} ({self.content_type.model})"

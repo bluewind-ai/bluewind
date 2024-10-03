@@ -9,8 +9,8 @@ DEBUG 2024-09-12 20:05:56,031 admin_site 34543 6129266688 each_context: Using wo
 DEBUG 2024-09-12 20:05:56,031 admin_site 34543 6129266688 each_context: Using workspace 1
 DEBUG 2024-09-12 20:05:56,035 admin_site 34543 6129266688 each_context: Using workspace 1
 DEBUG 2024-09-12 20:05:56,035 admin_site 34543 6129266688 each_context: Using workspace 1
-INFO 2024-09-12 20:05:56,144 basehttp 34543 6129266688 "GET /workspaces/1/admin/ HTTP/1.1" 200 108836
-INFO 2024-09-12 20:05:56,144 basehttp 34543 6129266688 "GET /workspaces/1/admin/ HTTP/1.1" 200 108836
+INFO 2024-09-12 20:05:56,144 basehttp 34543 6129266688 "GET /admin/ HTTP/1.1" 200 108836
+INFO 2024-09-12 20:05:56,144 basehttp 34543 6129266688 "GET /admin/ HTTP/1.1" 200 108836
 INFO 2024-09-12 20:05:56,164 basehttp 34543 6129266688 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:56,164 basehttp 34543 6129266688 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:56,167 basehttp 34543 6146093056 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
@@ -49,8 +49,8 @@ DEBUG 2024-09-12 20:05:57,611 admin_site 34543 6162919424 each_context: Using wo
 DEBUG 2024-09-12 20:05:57,611 admin_site 34543 6162919424 each_context: Using workspace 1
 DEBUG 2024-09-12 20:05:57,615 admin_site 34543 6162919424 each_context: Using workspace 1
 DEBUG 2024-09-12 20:05:57,615 admin_site 34543 6162919424 each_context: Using workspace 1
-INFO 2024-09-12 20:05:57,657 basehttp 34543 6162919424 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
-INFO 2024-09-12 20:05:57,657 basehttp 34543 6162919424 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:57,657 basehttp 34543 6162919424 "GET /admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:57,657 basehttp 34543 6162919424 "GET /admin/ HTTP/1.1" 200 108834
 INFO 2024-09-12 20:05:57,673 basehttp 34543 6162919424 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:57,673 basehttp 34543 6162919424 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:57,678 basehttp 34543 6196572160 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
@@ -89,8 +89,8 @@ DEBUG 2024-09-12 20:05:58,375 admin_site 34543 6196572160 each_context: Using wo
 DEBUG 2024-09-12 20:05:58,375 admin_site 34543 6196572160 each_context: Using workspace 1
 DEBUG 2024-09-12 20:05:58,383 admin_site 34543 6196572160 each_context: Using workspace 1
 DEBUG 2024-09-12 20:05:58,383 admin_site 34543 6196572160 each_context: Using workspace 1
-INFO 2024-09-12 20:05:58,444 basehttp 34543 6196572160 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
-INFO 2024-09-12 20:05:58,444 basehttp 34543 6196572160 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:58,444 basehttp 34543 6196572160 "GET /admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:58,444 basehttp 34543 6196572160 "GET /admin/ HTTP/1.1" 200 108834
 INFO 2024-09-12 20:05:58,461 basehttp 34543 6196572160 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:58,461 basehttp 34543 6196572160 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:58,466 basehttp 34543 6196572160 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
@@ -125,8 +125,8 @@ INFO 2024-09-12 20:05:58,832 basehttp 34543 6146093056 "GET /static/debug_toolba
 INFO 2024-09-12 20:05:58,832 basehttp 34543 6146093056 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
 INFO 2024-09-12 20:05:58,833 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
 INFO 2024-09-12 20:05:58,833 basehttp 34543 6196572160 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4742
-INFO 2024-09-12 20:05:58,872 basehttp 34543 6162919424 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
-INFO 2024-09-12 20:05:58,872 basehttp 34543 6162919424 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:58,872 basehttp 34543 6162919424 "GET /admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:58,872 basehttp 34543 6162919424 "GET /admin/ HTTP/1.1" 200 108834
 INFO 2024-09-12 20:05:58,899 basehttp 34543 6162919424 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:58,899 basehttp 34543 6162919424 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:58,904 basehttp 34543 6196572160 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804
@@ -159,14 +159,14 @@ INFO 2024-09-12 20:05:59,097 basehttp 34543 6196572160 "GET /static/debug_toolba
 INFO 2024-09-12 20:05:59,097 basehttp 34543 6179745792 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
 INFO 2024-09-12 20:05:59,195 basehttp 34543 6196572160 "GET /favicon.ico HTTP/1.1" 301 0
 INFO 2024-09-12 20:05:59,195 basehttp 34543 6196572160 "GET /favicon.ico HTTP/1.1" 301 0
-INFO 2024-09-12 20:05:59,197 basehttp 34543 6196572160 "GET /static/favicon.ico HTTP/1.1" 200 91698
+INFO 2024-09-12 20:05:59,197 basehttp 34543 6196572160 "GET /static/ HTTP/1.1" 200 91698
 INFO 2024-09-12 20:05:59,197 basehttp 34543 6196572160 "GET /static/favicon.ico HTTP/1.1" 200 91698
 DEBUG 2024-09-12 20:05:59,501 admin_site 34543 6196572160 each_context: Using workspace 1
 DEBUG 2024-09-12 20:05:59,501 admin_site 34543 6196572160 each_context: Using workspace 1
 DEBUG 2024-09-12 20:05:59,508 admin_site 34543 6196572160 each_context: Using workspace 1
 DEBUG 2024-09-12 20:05:59,508 admin_site 34543 6196572160 each_context: Using workspace 1
-INFO 2024-09-12 20:05:59,558 basehttp 34543 6196572160 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
-INFO 2024-09-12 20:05:59,558 basehttp 34543 6196572160 "GET /workspaces/1/admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:59,558 basehttp 34543 6196572160 "GET /admin/ HTTP/1.1" 200 108834
+INFO 2024-09-12 20:05:59,558 basehttp 34543 6196572160 "GET /admin/ HTTP/1.1" 200 108834
 INFO 2024-09-12 20:05:59,573 basehttp 34543 6196572160 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:59,573 basehttp 34543 6196572160 "GET /static/admin/css/base.css HTTP/1.1" 200 22092
 INFO 2024-09-12 20:05:59,578 basehttp 34543 6196572160 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2804

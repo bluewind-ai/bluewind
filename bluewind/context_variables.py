@@ -2,7 +2,6 @@ from contextvars import ContextVar
 
 request_id_var = ContextVar("request_id")
 log_records_var = ContextVar("log_records")
-workspace_id_var = ContextVar("workspace_id")
 startup_mode_var = ContextVar("startup_mode")
 
 parent_function_call_var = ContextVar("parent_function_call", default=None)
@@ -18,6 +17,7 @@ is_update_entity_function_already_in_the_call_stack_var = ContextVar(
 )
 function_call_var = ContextVar("function_call", default=None)
 function_var = ContextVar("function_var", default=None)
+workspace_var = ContextVar("workspace_var")
 
 
 def get_request_id():
@@ -34,14 +34,6 @@ def get_log_records():
 
 def set_log_records(log_records):
     log_records_var.set(log_records)
-
-
-def get_workspace_id():
-    return workspace_id_var.get()
-
-
-def set_workspace_id(workspace_id):
-    workspace_id_var.set(workspace_id)
 
 
 def get_startup_mode():
@@ -123,3 +115,11 @@ def set_function(
     function,
 ):
     function_var.set(function)
+
+
+def get_workspace():
+    return workspace_var.get()
+
+
+def set_workspace(workspace):
+    workspace_var.set(workspace)

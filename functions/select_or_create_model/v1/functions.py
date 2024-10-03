@@ -36,7 +36,7 @@ def select_or_create_model_v1(model_instance):
         path=file_path,
         content=content,
         user_id=1,
-        workspace_id=2,
+        workspace=get_workspace(),
     )
 
     # Create Function object
@@ -46,5 +46,5 @@ def select_or_create_model_v1(model_instance):
         file=file_obj,
         function=get_function(),
         user_id=1,
-        workspace_id=2,
+        workspace=get_workspace(),
     )

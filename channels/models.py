@@ -444,18 +444,18 @@ def oauth2callback(request):
         logger.error("State mismatch")
         return HttpResponseBadRequest("State mismatch")
 
-    workspace_id = request.session.get("gmail_oauth_flow_workspace_id")
+    workspace = request.session.get("gmail_oauth_flow_workspace_id")
     channel_id = request.session.get("channel_id")
 
-    if not workspace_id or not channel_id:
+    if not workspace or not channel_id:
         logger.error("Missing workspace_id or channel_id in session")
         return HttpResponseBadRequest("Invalid session state")
 
     try:
-        channel = Channel.objects.get(id=channel_id, workspace_id=workspace_id)
+        channel = Channel.objects.get(id=channel_id, workspace=get_workspace())
 
         credential = CredentialsModel.objects.get(
-            workspace_id=workspace_id, key="GMAIL_CLIENT_SECRET_BASE64"
+            workspace=get_workspace(), key="GMAIL_CLIENT_SECRET_BASE64"
         )
         client_secret_base64 = credential.value
         client_secret_json = base64.b64decode(client_secret_base64).decode("utf-8")

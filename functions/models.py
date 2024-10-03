@@ -31,9 +31,6 @@ class Function(WorkspaceRelated):
         blank=True,
     )
 
-    class Meta:
-        unique_together = ["name", "workspace"]
-
     @property
     def name_without_version(self):
         return re.sub(r"_v\d+$", "", self.name)

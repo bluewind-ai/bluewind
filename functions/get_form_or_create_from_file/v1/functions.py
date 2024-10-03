@@ -41,7 +41,7 @@ def get_form_or_create_from_file_v1(form_object):
     # )
     base_dir = os.environ.get("BASE_DIR", ".")
     default_user_id = 1
-    default_workspace_id = 1
+    default_workspace = get_workspace()
 
     # Construct the file path
     file_path = os.path.join(

@@ -1,21 +1,14 @@
-from asyncio.log import logger
-
 from django.contrib.admin.views.main import ChangeList
 from django.db.models import JSONField
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django_json_widget.widgets import JSONEditorWidget
 
-from bluewind.context_variables import get_workspace_id
-from bluewind.utils import get_queryset
-
 # from recordings.models import Recording
-from users.models import User
-from workspaces.models import Workspace
 
 # def get_latest_recording(workspace_id):
 #     return (
-#         Recording.objects.filter(workspace_id=workspace_id)
+#         Recording.objects.filter(workspace=get_workspace())
 #         .order_by("-start_time")
 #         .first()
 #     )
@@ -28,6 +21,7 @@ class CustomChangeList(ChangeList):
 
 
 from import_export.admin import ImportExportModelAdmin
+
 from unfold.admin import ModelAdmin
 from unfold.contrib.import_export.forms import (
     ExportForm,
@@ -68,38 +62,38 @@ class InWorkspace(ModelAdmin, ImportExportModelAdmin):
             )
         return HttpResponseRedirect(url)
 
-    def get_queryset(self, request):
-        return get_queryset(self, request)
+        # def get_queryset(self, request):
+        #     return get_queryset(self, request)
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        workspace_id = get_workspace_id()
-        logger.debug(f"formfield_for_foreignkey: workspace_id = {workspace_id}")
+        # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        #     workspace = get_workspace()
+        #     workspace = get_workspace()
 
-        if db_field.name == "workspace":
-            logger.debug("Handling workspace field")
-            workspace = Workspace.objects.get(id=workspace_id)
-            logger.debug(f"Found workspace: {workspace}")
-            kwargs["queryset"] = Workspace.objects.filter(id=workspace_id)
-            kwargs["initial"] = workspace
-        elif db_field.name == "user":  # Add this condition
-            kwargs["initial"] = request.user
-            kwargs["queryset"] = User.objects.filter(id=request.user.id)
-        elif hasattr(db_field.related_model, "workspace"):
-            logger.debug(f"Handling related field: {db_field.name}")
-            kwargs["queryset"] = db_field.related_model.objects.filter(
-                workspace_id=workspace_id
-            )
+        #     if db_field.name == "workspace":
+        #         logger.debug("Handling workspace field")
+        #         workspace = Workspace.objects.get(id=workspace_id)
+        #         logger.debug(f"Found workspace: {workspace}")
+        #         kwargs["queryset"] = Workspace.objects.filter(id=workspace_id)
+        #         kwargs["initial"] = workspace
+        #     elif db_field.name == "user":  # Add this condition
+        #         kwargs["initial"] = request.user
+        #         kwargs["queryset"] = User.objects.filter(id=request.user.id)
+        #     elif hasattr(db_field.related_model, "workspace"):
+        #         logger.debug(f"Handling related field: {db_field.name}")
+        #         kwargs["queryset"] = db_field.related_model.objects.filter(
+        #             workspace=get_workspace()
+        #         )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     # def _log_admin_action(self, request, action, queryset, action_name):
-    #     workspace_id = get_workspace_id()
+    #     workspace = get_workspace()
     #     content_type = ContentType.objects.get_for_model(queryset.model)
 
     #     action_instance = Action.objects.get(
     #         action_type=Action.ActionType.CUSTOM,
     #         content_type=content_type,
-    #         workspace_id=workspace_id,
+    #         workspace=get_workspace(),
     #     )
 
     #     latest_recording = get_latest_recording(workspace_id)
@@ -118,7 +112,7 @@ class InWorkspace(ModelAdmin, ImportExportModelAdmin):
     #             object_id=obj.id,
     #             action_input=input_data,
     #             results={},
-    #             workspace_id=workspace_id,
+    #             workspace=get_workspace(),
     #             recording=latest_recording,
     #         )
 
@@ -144,7 +138,7 @@ class InWorkspace(ModelAdmin, ImportExportModelAdmin):
     #     return cl
 
     # def _log_get_request(self, request):
-    #     workspace_id = get_workspace_id()
+    #     workspace = get_workspace()
     #     content_type = ContentType.objects.get_for_model(self.model)
 
     #     # Check if this list action should be recorded
@@ -152,7 +146,7 @@ class InWorkspace(ModelAdmin, ImportExportModelAdmin):
     #         action = Action.objects.get(
     #             content_type=content_type,
     #             action_type=Action.ActionType.LIST,
-    #             workspace_id=workspace_id,
+    #             workspace=get_workspace(),
     #         )
     #         if not action.is_recorded:
     #             return  # Exit the method early without logging
@@ -170,11 +164,11 @@ class InWorkspace(ModelAdmin, ImportExportModelAdmin):
     #     list_view_action = Action.objects.get(
     #         action_type=Action.ActionType.LIST,
     #         content_type=content_type,
-    #         workspace_id=workspace_id,
+    #         workspace=get_workspace(),
     #     )
 
     #     latest_recording = (
-    #         Recording.objects.filter(workspace_id=workspace_id)
+    #         Recording.objects.filter(workspace=get_workspace())
     #         .order_by("-start_time")
     #         .first()
     #     )
@@ -186,7 +180,7 @@ class InWorkspace(ModelAdmin, ImportExportModelAdmin):
     #         object_id=None,
     #         action_input=input_data,
     #         results=output_data,
-    #         workspace_id=workspace_id,
+    #         workspace=get_workspace(),
     #         recording=latest_recording,
     #     )
 

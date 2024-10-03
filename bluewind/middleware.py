@@ -33,12 +33,12 @@
 # #         set_log_records([])
 
 # #         # Get workspace_id from context variables (set by WSGI)
-# #         workspace_id = get_workspace_id()
+# #         workspace = get_workspace()
 # #         user_id = 2
 # #         # Create IncomingHTTPRequest with minimal info and set request_id
 # #         try:
 # #             incoming_request = IncomingHTTPRequest.objects.create(
-# #                 workspace_id=workspace_id,
+# #                 workspace=get_workspace(),
 # #                 user_id=user_id,
 # #             )
 # #         except IntegrityError as e:
@@ -49,7 +49,7 @@
 # #             ):
 # #                 # This is the specific foreign key violation on workspace_id
 # #                 incoming_request = IncomingHTTPRequest.objects.create(
-# #                     workspace_id=2,  # Placeholder workspace
+# #                     workspace=get_workspace(),  # Placeholder workspace
 # #                     user_id=user_id,
 # #                 )
 # #                 return HttpResponseNotFound("Workspace not found")
@@ -82,7 +82,6 @@
 
 
 # from bluewind.middleware import redirect
-import re
 
 from bluewind.context_variables import (
     set_approved_function_call,
@@ -95,29 +94,28 @@ from bluewind.context_variables import (
     set_parent_function_call,
     set_request_id,
     set_startup_mode,
-    set_workspace_id,
+    set_workspace,
 )
 
-
-def process_response(response):
-    if response.status_code in [301, 302, 307, 308] and "Location" in response:
-        location = response["Location"]
-        if location.startswith("/admin/"):
-            response["Location"] = location.replace("/admin/", "/", 1)
-    elif response.status_code == 200 and "text/html" in response.get(
-        "Content-Type", ""
-    ):
-        content = response.content.decode("utf-8")
-        pattern = r'href="(/admin/[^"]*)"'
-        content = re.sub(
-            pattern,
-            lambda m: f'href="{m.group(1).replace("/admin/", "/", 1)}"'
-            if m.group(1).startswith("/admin/")
-            else m.group(0),
-            content,
-        )
-        response.content = content.encode("utf-8")
-    return response
+# def process_response(response):
+#     if response.status_code in [301, 302, 307, 308] and "Location" in response:
+#         location = response["Location"]
+#         if location.startswith("/admin/"):
+#             response["Location"] = location.replace("/admin/", "/", 1)
+#     elif response.status_code == 200 and "text/html" in response.get(
+#         "Content-Type", ""
+#     ):
+#         content = response.content.decode("utf-8")
+#         pattern = r'href="(/admin/[^"]*)"'
+#         content = re.sub(
+#             pattern,
+#             lambda m: f'href="{m.group(1).replace("/admin/", "/", 1)}"'
+#             if m.group(1).startswith("/admin/")
+#             else m.group(0),
+#             content,
+#         )
+#         response.content = content.encode("utf-8")
+#     return response
 
 
 def admin_middleware(get_response):
@@ -128,7 +126,7 @@ def admin_middleware(get_response):
         # Set initial values for all context variables
         set_request_id(None)
         set_log_records([])
-        # set_workspace_id(None)
+        set_workspace(None)
         set_startup_mode(True)
         set_parent_function_call(None)
         set_approved_function_call(None)
@@ -140,11 +138,6 @@ def admin_middleware(get_response):
         try:
             if request.path.startswith("/favicon.ico"):
                 return get_response(request)
-            if not request.path.startswith("/workspaces/"):
-                request.path_info = f"/admin{request.path}"
-                request.path = f"/workspaces/1/admin{request.path}"
-                response = get_response(request)
-                return process_response(response)
 
             return get_response(request)
         except BaseException as e:
@@ -152,7 +145,7 @@ def admin_middleware(get_response):
         finally:
             set_request_id(None)
             set_log_records(None)
-            set_workspace_id(None)
+            set_workspace(None)
             set_startup_mode(True)  # Reset to default value
             set_parent_function_call(None)
             set_approved_function_call(None)
@@ -175,7 +168,7 @@ def context_variables_middleware(get_response):
         # Set initial values for all context variables
         set_request_id(None)
         set_log_records([])
-        # set_workspace_id(None)
+        set_workspace(None)
         set_startup_mode(True)
         set_parent_function_call(None)
         set_approved_function_call(None)
@@ -191,7 +184,7 @@ def context_variables_middleware(get_response):
         finally:
             set_request_id(None)
             set_log_records(None)
-            set_workspace_id(None)
+            set_workspace(None)
             set_startup_mode(True)  # Reset to default value
             set_parent_function_call(None)
             set_approved_function_call(None)
@@ -206,3 +199,19 @@ def context_variables_middleware(get_response):
         return response
 
     return middleware
+
+
+# def workspace_middleware(get_response):
+#     def middleware(request):
+#         if request.path.startswith("/workspaces/"):
+#             parts = request.path.split("/")
+#             workspace_id = parts[2]
+#             request.path_info = "/" + "/".join(parts[3:])
+#             request.script_name = f"/workspaces/{workspace_id}"
+#             workspace = Workspace.objects.get(id=workspace_id)
+#             set_workspace(workspace)
+
+#         response = get_response(request)
+#         return response
+
+#     return middleware

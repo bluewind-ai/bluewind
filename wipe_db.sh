@@ -58,7 +58,7 @@ python manage.py migrate
 # Create superuser
 python manage.py createsuperuser --noinput --username wayne@bluewind.ai --email wayne@bluewind.ai
 
-python manage.py create_superuser_workspace
+# python manage.py create_superuser_workspace
 
 echo "Database setup and initial data creation completed."
 

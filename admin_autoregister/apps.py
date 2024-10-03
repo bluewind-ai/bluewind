@@ -6,10 +6,6 @@ class AdminAutoregisterConfig(AppConfig):
     name = "admin_autoregister"
 
     def ready(self):
-        from bluewind.context_variables import set_workspace_id
-
-        set_workspace_id(1)
-
         from admin_autoregister.models import autoregister
 
         autoregister()

@@ -12,7 +12,6 @@ from django.utils.html import format_html
 from bluewind.context_variables import (
     get_function,
     get_function_call,
-    get_workspace_id,
 )
 
 
@@ -53,8 +52,8 @@ class WorkspaceAdmin(admin.ModelAdmin):
     readonly_fields = ("admin_url_link",)
 
     # def formfield_for_foreignkey(self, db_field, request, **kwargs):
-    #     workspace_id = get_workspace_id()
-    #     logger.debug(f"formfield_for_foreignkey: workspace_id = {workspace_id}")
+    #     workspace = get_workspace()
+    #     logger.debug(f"formfield_for_foreignkey: workspace = {workspace_id}")
 
     #     if db_field.name == "user":  # Add this condition
     #         kwargs["initial"] = request.user
@@ -93,7 +92,6 @@ class WorkspaceRelatedMeta(models.base.ModelBase):
 
 
 class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
-    workspace = models.ForeignKey("workspaces.Workspace", on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     function_call = models.ForeignKey(
         "function_calls.FunctionCall", on_delete=models.CASCADE
@@ -125,6 +123,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         return errors
 
     def save(self, *args, **kwargs):
+        # raise_debug("cdnsjkcnds", 8)
         if self.__class__.__name__ == "FunctionCall":
             super().save(*args, **kwargs)
             return
@@ -139,8 +138,10 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
             self.function_call = function_call
         else:
             self.function_call = None
+
+        # if self.__class__.__name__ == "File":
+        #     raise_debug(self, Workspace.objects.all().count())
         self.user_id = 1
-        self.workspace_id = get_workspace_id()
 
         super().save(*args, **kwargs)
 

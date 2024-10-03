@@ -15,8 +15,6 @@ def create_function_from_file_v1(function_name):
     match = re.search(r"_v(\d+)$", function_name)
     version_number = int(match.group(1))
     base_dir = os.environ.get("BASE_DIR", ".")
-    default_user_id = 1
-    default_workspace_id = 1
 
     # Construct the file path
     file_path = os.path.join(

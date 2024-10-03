@@ -18,6 +18,4 @@ def restart_v1():
     function_call = FunctionCall.objects.filter(
         status=FunctionCall.Status.READY_FOR_APPROVAL
     ).first()
-    return redirect(
-        f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
-    )
+    return redirect(f"/admin/function_calls/functioncall/{function_call.id}/change")

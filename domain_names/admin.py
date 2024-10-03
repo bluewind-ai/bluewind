@@ -9,7 +9,7 @@ from function_calls.models import FunctionCall
 class DomainNameForm(forms.ModelForm):
     class Meta:
         model = DomainName
-        fields = ["name", "function_call", "workspace", "user"]
+        fields = ["name", "function_call", "user"]
         # widgets = {
         #     "function_call": forms.HiddenInput(),
         #     "workspace": forms.HiddenInput(),
@@ -19,9 +19,6 @@ class DomainNameForm(forms.ModelForm):
 
 class DomainNameAdmin(InWorkspace):
     form = DomainNameForm
-    list_display = ("name", "workspace")
-    search_fields = ("name",)
-    list_filter = ("workspace",)
 
     def get_changeform_initial_data(self, request):
         initial = super().get_changeform_initial_data(request)
@@ -54,5 +51,5 @@ class DomainNameAdmin(InWorkspace):
         if not function_to_approve:
             raise Exception("No function to approve")
         return redirect(
-            f"/workspaces/1/admin/function_calls/functioncall/{function_to_approve.id}/change"
+            f"/admin/function_calls/functioncall/{function_to_approve.id}/change"
         )

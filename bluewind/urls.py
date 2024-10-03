@@ -10,9 +10,9 @@ from health_check.views import health_check
 
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
-
+"cdscds"
 # def redirect_to_admin(request):
-#     return redirect("/workspaces/1/admin")
+#     return redirect("/admin")
 
 
 router = DefaultRouter()
@@ -22,7 +22,7 @@ urlpatterns = [
     # path("", home, name="home"),
     # path("", redirect_to_admin, name="home"),
     # Use custom_admin_site for /admin
-    path("admin/", custom_admin_site.urls),
+    path("", custom_admin_site.urls),
     # Existing paths
     path("__debug__/", include("debug_toolbar.urls")),
     path("health/", health_check, name="health_check"),

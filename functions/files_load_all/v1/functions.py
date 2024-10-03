@@ -16,7 +16,7 @@ def files_load_all():
 
     base_dir = os.environ.get("BASE_DIR", ".")
     default_user_id = 1
-    default_workspace_id = 1
+    default_workspace = get_workspace()
     installed_apps = json.loads(os.environ["CUSTOM_APPS"])
 
     files_to_create = []

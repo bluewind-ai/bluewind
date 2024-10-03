@@ -20,9 +20,7 @@ def go_next_v1():
     ).first()
 
     if function_call:
-        return redirect(
-            f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
-        )
+        return redirect(f"/function_calls/functioncall/{function_call.id}/change")
 
     function_call = FunctionCall.objects.filter(
         status=FunctionCall.Status.READY_FOR_APPROVAL
@@ -30,11 +28,9 @@ def go_next_v1():
     if function_call:
         if function_call.function.name == "create_domain_name_v1":
             return redirect(
-                f"/workspaces/1/admin/domain_names/domainname/add/?function_call={function_call.id}"
+                f"/domain_names/domainname/add/?function_call={function_call.id}"
             )
-        return redirect(
-            f"/workspaces/1/admin/function_calls/functioncall/{function_call.id}/change"
-        )
+        return redirect(f"/function_calls/functioncall/{function_call.id}/change")
 
     master_v1()
     return go_next_v1()

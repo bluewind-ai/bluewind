@@ -211,11 +211,12 @@ for app in APP_TYPE:
 # Middleware Configuration
 MIDDLEWARE = [
     # CORE
+    # "bluewind.middleware.workspace_middleware",
     # "bluewind.middleware.custom_middleware",
     # "silk.middleware.SilkyMiddleware",
     # "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
     # "debug_toolbar.middleware.DebugToolbarMiddleware",
-    # "bluewind.middleware.context_variables_middleware",
+    "bluewind.middleware.context_variables_middleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -263,18 +264,18 @@ is_migration_command = len(sys.argv) > 1 and sys.argv[1] in [
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django_db_geventpool.backends.postgresql_psycopg3",
         "NAME": DB_NAME,
         "USER": DB_USERNAME,
         "PASSWORD": DB_PASSWORD,
         "HOST": DB_HOST,
         "PORT": DB_PORT,
         "AUTOCOMMIT": True,
-        # "CONN_MAX_AGE": 0,
+        "CONN_MAX_AGE": 0,
         "OPTIONS": {
             "sslmode": "disable",
-            # "MAX_CONNS": 100,  # Adjust based on your needs
-            # "REUSE_CONNS": 100,  # Adjust based on your needs
+            "MAX_CONNS": 100,  # Adjust based on your needs
+            "REUSE_CONNS": 100,  # Adjust based on your needs
         },
         "ATOMIC_REQUESTS": True,  # Add this line
     }
@@ -322,7 +323,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # AllAuth Settings
 SITE_ID = 1
 # LOGIN_URL = "/workspaces/1/accounts/login/"
-# LOGIN_REDIRECT_URL = "/workspaces/1/admin/next"
+# LOGIN_REDIRECT_URL = "/admin/next"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"

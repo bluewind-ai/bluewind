@@ -7,8 +7,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
-from bluewind.context_variables import get_workspace_id
-
 logger = logging.getLogger(__name__)
 
 
@@ -68,22 +66,22 @@ def uuid7():
     return UUID(int=uuid_int, version=7)
 
 
-def get_queryset(cls, request):
-    from workspaces.models import Workspace
+# def get_queryset(cls, request):
+#     from workspaces.models import Workspace
 
-    # Get the base queryset without filtering
-    qs = cls.model.objects.all()
+#     # Get the base queryset without filtering
+#     qs = cls.model.objects.all()
 
-    workspace_id = get_workspace_id()
+#     workspace = get_workspace()
 
-    if cls.model == Workspace:
-        return qs.filter(id=workspace_id)
+#     if cls.model == Workspace:
+#         return qs.filter(id=workspace_id)
 
-    # Check if the model has a workspace field
-    if hasattr(cls.model, "workspace"):
-        return qs.filter(workspace_id=workspace_id).select_related("workspace")
+#     # Check if the model has a workspace field
+#     if hasattr(cls.model, "workspace"):
+#         return qs.filter(workspace=get_workspace()).select_related("workspace")
 
-    return qs
+#     return qs
 
 
 def dd(*args):

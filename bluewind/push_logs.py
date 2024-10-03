@@ -25,7 +25,7 @@ def push_logs_to_db(user_id, workspace_id, log_records):
         log_entries.append(
             AppLog(
                 user_id=user_id,
-                workspace_id=workspace_id,
+                workspace=get_workspace(),
                 message=record["message"],
                 level=record["level"],
                 timestamp=record["timestamp"],

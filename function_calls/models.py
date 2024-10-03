@@ -2,11 +2,11 @@ import logging
 
 from django.db import models
 
-from bluewind.context_variables import get_function, get_function_call, get_workspace_id
+from bluewind.context_variables import get_function, get_function_call
 from bluewind.utils import snake_case_to_spaced_camel_case
 from treenode.models import TreeNodeModel
 from users.models import User
-from workspaces.models import Workspace, WorkspaceRelated
+from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger("django.not_used")
 
@@ -51,22 +51,8 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     )
     state = models.JSONField(default=dict)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     input_parameter_name = models.CharField(max_length=255)
-    input_form_data = models.ForeignKey(
-        "form_data.FormData",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="function_calls_using_as_input",
-    )
-    output_form_data = models.ForeignKey(
-        "form_data.FormData",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="function_calls_using_as_output",
-    )
+
     input_data = models.JSONField(default=dict, blank=True)
     output_data = models.JSONField(default=dict, blank=True)
     output_type = models.CharField(
@@ -109,7 +95,6 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         if is_new:
             self.whole_tree = self.to_dict()
         self.user_id = 1
-        self.workspace_id = get_workspace_id()
         super().save(*args, **kwargs)
 
         # Rebuild and update the whole tree

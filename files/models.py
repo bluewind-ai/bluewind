@@ -30,4 +30,3 @@ class File(WorkspaceRelated):
 
     class Meta:
         ordering = ["-updated_at"]
-        unique_together = ["workspace", "path"]
