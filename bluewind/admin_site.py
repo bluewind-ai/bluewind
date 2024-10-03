@@ -50,8 +50,9 @@ from unfold.sites import UnfoldAdminSite
 
 class CustomAdminSite(UnfoldAdminSite):
     def has_permission(self, request):
-        request.user = User.objects.get(username="wayne@bluewind.ai")
-
+        user = User.objects.filter(username="wayne@bluewind.ai").first()
+        if user:
+            request.user = user
         return True
 
     # def each_context(self, request):

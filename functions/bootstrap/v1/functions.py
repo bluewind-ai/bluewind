@@ -1,5 +1,6 @@
 import logging
 
+from django.core.management import call_command
 from django.utils import timezone
 
 from bluewind.context_variables import (
@@ -18,6 +19,16 @@ logger = logging.getLogger("django.not_used")
 
 
 def bootstrap_v1():
+    call_command(
+        "createsuperuser",
+        username="wayne@bluewind.ai",
+        email="wayne@bluewind.ai",
+        interactive=False,
+    )
+
+    user = User.objects.get(username="wayne@bluewind.ai")
+    user.set_password("changeme123")
+    user.save()
     superuser = User.objects.get(username="wayne@bluewind.ai")
 
     set_workspace(Workspace.objects.create(name="superuser", user=superuser))

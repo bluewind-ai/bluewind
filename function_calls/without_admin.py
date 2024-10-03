@@ -47,7 +47,7 @@
 #     if not object_id:
 #         function_call = master_v1()
 #         return redirect(
-#             f"/admin/function_calls/functioncall/{function_call.id}/change"
+#             f"function_calls/functioncall/{function_call.id}/change"
 #         )
 #     else:
 #         object_id = unquote(object_id)
