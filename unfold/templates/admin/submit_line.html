@@ -2,7 +2,7 @@
 
 <div {% if not is_popup %}id="submit-row"{% endif %} class="fixed top-0 left-0 right-0 z-50">
     <div class="w-full" {% if not is_popup %}x-bind:class="{'xl:left-0': !sidebarDesktopOpen, 'xl:left-72': sidebarDesktopOpen}"{% endif %}>
-        <div class="bg-white dark:bg-gray-900 {% if not is_popup %} px-4 py-4 lg:px-12 dark:border-gray-800{% endif %}">
+        <div class="bg-white dark:bg-gray-900 {% if not is_popup %}px-4 py-4 lg:px-12 dark:border-gray-800{% endif %}">
             <div class="container flex flex-col-reverse gap-3 items-center mx-auto lg:flex-row-reverse">
                 {% block submit-row %}
 

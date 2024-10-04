@@ -40,11 +40,11 @@
 
             <div class="px-4 pb-12 lg:px-12">
                 <div id="content" class="{% if not cl.model_admin.list_fullwidth %}container{% endif %} mx-auto {% block coltype %}colM{% endblock %}">
-                    {% if cl %}
+                    {% comment %} {% if cl %}
                         {% tab_list "changelist" cl.opts %}
                     {% elif opts %}
                         {% tab_list "changeform" opts %}
-                    {% endif %}
+                    {% endif %} {% endcomment %}
 
                     {% block content %}
                         {% block object-tools %}{% endblock %}
