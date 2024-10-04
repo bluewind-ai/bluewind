@@ -22,12 +22,8 @@ from unfold.decorators import action
 
 
 class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
-    actions_detail = [
-        "approve_function_call",
-        "mark_function_call_as_successful",
-        "restart",
-    ]
-    actions_submit_line = ["changeform_submitline_action", "test"]
+    actions_detail = ["restart", "test"]
+    actions_submit_line = ["approve_function_call"]
 
     list_display = ("status", "executed_at", "id")
     list_display_links = ("indented_title",)
@@ -78,12 +74,25 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         }
 
     @action(
+        description=_("test"),
+        url_path="test",
+    )
+    def test(self, request: HttpRequest, object_id: int):
+        raise_debug("test about to happen")
+        approve_function_call_v1(function_call_id=object_id.id)
+        context = self.admin_site.each_context(request)
+        # raise_debug("123")
+        return go_next_v1(request, context)
+
+    @action(
         description=_("Approve"),
         url_path="approve_function_call",
     )
-    def approve_function_call(self, request: HttpRequest, object_id: int):
-        approve_function_call_v1(function_call_id=object_id)
+    def approve_function_call(self, request: HttpRequest, obj):
+        raise_debug("cmndjsnckdjnjkcds")
+        approve_function_call_v1(function_call_id=obj.id)
         context = self.admin_site.each_context(request)
+
         return go_next_v1(request, context)
 
     @action(
@@ -144,9 +153,9 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         return custom_urls + urls
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
-        extra_context = extra_context or {}
-        function_call, tree_data = get_function_call_whole_tree_v1(object_id)
-        extra_context["tree_json"] = json.dumps(tree_data)
+        extra_context.update(
+            "go_next": True
+        )
         return super().change_view(
             request,
             object_id,
@@ -172,21 +181,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         return go_next_v1(request, context)
 
     def has_changeform_submitline_action_permission(
-        self, request: HttpRequest, object_id: Union[str, int] = None
-    ):
-        return True
-
-    def test(self, request: HttpRequest, obj: int):
-        """
-        If instance is modified in any way, it also needs to be saved, since this handler is invoked after instance is saved.
-        """
-        approve_function_call_v1(function_call_id=obj.function_call_id)
-        context = self.admin_site.each_context(request)
-
-        obj.save()
-        return go_next_v1(request, context)
-
-    def has_test_permission(
         self, request: HttpRequest, object_id: Union[str, int] = None
     ):
         return True
