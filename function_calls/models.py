@@ -1,6 +1,8 @@
 import logging
 
 from django.db import models
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 
 from bluewind.context_variables import get_function, get_function_call
@@ -82,37 +84,6 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         self.user_id = 1
         super().save(*args, **kwargs)
 
-    def to_dict(self):
-        children = self.get_children(cache=False)
-
-        def sort_key(child):
-            return (
-                child.executed_at
-                if child.executed_at is not None
-                else timezone.make_aware(timezone.datetime.max),
-                child.id or float("inf"),
-            )
-
-        sorted_children = sorted(children, key=sort_key)
-
-        return {
-            "id": self.id if self.id else None,
-            "function_name": str(self),
-            "status": self.status,
-            "executed_at": self.executed_at.isoformat() if self.executed_at else None,
-            "children": [child.to_dict() for child in sorted_children]
-            if self.id
-            else [],
-        }
-
-    def get_whole_tree(self):
-        if self.function.name != "master_v1":
-            root = self.get_root(cache=False)
-        else:
-            root = self
-
-        return root.to_dict()
-
     @classmethod
     def successful_terminal_stages(cls):
         return [
@@ -158,3 +129,50 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
             self.Status.CANCELLED: "🚫",
         }
         return emoji_map.get(self.status, "")
+
+
+def get_whole_tree(function_call):
+    def _to_dict(function_call):
+        children = function_call.get_children(cache=False)
+
+        def sort_key(child):
+            return (
+                child.executed_at
+                if child.executed_at is not None
+                else timezone.make_aware(timezone.datetime.max),
+                child.id or float("inf"),
+            )
+
+        sorted_children = sorted(children, key=sort_key)
+
+        change_url = reverse(
+            "admin:function_calls_functioncall_change", args=[function_call.id]
+        )
+        emoji = function_call.get_status_emoji()
+
+        return {
+            "id": str(function_call.id) if function_call.id else None,
+            "text": f"{str(function_call)} {emoji}",
+            "status": function_call.status,
+            "executed_at": function_call.executed_at.isoformat()
+            if function_call.executed_at
+            else None,
+            "children": [_to_dict(child) for child in sorted_children]
+            if function_call.id
+            else [],
+            "data": {"change_url": change_url},
+        }
+
+    if function_call.function.name != "master_v1":
+        root = function_call.get_root(cache=False)
+    else:
+        root = function_call
+
+    return _to_dict(root)
+
+
+def get_function_call_whole_tree_v1(function_call_id):
+    function_call = get_object_or_404(FunctionCall, id=function_call_id)
+
+    tree_data = get_whole_tree(function_call)
+    return [tree_data]

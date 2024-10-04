@@ -85,7 +85,7 @@ class DomainNameAdmin(InWorkspace):
                 return extra_context
 
             extra_context = extra_context or {}
-            _, tree_data = get_function_call_whole_tree_v1(function_call_id)
+            tree_data = get_function_call_whole_tree_v1(function_call_id)
             extra_context["tree_json"] = json.dumps(tree_data)
             return extra_context
         return extra_context
