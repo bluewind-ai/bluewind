@@ -20,11 +20,28 @@
         #tree .jstree-wholerow { height: 24px !important; }
         #tree { font-size: 12px !important; }
         .change-link { font-size: 10px !important; padding: 0 2px !important; margin-left: 4px !important; }
+
+        /* New styles to ensure tree view stays on top */
+        #tree-container {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            height: 100vh !important;
+            width: 200px !important;
+            z-index: 10000 !important; /* Very high z-index */
+            background-color: white !important;
+            border-right: 1px solid #e5e7eb !important;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1) !important;
+        }
+        #tree {
+            height: 100% !important;
+            overflow-y: auto !important;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
-    <div class="fixed left-0 top-0 h-full z-50 w-50 bg-white border-r shadow-lg overflow-hidden">
+    <div id="tree-container">
         <div id="tree" class="overflow-y-auto h-[calc(100%-32px)]"></div>
     </div>
 
