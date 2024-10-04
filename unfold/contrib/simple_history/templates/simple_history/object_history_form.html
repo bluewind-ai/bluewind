@@ -34,13 +34,13 @@
     </div>
 {% endblock %}
 
-{% block submit_buttons_top %}
+{% comment %} {% block submit_buttons_top %}
     {% include "simple_history/submit_line.html" %}
 {% endblock %}
 
 {% block submit_buttons_bottom %}
     {% include "simple_history/submit_line.html" %}
-{% endblock %}
+{% endblock %} {% endcomment %}
 
 {% block form_top %}
     <p class="px-3 py-3 rounded-md text-sm last:mb-8 er-amber-600/10 bg-blue-50 mb-8 text-blue-500 dark:bg-blue-500/20 dark:border-blue-500/10">
