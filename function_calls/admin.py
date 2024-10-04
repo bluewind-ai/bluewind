@@ -1,4 +1,5 @@
 import json
+from typing import Union
 
 from django.http import HttpRequest
 from django.shortcuts import render
@@ -6,7 +7,11 @@ from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from base_model_admin.admin import InWorkspace
-from function_calls.models import FunctionCall, get_function_call_whole_tree_v1
+from function_calls.models import (
+    FunctionCall,
+    get_function_call_whole_tree_v1,
+    get_whole_tree,
+)
 from functions.approve_function_call.v1.functions import approve_function_call_v1
 from functions.get_allowed_actions_on_function_call.v1.functions import (
     get_allowed_actions_on_function_call_v1,
@@ -51,7 +56,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     name.short_description = "Name"
 
     def whole_tree(self, obj):
-        return obj.get_whole_tree()
+        return get_whole_tree(obj)
 
     whole_tree.short_description = "Whole Tree"
 
@@ -67,12 +72,24 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     @action(
         description=_("Approve"),
         url_path="approve_function_call",
+        permissions=["approve_function_call"],
     )
     def approve_function_call(self, request: HttpRequest, obj):
         if obj.status == FunctionCall.Status.READY_FOR_APPROVAL:
             approve_function_call_v1(function_call_id=obj.id)
         else:
             handle_mark_function_call_as_successful_v1(function_call_id=obj.id)
+
+    def has_approve_function_call_permission(
+        self, request: HttpRequest, object_id: Union[str, int]
+    ):
+        if not object_id:
+            return True
+        function_call = FunctionCall.objects.get(pk=object_id)
+
+        if function_call.status in FunctionCall.successful_terminal_stages():
+            return False
+        return True
 
     @action(
         description=_("Restart"),

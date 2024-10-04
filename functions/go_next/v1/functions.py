@@ -38,4 +38,5 @@ def go_next_v1(request, context):
         return go_next_v1(request, context)
     from function_calls.admin import new_method
 
+    return redirect(request.path)
     return new_method(request, context)
