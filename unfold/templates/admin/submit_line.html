@@ -5,18 +5,22 @@
         <div class="bg-white dark:bg-gray-900 {% if not is_popup %}px-4 py-4 lg:px-12 dark:border-gray-800{% endif %}">
             <div class="container flex flex-col-reverse gap-3 items-center mx-auto lg:flex-row-reverse">
                 {% block submit-row %}
-
-                    {% for action in actions_submit_line %}
-                        <button type="submit" {% if not action.attrs.name %}name="{{ action.action_name }}"{% endif %} class="border font-medium px-3 py-2 rounded-md transition-all w-full hover:bg-gray-50 lg:w-auto dark:border-gray-700 dark:hover:text-gray-200 dark:hover:bg-gray-900" {% include "unfold/helpers/attrs.html" with attrs=action.attrs %}>
-                            {{ action.description }}
-                        </button>
-                    {% endfor %}
-
                     <ul class="border flex flex-col font-medium mb-4 mt-2 rounded-md shadow-sm md:flex-row md:mb-2 md:mt-0 dark:border-gray-800 max-md:w-full">
-                        {% for action in actions_detail %}
-                            {% include "unfold/helpers/tab_action.html" with title=action.title link=action.path %}
+                        {% for action in actions_submit_line %}
+                            <li class="border-b flex-grow text-center md:border-b-0 md:border-r last:border-0 dark:border-gray-800">
+                                <button type="submit" {% if not action.attrs.name %}name="{{ action.action_name }}"{% endif %} class="block px-4 py-2 text-left whitespace-nowrap w-full h-full" {% include "unfold/helpers/attrs.html" with attrs=action.attrs %}>
+                                    {{ action.description }}
+                                </button>
+                            </li>
                         {% endfor %}
 
+                        {% for action in actions_detail %}
+                            <li class="border-b flex-grow text-center md:border-b-0 md:border-r last:border-0 dark:border-gray-800">
+                                <a href="{{ action.path }}" class="block px-4 py-2 text-left whitespace-nowrap"{% if action.blank %} target="_blank"{% endif %} {% include "unfold/helpers/attrs.html" with attrs=action.attrs %}>
+                                    {{ action.title }}
+                                </a>
+                            </li>
+                        {% endfor %}
                     </ul>
                 {% endblock %}
             </div>
