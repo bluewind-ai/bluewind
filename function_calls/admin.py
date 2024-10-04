@@ -89,11 +89,10 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         url_path="approve_function_call",
     )
     def approve_function_call(self, request: HttpRequest, obj):
-        raise_debug("cmndjsnckdjnjkcds")
-        approve_function_call_v1(function_call_id=obj.id)
-        context = self.admin_site.each_context(request)
-
-        return go_next_v1(request, context)
+        if obj.status == FunctionCall.Status.READY_FOR_APPROVAL:
+            approve_function_call_v1(function_call_id=obj.id)
+        else:
+            handle_mark_function_call_as_successful_v1(function_call_id=obj.id)
 
     @action(
         description=_("Mark function call as successful"),
@@ -153,15 +152,19 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         return custom_urls + urls
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
-        extra_context.update(
-            "go_next": True
-        )
-        return super().change_view(
+        extra_context = extra_context or {}
+        function_call, tree_data = get_function_call_whole_tree_v1(object_id)
+        extra_context["tree_json"] = json.dumps(tree_data)
+
+        response = super().change_view(
             request,
             object_id,
             form_url,
             extra_context=extra_context,
         )
+        if request.POST:
+            return go_next_v1(request, extra_context)
+        return response
 
     def go_next(self, request, object_id):
         return go_next_v1()
@@ -174,6 +177,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         """
         If instance is modified in any way, it also needs to be saved, since this handler is invoked after instance is saved.
         """
+
         approve_function_call_v1(function_call_id=obj.function_call_id)
         context = self.admin_site.each_context(request)
 
