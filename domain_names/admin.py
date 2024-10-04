@@ -1,5 +1,4 @@
 import json
-from typing import Union
 
 from django import forms
 from django.http import HttpRequest
@@ -11,8 +10,9 @@ from bluewind.context_variables import set_function, set_function_call
 from domain_names.models import DomainName
 from function_calls.admin import get_function_call_whole_tree_v1, new_method
 from function_calls.models import FunctionCall
-from functions.approve_function_call.v1.functions import approve_function_call_v1
-from functions.go_next.v1.functions import go_next_v1
+from functions.handle_function_call_after_save.v1.functions import (
+    handle_function_call_after_save_v1,
+)
 from unfold.decorators import action
 
 
@@ -95,26 +95,7 @@ class DomainNameAdmin(InWorkspace):
         url_path="approve_function_call",
     )
     def approve_function_call(self, request: HttpRequest, obj):
-        return
-
-    @action(
-        description=_("Changeform submitline action"),
-        permissions=["changeform_submitline_action"],
-    )
-    def changeform_submitline_action(self, request: HttpRequest, obj: int):
-        """
-        If instance is modified in any way, it also needs to be saved, since this handler is invoked after instance is saved.
-        """
-        approve_function_call_v1(function_call_id=obj.function_call_id)
-        context = self.admin_site.each_context(request)
-
-        obj.save()
-        return go_next_v1(request, context)
-
-    def has_changeform_submitline_action_permission(
-        self, request: HttpRequest, object_id: Union[str, int] = None
-    ):
-        return True
+        handle_function_call_after_save_v1(obj)
 
     @action(
         description=_("Restart"),
