@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from base_model_admin.admin import InWorkspace
 from bluewind.context_variables import set_function, set_function_call
 from domain_names.models import DomainName
-from function_calls.admin import get_function_call_whole_tree_v1
+from function_calls.admin import get_function_call_whole_tree_v1, new_method
 from function_calls.models import FunctionCall
 from functions.approve_function_call.v1.functions import approve_function_call_v1
 from functions.go_next.v1.functions import go_next_v1
@@ -29,14 +29,11 @@ class DomainNameForm(forms.ModelForm):
 
 class DomainNameAdmin(InWorkspace):
     form = DomainNameForm
-    actions_detail = [
-        "approve_function_call",
-    ]
-    actions_submit_line = ["changeform_submitline_action"]
+    actions_submit_line = ["approve_function_call"]
+    actions_detail = ["restart"]
 
-    def get_actions_detail(self, request, obj=None):
-        actions = super().get_actions_detail(request, obj)
-        return actions
+    # def get_actions_detail(self, request, obj=None):
+    #     return super().get_actions_detail(request, obj)
 
     def get_changeform_initial_data(self, request):
         initial = super().get_changeform_initial_data(request)
@@ -97,10 +94,8 @@ class DomainNameAdmin(InWorkspace):
         description=_("Approve"),
         url_path="approve_function_call",
     )
-    def approve_function_call(self, request: HttpRequest, object_id: int):
-        approve_function_call_v1(function_call_id=object_id)
-        context = self.admin_site.each_context(request)
-        return go_next_v1(request, context)
+    def approve_function_call(self, request: HttpRequest, obj):
+        return
 
     @action(
         description=_("Changeform submitline action"),
@@ -120,3 +115,12 @@ class DomainNameAdmin(InWorkspace):
         self, request: HttpRequest, object_id: Union[str, int] = None
     ):
         return True
+
+    @action(
+        description=_("Restart"),
+        url_path="restart",
+    )
+    def restart(self, request: HttpRequest, object_id: int):
+        context = self.admin_site.each_context(request)
+
+        return new_method(request, context)

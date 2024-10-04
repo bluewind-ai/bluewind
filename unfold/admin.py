@@ -423,18 +423,18 @@ class ModelAdmin(ModelAdminMixin, BaseModelAdmin):
             extra_context = {}
 
         actions = []
-        if object_id:
-            for action in self.get_actions_detail(request, object_id):
-                actions.append(
-                    {
-                        "title": action.description,
-                        "attrs": action.method.attrs,
-                        "path": reverse(
-                            f"{self.admin_site.name}:{action.action_name}",
-                            args=(object_id,),
-                        ),
-                    }
-                )
+        # if object_id: this was removed to allow actions on add forms, and not just change_forms. if this removal becomes problematic, find a better way
+        for action in self.get_actions_detail(request, object_id):
+            actions.append(
+                {
+                    "title": action.description,
+                    "attrs": action.method.attrs,
+                    "path": reverse(
+                        f"{self.admin_site.name}:{action.action_name}",
+                        args=(object_id,),
+                    ),
+                }
+            )
 
         extra_context.update(
             {

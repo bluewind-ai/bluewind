@@ -1,10 +1,4 @@
 {% extends 'admin/base_site.html' %}
-{% load static %}
-
-{% block extrahead %}
-    {{ block.super }}
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-{% endblock %}
 
 {% block content %}
     <div id="redirect-message">
@@ -12,20 +6,16 @@
         <p>You will be redirected in <span id="countdown">3</span> seconds...</p>
     </div>
 
-    <body hx-get="{{ redirect_url }}"
-          hx-trigger="load delay:3s"
-          hx-push-url="true"
-          hx-target="body"
-          hx-swap="outerHTML">
-    </body>
-
     <script>
         let countdown = 3;
         const countdownElement = document.getElementById('countdown');
         const countdownInterval = setInterval(() => {
             countdown--;
             countdownElement.textContent = countdown;
-            if (countdown <= 0) clearInterval(countdownInterval);
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = "{{ redirect_url }}";
+            }
         }, 1000);
     </script>
 {% endblock %}

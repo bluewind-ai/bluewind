@@ -1,5 +1,4 @@
 import json
-from typing import Union
 
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, render
@@ -22,7 +21,7 @@ from unfold.decorators import action
 
 
 class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
-    actions_detail = ["restart", "test"]
+    actions_detail = ["restart"]
     actions_submit_line = ["approve_function_call"]
 
     list_display = ("status", "executed_at", "id")
@@ -74,17 +73,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         }
 
     @action(
-        description=_("test"),
-        url_path="test",
-    )
-    def test(self, request: HttpRequest, object_id: int):
-        raise_debug("test about to happen")
-        approve_function_call_v1(function_call_id=object_id.id)
-        context = self.admin_site.each_context(request)
-        # raise_debug("123")
-        return go_next_v1(request, context)
-
-    @action(
         description=_("Approve"),
         url_path="approve_function_call",
     )
@@ -93,16 +81,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
             approve_function_call_v1(function_call_id=obj.id)
         else:
             handle_mark_function_call_as_successful_v1(function_call_id=obj.id)
-
-    @action(
-        description=_("Mark function call as successful"),
-        url_path="mark_function_call_as_successful",
-    )
-    def mark_function_call_as_successful(self, request: HttpRequest, object_id: int):
-        context = self.admin_site.each_context(request)
-        return handle_mark_function_call_as_successful_v1(
-            request, context, function_call_id=object_id
-        )
 
     @action(
         description=_("Restart"),
@@ -168,26 +146,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
     def go_next(self, request, object_id):
         return go_next_v1()
-
-    @action(
-        description=_("Changeform submitline action"),
-        permissions=["changeform_submitline_action"],
-    )
-    def changeform_submitline_action(self, request: HttpRequest, obj: int):
-        """
-        If instance is modified in any way, it also needs to be saved, since this handler is invoked after instance is saved.
-        """
-
-        approve_function_call_v1(function_call_id=obj.function_call_id)
-        context = self.admin_site.each_context(request)
-
-        obj.save()
-        return go_next_v1(request, context)
-
-    def has_changeform_submitline_action_permission(
-        self, request: HttpRequest, object_id: Union[str, int] = None
-    ):
-        return True
 
 
 def get_function_call_whole_tree_v1(function_call_id):
