@@ -3,7 +3,6 @@ from typing import Union
 
 from django.http import HttpRequest
 from django.shortcuts import render
-from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from base_model_admin.admin import InWorkspace
@@ -16,7 +15,6 @@ from functions.approve_function_call.v1.functions import approve_function_call_v
 from functions.get_allowed_actions_on_function_call.v1.functions import (
     get_allowed_actions_on_function_call_v1,
 )
-from functions.go_next.v1.functions import go_next_v1
 from functions.handle_mark_function_call_as_successful.v1.functions import (
     handle_mark_function_call_as_successful_v1,
 )
@@ -110,34 +108,17 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
 
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path(
-                "go_next",
-                self.admin_site.admin_view(self.go_next),
-                name="go_next",
-            ),
-        ]
-        return custom_urls + urls
-
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
         tree_data = get_function_call_whole_tree_v1(object_id)
         extra_context["tree_json"] = json.dumps(tree_data)
 
-        response = super().change_view(
+        return super().change_view(
             request,
             object_id,
             form_url,
             extra_context=extra_context,
         )
-        if request.POST:
-            return go_next_v1(request, extra_context)
-        return response
-
-    def go_next(self, request, object_id):
-        return go_next_v1()
 
 
 def new_method(request, context):
