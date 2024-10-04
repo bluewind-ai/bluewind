@@ -14,4 +14,5 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 def select_or_create_domain_name_v1():
     if DomainName.objects.all():
         return select_domain_names_v1()
-    return create_domain_name_v1()
+    name = create_domain_name_v1()
+    return name

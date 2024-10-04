@@ -3,6 +3,7 @@ import logging
 import os
 
 from apps.models import App
+from bluewind.context_variables import get_superuser, get_workspace
 from files.models import File
 from flows.is_ignored_by_git.flows import is_ignored_by_git
 from flows.models import Flow
@@ -15,7 +16,7 @@ def files_load_all():
     logger.debug("Starting to process Python files and register models and flows...")
 
     base_dir = os.environ.get("BASE_DIR", ".")
-    default_user_id = 1
+    default_user_id = get_superuser().id
     default_workspace = get_workspace()
     installed_apps = json.loads(os.environ["CUSTOM_APPS"])
 

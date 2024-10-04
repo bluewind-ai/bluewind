@@ -6,6 +6,7 @@ from django.utils import timezone
 from bluewind.context_variables import (
     set_function,
     set_function_call,
+    set_superuser,
     set_workspace,
 )
 from function_calls.models import FunctionCall
@@ -26,10 +27,10 @@ def bootstrap_v1():
         interactive=False,
     )
 
-    user = User.objects.get(username="wayne@bluewind.ai")
-    user.set_password("changeme123")
-    user.save()
     superuser = User.objects.get(username="wayne@bluewind.ai")
+    superuser.set_password("changeme123")
+    superuser.save()
+    set_superuser(superuser)
 
     set_workspace(Workspace.objects.create(name="superuser", user=superuser))
 

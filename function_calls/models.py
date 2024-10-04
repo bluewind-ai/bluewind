@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 
-from bluewind.context_variables import get_function, get_function_call
+from bluewind.context_variables import get_function, get_function_call, get_superuser
 from bluewind.utils import snake_case_to_spaced_camel_case
 from treenode.models import TreeNodeModel
 from users.models import User
@@ -58,6 +58,13 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
 
     input_data = models.JSONField(default=dict, blank=True)
     output_data = models.JSONField(default=dict, blank=True)
+    output_data_dependency = models.ForeignKey(
+        "function_calls.FunctionCall",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="function_calls_related_output",
+    )
     output_type = models.CharField(
         max_length=35,
         choices=OutputType.choices,
@@ -81,7 +88,12 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         if not self.tn_parent:
             self.tn_parent = get_function_call()
 
-        self.user_id = 1
+        self.user_id = get_superuser().id
+        # raise_debug(
+        #     FunctionCall.objects.get(
+        #         pk=self.id,
+        #     ).output_data,
+        # )
         super().save(*args, **kwargs)
 
     @classmethod

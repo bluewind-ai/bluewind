@@ -38,10 +38,29 @@ def update_related_function_calls_v1(function_call):
             dependency.dependent.status = FunctionCall.Status.READY_FOR_APPROVAL
         dependency.dependent.save()
 
+    # )
+    FunctionCall.objects.filter(
+        output_data_dependency=function_call,
+    ).update(output_data=function_call.output_data)
+
+    # raise_debug(
+    #     FunctionCall.objects.get(
+    #         output_data_dependency=function_call,
+    #     ).output_data,
+    # )
+    function_call.tn_parent.refresh_from_db()
+
     if not get_siblings_in_uncompleted_stages_v1(function_call).exists():
-        if function_call.tn_parent:
-            function_call.tn_parent.status = (
-                FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
-            )
-            function_call.tn_parent.save()
+        function_call.tn_parent.status = (
+            FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
+        )
+
+        function_call.tn_parent.save()
+        # raise_debug(
+        #     function_call.tn_parent,
+        #     FunctionCall.objects.get(
+        #         output_data_dependency=function_call,
+        #     ).output_data,
+        # )
+
     function_call.save()

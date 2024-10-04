@@ -10,6 +10,7 @@ from django.http.response import HttpResponseRedirectBase
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 
+from bluewind.context_variables import set_superuser
 from functions.go_next.v1.functions import go_next_v1
 from users.models import User
 
@@ -50,9 +51,10 @@ from unfold.sites import UnfoldAdminSite
 
 class CustomAdminSite(UnfoldAdminSite):
     def has_permission(self, request):
-        user = User.objects.filter(username="wayne@bluewind.ai").first()
-        if user:
-            request.user = user
+        superuser = User.objects.filter(username="wayne@bluewind.ai").first()
+        if superuser:
+            request.user = superuser
+            set_superuser(superuser)
         return True
 
     # def each_context(self, request):

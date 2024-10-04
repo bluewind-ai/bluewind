@@ -1,6 +1,6 @@
 from django.db import models
 
-from bluewind.context_variables import get_user_id
+from bluewind.context_variables import get_superuser, get_workspace
 from daphne_processes.before_create import daphne_processes_before_create
 from daphne_processes.before_delete import daphne_process_before_delete
 from workspaces.models import WorkspaceRelated
@@ -27,7 +27,7 @@ class DaphneProcess(WorkspaceRelated):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.user_id = get_user_id()
+            self.user_id = get_superuser().id
             self.workspace = get_workspace()
         daphne_processes_before_create(self)
         super().save(*args, **kwargs)

@@ -12,6 +12,7 @@ from django.utils.html import format_html
 from bluewind.context_variables import (
     get_function,
     get_function_call,
+    get_superuser,
 )
 
 
@@ -124,7 +125,19 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
 
     def save(self, *args, **kwargs):
         if self.__class__.__name__ == "FunctionCall":
+            # from function_calls.models import FunctionCall
+
+            # raise_debug(
+            #     self.output_data,
+            #     FunctionCall.objects.get(
+            #         pk=self.id,
+            #     ).output_data,
+            #     args,
+            #     kwargs,
+            #     skip=1,
+            # )
             super().save(*args, **kwargs)
+
             return
         function = get_function()
         if function:
@@ -138,7 +151,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
         else:
             self.function_call = None
 
-        self.user_id = 1
+        self.user_id = get_superuser().id
 
         super().save(*args, **kwargs)
 

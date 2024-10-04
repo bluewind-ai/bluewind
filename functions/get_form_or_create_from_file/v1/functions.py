@@ -2,6 +2,7 @@ import logging
 import os
 import re
 
+from bluewind.context_variables import get_superuser, get_workspace
 from files.models import File
 from forms.models import Form
 
@@ -40,7 +41,7 @@ def get_form_or_create_from_file_v1(form_object):
     #     snake_case_name_without_version, camel_case_name_without_version, version_number
     # )
     base_dir = os.environ.get("BASE_DIR", ".")
-    default_user_id = 1
+    default_user_id = get_superuser().id
     default_workspace = get_workspace()
 
     # Construct the file path

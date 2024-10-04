@@ -19,4 +19,5 @@ def handle_function_call_after_save_v1(object):
     object.function_call.output_type = FunctionCall.OutputType.QUERY_SET
 
     object.function_call.save()
+
     update_related_function_calls_v1(object.function_call)

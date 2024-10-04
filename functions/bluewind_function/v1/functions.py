@@ -55,7 +55,8 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
             result = handle_network_calls_v1(func, new_kwargs, function_call)
         else:
             result = func(**new_kwargs)
-
+            if result.__class__.__name__ == "FunctionCall":
+                function_call.output_data_dependency = result
         if not FunctionCall.objects.filter(tn_parent=function_call).exists():
             if result == None:
                 result = {}

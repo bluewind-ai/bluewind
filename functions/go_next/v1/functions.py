@@ -26,6 +26,7 @@ def go_next_v1(request, context):
     function_call = FunctionCall.objects.filter(
         status=FunctionCall.Status.READY_FOR_APPROVAL
     ).first()
+
     if function_call:
         if function_call.function.name == "create_domain_name_v1":
             return redirect(
@@ -38,5 +39,6 @@ def go_next_v1(request, context):
         return go_next_v1(request, context)
     from function_calls.admin import new_method
 
+    raise_debug("NO JOB LEFT")
     return redirect(request.path)
     return new_method(request, context)

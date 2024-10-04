@@ -4,7 +4,8 @@ from django.contrib.admin.views.main import ChangeList
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from function_calls.models import get_function_call_whole_tree_v1
+from bluewind.context_variables import set_function, set_function_call
+from function_calls.models import FunctionCall, get_function_call_whole_tree_v1
 from functions.go_next.v1.functions import go_next_v1
 from users.models import User
 
@@ -68,7 +69,48 @@ class InWorkspace(ModelAdmin):
             tree_data = get_function_call_whole_tree_v1(object_id)
             extra_context["tree_json"] = json.dumps(tree_data)
         response = super().change_view(request, object_id, form_url, extra_context)
-        raise_debug(request.POST)
         if request.POST:
             return go_next_v1(request, extra_context)
         return response
+
+    def add_view(self, request, form_url="", extra_context=None):
+        function_call_id = None
+        function_call_to_approve = None
+        request_post = request.POST
+        extra_context = extra_context or {}
+        if request_post:
+            function_call_id = request_post.get("function_call")
+            # raise_debug(function_call_id)
+            tree_data = get_function_call_whole_tree_v1(function_call_id)
+            extra_context["tree_json"] = json.dumps(tree_data)
+
+            if function_call_id:
+                function_call_to_approve = FunctionCall.objects.filter(
+                    status=FunctionCall.Status.READY_FOR_APPROVAL
+                ).first()
+
+                set_function(function_call_to_approve.function)
+                set_function_call(function_call_to_approve)
+        else:
+            extra_context = self.get_add_view(request, extra_context)
+
+        response = super().add_view(request, form_url, extra_context)
+
+        if not response.status_code == 302:
+            return response
+        if function_call_to_approve:
+            return go_next_v1(request, extra_context)
+        return response
+
+    def get_add_view(self, request, extra_context=None):
+        request_get = request.GET
+        if request_get:
+            function_call_id = request_get.get("function_call")
+            if not function_call_id:
+                return extra_context
+
+            extra_context = extra_context or {}
+            tree_data = get_function_call_whole_tree_v1(function_call_id)
+            extra_context["tree_json"] = json.dumps(tree_data)
+            return extra_context
+        return extra_context

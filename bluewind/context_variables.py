@@ -18,6 +18,7 @@ is_update_entity_function_already_in_the_call_stack_var = ContextVar(
 function_call_var = ContextVar("function_call", default=None)
 function_var = ContextVar("function_var", default=None)
 workspace_var = ContextVar("workspace_var")
+superuser_var = ContextVar("superuser_var")
 
 
 def get_request_id():
@@ -42,11 +43,6 @@ def get_startup_mode():
 
 def set_startup_mode(startup_mode):
     startup_mode_var.set(startup_mode)
-
-
-def get_user_id():
-    # TODO
-    return 1
 
 
 def get_approved_function_call():
@@ -123,3 +119,11 @@ def get_workspace():
 
 def set_workspace(workspace):
     workspace_var.set(workspace)
+
+
+def get_superuser():
+    return superuser_var.get()
+
+
+def set_superuser(superuser):
+    superuser_var.set(superuser)
