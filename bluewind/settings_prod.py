@@ -421,3 +421,7 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
     }
 }
+
+USE_TZ = False
+
+USE_L10N = False

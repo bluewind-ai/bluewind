@@ -151,7 +151,7 @@ def get_whole_tree(function_call):
             return (
                 child.executed_at
                 if child.executed_at is not None
-                else timezone.make_aware(timezone.datetime.max),
+                else timezone.datetime.max,
                 child.id or float("inf"),
             )
 
