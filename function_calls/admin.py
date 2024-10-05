@@ -2,7 +2,7 @@ import json
 from typing import Union
 
 from django.http import HttpRequest
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from base_model_admin.admin import InWorkspace
@@ -15,6 +15,8 @@ from functions.approve_function_call.v2.functions import approve_function_call_v
 from functions.get_allowed_actions_on_function_call.v1.functions import (
     get_allowed_actions_on_function_call_v1,
 )
+from functions.go_next.v1.functions import go_next_v1
+from functions.replay_until_here.v1.functions import replay_until_here_v1
 from functions.restart.v1.functions import restart_v1
 from functions.restart.v3.functions import restart_v3
 from treenode.admin import TreeNodeModelAdmin
@@ -22,7 +24,12 @@ from unfold.decorators import action
 
 
 class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
-    actions_detail = ["restart", "replay_everything", "replay_everything_until_here"]
+    actions_detail = [
+        "restart",
+        "replay_everything",
+        "replay_everything_until_here",
+        "replay_until_here",
+    ]
     actions_submit_line = ["approve_function_call"]
 
     list_display = ("status", "executed_at", "id")
@@ -114,6 +121,15 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         )
 
         return render(request, "admin/function_calls/delayed_redirect.html", context)
+
+    @action(
+        description=_("Replay Until here"),
+        url_path="replay_until_here",
+    )
+    def replay_until_here(self, request: HttpRequest, object_id: int):
+        replay_until_here_v1(object_id)
+        function_call_id, redirect_link, object = go_next_v1()
+        return redirect(redirect_link)
 
     @action(
         description=_("Replay Everything Until Here"),
