@@ -16,7 +16,3 @@ class DomainName(WorkspaceRelated):
 
     def __str__(self):
         return self.name
-
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     # handle_function_call_after_save_v1(self)

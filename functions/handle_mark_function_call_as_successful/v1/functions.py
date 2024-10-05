@@ -62,5 +62,4 @@ def update_related_function_calls_v1(function_call):
             function_call.tn_parent.status = (
                 FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
             )
-            # raise_debug(function_call.tn_parent.id, skip=2)
             function_call.tn_parent.save()

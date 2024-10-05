@@ -16,13 +16,13 @@ from functions.get_allowed_actions_on_function_call.v1.functions import (
     get_allowed_actions_on_function_call_v1,
 )
 from functions.restart.v1.functions import restart_v1
-from functions.restart.v2.functions import restart_v2
+from functions.restart.v3.functions import restart_v3
 from treenode.admin import TreeNodeModelAdmin
 from unfold.decorators import action
 
 
 class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
-    actions_detail = ["restart", "replay_everything"]
+    actions_detail = ["restart", "replay_everything", "replay_everything_until_here"]
     actions_submit_line = ["approve_function_call"]
 
     list_display = ("status", "executed_at", "id")
@@ -96,11 +96,31 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         return new_method(request, context)
 
     @action(
-        description=_("replay_everything"),
+        description=_("Replay Everything"),
         url_path="replay_everything",
     )
     def replay_everything(self, request: HttpRequest, object_id: int):
-        restart_v2()
+        restart_v3(None)
+
+        context = self.admin_site.each_context(request)
+
+        context.update(
+            {
+                "title": "Redirecting...",
+                "redirect_url": "/",
+                "countdown_seconds": 0,
+                "message": "Replaying everything...",
+            }
+        )
+
+        return render(request, "admin/function_calls/delayed_redirect.html", context)
+
+    @action(
+        description=_("Replay Everything Until Here"),
+        url_path="replay_everything_until_here",
+    )
+    def replay_everything_until_here(self, request: HttpRequest, object_id: int):
+        restart_v3(object_id)
 
         context = self.admin_site.each_context(request)
 

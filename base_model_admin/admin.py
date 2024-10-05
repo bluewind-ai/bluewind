@@ -72,7 +72,7 @@ class InWorkspace(ModelAdmin):
         response = super().change_view(request, object_id, form_url, extra_context)
 
         if request.POST:
-            function_call_id, redirect_link = go_next_v1()
+            function_call_id, redirect_link, object = go_next_v1()
             return redirect(redirect_link)
         return response
 
@@ -101,7 +101,7 @@ class InWorkspace(ModelAdmin):
         if not response.status_code == 302:
             return response
         if function_call_to_approve:
-            function_call_id, redirect_link = go_next_v1()
+            function_call_id, redirect_link, _ = go_next_v1()
             return redirect(redirect_link)
         return response
 
