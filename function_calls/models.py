@@ -87,14 +87,14 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
             self.function = get_function()
 
         if not self.tn_parent:
-            self.tn_parent = get_function_call()
+            if (
+                self.function.name_without_version != "master"
+            ):  # CAREFUL don't remove, otherwise infinte loop
+                self.tn_parent = get_function_call()
 
         self.user_id = get_superuser().id
-        if self.id == 1:
-            raise_debug(self.id, self.tn_parent, skip=0)
+
         super().save(*args, **kwargs)
-        # if self.id == 1:
-        #     raise_debug(self.id, not self.function, not self.tn_parent, skip=1)
 
     @classmethod
     def successful_terminal_stages(cls):

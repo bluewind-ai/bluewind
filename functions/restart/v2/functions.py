@@ -76,3 +76,9 @@ def restart_v2():
     function_call = FunctionCall.objects.get(pk=function_call_id)
 
     approve_function_call_v2(function_call)
+
+    function_call_id, _ = go_next_v1()
+
+    function_call = FunctionCall.objects.get(pk=function_call_id)
+
+    approve_function_call_v2(function_call)
