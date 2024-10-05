@@ -1,6 +1,6 @@
 from django.utils.html import format_html
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 
 
 class FlowAdmin(InWorkspace):

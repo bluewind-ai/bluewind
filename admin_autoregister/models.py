@@ -7,7 +7,7 @@ from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 from django.db.migrations.recorder import MigrationRecorder
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 from bluewind.admin_site import custom_admin_site
 from workspaces.models import WorkspaceRelated  # Adjust this import as needed
 

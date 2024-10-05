@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     # "model_clone",
     # "slippers",
     # "widget_tweaks",
-    # "base_model_admin",
+    # "base_admin",
     # "auto_tests",
     # "people",
     # "chat_messages",
@@ -139,7 +139,7 @@ APP_TYPE = {
     # "widget_tweaks": "third_party",
     # "slippers": "third_party",
     # # Local apps
-    # "base_model_admin": "custom",
+    # "base_admin": "custom",
     # "auto_tests": "custom",
     # "people": "custom",
     # "chat_messages": "custom",

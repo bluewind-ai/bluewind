@@ -14,7 +14,7 @@
 !auto_tests
 !base64_utils
 !base_model
-!base_model_admin
+!base_admin
 !behave_django
 !bluewind
 !channel_wizzard

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 
 from .models import Supervisord
 

@@ -9,7 +9,7 @@ from google.api_core import exceptions as google_exceptions
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 from credentials.models import Credentials
 from workspaces.models import WorkspaceRelated
 

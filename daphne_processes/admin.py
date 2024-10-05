@@ -1,7 +1,7 @@
 # Register your models here.
 from django import forms
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 
 from .models import DaphneProcess
 

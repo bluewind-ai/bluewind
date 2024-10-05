@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 from function_calls.models import (
     FunctionCall,
     get_function_call_whole_tree_v1,

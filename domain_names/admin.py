@@ -2,7 +2,7 @@ from django import forms
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 from domain_names.models import DomainName
 from function_calls.admin import new_method
 from unfold.decorators import action

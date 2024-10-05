@@ -7,7 +7,7 @@ from admin_autoregister.whitelist import MODEL_ADMIN_WHITELIST
 
 # Try to import InWorkspace, but don't raise an error if it's not found
 try:
-    from base_model_admin.admin import InWorkspace
+    from base_admin.admin import InWorkspace
 except ImportError:
     InWorkspace = None
 

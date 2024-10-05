@@ -1,7 +1,7 @@
 # Register your models here.
 
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 
 
 class FileAdmin(InWorkspace):

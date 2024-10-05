@@ -1,7 +1,7 @@
 # from django.db import models
 
 # from base_model.models import BaseModel
-# from base_model_admin.models import BaseAdmin
+# from base_admin.models import BaseAdmin
 
 # class DBGraph(WorkspaceRelated):
 #     name = models.CharField(max_length=100)

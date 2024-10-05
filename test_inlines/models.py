@@ -1,7 +1,7 @@
 # Create your models here.
 from django.db import models
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 from unfold import admin
 from workspaces.models import WorkspaceRelated
 

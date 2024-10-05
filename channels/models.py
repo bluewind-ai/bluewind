@@ -17,7 +17,7 @@ from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 from channels.tests import SCOPES
 from credentials.models import Credentials as CredentialsModel
 from gmail_subscriptions.models import GmailSubscription

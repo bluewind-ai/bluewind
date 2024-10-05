@@ -5,7 +5,7 @@ from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from base_model_admin.admin import InWorkspace
+from base_admin.admin import InWorkspace
 from channels.models import Channel
 from chat_messages.models import Message
 from draft_messages.models import DraftMessage
