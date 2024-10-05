@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "entities",
     "debug_toolbar",
     "domain_names",
+    "dns_records",
     # "import_export",
     # # "behave_django",
     # "channels",
@@ -103,7 +104,6 @@ INSTALLED_APPS = [
     # "supervisord",
     # "approvals",
     # "user_settings",
-    # "dns_records",
 ]
 
 APP_TYPE = {
@@ -126,6 +126,7 @@ APP_TYPE = {
     "files": "custom",
     "admin_autoregister": "custom",
     "domain_names": "custom",
+    "dns_records": "custom",
     "function_call_dependencies": "custom",
     "models": "custom",
     "treenode": "third_party",

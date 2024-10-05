@@ -74,11 +74,16 @@ def query_dns(domain, record_type):
 
 @bluewind_function_v1(is_making_network_calls=True)
 def scan_domain_name_v1(domain_names):
-    dns_records = {}
+    dns_records_by_domain_name = []
     for domain_name in domain_names:
-        dns_records = scan_individual_domain_name(domain_name)
+        dns_records_by_domain_name.append(
+            {
+                "domain_name": domain_name,
+                "dns_records": scan_individual_domain_name(domain_name),
+            }
+        )
 
-    return dns_records
+    return dns_records_by_domain_name
 
 
 def scan_individual_domain_name(domain_name):
