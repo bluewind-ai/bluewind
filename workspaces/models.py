@@ -99,7 +99,7 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
     )
     function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    # objects = WorkspaceRelatedManager()
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         abstract = True

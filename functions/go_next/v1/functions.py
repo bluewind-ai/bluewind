@@ -15,9 +15,13 @@ def snake_to_camel_case_uppercase(snake_str):
 
 
 def go_next_v1():
-    function_call = FunctionCall.objects.filter(
-        status=FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
-    ).first()
+    function_call = (
+        FunctionCall.objects.filter(
+            status=FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
+        )
+        .order_by("created_at")
+        .first()
+    )
 
     if function_call:
         return (

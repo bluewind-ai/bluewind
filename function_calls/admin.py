@@ -39,6 +39,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     readonly_fields = [
         "name",
         "whole_tree",
+        "high_res_created_at",
         "status",
         "input_data",
         "output_data",
@@ -51,6 +52,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         "status",
         "input_data",
         "output_data",
+        "high_res_created_at",
         "executed_at",
         "whole_tree",
         "output_type",
@@ -81,6 +83,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         permissions=["approve_function_call"],
     )
     def approve_function_call(self, request: HttpRequest, obj):
+        # raise_debug(obj.created_at)
         approve_function_call_v2(function_call=obj)
 
     def has_approve_function_call_permission(
@@ -173,6 +176,12 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
             form_url,
             extra_context=extra_context,
         )
+
+    def high_res_created_at(self, obj):
+        if obj.created_at:
+            # Format with microseconds, without timezone
+            return obj.created_at.strftime("%Y-%m-%d %H:%M:%S.%f")
+        return "-"
 
 
 def new_method(request, context):
