@@ -49,7 +49,7 @@ class InWorkspace(ModelAdmin):
     actions_submit_line = ["approve_function_call"]
 
     actions_detail = [
-        # "restart",
+        "restart",
         "replay_everything",
         "replay_everything_until_here",
         "replay_until_here",
