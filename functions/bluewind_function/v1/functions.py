@@ -1,9 +1,8 @@
-import json
 import logging
 from functools import wraps
 
+from django.apps import apps
 from django.utils import timezone
-from rest_framework import serializers
 
 from bluewind.context_variables import (
     get_approved_function_call,
@@ -21,23 +20,8 @@ from functions.build_kwargs_from_dependencies.v1.functions import (
 from functions.get_parameter_names.v1.functions import get_parameter_names_v1
 from functions.handle_network_calls.v1.functions import handle_network_calls_v1
 
-
-class MinimalDomainNameSerializer(serializers.ModelSerializer):
-    model = serializers.SerializerMethodField()
-
-    class Meta:
-        model = DomainName
-        fields = ["model", "pk"]
-
-    def get_model(self, obj):
-        return obj._meta.model_name
-
-
 logger = logging.getLogger("django.not_used")
 
-import logging
-
-logger = logging.getLogger("django.not_used")
 AUTO_APPROVE = [
     "master_v1",
     "bootstrap_v1",
@@ -45,6 +29,22 @@ AUTO_APPROVE = [
     "approve_function_call_v1",
     "get_function_or_create_from_file_v1",
 ]
+
+
+def custom_serialize(queryset):
+    return [{"model": obj._meta.model_name, "pk": obj.pk} for obj in queryset]
+
+
+def custom_deserialize(serialized_data):
+    if not serialized_data:
+        return DomainName.objects.none()
+
+    model_class = apps.get_model(
+        app_label="domain_names", model_name=serialized_data[0]["model"]
+    )
+    pks = [item["pk"] for item in serialized_data]
+
+    return model_class.objects.filter(pk__in=pks)
 
 
 def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
@@ -72,25 +72,15 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
                 function_call.output_data_dependency = result
 
         if not FunctionCall.objects.filter(tn_parent=function_call).exists():
-            # if is_making_network_calls:
-            #     raise_debug(
-            #         not FunctionCall.objects.filter(tn_parent=function_call).exists(),
-            #         result,
-            #     )
             if result == None:
                 result = {}
             function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
             if result.__class__.__name__ == "QuerySet":
-                serializer = MinimalDomainNameSerializer(result, many=True)
-                serialized_data = serializer.data
-                json_data = json.dumps(serialized_data)
-                deserialized_objects = list(serializers.deserialize("json", json_data))
-
-                # Extract model instances
-                deserialized_models = [obj.object for obj in deserialized_objects]
-
-                raise_debug(serializer.data, deserialized_models)
-            function_call.output_data = result
+                serialized_data = custom_serialize(result)
+                function_call.output_data = serialized_data
+                function_call.output_type = FunctionCall.OutputType.QUERY_SET
+            else:
+                function_call.output_data = result
         function_call.save()
 
         return
@@ -107,12 +97,6 @@ def ask_for_approval(func, kwargs):
     function = get_function_or_create_from_file_v1(function_name=func.__name__)
     assert function is not None, "function hasn't been found in the DB"
     logger.debug(f"{func.__name__} found in the DB")
-    # raise Exception(f"Create function call for {func.__name__} asking for approval")
-    # raise Exception(f"Create function call for {func.__name__} asking for approval")
-    # from django.db import connections
-
-    # for conn in connections.all():
-    #     conn.close_if_unusable_or_obsolete()
 
     function_call = FunctionCall.objects.create(
         status=status,
@@ -127,9 +111,6 @@ def ask_for_approval(func, kwargs):
     function_call.save()
 
     if func.__name__ == "master_v1":
-        # raise Exception(
-        #     f"Create function call for {func.__name__} asking for approval"
-        # )
         pass
     logger.debug(f"Create function call for {func.__name__} asking for approval")
 
