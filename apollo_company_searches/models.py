@@ -12,12 +12,22 @@ class ApolloCompanySearch(WorkspaceRelated):
         null=True,
         help_text="An array of organization ids obtained from companies-search",
     )
+    EMPLOYEE_RANGE_CHOICES = [
+        ("1-10", "1-10"),
+        ("11-50", "11-50"),
+        ("51-200", "51-200"),
+        ("201-500", "201-500"),
+        ("501-1000", "501-1000"),
+        ("1001-5000", "1001-5000"),
+        ("5001-10000", "5001-10000"),
+        ("10001+", "10001+"),
+    ]
 
     organization_num_employees_ranges = ArrayField(
-        models.CharField(max_length=20),
+        models.CharField(max_length=20, choices=EMPLOYEE_RANGE_CHOICES),
         blank=True,
         null=True,
-        help_text="An array of intervals to include organizations having number of employees in a range",
+        help_text="Intervals to include organizations having number of employees in a range",
     )
 
     organization_locations = ArrayField(

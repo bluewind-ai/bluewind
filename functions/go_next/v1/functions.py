@@ -3,7 +3,6 @@ import logging
 from django.db import models
 from django.db.models import F
 
-from apollo_company_searches.models import ApolloCompanySearch
 from domain_names.models import DomainName
 from function_calls.models import FunctionCall
 from functions.master.v1.functions import master_v1
@@ -56,14 +55,18 @@ def go_next_v1():
                 domain_name,
             )
         if function_call.function.name == "create_apollo_company_searches_v1":
-            domain_name = ApolloCompanySearch(
-                organization_num_employees_ranges=["101,200"],
-                function_call=function_call,
-            )
+            # ranges_to_add = EmployeeRange.objects.filter(range__in=["1-10", "11-50"])
+            # domain_name = ApolloCompanySearch.objects.create(
+            #     function_call=function_call,
+            # )
+            # domain_name = ApolloCompanySearch(
+            #     organization_num_employees_ranges=ranges_to_add,
+            #     function_call=function_call,
+            # )
             return (
                 function_call.id,
                 f"/apollo_company_searches/apollocompanysearch/add/?function_call={function_call.id}&organization_num_employees_ranges=101,200",
-                domain_name,
+                None,
             )
         return (
             function_call.id,

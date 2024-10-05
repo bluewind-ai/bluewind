@@ -1,5 +1,4 @@
 import json
-from typing import Union
 
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
@@ -11,10 +10,6 @@ from function_calls.models import (
     get_function_call_whole_tree_v1,
     get_whole_tree,
 )
-from functions.approve_function_call.v2.functions import approve_function_call_v2
-from functions.get_allowed_actions_on_function_call.v1.functions import (
-    get_allowed_actions_on_function_call_v1,
-)
 from functions.go_next.v1.functions import go_next_v1
 from functions.replay_until_here.v1.functions import replay_until_here_v1
 from functions.restart.v1.functions import restart_v1
@@ -25,13 +20,13 @@ from unfold.decorators import action
 
 
 class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
-    actions_detail = [
-        "restart",
-        "replay_everything",
-        "replay_everything_until_here",
-        "replay_until_here",
-    ]
-    actions_submit_line = ["approve_function_call"]
+    # actions_detail = [
+    #     "restart",
+    #     "replay_everything",
+    #     "replay_everything_until_here",
+    #     "replay_until_here",
+    # ]
+    # actions_submit_line = ["approve_function_call"]
 
     list_display = ("status", "executed_at", "id")
     list_display_links = ("indented_title",)
@@ -77,25 +72,25 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return True
 
-    @action(
-        description=_("Approve"),
-        url_path="approve_function_call",
-        permissions=["approve_function_call"],
-    )
-    def approve_function_call(self, request: HttpRequest, obj):
-        # raise_debug(obj.created_at)
-        approve_function_call_v2(function_call=obj)
+    # @action(
+    #     description=_("Approve"),
+    #     url_path="approve_function_call",
+    #     permissions=["approve_function_call"],
+    # )
+    # def approve_function_call(self, request: HttpRequest, obj):
+    #     # raise_debug(obj.created_at)
+    #     approve_function_call_v2(function_call=obj)
 
-    def has_approve_function_call_permission(
-        self, request: HttpRequest, object_id: Union[str, int]
-    ):
-        if not object_id:
-            return True
-        function_call = FunctionCall.objects.get(pk=object_id)
+    # def has_approve_function_call_permission(
+    #     self, request: HttpRequest, object_id: Union[str, int]
+    # ):
+    #     if not object_id:
+    #         return True
+    #     function_call = FunctionCall.objects.get(pk=object_id)
 
-        if function_call.status in FunctionCall.successful_terminal_stages():
-            return False
-        return True
+    #     if function_call.status in FunctionCall.successful_terminal_stages():
+    #         return False
+    #     return True
 
     @action(
         description=_("Restart"),
@@ -155,13 +150,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         function_call_id, redirect_link, object = go_next_v1()
         return redirect(redirect_link)
 
-    def get_actions_detail(self, request, obj=None):
-        function_call = FunctionCall.objects.get(pk=obj)
-        actions = super().get_actions_detail(request, obj)
-        allowed_actions = get_allowed_actions_on_function_call_v1(function_call)
-        actions = [action for action in actions if action.path in allowed_actions]
-        return actions
-
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
 
@@ -190,7 +178,7 @@ def new_method(request, context):
         {
             "title": "Redirecting...",
             "redirect_url": "/",
-            "countdown_seconds": 3,
+            "countdown_seconds": 5,
             "message": "Replaying everything...",
         }
     )

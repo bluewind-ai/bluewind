@@ -1,3 +1,20 @@
-from django.contrib import admin
+from django import forms
 
-# Register your models here.
+from base_model_admin.admin import InWorkspace
+
+from .models import ApolloCompanySearch
+
+
+class ApolloCompanySearchAdmin(InWorkspace):
+    fields = [
+        "organization_num_employees_ranges",
+    ]
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == "organization_num_employees_ranges":
+            return forms.MultipleChoiceField(
+                choices=ApolloCompanySearch.EMPLOYEE_RANGE_CHOICES,
+                widget=forms.CheckboxSelectMultiple,
+                required=False,
+            )
+        return super().formfield_for_dbfield(db_field, request, **kwargs)

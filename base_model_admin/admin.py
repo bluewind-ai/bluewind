@@ -1,13 +1,28 @@
 import json
 
 from django.contrib.admin.views.main import ChangeList
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.http import HttpRequest, HttpResponseRedirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from bluewind.context_variables import set_function, set_function_call
-from function_calls.models import FunctionCall, get_function_call_whole_tree_v1
+from function_calls.models import (
+    FunctionCall,
+    get_function_call_whole_tree_v1,
+)
+from functions.approve_function_call.v2.functions import approve_function_call_v2
+from functions.get_allowed_actions_on_function_call.v1.functions import (
+    get_allowed_actions_on_function_call_v1,
+)
 from functions.go_next.v1.functions import go_next_v1
+from functions.handle_function_call_after_save.v1.functions import (
+    handle_function_call_after_save_v1,
+)
+from functions.replay_until_here.v1.functions import replay_until_here_v1
+from functions.restart.v3.functions import restart_v3
+from functions.restart.v4.functions import restart_v4
+from unfold.decorators import action
 from users.models import User
 
 # from recordings.models import Recording
@@ -31,8 +46,14 @@ from unfold.admin import ModelAdmin
 
 class InWorkspace(ModelAdmin):
     change_form_template = "admin/change_form.html"
+    actions_submit_line = ["approve_function_call"]
 
-    actions = ["custom_action"]
+    actions_detail = [
+        # "restart",
+        "replay_everything",
+        "replay_everything_until_here",
+        "replay_until_here",
+    ]
 
     def custom_action(self, request, queryset):
         self.message_user(request, "Custom action performed")
@@ -117,3 +138,93 @@ class InWorkspace(ModelAdmin):
             extra_context["tree_json"] = json.dumps(tree_data)
             return extra_context
         return extra_context
+
+    @action(
+        description=_("Approve"),
+        url_path="approve_function_call",
+    )
+    def approve_function_call(self, request: HttpRequest, obj):
+        # raise_debug(obj.created_at)
+        # raise_debug(obj.__class__.__name__ == "FunctionCall")
+        if obj.__class__.__name__ == "FunctionCall":
+            approve_function_call_v2(function_call=obj)
+        else:
+            handle_function_call_after_save_v1(obj)
+
+    # def has_approve_function_call_permission(
+    #     self, request: HttpRequest, object_id: Union[str, int]
+    # ):
+    #     if not object_id:
+    #         return True
+    #     function_call = FunctionCall.objects.get(pk=object_id)
+
+    #     if function_call.status in FunctionCall.successful_terminal_stages():
+    #         return False
+    #     return True
+
+    def get_actions_detail(self, request, obj=None):
+        if obj.__class__.__name__ != "FunctionCall":
+            return super().get_actions_detail(request, obj)
+        function_call = FunctionCall.objects.get(pk=obj)
+        actions = super().get_actions_detail(request, obj)
+        allowed_actions = get_allowed_actions_on_function_call_v1(function_call)
+        actions = [action for action in actions if action.path in allowed_actions]
+        return actions
+
+    @action(
+        description=_("Restart"),
+        url_path="restart",
+    )
+    def restart(self, request: HttpRequest, object_id: int):
+        context = self.admin_site.each_context(request)
+
+        return new_method(request, context)
+
+    @action(
+        description=_("Replay Everything"),
+        url_path="replay_everything",
+    )
+    def replay_everything(self, request: HttpRequest, object_id: int):
+        restart_v3(None)
+
+        context = self.admin_site.each_context(request)
+
+        context.update(
+            {
+                "title": "Redirecting...",
+                "redirect_url": "/",
+                "countdown_seconds": 0,
+                "message": "Replaying everything...",
+            }
+        )
+
+        return render(request, "admin/function_calls/delayed_redirect.html", context)
+
+    @action(
+        description=_("Replay Until here"),
+        url_path="replay_until_here",
+    )
+    def replay_until_here(self, request: HttpRequest, object_id: int):
+        if not object_id:
+            function_name_to_reach = "unreachable_function"
+        else:
+            function_name_to_reach = FunctionCall.objects.get(
+                pk=object_id
+            ).function.name
+        function_call_id = replay_until_here_v1(function_name_to_reach)
+        # raise_debug(
+        #     FunctionCall.objects.get(pk=function_call_id).id,
+        #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
+        # )
+        function_call_id, redirect_link, object = go_next_v1()
+        return redirect(redirect_link)
+
+    @action(
+        description=_("Replay Everything Until Here"),
+        url_path="replay_everything_until_here",
+    )
+    def replay_everything_until_here(self, request: HttpRequest, object_id: int):
+        restart_v4(object_id)
+
+        function_call_id, redirect_link, object = go_next_v1()
+        return redirect(redirect_link)

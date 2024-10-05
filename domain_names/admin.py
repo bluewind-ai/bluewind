@@ -5,9 +5,6 @@ from django.utils.translation import gettext_lazy as _
 from base_model_admin.admin import InWorkspace
 from domain_names.models import DomainName
 from function_calls.admin import new_method
-from functions.handle_function_call_after_save.v1.functions import (
-    handle_function_call_after_save_v1,
-)
 from unfold.decorators import action
 
 
@@ -19,7 +16,6 @@ class DomainNameForm(forms.ModelForm):
 
 class DomainNameAdmin(InWorkspace):
     form = DomainNameForm
-    actions_submit_line = ["approve_function_call"]
     actions_detail = ["restart"]
 
     # def get_actions_detail(self, request, obj=None):
@@ -39,13 +35,6 @@ class DomainNameAdmin(InWorkspace):
             if function_call_id:
                 form.base_fields["function_call"].initial = function_call_id
         return form
-
-    @action(
-        description=_("Approve"),
-        url_path="approve_function_call",
-    )
-    def approve_function_call(self, request: HttpRequest, obj):
-        handle_function_call_after_save_v1(obj)
 
     @action(
         description=_("Restart"),
