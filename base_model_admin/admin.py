@@ -70,8 +70,9 @@ class InWorkspace(ModelAdmin):
             tree_data = get_function_call_whole_tree_v1(object_id)
             extra_context["tree_json"] = json.dumps(tree_data)
         response = super().change_view(request, object_id, form_url, extra_context)
+
         if request.POST:
-            function_call_id, redirect_link = go_next_v1(request, extra_context)
+            function_call_id, redirect_link = go_next_v1()
             return redirect(redirect_link)
         return response
 
@@ -100,7 +101,7 @@ class InWorkspace(ModelAdmin):
         if not response.status_code == 302:
             return response
         if function_call_to_approve:
-            function_call_id, redirect_link = go_next_v1(request, extra_context)
+            function_call_id, redirect_link = go_next_v1()
             return redirect(redirect_link)
         return response
 

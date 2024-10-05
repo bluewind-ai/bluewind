@@ -54,7 +54,6 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
         if is_making_network_calls:
             result = handle_network_calls_v1(func, new_kwargs, function_call)
         else:
-            # raise_debug(new_kwargs)
             result = func(**new_kwargs)
             if result.__class__.__name__ == "FunctionCall":
                 function_call.output_data_dependency = result
@@ -90,14 +89,12 @@ def ask_for_approval(func, kwargs):
         status=status,
         function=function,
     )
-    # raise_debug(function_call.tn_parent)
 
     remaining_dependencies = build_function_call_dependencies_v1(function_call, kwargs)
     if remaining_dependencies:
         function_call.remaining_dependencies = remaining_dependencies
         function_call.status = FunctionCall.Status.CONDITIONS_NOT_MET
 
-    # raise_debug(function_call)
     function_call.save()
 
     if func.__name__ == "master_v1":

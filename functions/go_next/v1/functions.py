@@ -13,7 +13,7 @@ def snake_to_camel_case_uppercase(snake_str):
     return "".join(x.capitalize() for x in components)
 
 
-def go_next_v1(request, context):
+def go_next_v1():
     function_call = FunctionCall.objects.filter(
         status=FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
     ).first()
@@ -27,7 +27,6 @@ def go_next_v1(request, context):
     function_call = FunctionCall.objects.filter(
         status=FunctionCall.Status.READY_FOR_APPROVAL
     ).first()
-
     if function_call:
         if function_call.function.name == "create_domain_name_v1":
             return (
@@ -41,5 +40,5 @@ def go_next_v1(request, context):
     superuser = User.objects.filter(username="wayne@bluewind.ai").first()
     if not superuser:
         master_v1()
-        return go_next_v1(request, context)
+        return go_next_v1()
     raise Exception("NO JOB LEFT")

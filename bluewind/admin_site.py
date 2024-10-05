@@ -74,7 +74,7 @@ class CustomAdminSite(UnfoldAdminSite):
         def inner(request, *args, **kwargs):
             context = self.each_context(request)
             if request.path_info == "/":
-                function_call_id, redirect_link = go_next_v1(request, context)
+                function_call_id, redirect_link = go_next_v1()
                 return redirect(redirect_link)
 
             response = view(request, *args, **kwargs)

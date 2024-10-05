@@ -85,16 +85,16 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     def save(self, *args, **kwargs):
         if not self.function:
             self.function = get_function()
+
         if not self.tn_parent:
             self.tn_parent = get_function_call()
 
         self.user_id = get_superuser().id
-        # raise_debug(
-        #     FunctionCall.objects.get(
-        #         pk=self.id,
-        #     ).output_data,
-        # )
+        if self.id == 1:
+            raise_debug(self.id, self.tn_parent, skip=0)
         super().save(*args, **kwargs)
+        # if self.id == 1:
+        #     raise_debug(self.id, not self.function, not self.tn_parent, skip=1)
 
     @classmethod
     def successful_terminal_stages(cls):

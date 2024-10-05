@@ -11,12 +11,9 @@ from function_calls.models import (
     get_function_call_whole_tree_v1,
     get_whole_tree,
 )
-from functions.approve_function_call.v1.functions import approve_function_call_v1
+from functions.approve_function_call.v2.functions import approve_function_call_v2
 from functions.get_allowed_actions_on_function_call.v1.functions import (
     get_allowed_actions_on_function_call_v1,
-)
-from functions.handle_mark_function_call_as_successful.v1.functions import (
-    handle_mark_function_call_as_successful_v1,
 )
 from functions.restart.v1.functions import restart_v1
 from functions.restart.v2.functions import restart_v2
@@ -76,10 +73,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         permissions=["approve_function_call"],
     )
     def approve_function_call(self, request: HttpRequest, obj):
-        if obj.status == FunctionCall.Status.READY_FOR_APPROVAL:
-            approve_function_call_v1(function_call_id=obj.id)
-        else:
-            handle_mark_function_call_as_successful_v1(function_call_id=obj.id)
+        approve_function_call_v2(function_call=obj)
 
     def has_approve_function_call_permission(
         self, request: HttpRequest, object_id: Union[str, int]
@@ -107,6 +101,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     )
     def replay_everything(self, request: HttpRequest, object_id: int):
         restart_v2()
+
         context = self.admin_site.each_context(request)
 
         context.update(
