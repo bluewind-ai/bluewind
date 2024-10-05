@@ -118,7 +118,7 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         return self.status in self.successful_terminal_stages()
 
     def __str__(self):
-        return f"{snake_case_to_spaced_camel_case(self.function.name)}"
+        return f"{snake_case_to_spaced_camel_case(self.function.name)} {self.id}"
 
     @property
     def parent(self):

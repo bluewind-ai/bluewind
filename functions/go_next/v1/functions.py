@@ -25,19 +25,26 @@ def go_next_v1():
             f"/function_calls/functioncall/{function_call.id}/change",
             None,
         )
-
+    # raise_debug(
+    #     FunctionCall.objects.filter(
+    #         status=FunctionCall.Status.READY_FOR_APPROVAL
+    #     ).first()
+    # )
     function_call = FunctionCall.objects.filter(
         status=FunctionCall.Status.READY_FOR_APPROVAL
     ).first()
+
     if function_call:
         if function_call.function.name == "create_domain_name_v1":
             domain_name = DomainName(name="bluewind.ai", function_call=function_call)
             # raise_debug(domain_name, function_call.id)
-            return (
+            test = (
                 function_call.id,
                 f"/domain_names/domainname/add/?function_call={function_call.id}&name=bluewind.ai",
                 domain_name,
             )
+            # raise_debug(test)
+            return test
         return (
             function_call.id,
             f"/function_calls/functioncall/{function_call.id}/change",

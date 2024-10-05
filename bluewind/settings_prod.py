@@ -199,7 +199,7 @@ MIDDLEWARE = [
     # "silk.middleware.SilkyMiddleware",
     # "bluewind.vscode_link_errors.VSCodeLinkMiddleware",
     # "debug_toolbar.middleware.DebugToolbarMiddleware",
-    "bluewind.middleware.context_variables_middleware",
+    # "bluewind.middleware.context_variables_middleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

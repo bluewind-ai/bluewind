@@ -14,6 +14,9 @@ logger = logging.getLogger("django.temp")
 
 # @bluewind_function_v1()
 def replay_until_here_v1(object_id):
+    FunctionCall.objects.filter(status__in=FunctionCall.uncompleted_stages()).update(
+        status=FunctionCall.Status.CANCELLED
+    )
     master_v1()
     function_call_id, _, _ = go_next_v1()
     other_object_than_function_call = None
@@ -26,7 +29,15 @@ def replay_until_here_v1(object_id):
     logger.debug(current_function_name != function_name_to_reach)
     logger.debug(not first_iteration_done)
 
-    while current_function_name != function_name_to_reach or not first_iteration_done:
+    while current_function_name != function_name_to_reach:
+        # from bluewind.context_variables import get_function_call
+
+        # raise_debug(
+        #     current_function_name,
+        #     function_name_to_reach,
+        #     first_iteration_done,
+        #     get_function_call(),
+        # )
         if other_object_than_function_call:
             set_function_call(other_object_than_function_call.function_call)
             other_object_than_function_call.save()
@@ -40,4 +51,5 @@ def replay_until_here_v1(object_id):
             pk=function_call_id
         ).function.name
         first_iteration_done = True
+
     return function_call_id
