@@ -25,7 +25,9 @@ def build_kwargs_from_dependencies_v1(function_call):
         from functions.bluewind_function.v1.functions import custom_deserialize
 
         # raise_debug(custom_deserialize(function_call.input_data))
-        new_kwargs[dependency.name] = custom_deserialize(function_call.input_data)
+        new_kwargs[dependency.name] = custom_deserialize(
+            function_call.input_data[dependency.name]
+        )
         # for key, value in dependency.dependency.output_data.items():
         #     model_name = to_camel_case_v1(key)
         #     domain_name_module = importlib.import_module("domain_names.models")

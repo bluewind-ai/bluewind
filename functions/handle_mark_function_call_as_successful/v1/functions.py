@@ -41,7 +41,9 @@ def update_related_function_calls_v1(function_call):
     for dependency in dependencies:
         dependency.dependent.remaining_dependencies -= 1
 
-        dependency.dependent.input_data = dependency.dependency.output_data
+        dependency.dependent.input_data[dependency.name] = (
+            dependency.dependency.output_data
+        )
 
         if dependency.dependent.remaining_dependencies == 0:
             dependency.dependent.status = FunctionCall.Status.READY_FOR_APPROVAL
