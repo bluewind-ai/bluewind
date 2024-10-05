@@ -23,6 +23,11 @@ class DNSRecord(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(65535)],
     )
 
+    class Meta:
+        unique_together = [
+            ["domain", "name", "record_type", "value", "priority"],
+        ]
+
     def clean(self):
         from django.core.exceptions import ValidationError
 
