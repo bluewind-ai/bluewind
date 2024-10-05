@@ -37,6 +37,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         "input_data",
         "output_data",
         "executed_at",
+        "output_type",
     ]
 
     fields = [
@@ -46,6 +47,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         "output_data",
         "executed_at",
         "whole_tree",
+        "output_type",
     ]
 
     def name(self, obj):

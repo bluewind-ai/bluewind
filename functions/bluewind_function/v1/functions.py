@@ -51,9 +51,11 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
             duration = timezone.now() - function_call.executed_at
         function_call.executed_at = timezone.now()
         function_call.input_data = kwargs
+        is_making_network_calls = False
         if is_making_network_calls:
             result = handle_network_calls_v1(func, new_kwargs, function_call)
         else:
+            # raise_debug(new_kwargs)
             result = func(**new_kwargs)
             if result.__class__.__name__ == "FunctionCall":
                 function_call.output_data_dependency = result
