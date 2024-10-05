@@ -7,13 +7,16 @@ from django.db.models import Q
 from dns_records.models import DNSRecord
 from domain_names.models import DomainName
 from functions.bluewind_function.v1.functions import bluewind_function_v1
+from functions.mark_domain_name_as_scanned.v1.functions import (
+    mark_domain_name_as_scanned_v1,
+)
 
 # Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
 @bluewind_function_v1()
-def store_dns_records_v1(dns_records_data):
+def store_dns_records_v1(dns_records_data, domain_names):
     all_created_records = []
 
     for domain_entry in dns_records_data:
@@ -65,5 +68,5 @@ def store_dns_records_v1(dns_records_data):
             value=record.value,
         )
 
-    # Return a queryset of all created records
+    mark_domain_name_as_scanned_v1(domain_names=domain_names)
     return DNSRecord.objects.filter(q_filter)

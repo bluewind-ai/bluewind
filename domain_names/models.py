@@ -13,6 +13,7 @@ class DomainName(WorkspaceRelated):
         null=True,
         blank=True,
     )
+    last_scanned_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.name

@@ -1,12 +1,10 @@
 import logging
-from contextvars import ContextVar
 
 # from bluewind.custom_exception import raise_debug
 from function_call_dependencies.models import FunctionCallDependency  # noqa: F401
 
 # Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
-is_function_call_magic_var = ContextVar("is_function_call_magic", default=False)
 
 
 def build_function_call_dependencies_v1(function_call, kwargs):
@@ -14,6 +12,7 @@ def build_function_call_dependencies_v1(function_call, kwargs):
         return
     dependency_count = 0
     for key, value in kwargs.items():
+        # raise_debug(type(value), kwargs)
         FunctionCallDependency.objects.create(
             dependency=value, dependent=function_call, name=key
         )
