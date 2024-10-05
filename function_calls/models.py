@@ -3,7 +3,6 @@ import logging
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils import timezone
 
 from bluewind.context_variables import get_function, get_function_call, get_superuser
 from bluewind.utils import snake_case_to_spaced_camel_case
@@ -82,6 +81,9 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         null=True,
     )
 
+    def get_parent_created_at(self):
+        return self.tn_parent.created_at if self.tn_parent else None
+
     def save(self, *args, **kwargs):
         if not self.function:
             self.function = get_function()
@@ -149,9 +151,7 @@ def get_whole_tree(function_call):
 
         def sort_key(child):
             return (
-                child.executed_at
-                if child.executed_at is not None
-                else timezone.datetime.max,
+                child.created_at,
                 child.id or float("inf"),
             )
 
