@@ -46,18 +46,22 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
         set_approved_function_call(None)
         set_parent_function_call(function_call)
         function_call.status = FunctionCall.Status.RUNNING
-        # get difference in time between the 2
-        if function_call.executed_at:
-            duration = timezone.now() - function_call.executed_at
+
         function_call.executed_at = timezone.now()
-        is_making_network_calls = False
+
         if is_making_network_calls:
             result = handle_network_calls_v1(func, new_kwargs, function_call)
         else:
             result = func(**new_kwargs)
             if result.__class__.__name__ == "FunctionCall":
                 function_call.output_data_dependency = result
+
         if not FunctionCall.objects.filter(tn_parent=function_call).exists():
+            # if is_making_network_calls:
+            #     raise_debug(
+            #         not FunctionCall.objects.filter(tn_parent=function_call).exists(),
+            #         result,
+            #     )
             if result == None:
                 result = {}
             function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
