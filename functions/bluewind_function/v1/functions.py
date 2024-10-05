@@ -1,13 +1,16 @@
+import json
 import logging
 from functools import wraps
 
 from django.utils import timezone
+from rest_framework import serializers
 
 from bluewind.context_variables import (
     get_approved_function_call,
     set_approved_function_call,
     set_parent_function_call,
 )
+from domain_names.models import DomainName
 from function_calls.models import FunctionCall
 from functions.build_function_call_dependencies.v1.functions import (
     build_function_call_dependencies_v1,
@@ -17,6 +20,18 @@ from functions.build_kwargs_from_dependencies.v1.functions import (
 )
 from functions.get_parameter_names.v1.functions import get_parameter_names_v1
 from functions.handle_network_calls.v1.functions import handle_network_calls_v1
+
+
+class MinimalDomainNameSerializer(serializers.ModelSerializer):
+    model = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DomainName
+        fields = ["model", "pk"]
+
+    def get_model(self, obj):
+        return obj._meta.model_name
+
 
 logger = logging.getLogger("django.not_used")
 
@@ -65,6 +80,16 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
             if result == None:
                 result = {}
             function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
+            if result.__class__.__name__ == "QuerySet":
+                serializer = MinimalDomainNameSerializer(result, many=True)
+                serialized_data = serializer.data
+                json_data = json.dumps(serialized_data)
+                deserialized_objects = list(serializers.deserialize("json", json_data))
+
+                # Extract model instances
+                deserialized_models = [obj.object for obj in deserialized_objects]
+
+                raise_debug(serializer.data, deserialized_models)
             function_call.output_data = result
         function_call.save()
 
