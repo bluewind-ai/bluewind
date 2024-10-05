@@ -7,7 +7,7 @@ from functions.handle_mark_function_call_as_successful.v1.functions import (
     update_related_function_calls_v1,
 )
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def handle_function_call_after_save_v1(object):

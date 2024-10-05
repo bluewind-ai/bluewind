@@ -132,7 +132,7 @@ def get_logging_config():
                 "propagate": False,
             },
             "django.treenode": {
-                "level": "DEBUG",
+                "level": "ERROR",
                 "handlers": ["console"],
                 "propagate": False,
             },
@@ -141,14 +141,19 @@ def get_logging_config():
                 "handlers": ["console"],
                 "propagate": False,
             },
+            "django.temp": {
+                "level": "DEBUG",
+                "handlers": ["console"],
+                "propagate": False,
+            },
             "django.db.backends.schema": {
                 "level": "ERROR",
                 "handlers": ["console"],
                 "propagate": False,
             },
-            "django.temp": {
+            "django.not_used": {
                 "handlers": ["console"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
             "django.watchdog": {
@@ -168,7 +173,7 @@ def get_logging_config():
             },
             "django.request": {
                 "handlers": ["console"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
             "django.always_used": {
@@ -178,12 +183,12 @@ def get_logging_config():
             },
             "django.to_file": {
                 "handlers": ["file"],
-                "level": "DEBUG",
+                "level": "ERROR",
                 "propagate": False,
             },
         },
         "root": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "ERROR",
         },
     }

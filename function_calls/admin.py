@@ -127,7 +127,11 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         url_path="replay_until_here",
     )
     def replay_until_here(self, request: HttpRequest, object_id: int):
-        replay_until_here_v1(object_id)
+        function_call_id = replay_until_here_v1(object_id)
+        # raise_debug(
+        #     FunctionCall.objects.get(pk=function_call_id).id,
+        #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
+        # )
         function_call_id, redirect_link, object = go_next_v1()
         return redirect(redirect_link)
 

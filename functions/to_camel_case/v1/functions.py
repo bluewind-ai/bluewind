@@ -10,7 +10,7 @@ logger = logging.getLogger("django.not_used")
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def to_camel_case_v1(string):

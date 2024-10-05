@@ -29,7 +29,7 @@ def autoregister():
     for app_config in apps.get_app_configs():
         app_configs.append(app_config)
         app_label = app_config.label
-        logger = logging.getLogger("django.temp")
+        logger = logging.getLogger("django.not_used")
 
         for model in app_config.get_models():
             admin_class = None

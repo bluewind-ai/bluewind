@@ -18,11 +18,11 @@ from functions.build_kwargs_from_dependencies.v1.functions import (
 from functions.get_parameter_names.v1.functions import get_parameter_names_v1
 from functions.handle_network_calls.v1.functions import handle_network_calls_v1
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 import logging
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 AUTO_APPROVE = [
     "master_v1",
     "bootstrap_v1",

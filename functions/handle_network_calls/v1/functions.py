@@ -2,7 +2,7 @@ import logging
 
 from function_calls.models import FunctionCall
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def handle_network_calls_v1(func, kwargs, function_call):

@@ -5,7 +5,7 @@ from functions.get_form_or_create_from_file.v1.functions import (
     get_name_and_version_from_camel_case_name,
 )
 
-logger = logging.getLogger("django.temp")
+logger = logging.getLogger("django.not_used")
 
 
 def import_form_using_db_object_v1(output_form_data):

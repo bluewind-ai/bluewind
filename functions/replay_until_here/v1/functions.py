@@ -9,7 +9,7 @@ from functions.handle_function_call_after_save.v1.functions import (
 )
 from functions.master.v1.functions import master_v1
 
-logger = logging.getLogger("django.not_used")
+logger = logging.getLogger("django.temp")
 
 
 # @bluewind_function_v1()
@@ -17,10 +17,16 @@ def replay_until_here_v1(object_id):
     master_v1()
     function_call_id, _, _ = go_next_v1()
     other_object_than_function_call = None
-    object_id = (
-        object_id or "-1"
-    )  # if no target, we reply everything until no work remaining
-    while function_call_id != int(object_id):
+    if not object_id:
+        function_name_to_reach = "unreachable_function"
+    else:
+        function_name_to_reach = FunctionCall.objects.get(pk=object_id).function.name
+    current_function_name = FunctionCall.objects.get(pk=function_call_id).function.name
+    first_iteration_done = False
+    logger.debug(current_function_name != function_name_to_reach)
+    logger.debug(not first_iteration_done)
+
+    while current_function_name != function_name_to_reach or not first_iteration_done:
         if other_object_than_function_call:
             set_function_call(other_object_than_function_call.function_call)
             other_object_than_function_call.save()
@@ -30,3 +36,8 @@ def replay_until_here_v1(object_id):
             function_call = FunctionCall.objects.get(pk=function_call_id)
             approve_function_call_v2(function_call)
         function_call_id, _, other_object_than_function_call = go_next_v1()
+        current_function_name = FunctionCall.objects.get(
+            pk=function_call_id
+        ).function.name
+        first_iteration_done = True
+    return function_call_id
