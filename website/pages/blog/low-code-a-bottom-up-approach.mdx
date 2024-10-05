@@ -1,0 +1,35 @@
+---
+title: The bottom-up approach to low-code
+---
+
+# The bottom-up approach to low-code
+
+Low-code is great. I need it. Even as a developer. For me, low-code is a tool to understand my business application.
+
+I have always built low-code components in my applications. The one I have constantly built is a diff viewer. It allows me to know exactly what a test did at the last run vs the current run. This way I can see what my code does. This is particularly powerful at the beginning of a project, where writing acceptance tests is very counter productive because a lot of requirements will change. Whereas recording the behavior and giving a diff of the behavior changes is ALWAYS useful for me. Think things like VCR (the ruby gem).
+
+I think exposing your business application into higher level concepts is underrated. I call that bottom up low-code.
+
+The opposite approach is to move blocks and have a business application emerge from it.
+
+Here is one weakness of top-down low-code: when you retrofit your blocks visualization into a lower-level abstraction like python code, you might give a very poor experience to your users. Because your whole design was not made for it.
+
+Why does it matter to me that I keep writing python, or typescript, or Go? Because I don't believe in DSL. I think code is already the most expressive way to describe business logic. YAML and json structures are agnostic, yes. But they're not powerful. I will take power over agnosticism any day.
+
+Declarative structures fail to describe very imperative business logic. One common example I give for this is the inability for terraform to properly describe your application deploy,ent without really stretching the framework (using null resources all over the place for example)
+
+So I think we need more low-code platforms built for developers first. Because it's harder to go from user-friendly to dev friendly, whereas it's very easy to build blocks visualizations on top of a workflow engine built for python, for example. And at least you won't fight the language.
+
+Bottom-up also means tracking over planning. I don't move blocks around to create business logic. I write code, and the blocks appear. I discover things after the fact. Fog of war until my program reaches this area.
+
+Any builder will tell he discovers the right design through iteration. And this is actually what makes the process of making things so addictive. You discover your creation as you're building it.
+
+Now, don't get me wrong, Top-Down is powerful and very much needed. In particular for data modeling. You want to be thinking carefully about your data model and plan a little, or you're going to waste a lot of resources fixing your mess.
+
+We need the perfect combination of bottom-up/top-down, logging-tracking/planning.
+
+However I have to admit I am way more of a bottom-up person, because I cannot count how many times my plans have wasted me a lot of time.
+
+Even data for data modeling: I would argue that the best data models come from a lot of pain and discovery. I think you want to be able to build an infrastructure that allows to easily change your data models. Which is known to be very hard. This would mean you've solved the "auto-migrations" problem.
+
+But this is another topic (which I am obsessed about, because I am convinced auto-migrations are one of the keys to unlock the next level of business software)
