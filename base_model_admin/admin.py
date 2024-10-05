@@ -2,6 +2,7 @@ import json
 
 from django.contrib.admin.views.main import ChangeList
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse
 
 from bluewind.context_variables import set_function, set_function_call
@@ -70,7 +71,8 @@ class InWorkspace(ModelAdmin):
             extra_context["tree_json"] = json.dumps(tree_data)
         response = super().change_view(request, object_id, form_url, extra_context)
         if request.POST:
-            return go_next_v1(request, extra_context)
+            function_call_id, redirect_link = go_next_v1(request, extra_context)
+            return redirect(redirect_link)
         return response
 
     def add_view(self, request, form_url="", extra_context=None):
@@ -99,7 +101,8 @@ class InWorkspace(ModelAdmin):
         if not response.status_code == 302:
             return response
         if function_call_to_approve:
-            return go_next_v1(request, extra_context)
+            function_call_id, redirect_link = go_next_v1(request, extra_context)
+            return redirect(redirect_link)
         return response
 
     def get_add_view(self, request, extra_context=None):

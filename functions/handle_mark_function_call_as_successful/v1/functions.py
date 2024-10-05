@@ -49,6 +49,7 @@ def update_related_function_calls_v1(function_call):
     ).update(
         output_data=function_call.output_data, output_type=function_call.output_type
     )
+
     if function_call.tn_parent:
         function_call.tn_parent.refresh_from_db()
 

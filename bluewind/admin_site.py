@@ -7,6 +7,7 @@ from django.contrib.admin.views.main import ChangeList
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Model, QuerySet
 from django.http.response import HttpResponseRedirectBase
+from django.shortcuts import redirect
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 
@@ -73,7 +74,8 @@ class CustomAdminSite(UnfoldAdminSite):
         def inner(request, *args, **kwargs):
             context = self.each_context(request)
             if request.path_info == "/":
-                return go_next_v1(request, context)
+                function_call_id, redirect_link = go_next_v1(request, context)
+                return redirect(redirect_link)
 
             response = view(request, *args, **kwargs)
             return response
