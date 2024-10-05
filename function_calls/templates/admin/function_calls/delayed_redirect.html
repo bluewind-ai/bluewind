@@ -3,11 +3,11 @@
 {% block content %}
     <div id="redirect-message">
         <h2>{{ message }}</h2>
-        <p>You will be redirected in <span id="countdown">3</span> seconds...</p>
+        <p>You will be redirected in <span id="countdown">{{ countdown_seconds }}</span> seconds...</p>
     </div>
 
     <script>
-        let countdown = 3;
+        let countdown = {{ countdown_seconds }};
         const countdownElement = document.getElementById('countdown');
         const countdownInterval = setInterval(() => {
             countdown--;
