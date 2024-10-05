@@ -18,5 +18,4 @@ def build_function_call_dependencies_v1(function_call, kwargs):
             dependency=value, dependent=function_call, name=key
         )
         dependency_count += 1
-    # raise_debug(dependency_count)
     return dependency_count

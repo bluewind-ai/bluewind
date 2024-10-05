@@ -42,5 +42,4 @@ def go_next_v1(request, context):
     if not superuser:
         master_v1()
         return go_next_v1(request, context)
-
-    raise_debug("NO JOB LEFT")
+    raise Exception("NO JOB LEFT")

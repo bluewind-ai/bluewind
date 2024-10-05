@@ -125,17 +125,6 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
 
     def save(self, *args, **kwargs):
         if self.__class__.__name__ == "FunctionCall":
-            # from function_calls.models import FunctionCall
-
-            # raise_debug(
-            #     self.output_data,
-            #     FunctionCall.objects.get(
-            #         pk=self.id,
-            #     ).output_data,
-            #     args,
-            #     kwargs,
-            #     skip=1,
-            # )
             super().save(*args, **kwargs)
 
             return
