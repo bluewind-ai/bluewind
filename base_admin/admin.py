@@ -22,6 +22,7 @@ from functions.handle_function_call_after_save.v1.functions import (
 from functions.replay_until_here.v1.functions import replay_until_here_v1
 from functions.restart.v3.functions import restart_v3
 from functions.restart.v4.functions import restart_v4
+from functions.run_until_complete.v1.functions import run_until_complete_v1
 from unfold.decorators import action
 from users.models import User
 
@@ -53,6 +54,7 @@ class InWorkspace(ModelAdmin):
         "replay_everything",
         "replay_everything_until_here",
         "replay_until_here",
+        "run_until_complete",
     ]
 
     def custom_action(self, request, queryset):
@@ -212,6 +214,22 @@ class InWorkspace(ModelAdmin):
                 pk=object_id
             ).function.name
         function_call_id = replay_until_here_v1(function_name_to_reach)
+        # raise_debug(
+        #     FunctionCall.objects.get(pk=function_call_id).id,
+        #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
+        # )
+        function_call_id, redirect_link, object = go_next_v1()
+        return redirect(redirect_link)
+
+    @action(
+        description=_("Run Until Complete"),
+        url_path="run_until_complete",
+    )
+    def run_until_complete(self, request: HttpRequest, object_id: int):
+        # raise_debug(object_id)
+        function_call_id = run_until_complete_v1(
+            object_id, FunctionCall.successful_terminal_stages()
+        )
         # raise_debug(
         #     FunctionCall.objects.get(pk=function_call_id).id,
         #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
