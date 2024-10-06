@@ -1,7 +1,6 @@
 import importlib
 import logging
 
-from bluewind.context_variables import set_approved_function_call, set_function_call
 from function_calls.models import FunctionCall
 
 # Patch standard library
@@ -13,12 +12,15 @@ def snake_to_camel_case_uppercase(snake_str):
     return "".join(x.capitalize() for x in components)
 
 
-def approve_function_call_v1(function_call_id):
-    function_call = FunctionCall.objects.get(id=function_call_id)
-    func = get_function(function_call)
-    set_function_call(function_call)
-    set_approved_function_call(function_call)
-    return func()
+def approve_function_call_v1(function_call, user):
+    function_call = FunctionCall.objects.get(pk=function_call.id)
+    func = import_function(function_call)
+    function_call.status = FunctionCall.Status.RUNNING
+    # func.save()
+    return func(
+        function_call=function_call,
+        user=user,
+    )
 
 
 def get_input_form(function_call):
@@ -41,7 +43,7 @@ def get_filled_input_form(function_call):
         raise ValueError(f"Form is invalid: {input_form.errors}")
 
 
-def get_function(function_call):
+def import_function(function_call):
     func_name = function_call.function.name
     base_module = f"functions.{function_call.function.name_without_version}.v{function_call.function.version_number}"
     function_module = importlib.import_module(f"{base_module}.functions")

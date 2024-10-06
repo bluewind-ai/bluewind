@@ -9,12 +9,6 @@ from django.forms import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
 
-from bluewind.context_variables import (
-    get_function,
-    get_function_call,
-    get_superuser,
-)
-
 
 class Workspace(models.Model):
     class BootstrapStatus(models.TextChoices):
@@ -97,7 +91,6 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
     function_call = models.ForeignKey(
         "function_calls.FunctionCall", on_delete=models.CASCADE
     )
-    function = models.ForeignKey("functions.Function", on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -122,27 +115,6 @@ class WorkspaceRelated(models.Model, metaclass=WorkspaceRelatedMeta):
                     )
 
         return errors
-
-    def save(self, *args, **kwargs):
-        if self.__class__.__name__ == "FunctionCall":
-            super().save(*args, **kwargs)
-
-            return
-        function = get_function()
-        if function:
-            self.function = function
-        else:
-            self.function = None
-
-        function_call = get_function_call()
-        if function_call:
-            self.function_call = function_call
-        else:
-            self.function_call = None
-
-        self.user_id = get_superuser().id
-
-        super().save(*args, **kwargs)
 
     def get_model_instance(self):
         return ContentType.objects.get_for_model(self.__class__)

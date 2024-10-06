@@ -6,7 +6,6 @@ from django.db.models import F
 from domain_names.models import DomainName
 from function_calls.models import FunctionCall
 from functions.master.v1.functions import master_v1
-from users.models import User
 
 # Patch standard library
 logger = logging.getLogger("django.not_used")  # noqa: F821
@@ -20,7 +19,7 @@ def snake_to_camel_case_uppercase(snake_str):
 from django.db.models import Case, Value, When
 
 
-def go_next_v2(only_descendants_of=None):
+def go_next_v2(function_call, user, only_descendants_of=None):
     def get_ordered_queryset(status):
         return (
             FunctionCall.objects.filter(status=status)
@@ -34,6 +33,9 @@ def go_next_v2(only_descendants_of=None):
             .order_by(F("parent_created_at").desc(nulls_last=True), "created_at")
         )
 
+    if not user:
+        function_call, user = master_v1()
+        return go_next_v2(function_call=function_call, user=user)
     picked_function_call = None
 
     for function_call_item in get_ordered_queryset(
@@ -93,8 +95,5 @@ def go_next_v2(only_descendants_of=None):
             f"/function_calls/functioncall/{picked_function_call.id}/change",
             None,
         )
-    superuser = User.objects.filter(username="wayne@bluewind.ai").first()
-    if not superuser:
-        master_v1()
-        return go_next_v2()
+
     raise Exception("NO JOB LEFT")

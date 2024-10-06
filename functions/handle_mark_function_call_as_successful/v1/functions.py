@@ -14,11 +14,10 @@ def snake_to_camel_case_uppercase(snake_str):
     return "".join(x.capitalize() for x in components)
 
 
-def handle_mark_function_call_as_successful_v1(function_call_id):
-    function_call = FunctionCall.objects.get(id=int(function_call_id))
+def handle_mark_function_call_as_successful_v1(function_call, user):
     function_call.status = FunctionCall.Status.MARKED_SUCCESSFUL
 
-    update_related_function_calls_v1(function_call)
+    update_related_function_calls_v1(function_call=function_call, user=user)
 
     function_call.save()
 
@@ -33,8 +32,10 @@ def get_siblings_in_uncompleted_stages_v1(function_call):
     return test
 
 
-def update_related_function_calls_v1(function_call):
+def update_related_function_calls_v1(function_call, user):
     dependencies = FunctionCallDependency.objects.filter(
+        function_call=function_call,
+        user=user,
         dependency=function_call,
     )
 

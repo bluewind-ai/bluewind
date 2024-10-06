@@ -1,5 +1,3 @@
-import json
-
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
@@ -7,7 +5,6 @@ from django.utils.translation import gettext_lazy as _
 from base_admin.admin import InWorkspace
 from function_calls.models import (
     FunctionCall,
-    get_function_call_whole_tree_v1,
     get_whole_tree,
 )
 from functions.go_next.v2.functions import go_next_v2
@@ -148,17 +145,17 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
 
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        extra_context = extra_context or {}
-        tree_data = get_function_call_whole_tree_v1(object_id)
-        extra_context["tree_json"] = json.dumps(tree_data)
+    # def change_view(self, request, object_id, form_url="", extra_context=None):
+    #     extra_context = extra_context or {}
+    #     tree_data = get_function_call_whole_tree_v1(object_id)
+    #     extra_context["tree_json"] = json.dumps(tree_data)
 
-        return super().change_view(
-            request,
-            object_id,
-            form_url,
-            extra_context=extra_context,
-        )
+    #     return super().change_view(
+    #         request,
+    #         object_id,
+    #         form_url,
+    #         extra_context=extra_context,
+    #     )
 
     def high_res_created_at(self, obj):
         if obj.created_at:

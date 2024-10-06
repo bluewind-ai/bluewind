@@ -11,6 +11,6 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
 @bluewind_function_v1()
-def mark_domain_name_as_scanned_v1(domain_names):
+def mark_domain_name_as_scanned_v1(function_call, user, domain_names):
     with transaction.atomic():
         domain_names.update(last_scanned_at=timezone.now())

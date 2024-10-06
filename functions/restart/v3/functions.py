@@ -2,10 +2,8 @@ import logging
 import subprocess
 from time import sleep
 
-from bluewind.context_variables import set_function_call
 from function_calls.models import FunctionCall
 from functions.approve_function_call.v2.functions import approve_function_call_v2
-from functions.go_next.v2.functions import go_next_v2
 from functions.handle_function_call_after_save.v1.functions import (
     handle_function_call_after_save_v1,
 )

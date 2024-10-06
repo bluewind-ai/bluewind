@@ -6,7 +6,6 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from bluewind.context_variables import set_function, set_function_call
 from function_calls.models import (
     FunctionCall,
     get_function_call_whole_tree_v1,
@@ -89,30 +88,30 @@ class InWorkspace(ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
-        if object_id:
-            tree_data = get_function_call_whole_tree_v1(object_id)
+        function_call = None
+        if self.model._meta.model_name == "functioncall":
+            function_call = FunctionCall.objects.get(pk=object_id)
+        if function_call:
+            tree_data = get_function_call_whole_tree_v1(function_call=function_call)
+            extra_context = extra_context or {}
             extra_context["tree_json"] = json.dumps(tree_data)
         response = super().change_view(request, object_id, form_url, extra_context)
-
         if request.POST:
-            function_call_id, redirect_link, object = go_next_v2()
+            function_call_id, redirect_link, object = go_next_v2(
+                function_call=function_call, user=request.user
+            )
             return redirect(redirect_link)
         return response
 
     def add_view(self, request, form_url="", extra_context=None):
-        function_call_id = None
-        function_call_to_approve = None
         request_post = request.POST
         extra_context = extra_context or {}
+        function_call = None
         if request_post:
             function_call_id = request_post.get("function_call")
-            tree_data = get_function_call_whole_tree_v1(function_call_id)
+            function_call = FunctionCall.objects.get(pk=function_call_id)
+            tree_data = get_function_call_whole_tree_v1(function_call)
             extra_context["tree_json"] = json.dumps(tree_data)
-            if function_call_id:
-                function_call = FunctionCall.objects.get(pk=function_call_id)
-
-                set_function(function_call.function)
-                set_function_call(function_call)
         else:
             extra_context = self.get_add_view(request, extra_context)
 
@@ -120,8 +119,10 @@ class InWorkspace(ModelAdmin):
 
         if not response.status_code == 302:
             return response
-        if request_post:
-            function_call_id, redirect_link, _ = go_next_v2()
+        if function_call:
+            function_call_id, redirect_link, _ = go_next_v2(
+                function_call, user=request.user
+            )
             return redirect(redirect_link)
         return response
 
@@ -133,7 +134,8 @@ class InWorkspace(ModelAdmin):
                 return extra_context
 
             extra_context = extra_context or {}
-            tree_data = get_function_call_whole_tree_v1(function_call_id)
+            function_call = FunctionCall.objects.get(pk=function_call_id)
+            tree_data = get_function_call_whole_tree_v1(function_call)
             extra_context["tree_json"] = json.dumps(tree_data)
             return extra_context
         return extra_context
@@ -142,13 +144,16 @@ class InWorkspace(ModelAdmin):
         description=_("Approve"),
         url_path="approve_function_call",
     )
-    def approve_function_call(self, request: HttpRequest, obj):
-        # raise_debug(obj.created_at)
-        # raise_debug(obj.__class__.__name__ == "FunctionCall")
-        if obj.__class__.__name__ == "FunctionCall":
-            approve_function_call_v2(function_call=obj)
+    def approve_function_call(self, request: HttpRequest, object):
+        if object.__class__.__name__ == "FunctionCall":
+            approve_function_call_v2(function_call=object, user=request.user)
         else:
-            handle_function_call_after_save_v1(obj)
+            function_call = object.function_call
+            handle_function_call_after_save_v1(
+                function_call,
+                user=request.user,
+                object=object,
+            )
 
     # def has_approve_function_call_permission(
     #     self, request: HttpRequest, object_id: Union[str, int]

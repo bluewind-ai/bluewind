@@ -8,7 +8,9 @@ from function_calls.models import FunctionCall
 logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
-def build_function_call_dependencies_v1(function_call, kwargs):
+def build_function_call_dependencies_v1(
+    function_call, user, function_call_to_approve, kwargs
+):
     from functions.bluewind_function.v1.functions import custom_serialize
 
     if kwargs == {}:
@@ -16,12 +18,19 @@ def build_function_call_dependencies_v1(function_call, kwargs):
     dependency_count = 0
     for key, value in kwargs.items():
         if value.__class__.__name__ == "QuerySet":
-            function_call.input_data[key] = custom_serialize(value)
-            function_call.output_type = FunctionCall.OutputType.QUERY_SET
-            function_call.save()
+            function_call_to_approve.input_data[key] = custom_serialize(value)
+            function_call_to_approve.output_type = FunctionCall.OutputType.QUERY_SET
+            function_call_to_approve.save()
         else:
+            if key in ["function_call", "user"]:
+                continue
+            # debugger(function_call, user, skip=2)
             FunctionCallDependency.objects.create(
-                dependency=value, dependent=function_call, name=key
+                function_call=function_call,
+                user=user,
+                dependency=value,
+                dependent=function_call_to_approve,
+                name=key,
             )
             dependency_count += 1
     return dependency_count

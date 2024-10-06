@@ -11,7 +11,6 @@ from django.shortcuts import redirect
 from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 
-from bluewind.context_variables import set_superuser
 from functions.go_next.v2.functions import go_next_v2
 from users.models import User
 
@@ -55,7 +54,6 @@ class CustomAdminSite(UnfoldAdminSite):
         superuser = User.objects.filter(username="wayne@bluewind.ai").first()
         if superuser:
             request.user = superuser
-            set_superuser(superuser)
         return True
 
     # def each_context(self, request):
@@ -74,7 +72,9 @@ class CustomAdminSite(UnfoldAdminSite):
         def inner(request, *args, **kwargs):
             context = self.each_context(request)
             if request.path_info == "/":
-                function_call_id, redirect_link, _ = go_next_v2()
+                function_call_id, redirect_link, _ = go_next_v2(
+                    function_call=None, user=None
+                )
                 return redirect(redirect_link)
 
             response = view(request, *args, **kwargs)

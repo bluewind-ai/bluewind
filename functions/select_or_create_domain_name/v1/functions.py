@@ -13,7 +13,7 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
 @bluewind_function_v1()
-def select_or_create_domain_name_v1():
+def select_or_create_domain_name_v1(function_call, user):
     one_month_ago = timezone.now() - timezone.timedelta(days=30)
 
     domain_names = DomainName.objects.filter(
@@ -22,5 +22,5 @@ def select_or_create_domain_name_v1():
 
     if domain_names.exists():
         return domain_names
-    name = create_domain_name_v1()
+    name = create_domain_name_v1(function_call=function_call, user=user)
     return name

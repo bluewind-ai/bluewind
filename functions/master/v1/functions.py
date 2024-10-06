@@ -14,7 +14,14 @@ def master_v1():
     This view runs the master_v1 function atomically and returns an HTTP response.
     """
 
-    bootstrap_v1()
-    load_companies_into_crm_v1()
+    function_call, user = bootstrap_v1()
+    load_companies_into_crm_v1(
+        function_call=function_call,
+        user=user,
+    )
 
-    avoid_going_into_spam_v1()
+    avoid_going_into_spam_v1(
+        function_call=function_call,
+        user=user,
+    )
+    return function_call, user

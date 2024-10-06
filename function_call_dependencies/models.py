@@ -1,9 +1,11 @@
 from django.db import models
 from django.forms import ValidationError
 
+from workspaces.models import WorkspaceRelated
+
 
 # Create your models here.
-class FunctionCallDependency(models.Model):
+class FunctionCallDependency(WorkspaceRelated):
     dependent = models.ForeignKey(
         "function_calls.FunctionCall",
         on_delete=models.CASCADE,

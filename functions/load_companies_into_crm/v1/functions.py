@@ -14,10 +14,18 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
 @bluewind_function_v1()
-def load_companies_into_crm_v1():
-    apollo_company_searches = select_or_create_apollo_company_searches_v1()
+def load_companies_into_crm_v1(
+    function_call,
+    user,
+):
+    apollo_company_searches = select_or_create_apollo_company_searches_v1(
+        function_call=function_call,
+        user=user,
+    )
     loaded_apollo_people_searches_v1 = load_apollo_company_searches_v1(
-        apollo_company_searches=apollo_company_searches
+        function_call=function_call,
+        user=user,
+        apollo_company_searches=apollo_company_searches,
     )
     # loaded_domain_names = load_domain_names_v1(domain_names=domain_name)
     # raw_dns_records = scan_domain_name_v1(domain_names=loaded_domain_names)

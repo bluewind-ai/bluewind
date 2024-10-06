@@ -1,10 +1,8 @@
 import logging
 
 from django.db import models
-from django.shortcuts import get_object_or_404
 from django.urls import reverse
 
-from bluewind.context_variables import get_function, get_function_call, get_superuser
 from bluewind.utils import snake_case_to_spaced_camel_case
 from treenode.models import TreeNodeModel
 from users.models import User
@@ -84,19 +82,19 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     def get_parent_created_at(self):
         return self.tn_parent.created_at if self.tn_parent else None
 
-    def save(self, *args, **kwargs):
-        if not self.function:
-            self.function = get_function()
+    # def save(self, *args, **kwargs):
+    #     if not self.function:
+    #         self.function = get_function()
 
-        if not self.tn_parent:
-            if (
-                self.function.name_without_version != "master"
-            ):  # CAREFUL don't remove, otherwise infinte loop
-                self.tn_parent = get_function_call()
+    #     if not self.tn_parent:
+    #         if (
+    #             self.function.name_without_version != "master"
+    #         ):  # CAREFUL don't remove, otherwise infinte loop
+    #             self.tn_parent = get_function_call()
 
-        self.user_id = get_superuser().id
+    #     self.user_id = get_superuser().id
 
-        super().save(*args, **kwargs)
+    #     super().save(*args, **kwargs)
 
     @classmethod
     def successful_terminal_stages(cls):
@@ -183,8 +181,6 @@ def get_whole_tree(function_call):
     return _to_dict(root)
 
 
-def get_function_call_whole_tree_v1(function_call_id):
-    function_call = get_object_or_404(FunctionCall, id=function_call_id)
-
+def get_function_call_whole_tree_v1(function_call):
     tree_data = get_whole_tree(function_call)
     return [tree_data]

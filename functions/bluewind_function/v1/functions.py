@@ -4,11 +4,6 @@ from functools import wraps
 from django.apps import apps
 from django.utils import timezone
 
-from bluewind.context_variables import (
-    get_approved_function_call,
-    set_approved_function_call,
-    set_parent_function_call,
-)
 from domain_names.models import DomainName
 from function_calls.models import FunctionCall
 from functions.build_function_call_dependencies.v1.functions import (
@@ -47,18 +42,16 @@ def custom_deserialize(serialized_data):
 
 
 def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
+    function_call, user = kwargs.get("function_call"), kwargs.get("user")
     check_args_dont_exist(args)
     check_kwargs_valid(func, kwargs)
-    if func.__name__ in AUTO_APPROVE:
-        return func(*args, **kwargs)
 
-    if get_approved_function_call():
-        function_call = get_approved_function_call()
-
+    if (
+        function_call.function.name == func.__name__
+        and function_call.status == FunctionCall.Status.RUNNING
+    ):
         new_kwargs = build_kwargs_from_dependencies_v1(function_call)
 
-        set_approved_function_call(None)
-        set_parent_function_call(function_call)
         function_call.status = FunctionCall.Status.RUNNING
 
         function_call.executed_at = timezone.now()
@@ -66,7 +59,7 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
         if is_making_network_calls:
             result = handle_network_calls_v1(func, new_kwargs, function_call)
         else:
-            result = func(**new_kwargs)
+            result = func(function_call=function_call, user=user, **new_kwargs)
             if result.__class__.__name__ == "FunctionCall":
                 function_call.output_data_dependency = result
 
@@ -84,36 +77,42 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
 
         return
 
-    return ask_for_approval(func, kwargs)
+    return ask_for_approval(function_call, user, func, kwargs)
 
 
-def ask_for_approval(func, kwargs):
-    status = FunctionCall.Status.READY_FOR_APPROVAL
+def ask_for_approval(function_call, user, func, kwargs):
     from functions.get_function_or_create_from_file.v1.functions import (
         get_function_or_create_from_file_v1,
     )
 
-    function = get_function_or_create_from_file_v1(function_name=func.__name__)
-    assert function is not None, "function hasn't been found in the DB"
+    function_to_approve = get_function_or_create_from_file_v1(
+        function_call=function_call, user=user, function_name=func.__name__
+    )
+    assert function_to_approve is not None, "function hasn't been found in the DB"
     logger.debug(f"{func.__name__} found in the DB")
 
-    function_call = FunctionCall.objects.create(
-        status=status,
-        function=function,
+    function_call_to_approve = FunctionCall.objects.create(
+        function_call=function_call,
+        user=user,
+        status=FunctionCall.Status.READY_FOR_APPROVAL,
+        tn_parent=function_call,
+        function=function_to_approve,
     )
 
-    remaining_dependencies = build_function_call_dependencies_v1(function_call, kwargs)
+    remaining_dependencies = build_function_call_dependencies_v1(
+        function_call=function_call,
+        user=user,
+        function_call_to_approve=function_call_to_approve,
+        kwargs=kwargs,
+    )
     if remaining_dependencies:
-        function_call.remaining_dependencies = remaining_dependencies
-        function_call.status = FunctionCall.Status.CONDITIONS_NOT_MET
+        function_call_to_approve.remaining_dependencies = remaining_dependencies
+        function_call_to_approve.status = FunctionCall.Status.CONDITIONS_NOT_MET
 
-    function_call.save()
-
-    if func.__name__ == "master_v1":
-        pass
-    logger.debug(f"Create function call for {func.__name__} asking for approval")
-
-    return function_call
+    function_call_to_approve.save()
+    function_call_to_approve.refresh_from_db()
+    debugger(function_call_to_approve.status, skip=10)
+    return function_call_to_approve
 
 
 def check_kwargs_valid(func, kwargs):

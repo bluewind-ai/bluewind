@@ -1,6 +1,5 @@
 import logging
 
-from bluewind.context_variables import set_function, set_function_call
 from function_calls.models import FunctionCall
 from functions.approve_function_call.v2.functions import approve_function_call_v2
 from functions.go_next.v2.functions import go_next_v2
