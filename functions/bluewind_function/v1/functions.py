@@ -38,7 +38,6 @@ def custom_serialize(queryset):
 def custom_deserialize(serialized_data):
     if not serialized_data:
         return DomainName.objects.none()
-
     model_class = apps.get_model(
         app_label="domain_names", model_name=serialized_data[0]["model"]
     )

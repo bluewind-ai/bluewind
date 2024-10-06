@@ -108,14 +108,11 @@ class InWorkspace(ModelAdmin):
             function_call_id = request_post.get("function_call")
             tree_data = get_function_call_whole_tree_v1(function_call_id)
             extra_context["tree_json"] = json.dumps(tree_data)
-
             if function_call_id:
-                function_call_to_approve = FunctionCall.objects.filter(
-                    status=FunctionCall.Status.READY_FOR_APPROVAL
-                ).first()
+                function_call = FunctionCall.objects.get(pk=function_call_id)
 
-                set_function(function_call_to_approve.function)
-                set_function_call(function_call_to_approve)
+                set_function(function_call.function)
+                set_function_call(function_call)
         else:
             extra_context = self.get_add_view(request, extra_context)
 
@@ -123,7 +120,7 @@ class InWorkspace(ModelAdmin):
 
         if not response.status_code == 302:
             return response
-        if function_call_to_approve:
+        if request_post:
             function_call_id, redirect_link, _ = go_next_v2()
             return redirect(redirect_link)
         return response

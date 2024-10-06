@@ -18,7 +18,6 @@ def approve_function_call_v1(function_call_id):
     func = get_function(function_call)
     set_function_call(function_call)
     set_approved_function_call(function_call)
-
     return func()
 
 

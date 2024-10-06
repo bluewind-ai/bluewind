@@ -1,3 +1,4 @@
+import logging
 from contextvars import ContextVar
 
 request_id_var = ContextVar("request_id")
@@ -19,6 +20,7 @@ function_call_var = ContextVar("function_call", default=None)
 function_var = ContextVar("function_var", default=None)
 workspace_var = ContextVar("workspace_var")
 superuser_var = ContextVar("superuser_var")
+logger = logging.getLogger("django.temp")  # noqa: F821
 
 
 def get_request_id():
@@ -100,7 +102,10 @@ def get_function_call():
 def set_function_call(
     function_call,
 ):
+    logger.debug(f"Setting function to {function_call}")
+
     function_call_var.set(function_call)
+    # cdscds
 
 
 def get_function():
@@ -110,6 +115,7 @@ def get_function():
 def set_function(
     function,
 ):
+    logger.debug(f"Setting function to {function}")
     function_var.set(function)
 
 

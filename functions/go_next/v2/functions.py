@@ -46,6 +46,7 @@ def go_next_v2(only_descendants_of=None):
         ):
             picked_function_call = function_call_item
             break
+
     if picked_function_call:
         return (
             picked_function_call.id,

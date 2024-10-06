@@ -9,5 +9,4 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 
 @bluewind_function_v1()
 def load_domain_names_v1(domain_names):
-    # debugger(domain_names)
     return [domain.name for domain in domain_names]
