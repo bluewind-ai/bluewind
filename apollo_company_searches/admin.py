@@ -6,9 +6,7 @@ from .models import ApolloCompanySearch
 
 
 class ApolloCompanySearchAdmin(InWorkspace):
-    fields = [
-        "organization_num_employees_ranges",
-    ]
+    fields = ["organization_num_employees_ranges", "function_call", "user"]
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == "organization_num_employees_ranges":
