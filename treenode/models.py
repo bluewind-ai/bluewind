@@ -153,7 +153,7 @@ class TreeNodeModel(models.Model):
             clear_cache(cls)
 
     @classmethod
-    def _get_all(cls, cache=True):
+    def _get_all(cls, cache=False):
         if cache:
             try:
                 return query_cache(cls)
@@ -161,7 +161,7 @@ class TreeNodeModel(models.Model):
                 pass
         return list(cls.objects.all())
 
-    def get_ancestors(self, cache=True):
+    def get_ancestors(self, cache=False):
         if cache:
             try:
                 return query_cache(self.__class__, pks=self.tn_ancestors_pks)
@@ -178,11 +178,11 @@ class TreeNodeModel(models.Model):
     def get_ancestors_queryset(self):
         return self.__class__.objects.filter(pk__in=self.get_ancestors_pks())
 
-    def get_breadcrumbs(self, attr=None, cache=True):
+    def get_breadcrumbs(self, attr=None, cache=False):
         objs = (self.get_ancestors(cache=cache) if self.tn_parent_id else []) + [self]
         return [getattr(obj, attr) for obj in objs] if attr else objs
 
-    def get_children(self, cache=True):
+    def get_children(self, cache=False):
         if cache:
             try:
                 return query_cache(self.__class__, pks=self.tn_children_pks)
@@ -202,7 +202,7 @@ class TreeNodeModel(models.Model):
     def get_depth(self):
         return self.tn_depth
 
-    def get_descendants(self, cache=True):
+    def get_descendants(self, cache=False):
         if cache:
             try:
                 return query_cache(self.__class__, pks=self.tn_descendants_pks)
@@ -219,10 +219,10 @@ class TreeNodeModel(models.Model):
     def get_descendants_queryset(self):
         return self.__class__.objects.filter(pk__in=self.get_descendants_pks())
 
-    def get_descendants_tree(self, cache=True):
+    def get_descendants_tree(self, cache=False):
         return self.__get_nodes_tree(instance=self, cache=cache)
 
-    def get_descendants_tree_display(self, cache=True):
+    def get_descendants_tree_display(self, cache=False):
         objs = self.get_descendants(cache=cache)
         strs = [f"{obj}" for obj in objs]
         d = "\n".join(strs)
@@ -262,13 +262,13 @@ class TreeNodeModel(models.Model):
             text = self.pk
         return force_str(text)
 
-    def get_first_child(self, cache=True):
+    def get_first_child(self, cache=False):
         return self.get_children(cache=cache)[0] if self.get_children_count() else None
 
     def get_index(self):
         return self.tn_index
 
-    def get_last_child(self, cache=True):
+    def get_last_child(self, cache=False):
         return self.get_children(cache=cache)[-1] if self.get_children_count() else None
 
     def get_level(self):
@@ -312,7 +312,7 @@ class TreeNodeModel(models.Model):
         self.tn_priority = val
         self.save()
 
-    def get_root(self, cache=True):
+    def get_root(self, cache=False):
         root_pk = self.get_root_pk()
         if cache:
             try:
@@ -326,7 +326,7 @@ class TreeNodeModel(models.Model):
         return (split_pks(self.tn_ancestors_pks) + [self.pk])[0]
 
     @classmethod
-    def get_roots(cls, cache=True):
+    def get_roots(cls, cache=False):
         if cache:
             try:
                 return [obj for obj in query_cache(cls) if obj.tn_ancestors_count == 0]
@@ -338,7 +338,7 @@ class TreeNodeModel(models.Model):
     def get_roots_queryset(cls):
         return cls.objects.filter(tn_ancestors_count=0)
 
-    def get_siblings(self, cache=True):
+    def get_siblings(self, cache=False):
         if cache:
             try:
                 return query_cache(self.__class__, pks=self.tn_siblings_pks)
@@ -356,18 +356,18 @@ class TreeNodeModel(models.Model):
         return self.__class__.objects.filter(pk__in=self.get_siblings_pks())
 
     @classmethod
-    def get_tree(cls, cache=True):
+    def get_tree(cls, cache=False):
         return cls.__get_nodes_tree(instance=None, cache=cache)
 
     @classmethod
-    def get_tree_display(cls, cache=True):
+    def get_tree_display(cls, cache=False):
         objs = cls._get_all(cache=cache)
         strs = [f"{obj}" for obj in objs]
         d = "\n".join(strs)
         return d
 
     # @classmethod
-    # def get_tree_dump(cls, cache=True, indent=2, default=None):
+    # def get_tree_dump(cls, cache=False, indent=2, default=None):
     #     data = cls.get_tree(cache=cache)
     #     func = lambda obj:str(obj.pk)
     #     dump = json.dumps(data,
@@ -644,7 +644,7 @@ class TreeNodeModel(models.Model):
         return objs_data_dict
 
     @classmethod
-    def __get_nodes_tree(cls, instance=None, cache=True):
+    def __get_nodes_tree(cls, instance=None, cache=False):
         def __get_node_tree(obj):
             child_tree = {"node": obj, "tree": []}
             child_tree_append = child_tree["tree"].append
