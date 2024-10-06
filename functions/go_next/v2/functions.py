@@ -40,7 +40,8 @@ def go_next_v2(only_descendants_of=None):
         FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
     ):
         if (
-            function_call_item == only_descendants_of
+            only_descendants_of is None
+            or function_call_item == only_descendants_of
             or function_call_item.is_descendant_of(only_descendants_of)
         ):
             picked_function_call = function_call_item
@@ -55,7 +56,8 @@ def go_next_v2(only_descendants_of=None):
         FunctionCall.Status.READY_FOR_APPROVAL
     ):
         if (
-            function_call_item == only_descendants_of
+            only_descendants_of is None
+            or function_call_item == only_descendants_of
             or function_call_item.is_descendant_of(only_descendants_of)
         ):
             picked_function_call = function_call_item

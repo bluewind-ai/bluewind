@@ -12,7 +12,7 @@ from django.utils.html import escapejs
 from django.utils.safestring import mark_safe
 
 from bluewind.context_variables import set_superuser
-from functions.go_next.v1.functions import go_next_v1
+from functions.go_next.v2.functions import go_next_v2
 from users.models import User
 
 logger = logging.getLogger("django.not_used")
@@ -74,7 +74,7 @@ class CustomAdminSite(UnfoldAdminSite):
         def inner(request, *args, **kwargs):
             context = self.each_context(request)
             if request.path_info == "/":
-                function_call_id, redirect_link, _ = go_next_v1()
+                function_call_id, redirect_link, _ = go_next_v2()
                 return redirect(redirect_link)
 
             response = view(request, *args, **kwargs)

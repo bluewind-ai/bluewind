@@ -10,7 +10,7 @@ from function_calls.models import (
     get_function_call_whole_tree_v1,
     get_whole_tree,
 )
-from functions.go_next.v1.functions import go_next_v1
+from functions.go_next.v2.functions import go_next_v2
 from functions.replay_until_here.v1.functions import replay_until_here_v1
 from functions.restart.v1.functions import restart_v1
 from functions.restart.v3.functions import restart_v3
@@ -137,7 +137,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         #     FunctionCall.objects.get(pk=function_call_id).id,
         #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
         # )
-        function_call_id, redirect_link, object = go_next_v1()
+        function_call_id, redirect_link, object = go_next_v2()
         return redirect(redirect_link)
 
     @action(
@@ -147,7 +147,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     def replay_everything_until_here(self, request: HttpRequest, object_id: int):
         restart_v4(object_id)
 
-        function_call_id, redirect_link, object = go_next_v1()
+        function_call_id, redirect_link, object = go_next_v2()
         return redirect(redirect_link)
 
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):

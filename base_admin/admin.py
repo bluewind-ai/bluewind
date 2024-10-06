@@ -15,7 +15,7 @@ from functions.approve_function_call.v2.functions import approve_function_call_v
 from functions.get_allowed_actions_on_function_call.v1.functions import (
     get_allowed_actions_on_function_call_v1,
 )
-from functions.go_next.v1.functions import go_next_v1
+from functions.go_next.v2.functions import go_next_v2
 from functions.handle_function_call_after_save.v1.functions import (
     handle_function_call_after_save_v1,
 )
@@ -95,7 +95,7 @@ class InWorkspace(ModelAdmin):
         response = super().change_view(request, object_id, form_url, extra_context)
 
         if request.POST:
-            function_call_id, redirect_link, object = go_next_v1()
+            function_call_id, redirect_link, object = go_next_v2()
             return redirect(redirect_link)
         return response
 
@@ -124,7 +124,7 @@ class InWorkspace(ModelAdmin):
         if not response.status_code == 302:
             return response
         if function_call_to_approve:
-            function_call_id, redirect_link, _ = go_next_v1()
+            function_call_id, redirect_link, _ = go_next_v2()
             return redirect(redirect_link)
         return response
 
@@ -219,7 +219,7 @@ class InWorkspace(ModelAdmin):
         #     FunctionCall.objects.get(pk=function_call_id).id,
         #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
         # )
-        function_call_id, redirect_link, object = go_next_v1()
+        function_call_id, redirect_link, object = go_next_v2()
         return redirect(redirect_link)
 
     @action(
@@ -235,7 +235,7 @@ class InWorkspace(ModelAdmin):
         #     FunctionCall.objects.get(pk=function_call_id).id,
         #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
         # )
-        function_call_id, redirect_link, object = go_next_v1()
+        function_call_id, redirect_link, object = go_next_v2()
         return redirect(redirect_link)
 
     @action(
@@ -245,5 +245,5 @@ class InWorkspace(ModelAdmin):
     def replay_everything_until_here(self, request: HttpRequest, object_id: int):
         restart_v4(object_id)
 
-        function_call_id, redirect_link, object = go_next_v1()
+        function_call_id, redirect_link, object = go_next_v2()
         return redirect(redirect_link)
