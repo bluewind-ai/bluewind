@@ -2,7 +2,7 @@ import json
 
 from django.contrib.admin.views.main import ChangeList
 from django.http import HttpRequest, HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -18,7 +18,7 @@ from functions.go_next.v2.functions import go_next_v2
 from functions.handle_function_call_after_save.v1.functions import (
     handle_function_call_after_save_v1,
 )
-from functions.restart.v4.functions import restart_v4
+from functions.replay_everything.v1.functions import replay_everything_v1
 from functions.run_until_complete.v1.functions import run_until_complete_v1
 from unfold.decorators import action
 from users.models import User
@@ -186,20 +186,9 @@ class InWorkspace(ModelAdmin):
         url_path="replay_everything",
     )
     def replay_everything(self, request: HttpRequest, object_id: int):
-        restart_v4(None)
+        function_call, redirect_link = replay_everything_v1(user=request.user)
 
-        context = self.admin_site.each_context(request)
-
-        context.update(
-            {
-                "title": "Redirecting...",
-                "redirect_url": "/",
-                "countdown_seconds": 0,
-                "message": "Replaying everything...",
-            }
-        )
-
-        return render(request, "admin/function_calls/delayed_redirect.html", context)
+        return redirect(redirect_link)
 
     # @action(
     #     description=_("Replay Until here"),

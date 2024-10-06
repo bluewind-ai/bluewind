@@ -1,17 +1,13 @@
 from django.http import HttpRequest
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
 from base_admin.admin import InWorkspace
 from function_call_dependencies.models import FunctionCallDependency
 from function_calls.models import (
-    FunctionCall,
     get_whole_tree,
 )
-from functions.go_next.v2.functions import go_next_v2
-from functions.replay_until_here.v1.functions import replay_until_here_v1
 from functions.restart.v1.functions import restart_v1
-from functions.restart.v4.functions import restart_v4
 from treenode.admin import TreeNodeModelAdmin
 from unfold.admin import TabularInline
 from unfold.decorators import action
@@ -117,65 +113,8 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
         return new_method(request, context)
 
-    # @action(
-    #     description=_("Replay Everything"),
-    #     url_path="replay_everything",
-    # )
-    # def replay_everything(self, request: HttpRequest, object_id: int):
-    #     restart_v3(None)
-
-    #     context = self.admin_site.each_context(request)
-
-    #     context.update(
-    #         {
-    #             "title": "Redirecting...",
-    #             "redirect_url": "/",
-    #             "countdown_seconds": 0,
-    #             "message": "Replaying everything...",
-    #         }
-    #     )
-
-    #     return render(request, "admin/function_calls/delayed_redirect.html", context)
-
-    @action(
-        description=_("Replay Until here"),
-        url_path="replay_until_here",
-    )
-    def replay_until_here(self, request: HttpRequest, object_id: int):
-        if not object_id:
-            function_name_to_reach = "unreachable_function"
-        else:
-            function_name_to_reach = FunctionCall.objects.get(
-                pk=object_id
-            ).function.name
-        function_call_id = replay_until_here_v1(function_name_to_reach)
-        function_call_id, redirect_link, object = go_next_v2()
-        return redirect(redirect_link)
-
-    @action(
-        description=_("Replay Everything Until Here"),
-        url_path="replay_everything_until_here",
-    )
-    def replay_everything_until_here(self, request: HttpRequest, object_id: int):
-        restart_v4(object_id)
-
-        function_call_id, redirect_link, object = go_next_v2()
-        return redirect(redirect_link)
-
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
-
-    # def change_view(self, request, object_id, form_url="", extra_context=None):
-    #     extra_context = extra_context or {}
-    #     tree_data = get_function_call_whole_tree_v1(object_id)
-    #     extra_context["tree_json"] = json.dumps(tree_data)
-
-    #     return super().change_view(
-    #         request,
-    #         object_id,
-    #         form_url,
-    #         extra_context=extra_context,
-    #     )
 
     def high_res_created_at(self, obj):
         if obj.created_at:
