@@ -102,7 +102,10 @@ def ask_for_approval(function_call, user, func, kwargs):
     assert function_to_approve is not None, "function hasn't been found in the DB"
     logger.debug(f"{func.__name__} found in the DB")
     status = FunctionCall.Status.READY_FOR_APPROVAL
-    if "create_domain_name_v1" == function_to_approve.name:
+    if function_to_approve.name in [
+        "create_domain_name_v1",
+        "create_apollo_company_searches_v1",
+    ]:
         status = FunctionCall.Status.REQUIRES_HUMAN_INPUT
 
     function_call_to_approve = FunctionCall.objects.create(
