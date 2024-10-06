@@ -17,3 +17,9 @@ class DomainName(WorkspaceRelated):
 
     def __str__(self):
         return self.name
+
+    # def save(self, *args, **kwargs):
+    #     raise_debug(self)
+    #     if not self.function_call:
+    #         self.function_call = get_function_call()
+    #     super().save(*args, **kwargs)

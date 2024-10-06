@@ -25,8 +25,6 @@ class ApolloCompanySearch(WorkspaceRelated):
 
     organization_num_employees_ranges = ArrayField(
         models.CharField(max_length=20, choices=EMPLOYEE_RANGE_CHOICES),
-        blank=True,
-        null=True,
         help_text="Intervals to include organizations having number of employees in a range",
     )
 
@@ -81,3 +79,9 @@ class ApolloCompanySearch(WorkspaceRelated):
     class Meta:
         verbose_name = "Apollo Company Search"
         verbose_name_plural = "Apollo Company Searches"
+
+    # def save(self, *args, **kwargs):
+    #     debugger(self.full_clean())
+    #     self.page = 1
+    #     self.per_page = 10
+    #     super().save(*args, **kwargs)

@@ -13,6 +13,5 @@ class ApolloCompanySearchAdmin(InWorkspace):
             return forms.MultipleChoiceField(
                 choices=ApolloCompanySearch.EMPLOYEE_RANGE_CHOICES,
                 widget=forms.CheckboxSelectMultiple,
-                required=False,
             )
         return super().formfield_for_dbfield(db_field, request, **kwargs)
