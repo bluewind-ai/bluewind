@@ -18,7 +18,10 @@ def run_until_complete_v1(function_call, user):
     while True:
         function_call.refresh_from_db()
 
-        if function_call.status == FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL:
+        if (
+            next_function_call.status == FunctionCall.Status.REQUIRES_HUMAN_INPUT
+            or function_call.status == FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
+        ):
             break
         if other_object_than_function_call:
             other_object_than_function_call.save()

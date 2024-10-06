@@ -17,7 +17,7 @@ def build_function_call_dependencies_v1(
         return
     dependency_count = 0
     for key, value in kwargs.items():
-        if value.__class__.__name__ == "QuerySet":
+        if value.__class__.__name__ == "QuerySet" or value == {}:
             function_call_to_approve.input_data[key] = custom_serialize(value)
             function_call_to_approve.output_type = FunctionCall.OutputType.QUERY_SET
             function_call_to_approve.save()

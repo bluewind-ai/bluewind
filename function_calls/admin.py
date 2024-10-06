@@ -11,7 +11,6 @@ from function_calls.models import (
 from functions.go_next.v2.functions import go_next_v2
 from functions.replay_until_here.v1.functions import replay_until_here_v1
 from functions.restart.v1.functions import restart_v1
-from functions.restart.v3.functions import restart_v3
 from functions.restart.v4.functions import restart_v4
 from treenode.admin import TreeNodeModelAdmin
 from unfold.admin import TabularInline
@@ -118,25 +117,25 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
 
         return new_method(request, context)
 
-    @action(
-        description=_("Replay Everything"),
-        url_path="replay_everything",
-    )
-    def replay_everything(self, request: HttpRequest, object_id: int):
-        restart_v3(None)
+    # @action(
+    #     description=_("Replay Everything"),
+    #     url_path="replay_everything",
+    # )
+    # def replay_everything(self, request: HttpRequest, object_id: int):
+    #     restart_v3(None)
 
-        context = self.admin_site.each_context(request)
+    #     context = self.admin_site.each_context(request)
 
-        context.update(
-            {
-                "title": "Redirecting...",
-                "redirect_url": "/",
-                "countdown_seconds": 0,
-                "message": "Replaying everything...",
-            }
-        )
+    #     context.update(
+    #         {
+    #             "title": "Redirecting...",
+    #             "redirect_url": "/",
+    #             "countdown_seconds": 0,
+    #             "message": "Replaying everything...",
+    #         }
+    #     )
 
-        return render(request, "admin/function_calls/delayed_redirect.html", context)
+    #     return render(request, "admin/function_calls/delayed_redirect.html", context)
 
     @action(
         description=_("Replay Until here"),

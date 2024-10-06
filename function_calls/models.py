@@ -133,6 +133,7 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     def get_status_emoji(self):
         emoji_map = {
             self.Status.CONDITIONS_NOT_MET: "⚪",
+            self.Status.REQUIRES_HUMAN_INPUT: "👩",
             self.Status.READY_FOR_APPROVAL: "🟡",
             self.Status.RUNNING: "🔄",
             self.Status.COMPLETED: "🟢",

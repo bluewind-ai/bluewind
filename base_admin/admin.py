@@ -18,8 +18,6 @@ from functions.go_next.v2.functions import go_next_v2
 from functions.handle_function_call_after_save.v1.functions import (
     handle_function_call_after_save_v1,
 )
-from functions.replay_until_here.v1.functions import replay_until_here_v1
-from functions.restart.v3.functions import restart_v3
 from functions.restart.v4.functions import restart_v4
 from functions.run_until_complete.v1.functions import run_until_complete_v1
 from unfold.decorators import action
@@ -51,8 +49,6 @@ class InWorkspace(ModelAdmin):
     actions_detail = [
         "restart",
         "replay_everything",
-        "replay_everything_until_here",
-        "replay_until_here",
         "run_until_complete",
     ]
 
@@ -190,7 +186,7 @@ class InWorkspace(ModelAdmin):
         url_path="replay_everything",
     )
     def replay_everything(self, request: HttpRequest, object_id: int):
-        restart_v3(None)
+        restart_v4(None)
 
         context = self.admin_site.each_context(request)
 
@@ -205,24 +201,24 @@ class InWorkspace(ModelAdmin):
 
         return render(request, "admin/function_calls/delayed_redirect.html", context)
 
-    @action(
-        description=_("Replay Until here"),
-        url_path="replay_until_here",
-    )
-    def replay_until_here(self, request: HttpRequest, object_id: int):
-        if not object_id:
-            function_name_to_reach = "unreachable_function"
-        else:
-            function_name_to_reach = FunctionCall.objects.get(
-                pk=object_id
-            ).function.name
-        function_call_id = replay_until_here_v1(function_name_to_reach)
-        # raise_debug(
-        #     FunctionCall.objects.get(pk=function_call_id).id,
-        #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
-        # )
-        function_call_id, redirect_link, object = go_next_v2()
-        return redirect(redirect_link)
+    # @action(
+    #     description=_("Replay Until here"),
+    #     url_path="replay_until_here",
+    # )
+    # def replay_until_here(self, request: HttpRequest, object_id: int):
+    #     if not object_id:
+    #         function_name_to_reach = "unreachable_function"
+    #     else:
+    #         function_name_to_reach = FunctionCall.objects.get(
+    #             pk=object_id
+    #         ).function.name
+    #     function_call_id = replay_until_here_v1(function_name_to_reach)
+    #     # raise_debug(
+    #     #     FunctionCall.objects.get(pk=function_call_id).id,
+    #     #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
+    #     # )
+    #     function_call_id, redirect_link, object = go_next_v2()
+    #     return redirect(redirect_link)
 
     @action(
         description=_("Run Until Complete"),
@@ -238,12 +234,12 @@ class InWorkspace(ModelAdmin):
         _, redirect_link, _ = go_next_v2(function_call, user=request.user)
         return redirect(redirect_link)
 
-    @action(
-        description=_("Replay Everything Until Here"),
-        url_path="replay_everything_until_here",
-    )
-    def replay_everything_until_here(self, request: HttpRequest, object_id: int):
-        restart_v4(object_id)
+    # @action(
+    #     description=_("Replay Everything Until Here"),
+    #     url_path="replay_everything_until_here",
+    # )
+    # def replay_everything_until_here(self, request: HttpRequest, object_id: int):
+    #     restart_v4(object_id)
 
-        function_call_id, redirect_link, object = go_next_v2()
-        return redirect(redirect_link)
+    #     function_call_id, redirect_link, object = go_next_v2()
+    #     return redirect(redirect_link)
