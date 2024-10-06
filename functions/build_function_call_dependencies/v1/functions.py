@@ -1,6 +1,6 @@
 import logging
 
-# from bluewind.custom_exception import raise_debug
+# from bluewind.custom_exception import debugger
 from function_call_dependencies.models import FunctionCallDependency
 from function_calls.models import FunctionCall
 

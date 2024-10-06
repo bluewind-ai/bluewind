@@ -34,6 +34,7 @@ def go_next_v1():
             .order_by(F("parent_created_at").desc(nulls_last=True), "created_at")
         )
 
+    debugger("cndsjkcn")
     function_call = get_ordered_queryset(
         FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
     ).first()

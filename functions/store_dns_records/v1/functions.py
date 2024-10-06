@@ -67,6 +67,6 @@ def store_dns_records_v1(dns_records_data, domain_names):
             record_type=record.record_type,
             value=record.value,
         )
-    # raise_debug(domain_names)
+    # debugger(domain_names)
     mark_domain_name_as_scanned_v1(domain_names=domain_names)
     return DNSRecord.objects.filter(q_filter)

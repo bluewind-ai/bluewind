@@ -29,13 +29,13 @@ class Debugger(Exception):
 
 
 @receiver(request_started)
-def reset_raise_debug_counts(sender, **kwargs):
+def reset_debugger_counts(sender, **kwargs):
     from bluewind.context_variables import set_exception_count
 
     set_exception_count(0)
 
 
-def raise_debug(*values, skip=0):
+def debugger(*values, skip=0):
     if skip != 0:
         check_if_we_use_skip_in_different_place()
     return Debugger(*values, skip=skip)()
@@ -60,7 +60,7 @@ def check_if_we_use_skip_in_different_place():
         line,
     ):
         raise Exception(
-            f"you can't use skip on raise_debug() in different parts of the code. It can only be used once. you asked it here: {file}:{line}. But it was also called here: {previous_file}:{previous_line}",
+            f"you can't use skip on debugger() in different parts of the code. It can only be used once. you asked it here: {file}:{line}. But it was also called here: {previous_file}:{previous_line}",
         )
 
 

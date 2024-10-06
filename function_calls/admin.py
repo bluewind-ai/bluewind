@@ -78,7 +78,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     #     permissions=["approve_function_call"],
     # )
     # def approve_function_call(self, request: HttpRequest, obj):
-    #     # raise_debug(obj.created_at)
+    #     # debugger(obj.created_at)
     #     approve_function_call_v2(function_call=obj)
 
     # def has_approve_function_call_permission(
@@ -133,7 +133,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
                 pk=object_id
             ).function.name
         function_call_id = replay_until_here_v1(function_name_to_reach)
-        # raise_debug(
+        # debugger(
         #     FunctionCall.objects.get(pk=function_call_id).id,
         #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
         # )
