@@ -49,37 +49,46 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
         function_call.function.name == func.__name__
         and function_call.status == FunctionCall.Status.RUNNING
     ):
-        new_kwargs = build_kwargs_from_dependencies_v1(function_call)
+        approve(
+            function_call=function_call,
+            user=user,
+            func=func,
+            is_making_network_calls=is_making_network_calls,
+        )
+    else:
+        return ask_for_approval(function_call, user, func, kwargs)
 
-        function_call.status = FunctionCall.Status.RUNNING
 
-        function_call.executed_at = timezone.now()
+def approve(func, is_making_network_calls, function_call, user):
+    new_kwargs = build_kwargs_from_dependencies_v1(function_call)
 
-        if is_making_network_calls:
-            result = handle_network_calls_v1(
-                function_call=function_call,
-                user=user,
-                func=func,
-                kwargs=new_kwargs,
-            )
+    function_call.status = FunctionCall.Status.RUNNING
+
+    function_call.executed_at = timezone.now()
+
+    if is_making_network_calls:
+        result = handle_network_calls_v1(
+            function_call=function_call,
+            user=user,
+            func=func,
+            kwargs=new_kwargs,
+        )
+    else:
+        result = func(function_call=function_call, user=user, **new_kwargs)
+        if result.__class__.__name__ == "FunctionCall":
+            function_call.output_data_dependency = result
+
+    if not FunctionCall.objects.filter(tn_parent=function_call).exists():
+        if result == None:
+            result = {}
+        function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
+        if result.__class__.__name__ == "QuerySet":
+            serialized_data = custom_serialize(result)
+            function_call.output_data = serialized_data
+            function_call.output_type = FunctionCall.OutputType.QUERY_SET
         else:
-            result = func(function_call=function_call, user=user, **new_kwargs)
-            if result.__class__.__name__ == "FunctionCall":
-                function_call.output_data_dependency = result
-
-        if not FunctionCall.objects.filter(tn_parent=function_call).exists():
-            if result == None:
-                result = {}
-            function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
-            if result.__class__.__name__ == "QuerySet":
-                serialized_data = custom_serialize(result)
-                function_call.output_data = serialized_data
-                function_call.output_type = FunctionCall.OutputType.QUERY_SET
-            else:
-                function_call.output_data = result
-        function_call.save()
-
-    return ask_for_approval(function_call, user, func, kwargs)
+            function_call.output_data = result
+    function_call.save()
 
 
 def ask_for_approval(function_call, user, func, kwargs):
@@ -92,11 +101,14 @@ def ask_for_approval(function_call, user, func, kwargs):
     )
     assert function_to_approve is not None, "function hasn't been found in the DB"
     logger.debug(f"{func.__name__} found in the DB")
+    status = FunctionCall.Status.READY_FOR_APPROVAL
+    if "create_domain_name_v1" == function_to_approve.name:
+        status = FunctionCall.Status.REQUIRES_HUMAN_INPUT
 
     function_call_to_approve = FunctionCall.objects.create(
         function_call=function_call,
         user=user,
-        status=FunctionCall.Status.READY_FOR_APPROVAL,
+        status=status,
         tn_parent=function_call,
         function=function_to_approve,
     )
@@ -112,6 +124,7 @@ def ask_for_approval(function_call, user, func, kwargs):
         function_call_to_approve.status = FunctionCall.Status.CONDITIONS_NOT_MET
 
     function_call_to_approve.save()
+
     return function_call_to_approve
 
 

@@ -15,6 +15,8 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     class Status(models.TextChoices):
         CONDITIONS_NOT_MET = "conditions-not-met", "Conditions Not Met"
         READY_FOR_APPROVAL = "ready-for-approval", "Ready for Approval"
+        REQUIRES_HUMAN_INPUT = "requires-human-input", "Requires Human Input"
+
         RUNNING = "running", "Running"
         COMPLETED = "completed", "Completed"
         COMPLETED_READY_FOR_APPROVAL = (

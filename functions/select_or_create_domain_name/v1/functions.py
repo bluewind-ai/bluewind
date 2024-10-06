@@ -22,5 +22,6 @@ def select_or_create_domain_name_v1(function_call, user):
 
     if domain_names.exists():
         return domain_names
+
     name = create_domain_name_v1(function_call=function_call, user=user)
     return name
