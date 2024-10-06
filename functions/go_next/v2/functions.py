@@ -34,35 +34,44 @@ def go_next_v2(only_descendants_of=None):
             .order_by(F("parent_created_at").desc(nulls_last=True), "created_at")
         )
 
-    function_call = None
+    picked_function_call = None
 
     for function_call_item in get_ordered_queryset(
         FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
     ):
-        if function_call_item.is_descendant_of(only_descendants_of):
-            function_call = function_call_item
+        if (
+            function_call_item == only_descendants_of
+            or function_call_item.is_descendant_of(only_descendants_of)
+        ):
+            picked_function_call = function_call_item
             break
-
-    if function_call:
+    if picked_function_call:
         return (
-            function_call.id,
-            f"/function_calls/functioncall/{function_call.id}/change",
+            picked_function_call.id,
+            f"/function_calls/functioncall/{picked_function_call.id}/change",
             None,
         )
-    for function_call in get_ordered_queryset(FunctionCall.Status.READY_FOR_APPROVAL):
-        if function_call.is_descendant_of(only_descendants_of):
-            function_call = function_call_item
+    for function_call_item in get_ordered_queryset(
+        FunctionCall.Status.READY_FOR_APPROVAL
+    ):
+        if (
+            function_call_item == only_descendants_of
+            or function_call_item.is_descendant_of(only_descendants_of)
+        ):
+            picked_function_call = function_call_item
             break
 
-    if function_call:
-        if function_call.function.name == "create_domain_name_v1":
-            domain_name = DomainName(name="bluewind.ai", function_call=function_call)
+    if picked_function_call:
+        if picked_function_call.function.name == "create_domain_name_v1":
+            domain_name = DomainName(
+                name="bluewind.ai", function_call=picked_function_call
+            )
             return (
-                function_call.id,
-                f"/domain_names/domainname/add/?function_call={function_call.id}&name=bluewind.ai",
+                picked_function_call.id,
+                f"/domain_names/domainname/add/?function_call={picked_function_call.id}&name=bluewind.ai",
                 domain_name,
             )
-        if function_call.function.name == "create_apollo_company_searches_v1":
+        if picked_function_call.function.name == "create_apollo_company_searches_v1":
             # ranges_to_add = EmployeeRange.objects.filter(range__in=["1-10", "11-50"])
             # domain_name = ApolloCompanySearch.objects.create(
             #     function_call=function_call,
@@ -72,13 +81,13 @@ def go_next_v2(only_descendants_of=None):
             #     function_call=function_call,
             # )
             return (
-                function_call.id,
-                f"/apollo_company_searches/apollocompanysearch/add/?function_call={function_call.id}&organization_num_employees_ranges=101,200",
+                picked_function_call.id,
+                f"/apollo_company_searches/apollocompanysearch/add/?function_call={picked_function_call.id}&organization_num_employees_ranges=101,200",
                 None,
             )
         return (
-            function_call.id,
-            f"/function_calls/functioncall/{function_call.id}/change",
+            picked_function_call.id,
+            f"/function_calls/functioncall/{picked_function_call.id}/change",
             None,
         )
     superuser = User.objects.filter(username="wayne@bluewind.ai").first()

@@ -179,6 +179,7 @@ class InWorkspace(ModelAdmin):
     )
     def restart(self, request: HttpRequest, object_id: int):
         context = self.admin_site.each_context(request)
+        from function_calls.admin import new_method
 
         return new_method(request, context)
 
