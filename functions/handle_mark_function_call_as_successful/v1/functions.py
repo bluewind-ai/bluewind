@@ -33,12 +33,6 @@ def get_siblings_in_uncompleted_stages_v1(function_call):
 
 
 def update_related_function_calls_v1(function_call, user):
-    # debugger(
-    #     FunctionCallDependency.objects.filter(
-    #         user=user,
-    #         dependency=function_call,
-    #     )
-    # )
     dependencies = FunctionCallDependency.objects.filter(
         user=user,
         dependency=function_call,
@@ -54,11 +48,7 @@ def update_related_function_calls_v1(function_call, user):
         if dependency.dependent.remaining_dependencies == 0:
             dependency.dependent.status = FunctionCall.Status.READY_FOR_APPROVAL
         dependency.dependent.save()
-    # debugger(
-    #     FunctionCall.objects.filter(
-    #         output_data_dependency=function_call,
-    #     )
-    # )
+
     FunctionCall.objects.filter(
         output_data_dependency=function_call,
     ).update(

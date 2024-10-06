@@ -229,15 +229,13 @@ class InWorkspace(ModelAdmin):
         url_path="run_until_complete",
     )
     def run_until_complete(self, request: HttpRequest, object_id: int):
-        # raise_debug(object_id)
-        function_call_id = run_until_complete_v1(
-            object_id, FunctionCall.successful_terminal_stages()
-        )
+        function_call = FunctionCall.objects.get(pk=object_id)
+        run_until_complete_v1(function_call, request.user)
         # raise_debug(
         #     FunctionCall.objects.get(pk=function_call_id).id,
         #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,
         # )
-        function_call_id, redirect_link, object = go_next_v2()
+        _, redirect_link, _ = go_next_v2(function_call, user=request.user)
         return redirect(redirect_link)
 
     @action(

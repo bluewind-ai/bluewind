@@ -51,7 +51,7 @@ def go_next_v2(function_call, user, only_descendants_of=None):
 
     if picked_function_call:
         return (
-            picked_function_call.id,
+            picked_function_call,
             f"/function_calls/functioncall/{picked_function_call.id}/change",
             None,
         )
@@ -69,10 +69,10 @@ def go_next_v2(function_call, user, only_descendants_of=None):
     if picked_function_call:
         if picked_function_call.function.name == "create_domain_name_v1":
             domain_name = DomainName(
-                name="bluewind.ai", function_call=picked_function_call
+                name="bluewind.ai", function_call=picked_function_call, user=user
             )
             return (
-                picked_function_call.id,
+                picked_function_call,
                 f"/domain_names/domainname/add/?function_call={picked_function_call.id}&name=bluewind.ai",
                 domain_name,
             )
@@ -86,12 +86,12 @@ def go_next_v2(function_call, user, only_descendants_of=None):
             #     function_call=function_call,
             # )
             return (
-                picked_function_call.id,
+                picked_function_call,
                 f"/apollo_company_searches/apollocompanysearch/add/?function_call={picked_function_call.id}&organization_num_employees_ranges=101,200",
                 None,
             )
         return (
-            picked_function_call.id,
+            picked_function_call,
             f"/function_calls/functioncall/{picked_function_call.id}/change",
             None,
         )

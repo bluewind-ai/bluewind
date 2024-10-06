@@ -45,7 +45,6 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
     function_call, user = kwargs.get("function_call"), kwargs.get("user")
     check_args_dont_exist(args)
     check_kwargs_valid(func, kwargs)
-
     if (
         function_call.function.name == func.__name__
         and function_call.status == FunctionCall.Status.RUNNING
@@ -80,8 +79,6 @@ def handler_bluewind_function_v1(func, args, kwargs, is_making_network_calls):
                 function_call.output_data = result
         function_call.save()
 
-        return
-
     return ask_for_approval(function_call, user, func, kwargs)
 
 
@@ -115,8 +112,6 @@ def ask_for_approval(function_call, user, func, kwargs):
         function_call_to_approve.status = FunctionCall.Status.CONDITIONS_NOT_MET
 
     function_call_to_approve.save()
-    function_call_to_approve.refresh_from_db()
-    debugger(function_call_to_approve.status, skip=10)
     return function_call_to_approve
 
 

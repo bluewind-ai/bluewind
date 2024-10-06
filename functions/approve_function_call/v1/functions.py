@@ -13,10 +13,8 @@ def snake_to_camel_case_uppercase(snake_str):
 
 
 def approve_function_call_v1(function_call, user):
-    function_call = FunctionCall.objects.get(pk=function_call.id)
     func = import_function(function_call)
     function_call.status = FunctionCall.Status.RUNNING
-    # func.save()
     return func(
         function_call=function_call,
         user=user,

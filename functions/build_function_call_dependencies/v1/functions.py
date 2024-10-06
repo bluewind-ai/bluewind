@@ -24,7 +24,6 @@ def build_function_call_dependencies_v1(
         else:
             if key in ["function_call", "user"]:
                 continue
-            # debugger(function_call, user, skip=2)
             FunctionCallDependency.objects.create(
                 function_call=function_call,
                 user=user,

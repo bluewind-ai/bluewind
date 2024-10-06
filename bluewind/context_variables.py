@@ -10,9 +10,6 @@ file_and_line_where_debugger_with_skipped_option_was_called_var = ContextVar(
     "file_and_line_where_debugger_with_skipped_option_was_called", default=(None, None)
 )
 
-is_update_entity_function_already_in_the_call_stack_var = ContextVar(
-    "is_update_entity_function_already_in_the_call_stack", default=False
-)
 logger = logging.getLogger("django.temp")  # noqa: F821
 
 
@@ -57,16 +54,4 @@ def set_file_and_line_where_debugger_with_skipped_option_was_called(
 ):
     file_and_line_where_debugger_with_skipped_option_was_called_var.set(
         file_and_line_where_debugger_with_skipped_option_was_called
-    )
-
-
-def get_is_update_entity_function_already_in_the_call_stack():
-    return is_update_entity_function_already_in_the_call_stack_var.get()
-
-
-def set_is_update_entity_function_already_in_the_call_stack(
-    is_update_entity_function_already_in_the_call_stack,
-):
-    is_update_entity_function_already_in_the_call_stack_var.set(
-        is_update_entity_function_already_in_the_call_stack
     )

@@ -79,9 +79,3 @@ class ApolloCompanySearch(WorkspaceRelated):
     class Meta:
         verbose_name = "Apollo Company Search"
         verbose_name_plural = "Apollo Company Searches"
-
-    # def save(self, *args, **kwargs):
-    #     debugger(self.full_clean())
-    #     self.page = 1
-    #     self.per_page = 10
-    #     super().save(*args, **kwargs)

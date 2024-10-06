@@ -11,6 +11,8 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 
 
 def approve_function_call_v2(function_call, user):
+    "cdscds"
+
     if function_call.status == FunctionCall.Status.READY_FOR_APPROVAL:
         approve_function_call_v1(function_call=function_call, user=user)
     else:
