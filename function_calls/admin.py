@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from base_admin.admin import InWorkspace
+from function_call_dependencies.models import FunctionCallDependency
 from function_calls.models import (
     FunctionCall,
     get_whole_tree,
@@ -13,7 +14,26 @@ from functions.restart.v1.functions import restart_v1
 from functions.restart.v3.functions import restart_v3
 from functions.restart.v4.functions import restart_v4
 from treenode.admin import TreeNodeModelAdmin
+from unfold.admin import TabularInline
 from unfold.decorators import action
+
+
+class FunctionCallDependentInline(TabularInline):
+    model = FunctionCallDependency
+    fk_name = "dependency"
+    fields = ["dependency"]
+    extra = 0
+    verbose_name = "needs"
+    verbose_name_plural = "needs"
+
+
+class FunctionCallDependencyInline(TabularInline):
+    model = FunctionCallDependency
+    fk_name = "dependency"
+    fields = ["dependent"]
+    extra = 0
+    verbose_name = "needed by"
+    verbose_name_plural = "needed by"
 
 
 class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
@@ -24,6 +44,7 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     #     "replay_until_here",
     # ]
     # actions_submit_line = ["approve_function_call"]
+    inlines = [FunctionCallDependencyInline, FunctionCallDependentInline]
 
     list_display = ("status", "executed_at", "id")
     list_display_links = ("indented_title",)
