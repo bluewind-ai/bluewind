@@ -19,6 +19,7 @@ from functions.handle_function_call_after_save.v1.functions import (
     handle_function_call_after_save_v1,
 )
 from functions.replay_everything.v1.functions import replay_everything_v1
+from functions.replay_until_here.v1.functions import replay_until_here_v1
 from functions.run_until_complete.v1.functions import run_until_complete_v1
 from unfold.decorators import action
 from users.models import User
@@ -48,6 +49,7 @@ class InWorkspace(ModelAdmin):
 
     actions_detail = [
         "restart",
+        "replay_until_here",
         "replay_everything",
         "run_until_complete",
     ]
@@ -179,7 +181,7 @@ class InWorkspace(ModelAdmin):
         context = self.admin_site.each_context(request)
         from function_calls.admin import new_method
 
-        return new_method(request, context)
+        return new_method(function_call=None, user=request.user)
 
     @action(
         description=_("Replay Everything"),
@@ -187,6 +189,18 @@ class InWorkspace(ModelAdmin):
     )
     def replay_everything(self, request: HttpRequest, object_id: int):
         function_call, redirect_link = replay_everything_v1(user=request.user)
+
+        return redirect(redirect_link)
+
+    @action(
+        description=_("Replay Until Here"),
+        url_path="replay_until_here",
+    )
+    def replay_until_here(self, request: HttpRequest, object_id: int):
+        function_call = FunctionCall.objects.get(pk=object_id)
+        function_call, redirect_link = replay_until_here_v1(
+            function_call=function_call, user=request.user
+        )
 
         return redirect(redirect_link)
 
@@ -215,7 +229,7 @@ class InWorkspace(ModelAdmin):
     )
     def run_until_complete(self, request: HttpRequest, object_id: int):
         function_call = FunctionCall.objects.get(pk=object_id)
-        run_until_complete_v1(function_call, request.user)
+        run_until_complete_v1(function_call, request.user, function_call)
         # raise_debug(
         #     FunctionCall.objects.get(pk=function_call_id).id,
         #     FunctionCall.objects.get(pk=function_call_id).get_root(cache=False).id,

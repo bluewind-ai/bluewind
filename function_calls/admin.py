@@ -1,16 +1,14 @@
 from django.http import HttpRequest
-from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import redirect
 
 from base_admin.admin import InWorkspace
 from function_call_dependencies.models import FunctionCallDependency
 from function_calls.models import (
     get_whole_tree,
 )
-from functions.restart.v1.functions import restart_v1
+from functions.reset.v1.functions import reset_v1
 from treenode.admin import TreeNodeModelAdmin
 from unfold.admin import TabularInline
-from unfold.decorators import action
 
 
 class FunctionCallDependentInline(TabularInline):
@@ -104,15 +102,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     #         return False
     #     return True
 
-    @action(
-        description=_("Restart"),
-        url_path="restart",
-    )
-    def restart(self, request: HttpRequest, object_id: int):
-        context = self.admin_site.each_context(request)
-
-        return new_method(request, context)
-
     def has_retry_function_call_permission(self, request: HttpRequest, obj=None):
         return request.user.is_superuser
 
@@ -123,15 +112,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
         return "-"
 
 
-def new_method(request, context):
-    restart_v1()
-    context.update(
-        {
-            "title": "Redirecting...",
-            "redirect_url": "/",
-            "countdown_seconds": 5,
-            "message": "Replaying everything...",
-        }
-    )
-
-    return render(request, "admin/function_calls/delayed_redirect.html", context)
+def new_method(function_call, user):
+    reset_v1(user)
+    return redirect("/")

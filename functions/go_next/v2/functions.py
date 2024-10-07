@@ -67,7 +67,7 @@ def go_next_v2(function_call, user, only_descendants_of=None):
         ):
             picked_function_call = function_call_item
             break
-    # debugger("cdnsknk")
+
     if picked_function_call:
         if picked_function_call.function.name == "create_domain_name_v1":
             # domain_name = DomainName(
