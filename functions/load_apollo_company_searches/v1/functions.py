@@ -11,7 +11,9 @@ logger = logging.getLogger("django.not_used")  # noqa: F821
 def load_apollo_company_searches_v1(function_call, user, apollo_company_searches):
     return [
         {
-            "organization_num_employees_ranges": apollo_company_search.organization_num_employees_ranges
+            "organization_num_employees_ranges": apollo_company_search.organization_num_employees_ranges,
+            "page": apollo_company_search.page,
+            "per_page": apollo_company_search.per_page,
         }
         for apollo_company_search in apollo_company_searches
     ]
