@@ -4,7 +4,6 @@ from functools import wraps
 from django.apps import apps
 from django.utils import timezone
 
-from domain_names.models import DomainName
 from function_calls.models import FunctionCall
 from functions.build_function_call_dependencies.v1.functions import (
     build_function_call_dependencies_v1,
@@ -27,19 +26,21 @@ AUTO_APPROVE = [
 
 
 def custom_serialize(queryset):
-    return [{"model": obj._meta.model_name, "pk": obj.pk} for obj in queryset]
+    return [
+        {"app": obj._meta.app_label, "model": obj.__class__.__name__, "pk": obj.pk}
+        for obj in queryset
+    ]
 
 
 def custom_deserialize(serialized_data):
-    # if serialized_data:
-    #     debugger(serialized_data)
     if not serialized_data:
-        return DomainName.objects.none()
-    model_class = apps.get_model(
-        app_label="domain_names", model_name=serialized_data[0]["model"]
-    )
-    pks = [item["pk"] for item in serialized_data]
+        raise Exception("Serialized data is empty")
 
+    app_label = serialized_data[0]["app"]
+    model_name = serialized_data[0]["model"]
+    model_class = apps.get_model(app_label=app_label, model_name=model_name)
+
+    pks = [item["pk"] for item in serialized_data]
     return model_class.objects.filter(pk__in=pks)
 
 
@@ -88,6 +89,12 @@ def approve(func, is_making_network_calls, function_call, user):
             serialized_data = custom_serialize(result)
             function_call.output_data = serialized_data
             function_call.output_type = FunctionCall.OutputType.QUERY_SET
+            if (
+                serialized_data == []
+                or serialized_data == {}
+                or serialized_data == [{}]
+            ):
+                raise Exception("QuerySet is empty")
         else:
             function_call.output_data = result
     function_call.save()

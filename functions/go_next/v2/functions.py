@@ -70,26 +70,21 @@ def go_next_v2(function_call, user, only_descendants_of=None):
 
     if picked_function_call:
         if picked_function_call.function.name == "create_domain_name_v1":
-            # domain_name = DomainName(
-            #     name="bluewind.ai", function_call=picked_function_call, user=user
-            # )
             return (
                 picked_function_call,
                 f"/domain_names/domainname/add/?function_call={picked_function_call.id}&name=bluewind.ai",
                 None,
             )
         if picked_function_call.function.name == "create_apollo_company_searches_v1":
-            # ranges_to_add = EmployeeRange.objects.filter(range__in=["1-10", "11-50"])
-            # domain_name = ApolloCompanySearch.objects.create(
-            #     function_call=function_call,
-            # )
-            # domain_name = ApolloCompanySearch(
-            #     organization_num_employees_ranges=ranges_to_add,
-            #     function_call=function_call,
-            # )
             return (
                 picked_function_call,
                 f"/apollo_company_searches/apollocompanysearch/add/?function_call={picked_function_call.id}&organization_num_employees_ranges=101,200",
+                None,
+            )
+        if picked_function_call.function.name == "create_apollo_apollo_api_keys_v1":
+            return (
+                picked_function_call,
+                f"/credentials/credential/add/?function_call={picked_function_call.id}",
                 None,
             )
         return (

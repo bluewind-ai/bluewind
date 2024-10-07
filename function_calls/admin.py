@@ -1,5 +1,4 @@
 from django.http import HttpRequest
-from django.shortcuts import redirect
 
 from base_admin.admin import InWorkspace
 from function_call_dependencies.models import FunctionCallDependency
@@ -112,4 +111,3 @@ class FunctionCallAdmin(InWorkspace):
 
 def new_method(function_call, user):
     reset_v1(user)
-    return redirect("/")

@@ -2,7 +2,7 @@ import json
 
 from django.contrib.admin.views.main import ChangeList
 from django.http import HttpRequest, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -18,6 +18,7 @@ from functions.go_next.v2.functions import go_next_v2
 from functions.handle_function_call_after_save.v1.functions import (
     handle_function_call_after_save_v1,
 )
+from functions.replay.v1.functions import replay_v1
 from functions.replay_everything.v1.functions import replay_everything_v1
 from functions.replay_until_here.v1.functions import replay_until_here_v1
 from functions.run_until_complete.v1.functions import run_until_complete_v1
@@ -52,6 +53,7 @@ class InWorkspace(ModelAdmin):
         "replay_until_here",
         "replay_everything",
         "run_until_complete",
+        "replay",
     ]
 
     def custom_action(self, request, queryset):
@@ -181,7 +183,17 @@ class InWorkspace(ModelAdmin):
         context = self.admin_site.each_context(request)
         from function_calls.admin import new_method
 
-        return new_method(function_call=None, user=request.user)
+        new_method(function_call=None, user=request.user)
+        context.update(
+            {
+                "title": "Redirecting...",
+                "redirect_url": "/",
+                "countdown_seconds": 5,
+                "message": "Replaying everything...",
+            }
+        )
+
+        return render(request, "admin/function_calls/delayed_redirect.html", context)
 
     @action(
         description=_("Replay Everything"),
@@ -189,6 +201,16 @@ class InWorkspace(ModelAdmin):
     )
     def replay_everything(self, request: HttpRequest, object_id: int):
         function_call, redirect_link = replay_everything_v1(user=request.user)
+
+        return redirect(redirect_link)
+
+    @action(
+        description=_("Replay"),
+        url_path="replay",
+    )
+    def replay(self, request: HttpRequest, object_id: int):
+        function_call = FunctionCall.objects.get(pk=object_id)
+        redirect_link = replay_v1(function_call=function_call, user=request.user)
 
         return redirect(redirect_link)
 

@@ -18,6 +18,10 @@ def build_kwargs_from_dependencies_v1(function_call):
     )
     from functions.bluewind_function.v1.functions import custom_deserialize
 
+    if function_call.function.name == "query_apollo_company_searches_v1":
+        for key, value in function_call.input_data.items():
+            new_kwargs[key] = value
+    # debugger(new_kwargs)
     for dependency in function_call_dependencies:
         if dependency.dependency.output_type != FunctionCall.OutputType.QUERY_SET:
             new_kwargs[dependency.name] = dependency.dependency.output_data

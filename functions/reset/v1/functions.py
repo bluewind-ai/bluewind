@@ -1,6 +1,5 @@
 import logging
 import subprocess
-from time import sleep
 
 logger = logging.getLogger("django.temp")
 
@@ -19,5 +18,4 @@ def reset_v1(user):
         stderr=subprocess.DEVNULL,
         start_new_session=True,
     )
-    sleep(3)
     connection.connect()
