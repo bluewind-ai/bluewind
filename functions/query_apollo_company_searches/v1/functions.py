@@ -19,7 +19,7 @@ def query_apollo_company_searches_v1(
     apollo_api_key: Dict[str, Any],
 ) -> Dict[str, Any]:
     # Assume the API key is stored in the user object
-    api_key = user.get("apollo_api_key")
+    api_key = apollo_api_key[0].value
 
     if not api_key:
         return {"error": "Apollo API key not found"}

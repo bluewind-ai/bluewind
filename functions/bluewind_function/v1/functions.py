@@ -38,6 +38,7 @@ def custom_deserialize(serialized_data):
 
     app_label = serialized_data[0]["app"]
     model_name = serialized_data[0]["model"]
+
     model_class = apps.get_model(app_label=app_label, model_name=model_name)
 
     pks = [item["pk"] for item in serialized_data]

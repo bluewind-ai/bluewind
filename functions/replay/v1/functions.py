@@ -16,4 +16,3 @@ def replay_v1(function_call, user):
         user=user,
     )
     approve_function_call_v1(function_call=new_function_call, user=user)
-    debugger("test")

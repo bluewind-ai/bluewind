@@ -78,10 +78,10 @@ def go_next_v2(function_call, user, only_descendants_of=None):
         if picked_function_call.function.name == "create_apollo_company_searches_v1":
             return (
                 picked_function_call,
-                f"/apollo_company_searches/apollocompanysearch/add/?function_call={picked_function_call.id}&organization_num_employees_ranges=101,200",
+                f"/apollo_company_searches/apollocompanysearch/add/?function_call={picked_function_call.id}&organization_num_employees_ranges=11-50&page=1&per_page=1",
                 None,
             )
-        if picked_function_call.function.name == "create_apollo_apollo_api_keys_v1":
+        if picked_function_call.function.name == "create_apollo_api_keys_v1":
             return (
                 picked_function_call,
                 f"/credentials/credential/add/?function_call={picked_function_call.id}",
