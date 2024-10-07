@@ -80,7 +80,7 @@ def approve(func, is_making_network_calls, function_call, user):
         if result.__class__.__name__ == "FunctionCall":
             function_call.output_data_dependency = result
 
-    if not FunctionCall.objects.filter(tn_parent=function_call).exists():
+    if not FunctionCall.objects.filter(parent=function_call).exists():
         if result == None:
             result = {}
         function_call.status = FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
@@ -114,7 +114,7 @@ def ask_for_approval(function_call, user, func, kwargs):
         function_call=function_call,
         user=user,
         status=status,
-        tn_parent=function_call,
+        parent=function_call,
         function=function_to_approve,
     )
 

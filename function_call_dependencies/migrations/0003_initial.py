@@ -10,16 +10,20 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("models", "0001_initial"),
+        ("function_call_dependencies", "0002_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="model",
+            model_name="functioncalldependency",
             name="user",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
             ),
+        ),
+        migrations.AlterUniqueTogether(
+            name="functioncalldependency",
+            unique_together={("dependent", "dependency")},
         ),
     ]

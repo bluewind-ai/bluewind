@@ -131,11 +131,6 @@ def get_logging_config():
                 "handlers": ["console"],
                 "propagate": False,
             },
-            "django.treenode": {
-                "level": "ERROR",
-                "handlers": ["console"],
-                "propagate": False,
-            },
             "django.static": {
                 "level": "ERROR",
                 "handlers": ["console"],

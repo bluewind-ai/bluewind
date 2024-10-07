@@ -25,7 +25,7 @@ def handle_mark_function_call_as_successful_v1(function_call, user):
 def get_siblings_in_uncompleted_stages_v1(function_call):
     test = FunctionCall.objects.filter(
         ~Q(id__in=[function_call.id]),
-        tn_parent=function_call.tn_parent,
+        parent=function_call.parent,
         status__in=FunctionCall.uncompleted_stages(),
     )
 
@@ -55,12 +55,12 @@ def update_related_function_calls_v1(function_call, user):
         output_data=function_call.output_data, output_type=function_call.output_type
     )
 
-    if function_call.tn_parent:
-        function_call.tn_parent.refresh_from_db()
+    if function_call.parent:
+        function_call.parent.refresh_from_db()
         exists = get_siblings_in_uncompleted_stages_v1(function_call).exists()
 
         if not exists:
-            function_call.tn_parent.status = (
+            function_call.parent.status = (
                 FunctionCall.Status.COMPLETED_READY_FOR_APPROVAL
             )
-            function_call.tn_parent.save()
+            function_call.parent.save()

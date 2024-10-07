@@ -1,2 +1,0 @@
-class CacheError(Exception):
-    pass

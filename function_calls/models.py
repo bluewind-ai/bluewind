@@ -4,14 +4,13 @@ from django.db import models
 from django.urls import reverse
 
 from bluewind.utils import snake_case_to_spaced_camel_case
-from treenode.models import TreeNodeModel
 from users.models import User
 from workspaces.models import WorkspaceRelated
 
 logger = logging.getLogger("django.not_used")
 
 
-class FunctionCall(WorkspaceRelated, TreeNodeModel):
+class FunctionCall(WorkspaceRelated):
     class Status(models.TextChoices):
         CONDITIONS_NOT_MET = "conditions-not-met", "Conditions Not Met"
         READY_FOR_APPROVAL = "ready-for-approval", "Ready for Approval"
@@ -40,12 +39,6 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     class OutputType(models.TextChoices):
         QUERY_SET = "queryset", "queryset"
 
-    class Meta(TreeNodeModel.Meta):
-        verbose_name = "Function Call"
-        verbose_name_plural = "Function Calls"
-
-    treenode_display_field = "function"
-
     status = models.CharField(
         max_length=35,
         choices=Status.choices,
@@ -63,6 +56,9 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         null=True,
         blank=True,
         related_name="function_calls_related_output",
+    )
+    parent = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
     )
     output_type = models.CharField(
         max_length=35,
@@ -82,17 +78,17 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     )
 
     def get_parent_created_at(self):
-        return self.tn_parent.created_at if self.tn_parent else None
+        return self.parent.created_at if self.parent else None
 
     # def save(self, *args, **kwargs):
     #     if not self.function:
     #         self.function = get_function()
 
-    #     if not self.tn_parent:
+    #     if not self.parent:
     #         if (
     #             self.function.name_without_version != "master"
     #         ):  # CAREFUL don't remove, otherwise infinte loop
-    #             self.tn_parent = get_function_call()
+    #             self.parent = get_function_call()
 
     #     self.user_id = get_superuser().id
 
@@ -122,14 +118,6 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
     def __str__(self):
         return f"{snake_case_to_spaced_camel_case(self.function.name)} {self.id}"
 
-    @property
-    def parent(self):
-        return super().tn_parent
-
-    @parent.setter
-    def parent(self, value):
-        self.tn_parent_id = value.id if value else None
-
     def get_status_emoji(self):
         emoji_map = {
             self.Status.CONDITIONS_NOT_MET: "⚪",
@@ -145,10 +133,30 @@ class FunctionCall(WorkspaceRelated, TreeNodeModel):
         }
         return emoji_map.get(self.status, "")
 
+    def get_root(self):
+        current = self
+        while current.parent:
+            current = current.parent
+        return current
+
+    def get_children(self):
+        return self.children.all()
+
+    def is_descendant_of(self, potential_ancestor):
+        if self == potential_ancestor:
+            return False
+
+        current = self.parent
+        while current:
+            if current == potential_ancestor:
+                return True
+            current = current.parent
+        return False
+
 
 def get_whole_tree(function_call):
     def _to_dict(function_call):
-        children = function_call.get_children(cache=False)
+        children = function_call.get_children()
 
         def sort_key(child):
             return (
@@ -177,7 +185,7 @@ def get_whole_tree(function_call):
         }
 
     if function_call.function.name != "master_v1":
-        root = function_call.get_root(cache=False)
+        root = function_call.get_root()
     else:
         root = function_call
 

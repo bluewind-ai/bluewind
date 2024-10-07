@@ -7,7 +7,6 @@ from function_calls.models import (
     get_whole_tree,
 )
 from functions.reset.v1.functions import reset_v1
-from treenode.admin import TreeNodeModelAdmin
 from unfold.admin import TabularInline
 
 
@@ -29,7 +28,7 @@ class FunctionCallDependencyInline(TabularInline):
     verbose_name_plural = "needed by"
 
 
-class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
+class FunctionCallAdmin(InWorkspace):
     # actions_detail = [
     #     "restart",
     #     "replay_everything",
@@ -40,7 +39,6 @@ class FunctionCallAdmin(InWorkspace, TreeNodeModelAdmin):
     inlines = [FunctionCallDependencyInline, FunctionCallDependentInline]
 
     list_display = ("status", "executed_at", "id")
-    list_display_links = ("indented_title",)
 
     readonly_fields = [
         "name",

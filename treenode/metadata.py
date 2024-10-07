@@ -1,7 +1,0 @@
-__author__ = "Fabio Caccamo"
-__copyright__ = "Copyright (c) 2018-present Fabio Caccamo"
-__description__ = "probably the best abstract model/admin for your tree based stuff."
-__email__ = "fabio.caccamo@gmail.com"
-__license__ = "MIT"
-__title__ = "django-treenode"
-__version__ = "0.22.1"

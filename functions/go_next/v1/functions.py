@@ -26,7 +26,7 @@ def go_next_v1():
             FunctionCall.objects.filter(status=status)
             .annotate(
                 parent_created_at=Case(
-                    When(tn_parent__isnull=False, then=F("tn_parent__created_at")),
+                    When(parent__isnull=False, then=F("parent__created_at")),
                     default=Value(None),
                     output_field=models.DateTimeField(),
                 )

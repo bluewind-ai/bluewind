@@ -35,7 +35,7 @@ def bootstrap_v1():
         user=superuser,
         status=status,
         function=master_v1_function,
-        tn_parent=None,
+        parent=None,
         executed_at=timezone.now(),
     )
     status = FunctionCall.Status.COMPLETED
@@ -48,6 +48,6 @@ def bootstrap_v1():
             user=superuser,
             function_name="bootstrap_v1",
         ),
-        tn_parent=master_v1_function_call,
+        parent=master_v1_function_call,
     )
     return master_v1_function_call, superuser
