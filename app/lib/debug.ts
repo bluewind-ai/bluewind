@@ -16,23 +16,15 @@ function formatDebugInfo(data: unknown): DebugInfo {
 
 export function dd(data: unknown): never {
   const debugInfo = formatDebugInfo(data);
-
-  // If it's called during a loader/action, wrap it in a Response
-  // If it's called elsewhere, stringify it
   const formattedData = JSON.stringify(debugInfo, null, 2);
 
-  if (typeof Response !== "undefined") {
-    throw new Response(formattedData, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
-
-  // Fallback for non-Remix contexts
-  console.log(formattedData);
-  throw new Error(formattedData);
+  // Always throw in Remix server context
+  throw new Response(formattedData, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 // Make dd truly global for Node.js

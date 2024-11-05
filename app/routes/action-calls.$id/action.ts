@@ -1,4 +1,4 @@
-// app/routes/action-calls.$id/action.server.ts
+// app/routes/action-calls.$id/action.ts
 
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";

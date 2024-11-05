@@ -1,4 +1,4 @@
-// app/routes/action-calls.$id/loader.server.ts
+// app/routes/action-calls.$id/loader.ts
 
 import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
@@ -7,6 +7,8 @@ import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
 export const loader: LoaderFunction = async ({ params }) => {
+  dd("test");
+
   console.log("=== ID ROUTE LOADER START ===", { params });
 
   if (!params.id) {
@@ -24,6 +26,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   });
 
   console.log("Found action call:", actionCall);
+  console.log("=== ID ROUTE LOADER END ===");
 
   return json({
     type: "Debug",
