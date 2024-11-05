@@ -1,4 +1,4 @@
-// app/routes/action-calls.$id.tsx
+// app/routes/action-calls/$id.tsx
 
 import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -9,8 +9,8 @@ import { ActionCallTree, type TreeNode } from "~/components/ui/ActionCallTree";
 import { GoNextButton } from "~/components/GoNextButton";
 import { useState } from "react";
 import { master } from "~/actions/master.server";
-import { ActionCallDetails } from "./action-calls/components/ActionCallDetails";
-import { DebugPanel } from "./action-calls/components/DebugPanel";
+import { ActionCallDetails } from "~/components/ActionCallDetails";
+import { DebugPanel } from "~/components/DebugPanel";
 
 export const loader: LoaderFunction = async ({ params }) => {
   if (!params.id) {

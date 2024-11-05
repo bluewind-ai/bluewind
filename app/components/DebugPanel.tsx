@@ -1,4 +1,4 @@
-// app/routes/action-calls/components/DebugPanel.tsx
+// app/components/DebugPanel.tsx
 
 import { ErrorDisplay } from "~/components/ErrorDisplay";
 

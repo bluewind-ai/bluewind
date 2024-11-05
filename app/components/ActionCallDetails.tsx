@@ -1,4 +1,4 @@
-// app/routes/action-calls/components/ActionCallDetails.tsx
+// app/components/ActionCallDetails.tsx
 
 import type { actionCalls, actions } from "~/db/schema";
 import type { InferSelectModel } from "drizzle-orm";

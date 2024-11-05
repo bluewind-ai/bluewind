@@ -1,6 +1,6 @@
 // app/lib/action-middleware.ts
 
-import { json, type ActionFunction } from "@remix-run/node";
+import { type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 
