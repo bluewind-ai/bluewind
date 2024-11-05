@@ -11,6 +11,7 @@ import { useState } from "react";
 import { master } from "~/actions/master.server";
 import { ActionCallDetails } from "~/components/ActionCallDetails";
 import { DebugPanel } from "~/components/DebugPanel";
+import { dd } from "~/lib/debug";
 
 export const loader: LoaderFunction = async ({ params }) => {
   console.log("=== SIMPLE TEST LOADER ===");
