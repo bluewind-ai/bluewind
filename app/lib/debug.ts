@@ -37,11 +37,9 @@ export function dd(messageOrError: any): Response {
   });
 }
 
-// Check if we're in Node.js or browser environment
-const globalObj =
-  typeof global !== "undefined" ? global : typeof window !== "undefined" ? window : undefined;
-if (globalObj) {
-  (globalObj as any).dd = dd;
+// Properly set global for Node.js environment
+if (typeof global !== "undefined") {
+  (global as any).dd = dd;
 }
 
 export {};

@@ -1,5 +1,7 @@
 // app/entry.server.tsx
 
+import "./lib/debug"; // Added this import
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { PassThrough } from "node:stream";
 
