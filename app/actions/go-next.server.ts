@@ -11,6 +11,7 @@ const actionMap = {
 } as const;
 
 export async function goNext(args: ActionFunctionArgs) {
+  dd("cdsds");
   const currentActionCall = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.id, parseInt(args.params.id || "")),
     with: {

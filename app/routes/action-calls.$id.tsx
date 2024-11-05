@@ -44,7 +44,7 @@ export const action: ActionFunction = async (args) => {
   if (!args.params.id) {
     throw new Response("Not Found", { status: 404 });
   }
-
+  dd("cdsds");
   await master(args);
 
   await db

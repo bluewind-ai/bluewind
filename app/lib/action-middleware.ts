@@ -48,12 +48,8 @@ export function withActionMiddleware(
       }
 
       context.startTime = Date.now();
-      try {
-        return await action(args);
-      } catch (error) {
-        console.error(`Error in action ${actionName}:`, error);
-        return json({ error: "An error occurred" }, { status: 500 });
-      }
+      // Removed the try/catch so dd() can work as expected
+      return await action(args);
     });
   };
 }
