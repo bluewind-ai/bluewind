@@ -1,4 +1,5 @@
-/** @type {import('eslint').Linter.Config} */
+// .eslintrc.cjs
+
 module.exports = {
   root: true,
   parserOptions: {
@@ -16,10 +17,9 @@ module.exports = {
   ignorePatterns: ["!**/.server", "!**/.client"],
 
   extends: ["eslint:recommended"],
-  plugins: ["local"], // Added your local plugin
+  plugins: ["local"],
 
   overrides: [
-    // Your file header rules
     {
       files: ["*.js", "*.mjs", "*.ts", "*.tsx"],
       rules: {
@@ -33,7 +33,6 @@ module.exports = {
       },
     },
 
-    // React
     {
       files: ["**/*.{js,jsx,ts,tsx}"],
       plugins: ["react", "jsx-a11y"],
@@ -58,7 +57,6 @@ module.exports = {
       },
     },
 
-    // Typescript
     {
       files: ["**/*.{ts,tsx}"],
       plugins: ["@typescript-eslint", "import"],
@@ -81,7 +79,6 @@ module.exports = {
       ],
     },
 
-    // Node
     {
       files: [".eslintrc.js"],
       env: {
@@ -90,6 +87,6 @@ module.exports = {
     },
   ],
   rules: {
-    "local/file-header": "error", // Added your global rule
+    "local/file-header": "error",
   },
 };

@@ -52,7 +52,5 @@
   "terminal.integrated.enableMultiLinePasteWarning": false,
   "git.autofetch": true,
   "git.enableSmartCommit": true,
-  "python.analysis.packageIndexDepths": [
-    { "name": "", "depth": 8, "includeAllSymbols": true }
-  ]
+  "python.analysis.packageIndexDepths": [{ "name": "", "depth": 8, "includeAllSymbols": true }]
 }
