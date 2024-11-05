@@ -6,10 +6,10 @@ import type { LoaderFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
+import { GoNextButton } from "~/components/GoNextButton";
+import { DebugPanel } from "~/components/DebugPanel";
 
 export const loader: LoaderFunction = async ({ params }) => {
-  dd(params);
-
   const actionCall = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.id, parseInt(params.id as string)),
     with: {
@@ -20,20 +20,29 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json(actionCall);
 };
 
+// This handles loader errors
 export function ErrorBoundary() {
   const error = useRouteError();
-  return (
-    <main className="flex-1 bg-black text-green-400 p-4 font-mono">
-      <pre className="whitespace-pre-wrap">{JSON.stringify(error, null, 2)}</pre>
-    </main>
-  );
+  return <DebugPanel data={error} />;
+}
+
+// This handles action errors
+export function Form() {
+  const error = useRouteError();
+  return <DebugPanel data={error} />;
 }
 
 export default function Route() {
-  const data = useLoaderData<typeof loader>();
+  const actionCall = useLoaderData<typeof loader>();
+
   return (
-    <main className="flex-1 bg-black text-green-400 p-4 font-mono">
-      <pre className="whitespace-pre-wrap">{JSON.stringify(data, null, 2)}</pre>
-    </main>
+    <div className="flex flex-col gap-4">
+      <div>
+        <GoNextButton actionCall={actionCall} />
+      </div>
+      <main className="flex-1 bg-black text-green-400 p-4 font-mono">
+        <pre className="whitespace-pre-wrap">{JSON.stringify(actionCall, null, 2)}</pre>
+      </main>
+    </div>
   );
 }
