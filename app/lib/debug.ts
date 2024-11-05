@@ -15,27 +15,19 @@ function formatDebugInfo(data: unknown): DebugInfo {
 }
 
 export function dd(data: unknown): never {
-  const debugInfo = formatDebugInfo(data);
-  const formattedData = JSON.stringify(debugInfo, null, 2);
-
-  // Always throw in Remix server context
-  throw new Response(formattedData, {
-    status: 200,
+  throw new Response(JSON.stringify(formatDebugInfo(data)), {
+    status: 500,
     headers: {
       "Content-Type": "application/json",
     },
   });
 }
 
-// Make dd truly global for Node.js
 declare global {
-  // @ts-expect-error - Intentionally adding dd to global scope
-  let dd: typeof dd;
+  // eslint-disable-next-line no-var
+  var dd: (data: unknown) => never;
 }
 
-if (typeof global !== "undefined") {
-  // @ts-expect-error - Intentionally adding dd to global scope
-  (global as { dd: typeof dd }).dd = dd;
-}
+global.dd = dd;
 
 export {};
