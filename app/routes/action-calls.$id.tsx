@@ -1,4 +1,4 @@
-// app/routes/action-calls/$id.tsx
+// app/routes/action-calls.$id.tsx
 
 import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -16,7 +16,6 @@ export const loader: LoaderFunction = async ({ params }) => {
   console.log("=== SIMPLE TEST LOADER ===");
   console.log("Params:", params);
 
-  // Just try to get the action_call directly
   const result = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.id, parseInt(params.id || "0")),
     with: {

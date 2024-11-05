@@ -5,6 +5,8 @@ import { actionCalls, actions } from "~/db/schema";
 import { and, inArray, isNull, eq, desc } from "drizzle-orm";
 
 export async function findNextOrCreateMaster() {
+  console.log("=== findNextOrCreateMaster START ===");
+
   // First check for any existing action calls that need approval
   const existingActionCall = await db.query.actionCalls.findFirst({
     where: and(
@@ -15,6 +17,8 @@ export async function findNextOrCreateMaster() {
       action: true,
     },
   });
+
+  console.log("Existing action call:", existingActionCall);
 
   if (existingActionCall) {
     return existingActionCall;

@@ -1,19 +1,19 @@
 // app/components/activity-bar.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { Network, Play, GitBranch, Bug, PackageSearch } from "lucide-react";
-import { useNavigate, useLoaderData } from "@remix-run/react";
-import type { loader } from "~/routes/_index";
+import { useNavigate } from "@remix-run/react";
 import { Logo } from "~/components/icons/logo";
 
 interface ActivityBarProps {
   className?: string;
+  lastAction?: any; // Made optional
 }
 
-export function ActivityBar({ className }: ActivityBarProps) {
+export function ActivityBar({ className, lastAction }: ActivityBarProps) {
   const navigate = useNavigate();
-  const { lastAction } = useLoaderData<typeof loader>();
 
   const handleNetworkClick = () => {
     if (lastAction) {
@@ -21,14 +21,9 @@ export function ActivityBar({ className }: ActivityBarProps) {
     }
   };
 
-  const handleLogoClick = () => {
-    dd("Logo clicked");
-    navigate("/");
-  };
-
   return (
     <div className={cn("flex flex-col gap-2 p-2 bg-muted w-12", className)}>
-      <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleLogoClick}>
+      <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => navigate("/")}>
         <Logo />
       </Button>
       <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleNetworkClick}>
