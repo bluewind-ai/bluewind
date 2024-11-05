@@ -1,4 +1,4 @@
-// app/routes/action-calls/$id/action.ts
+// app/routes/action-calls/$id/action.server.ts
 
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -12,7 +12,6 @@ export const action: ActionFunction = async (args) => {
   try {
     return await goNext(args);
   } catch (error) {
-    // Instead of throwing/returning the error response, we'll format it as debug message
     let debugMessage;
     if (error instanceof Error) {
       debugMessage = error.message;
@@ -28,7 +27,7 @@ export const action: ActionFunction = async (args) => {
         success: false,
       },
       {
-        status: 200, // Important: return 200 to prevent navigation
+        status: 200,
       },
     );
   }

@@ -1,4 +1,4 @@
-// app/routes/action-calls/$id/loader.ts
+// app/routes/action-calls/$id/loader.server.ts
 
 import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
@@ -15,7 +15,6 @@ export const loader: LoaderFunction = async ({ params }) => {
     );
   }
 
-  // Your existing loader logic here...
   return json(
     {
       type: "Debug",
