@@ -47,6 +47,5 @@ export async function goNext(args: ActionFunctionArgs) {
       actionCall: currentActionCall,
     });
   }
-
   throw new Response(`Action ${currentActionCall.id} is not ready for approval`, { status: 400 });
 }
