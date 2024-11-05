@@ -1,4 +1,4 @@
-// app/routes/action-calls/$id/route.tsx
+// app/routes/action-calls.$id.tsx
 
 import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
