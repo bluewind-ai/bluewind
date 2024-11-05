@@ -24,9 +24,8 @@ export async function goNext(args: ActionFunctionArgs) {
 
   // Let's test our new dd!
   dd({
-    message: "Testing our new dd function",
-    currentActionCall,
     args,
+    currentActionCall,
   });
 
   console.log("🟡 Found action call:", currentActionCall);

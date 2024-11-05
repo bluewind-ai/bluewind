@@ -1,22 +1,20 @@
 // app/lib/debug.ts
 
 type DebugInfo = {
-  type: "Error";
+  type: string;
   message: string;
-  data: Record<string, unknown>;
+  data: unknown;
 };
 
 export function dd(data: unknown): never {
   const debugInfo: DebugInfo = {
-    type: "Error",
+    type: "Debug",
     message: "Debug Dump",
-    data: {
-      debug: data,
-    },
+    data,
   };
 
   throw new Response(JSON.stringify(debugInfo, null, 2), {
-    status: 200, // Using 200 so it doesn't trigger error boundaries
+    status: 200,
     headers: {
       "Content-Type": "application/json",
     },
