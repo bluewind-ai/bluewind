@@ -7,6 +7,8 @@ import { eq } from "drizzle-orm";
 import type { TreeNode } from "~/components/ui/ActionCallTree";
 
 export const loader: LoaderFunction = async ({ params }) => {
+  dd("test1234");
+
   console.log("=== SIMPLE TEST LOADER ===");
   console.log("Params:", params);
 

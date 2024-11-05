@@ -5,7 +5,6 @@ import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import { master } from "./master.server";
-import { dd } from "~/lib/debug";
 
 const actionMap = {
   master,
@@ -23,10 +22,6 @@ export async function goNext(args: ActionFunctionArgs) {
   });
 
   // Let's test our new dd!
-  dd({
-    args,
-    currentActionCall,
-  });
 
   console.log("🟡 Found action call:", currentActionCall);
 

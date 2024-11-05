@@ -20,3 +20,16 @@ export function dd(data: unknown): never {
     },
   });
 }
+
+// Make dd truly global for Node.js
+declare global {
+  // @ts-expect-error - Intentionally adding dd to global scope
+  let dd: typeof dd;
+}
+
+if (typeof global !== "undefined") {
+  // @ts-expect-error - Intentionally adding dd to global scope
+  (global as { dd: typeof dd }).dd = dd;
+}
+
+export {};
