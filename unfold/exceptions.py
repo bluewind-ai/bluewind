@@ -1,2 +1,0 @@
-class UnfoldException(Exception):
-    pass
