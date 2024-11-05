@@ -24,10 +24,13 @@ export function GoNextButton({ actionCall, className, onDebugData, ...props }: G
   const fetcher = useFetcher<FetcherData>();
 
   useEffect(() => {
+    console.log("🟣 Fetcher state:", fetcher.state);
+    console.log("🟣 Fetcher data:", fetcher.data);
     if (fetcher.data?.debugMessage && onDebugData) {
+      console.log("🟣 Calling onDebugData with:", fetcher.data.debugMessage);
       onDebugData(fetcher.data.debugMessage);
     }
-  }, [fetcher.data, onDebugData]);
+  }, [fetcher.data, onDebugData, fetcher.state]);
 
   return (
     <fetcher.Form method="post" action={`/action-calls/${actionCall.id}`}>

@@ -1,10 +1,7 @@
 // app/routes/action-calls/$id/action.ts
 
-import { json, type ActionFunction } from "@remix-run/node";
-import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
-import { eq } from "drizzle-orm";
-import { master } from "~/actions/master.server";
+import type { ActionFunction } from "@remix-run/node";
+import { goNext } from "~/actions/go-next.server";
 
 export const action: ActionFunction = async (args) => {
   if (!args.params.id) {
@@ -12,19 +9,13 @@ export const action: ActionFunction = async (args) => {
   }
 
   try {
-    await master(args);
+    // Use goNext instead of directly calling master
+    return await goNext(args);
   } catch (error) {
-    if (error instanceof Response && error.status === 418) {
-      const debugMessage = await error.text();
-      return json({ debugMessage });
+    // Pass through any error responses
+    if (error instanceof Response) {
+      return error;
     }
     throw error;
   }
-
-  await db
-    .update(actionCalls)
-    .set({ status: "completed" })
-    .where(eq(actionCalls.id, parseInt(args.params.id)));
-
-  return json({ success: true });
 };

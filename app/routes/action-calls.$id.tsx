@@ -1,67 +1,15 @@
 // app/routes/action-calls.$id.tsx
 
-import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
-import { eq } from "drizzle-orm";
-import { ActionCallTree, type TreeNode } from "~/components/ui/ActionCallTree";
-import { GoNextButton } from "~/components/GoNextButton";
 import { useState } from "react";
-import { master } from "~/actions/master.server";
+import { useLoaderData, useRouteError, isRouteErrorResponse } from "@remix-run/react";
+import { ActionCallTree } from "~/components/ui/ActionCallTree";
 import { ActionCallDetails } from "~/components/ActionCallDetails";
+import { GoNextButton } from "~/components/GoNextButton";
 import { DebugPanel } from "~/components/DebugPanel";
+import type { loader } from "~/routes/action-calls/$id/loader";
 
-export const loader: LoaderFunction = async ({ params }) => {
-  console.log("=== SIMPLE TEST LOADER ===");
-  console.log("Params:", params);
-
-  const result = await db.query.actionCalls.findFirst({
-    where: eq(actionCalls.id, parseInt(params.id || "0")),
-    with: {
-      action: true,
-    },
-  });
-
-  console.log("Direct DB Result:", result);
-
-  if (!result) {
-    console.log("No result found");
-    throw new Response("Not Found", { status: 404 });
-  }
-
-  const treeData: TreeNode = {
-    id: result.id,
-    actionName: result.action.name,
-    status: result.status,
-    children: [],
-  };
-
-  return json({ result: { actionCall: result, action: result.action }, treeData });
-};
-
-export const action: ActionFunction = async (args) => {
-  if (!args.params.id) {
-    throw new Response("Not Found", { status: 404 });
-  }
-
-  try {
-    await master(args);
-  } catch (error) {
-    if (error instanceof Response && error.status === 418) {
-      const debugMessage = await error.text();
-      return json({ debugMessage });
-    }
-    throw error;
-  }
-
-  await db
-    .update(actionCalls)
-    .set({ status: "completed" })
-    .where(eq(actionCalls.id, parseInt(args.params.id)));
-
-  return json({ success: true });
-};
+export { action } from "~/routes/action-calls/$id/action";
+export { loader } from "~/routes/action-calls/$id/loader";
 
 export default function ActionCallPage() {
   const { result, treeData } = useLoaderData<typeof loader>();
@@ -83,6 +31,32 @@ export default function ActionCallPage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    let errorData;
+    try {
+      errorData = JSON.parse(error.data);
+    } catch {
+      errorData = error.data;
+    }
+
+    return (
+      <div className="error-container">
+        <pre className="whitespace-pre-wrap">{JSON.stringify(errorData, null, 2)}</pre>
+      </div>
+    );
+  }
+
+  return (
+    <div className="error-container">
+      <h1>Something went wrong</h1>
+      <pre>{error instanceof Error ? error.message : "Unknown error"}</pre>
     </div>
   );
 }
