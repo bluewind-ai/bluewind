@@ -17,10 +17,10 @@ export async function findNextOrCreateMaster() {
       action: true,
     },
   });
-
   console.log("Existing action call:", existingActionCall);
 
   if (existingActionCall) {
+    console.log("Returning existing action call");
     return existingActionCall;
   }
 
@@ -28,8 +28,10 @@ export async function findNextOrCreateMaster() {
   const lastActionCall = await db.query.actionCalls.findFirst({
     orderBy: [desc(actionCalls.id)],
   });
+  console.log("Last action call:", lastActionCall);
 
   if (lastActionCall) {
+    console.log("Returning last action call");
     return lastActionCall;
   }
 
@@ -37,14 +39,17 @@ export async function findNextOrCreateMaster() {
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });
+  console.log("Master action:", masterAction);
 
   const action =
     masterAction || (await db.insert(actions).values({ name: "master" }).returning())[0];
+  console.log("Action to use:", action);
 
   const [newActionCall] = await db
     .insert(actionCalls)
     .values({ actionId: action.id, status: "ready_for_approval" })
     .returning();
 
+  console.log("Created new action call:", newActionCall);
   return newActionCall;
 }
