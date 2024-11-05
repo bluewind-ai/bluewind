@@ -10,6 +10,7 @@
       "source.organizeImports.ruff": "explicit"
     }
   },
+
   "ruff.organizeImports": true,
   "ruff.fixAll": true,
   "files.associations": {
@@ -46,7 +47,8 @@
     "**/node_modules": true,
     "**/staticfiles": true,
     "**/poetry.lock": true,
-    "**/migrations": true
+    "**/migrations": true,
+    "website/**": true
   },
   "terminal.integrated.scrollback": 10000,
   "terminal.integrated.enableMultiLinePasteWarning": false,

@@ -21,9 +21,14 @@ export function ActivityBar({ className }: ActivityBarProps) {
     }
   };
 
+  const handleLogoClick = () => {
+    dd("Logo clicked");
+    navigate("/");
+  };
+
   return (
     <div className={cn("flex flex-col gap-2 p-2 bg-muted w-12", className)}>
-      <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => navigate("/")}>
+      <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleLogoClick}>
         <Logo />
       </Button>
       <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleNetworkClick}>
