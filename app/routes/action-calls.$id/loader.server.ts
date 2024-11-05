@@ -4,6 +4,9 @@ import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 
 export const loader: LoaderFunction = async ({ params }) => {
+  console.log("=== ID ROUTE LOADER START ===");
+  console.log("Params:", params);
+
   if (!params.id) {
     return json(
       {
@@ -19,7 +22,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     {
       type: "Debug",
       message: "Debug Dump",
-      data: "Whatever data you want to debug",
+      data: `Loading data for ID: ${params.id}`,
     },
     { status: 200 },
   );
