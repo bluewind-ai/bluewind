@@ -1,8 +1,8 @@
-// app/routes/action-calls/$id/route.tsx
+// app/routes/action-calls.$id/route.tsx
 
 import { useLoaderData, useRouteError } from "@remix-run/react";
 import { ActivityBar } from "~/components/activity-bar";
-import type { loader } from "./loader";
+import type { loader } from "./loader.server"; // Updated this line
 
 interface RouteError {
   type: string;

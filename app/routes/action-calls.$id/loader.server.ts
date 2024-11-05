@@ -1,4 +1,4 @@
-// app/routes/action-calls/$id/loader.server.ts
+// app/routes/action-calls.$id/loader.server.ts
 
 import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
