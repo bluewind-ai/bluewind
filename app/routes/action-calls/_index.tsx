@@ -1,23 +1,26 @@
 // app/routes/action-calls/_index.tsx
 
-import { type LoaderFunction, redirect } from "@remix-run/node";
+import { Outlet, useLoaderData } from "@remix-run/react";
+import { ActivityBar } from "~/components/activity-bar";
+import { json, type LoaderFunction } from "@remix-run/node";
 import { findNextOrCreateMaster } from "~/lib/actions.server";
 
 export const loader: LoaderFunction = async () => {
-  console.log("=== INDEX LOADER START ===");
-
   const lastAction = await findNextOrCreateMaster();
-  console.log("Last action found:", lastAction);
-
-  if (!lastAction) {
-    console.log("No action found");
-    throw new Response("No actions found", { status: 404 });
-  }
-
-  console.log("Redirecting to:", `/action-calls/${lastAction.id}`);
-  return redirect(`/action-calls/${lastAction.id}`);
+  return json({ lastAction });
 };
 
-export default function Index() {
-  return null;
+export default function ActionCallsLayout() {
+  const { lastAction } = useLoaderData<typeof loader>();
+
+  return (
+    <div className="flex min-h-screen">
+      <div className="w-12">
+        <ActivityBar lastAction={lastAction} />
+      </div>
+      <main className="flex-1">
+        <Outlet />
+      </main>
+    </div>
+  );
 }
