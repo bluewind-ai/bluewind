@@ -6,19 +6,33 @@ type DebugInfo = {
   data: unknown;
 };
 
-export function dd(data: unknown): never {
-  const debugInfo: DebugInfo = {
+function formatDebugInfo(data: unknown): DebugInfo {
+  return {
     type: "Debug",
     message: "Debug Dump",
     data,
   };
+}
 
-  throw new Response(JSON.stringify(debugInfo, null, 2), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export function dd(data: unknown): never {
+  const debugInfo = formatDebugInfo(data);
+
+  // If it's called during a loader/action, wrap it in a Response
+  // If it's called elsewhere, stringify it
+  const formattedData = JSON.stringify(debugInfo, null, 2);
+
+  if (typeof Response !== "undefined") {
+    throw new Response(formattedData, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
+  // Fallback for non-Remix contexts
+  console.log(formattedData);
+  throw new Error(formattedData);
 }
 
 // Make dd truly global for Node.js

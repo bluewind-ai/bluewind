@@ -5,8 +5,6 @@ import { json } from "@remix-run/node";
 import { goNext } from "~/actions/go-next.server";
 
 export const action: ActionFunction = async (args) => {
-  dd("test123");
-
   if (!args.params.id) {
     return json({ debugMessage: "Not Found" }, { status: 404 });
   }
