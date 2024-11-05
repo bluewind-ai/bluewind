@@ -1,7 +1,6 @@
 // app/root.tsx
 
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
-import "~/styles/globals.css";
 import "~/tailwind.css";
 
 export default function App() {
