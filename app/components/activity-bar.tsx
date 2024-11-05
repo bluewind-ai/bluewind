@@ -16,9 +16,7 @@ export function ActivityBar({ className }: ActivityBarProps) {
   const { lastAction } = useLoaderData<typeof loader>();
 
   const handleNetworkClick = () => {
-    console.log("Network clicked, lastAction:", lastAction); // Debug log
     if (lastAction) {
-      console.log("Navigating to:", `/action-calls/${lastAction.id}`); // Debug log
       navigate(`/action-calls/${lastAction.id}`);
     }
   };
