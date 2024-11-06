@@ -19,8 +19,13 @@ interface GoNextButtonProps extends ButtonProps {
   className?: string;
 }
 
+type ActionResponse = {
+  message: string;
+  status: string;
+};
+
 function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<ActionResponse>();
   return (
     <div className="flex flex-col gap-4">
       <fetcher.Form method="post" action={`/action-calls/${actionCall.id}`}>
@@ -48,6 +53,13 @@ export const loader: LoaderFunction = async ({ params }) => {
     with: { action: true },
   });
   return json(actionCall);
+};
+
+// Action
+export const action: ActionFunction = async ({ params }) => {
+  // @ts-expect-error - We are not using the request object
+  const result = await master({ id: parseInt(params.id as string) });
+  return json(result);
 };
 
 // For loader errors
