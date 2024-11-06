@@ -20,12 +20,7 @@ const ResizableHandle = ({
   const isResisting = useRef(false);
 
   const logEvent = (message: string, data: any) => {
-    console.log(message, {
-      ...data,
-      resistancePointX: resistancePointX.current,
-      isResisting: isResisting.current,
-      time: new Date().toISOString(),
-    });
+    void 0;
   };
 
   return (
@@ -50,14 +45,7 @@ const ResizableHandle = ({
           const parentRect = parent.getBoundingClientRect();
           const percentage = (rect.width / parentRect.width) * 100;
 
-          console.log("Dragging:", {
-            percentage,
-            width: rect.width,
-            parentWidth: parentRect.width,
-            mouseX: e.clientX,
-            isResisting: isResisting.current,
-            resistancePoint: resistancePointX.current,
-          });
+          void 0;
 
           if (percentage <= 15 && !isResisting.current) {
             void 0;
@@ -68,11 +56,7 @@ const ResizableHandle = ({
 
           if (isResisting.current && resistancePointX.current) {
             const distance = Math.abs(resistancePointX.current - e.clientX);
-            console.log("In resistance zone:", {
-              distance,
-              mouseX: e.clientX,
-              resistanceX: resistancePointX.current,
-            });
+            void 0;
 
             if (distance > 50) {
               void 0;

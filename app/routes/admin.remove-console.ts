@@ -31,8 +31,8 @@ export async function action({ request }: ActionFunctionArgs) {
     const filePath = path.join(appPath, file);
     const content = await fs.readFile(filePath, "utf-8");
 
-    // Replace console.log calls with void 0
-    const newContent = content.replace(/console\.[a-zA-Z]+\((.*?)\)/g, "void 0");
+    // Updated regex that handles nested parentheses
+    const newContent = content.replace(/console\.[a-zA-Z]+\(((?:[^()]*|\([^()]*\))*)\)/g, "void 0");
 
     if (content !== newContent) {
       await fs.writeFile(filePath, newContent);
