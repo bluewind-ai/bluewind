@@ -19,7 +19,8 @@
     "clean-all": "rm -rf build && rm -rf .drizzle && rm -rf .drizzle-kit && rm -rf node_modules && rm -rf .eslintcache && rm -rf .prettiercache",
     "reset-db": "sh reset-db.sh",
     "reset-all": "npm run clean-all && npm install && npm run reset-db && npm run fix",
-    "truncate-db": "tsx scripts/truncate-db.ts"
+    "truncate-db": "tsx scripts/truncate-db.ts",
+    "remove-console": "tsx scripts/remove-console.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.2",
@@ -32,8 +33,10 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.36.0",
+    "glob": "^10.3.10",
     "isbot": "^4.1.0",
     "lucide-react": "^0.454.0",
+    "node-fetch": "^3.3.2",
     "postgres": "^3.4.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

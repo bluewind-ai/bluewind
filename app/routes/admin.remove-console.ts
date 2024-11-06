@@ -50,7 +50,3 @@ export async function action({ request }: ActionFunctionArgs) {
     message: `Removed ${totalRemoved} console calls from ${modifiedFiles} files`,
   });
 }
-
-export default function RemoveConsoleRoute() {
-  return null;
-}

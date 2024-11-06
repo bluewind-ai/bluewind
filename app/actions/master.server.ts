@@ -5,6 +5,5 @@ import { loadCsvData } from "./load-csv-data.server";
 import type { ActionFunctionArgs } from "@remix-run/node";
 
 export const master = withActionMiddleware(async function master(args: ActionFunctionArgs) {
-  console.log("Running master action");
   return await loadCsvData(args);
 });
