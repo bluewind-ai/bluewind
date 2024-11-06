@@ -11,7 +11,15 @@ export default function App() {
   return (
     <AppLayout>
       <div className="flex min-h-screen">
-        <Outlet />
+        <div className="flex-1">
+          <Outlet />
+        </div>
+        <div className="w-[500px] border-l bg-[#1e1e1e]">
+          <div className="h-full text-green-400 font-mono p-4 overflow-auto">
+            <h1 className="text-2xl mb-6">Debug Panel</h1>
+            <pre className="whitespace-pre-wrap">Hello World</pre>
+          </div>
+        </div>
       </div>
     </AppLayout>
   );
