@@ -2,13 +2,12 @@
 
 import { useLoaderData, useRouteError } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import type { LoaderFunction, ActionFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { GoNextButton } from "~/components/GoNextButton";
 import { DebugPanel } from "~/components/DebugPanel";
-import { goNext } from "~/actions/go-next.server";
 
 export const loader: LoaderFunction = async ({ params }) => {
   const actionCall = await db.query.actionCalls.findFirst({
@@ -21,11 +20,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json(actionCall);
 };
 
-export const action: ActionFunction = async (args) => {
-  return await goNext(args);
-};
-
-// This handles both loader and action errors
+// For loader errors only
 export function ErrorBoundary() {
   const error = useRouteError();
   return <DebugPanel data={error} />;
