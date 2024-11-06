@@ -7,7 +7,7 @@ import type { ActionFunctionArgs } from "@remix-run/node";
 export const loadCsvData = withActionMiddleware(async function loadCsvData(
   args: ActionFunctionArgs,
 ) {
-  void 0;
+  void 0; // this can be removed
   // CSV loading logic here
   return true;
 });

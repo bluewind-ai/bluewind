@@ -34,7 +34,10 @@ export async function action(_: ActionFunctionArgs) {
     const content = await fs.readFile(filePath, "utf-8");
 
     // Updated regex that handles nested parentheses
-    const newContent = content.replace(/console\.[a-zA-Z]+\(((?:[^()]*|\([^()]*\))*)\)/g, "void 0");
+    const newContent = content.replace(
+      /console\.[a-zA-Z]+\(((?:[^()]*|\([^()]*\))*)\)/g,
+      "void 0 // this can be removedd",
+    );
 
     if (content !== newContent) {
       await fs.writeFile(filePath, newContent);
