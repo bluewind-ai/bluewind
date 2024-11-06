@@ -17,23 +17,29 @@ function formatDebugInfo(data: unknown): DebugInfo {
   };
 }
 
-export function dd(data: unknown): never {
+export async function dd(data: unknown): Promise<never> {
+  console.log("🟢 dd function called with data:", data);
+
   const debugInfo = formatDebugInfo(data);
-  db.insert(debugLogs).values({
+  console.log("🟢 Formatted debug info:", debugInfo);
+
+  console.log("🟡 Attempting to insert into debugLogs...");
+  await db.insert(debugLogs).values({
     message: JSON.stringify(debugInfo),
   });
+  console.log("🟢 Insert completed");
 
-  throw new Response(JSON.stringify(debugInfo), {
+  return new Response(JSON.stringify(debugInfo), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
     },
-  });
+  }) as never;
 }
 
 declare global {
   // eslint-disable-next-line no-var
-  var dd: (data: unknown) => never;
+  var dd: (data: unknown) => Promise<never>;
 }
 
 global.dd = dd;

@@ -40,12 +40,8 @@
           "name": "action_calls_action_id_actions_id_fk",
           "tableFrom": "action_calls",
           "tableTo": "actions",
-          "columnsFrom": [
-            "action_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["action_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -53,12 +49,8 @@
           "name": "action_calls_parent_id_action_calls_id_fk",
           "tableFrom": "action_calls",
           "tableTo": "action_calls",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -93,9 +85,7 @@
         "actions_name_unique": {
           "name": "actions_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
