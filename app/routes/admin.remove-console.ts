@@ -1,4 +1,5 @@
 // app/routes/admin.remove-console.ts
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { json, type ActionFunctionArgs } from "@remix-run/node";
@@ -6,7 +7,7 @@ import fs from "fs/promises";
 import path from "path";
 import { glob } from "glob";
 
-type ActionResponse =
+export type ActionResponse =
   | {
       success: true;
       totalRemoved: number;

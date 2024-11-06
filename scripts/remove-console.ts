@@ -11,12 +11,20 @@ async function removeConsole() {
     },
   });
 
-  const data = (await response.json()) as ActionResponse;
-  console.log(data.message);
+  const data: ActionResponse = (await response.json()) as ActionResponse;
 
-  if (data.modifiedFilePaths.length > 0) {
-    console.log("\nModified files:");
-    data.modifiedFilePaths.forEach((file) => console.log(`- ${file}`));
+  if (data.success) {
+    console.log(data.message);
+
+    if (data.modifiedFilePaths.length > 0) {
+      console.log("\nModified files:");
+      data.modifiedFilePaths.forEach((filePath: string) => console.log(`- ${filePath}`));
+    }
+  } else {
+    console.error(data.error);
+    if (data.stack) {
+      console.error(data.stack);
+    }
   }
 }
 
