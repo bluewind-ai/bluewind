@@ -1,9 +1,9 @@
 // app/root.tsx
 
 import { type LinksFunction } from "@remix-run/node";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 
-import tailwindStylesheetUrl from "./tailwind.css";
+import tailwindStylesheetUrl from "./tailwind.css?url";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
 
@@ -30,7 +30,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );

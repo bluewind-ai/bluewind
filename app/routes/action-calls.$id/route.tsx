@@ -21,9 +21,6 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
-  console.log("Navigation state:", navigation.state);
-  console.log("Navigation location:", navigation.location);
-
   return (
     <Form method="post" replace>
       <Button
@@ -38,27 +35,32 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
   );
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
+  console.log("\n🔍 DEBUG LOADER START");
+  console.log("URL:", request.url);
+  console.log("Headers:", Object.fromEntries(request.headers.entries()));
+  console.log("Params:", params);
+
   if (!params.id || isNaN(Number(params.id))) {
+    console.log("❌ Invalid ID detected:", params.id);
+    console.log("Request URL:", request.url);
+    console.log("Full params:", params);
     throw new Response("Invalid ID", { status: 400 });
   }
 
-  console.log("Loader called with params:", params);
   const actionCall = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.id, parseInt(params.id)),
     with: { action: true },
   });
 
-  if (!actionCall) {
-    throw new Response("Not found", { status: 404 });
-  }
+  console.log("✅ Loader completing successfully");
+  console.log("🔍 DEBUG LOADER END\n");
 
   return json(actionCall);
 };
 
 export default function Route() {
   const actionCall = useLoaderData<typeof loader>();
-  console.log("Route rendering with actionCall:", actionCall);
 
   return (
     <div className="flex flex-col gap-4">
