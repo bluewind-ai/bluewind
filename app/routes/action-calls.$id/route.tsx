@@ -28,6 +28,9 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
+  console.log("Navigation state:", navigation.state);
+  console.log("Navigation location:", navigation.location);
+
   return (
     <Form method="post" replace>
       <Button
@@ -44,6 +47,7 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
 
 // Loader
 export const loader: LoaderFunction = async ({ params }) => {
+  console.log("Loader called with params:", params);
   const actionCall = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.id, parseInt(params.id as string)),
     with: { action: true },
@@ -53,6 +57,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 // Action
 export const action: ActionFunction = async ({ params }) => {
+  console.log("Action called with params:", params);
   dd("Request");
   // @ts-expect-error - We are not using the request object
   const result = await master({ id: parseInt(params.id as string) });
@@ -62,13 +67,16 @@ export const action: ActionFunction = async ({ params }) => {
 // For loader errors
 export function ErrorBoundary() {
   const error = useRouteError();
+  console.log("Error boundary triggered with:", error);
+
   if (isRouteErrorResponse(error)) {
-    return (
-      <main className="flex-1 bg-black text-green-400 p-4 font-mono">
-        <pre className="whitespace-pre-wrap">{JSON.stringify(error, null, 2)}</pre>
-      </main>
-    );
+    console.log("Route error response:", {
+      status: error.status,
+      statusText: error.statusText,
+      data: error.data,
+    });
   }
+
   return (
     <main className="flex-1 bg-black text-green-400 p-4 font-mono">
       <pre className="whitespace-pre-wrap">{JSON.stringify(error, null, 2)}</pre>
@@ -79,6 +87,8 @@ export function ErrorBoundary() {
 // Route Component
 export default function Route() {
   const actionCall = useLoaderData<typeof loader>();
+  console.log("Route rendering with actionCall:", actionCall);
+
   return (
     <div className="flex flex-col gap-4">
       <GoNextButton actionCall={actionCall} />
