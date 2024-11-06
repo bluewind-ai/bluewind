@@ -28,24 +28,17 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
   const fetcher = useFetcher<ActionResponse>();
 
   return (
-    <>
-      <div className="flex flex-col gap-4">
-        <fetcher.Form method="post" action={`/action-calls/${actionCall.id}`}>
-          <Button
-            type="submit"
-            className={cn("bg-primary text-primary-foreground hover:bg-primary/90", className)}
-            {...props}
-          >
-            {actionCall.status === "completed" ? "Next" : "Approve"}
-          </Button>
-        </fetcher.Form>
-      </div>
-      {fetcher.data && (
-        <main className="flex-1 bg-black text-green-400 p-4 font-mono">
-          <pre className="whitespace-pre-wrap">{JSON.stringify(fetcher.data, null, 2)}</pre>
-        </main>
-      )}
-    </>
+    <div className="flex flex-col gap-4">
+      <fetcher.Form method="post" action={`/action-calls/${actionCall.id}`}>
+        <Button
+          type="submit"
+          className={cn("bg-primary text-primary-foreground hover:bg-primary/90", className)}
+          {...props}
+        >
+          {actionCall.status === "completed" ? "Next" : "Approve"}
+        </Button>
+      </fetcher.Form>
+    </div>
   );
 }
 
