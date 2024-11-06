@@ -1,6 +1,6 @@
 // app/root.tsx
 
-import { json, type LinksFunction, type LoaderFunction } from "@remix-run/node";
+import { type LinksFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,55 +8,15 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
+  isRouteErrorResponse,
+  useRouteError,
 } from "@remix-run/react";
 import stylesheet from "~/tailwind.css";
-import { desc } from "drizzle-orm";
-import { db } from "./db";
-import { debugLogs } from "./db/schema";
-import type { InferSelectModel } from "drizzle-orm";
-
-type DebugLog = InferSelectModel<typeof debugLogs>;
-type SerializedDebugLog = Omit<DebugLog, "createdAt"> & {
-  createdAt: string;
-};
+import { Debug } from "~/components/DebugPanel";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: stylesheet }];
 
-export const loader = async () => {
-  console.log("🟢 Root Loader starting");
-  const logs = await db.select().from(debugLogs).orderBy(desc(debugLogs.createdAt)).limit(50);
-  const serializedLogs: SerializedDebugLog[] = logs.map((log) => ({
-    ...log,
-    createdAt: log.createdAt.toISOString(),
-  }));
-  console.log("🟢 Fetched debug logs:", serializedLogs);
-  return json({ logs: serializedLogs });
-};
-
-function Debug() {
-  const { logs } = useLoaderData<typeof loader>();
-
-  return (
-    <div className="w-[500px] border-l bg-[#1e1e1e]">
-      <div className="h-full text-green-400 font-mono p-4 overflow-auto">
-        <h1 className="text-2xl mb-6">Debug Panel</h1>
-        <div className="space-y-6">
-          {logs.map((log) => (
-            <div key={log.id} className="border border-green-400/20 rounded p-4">
-              <div className="text-xs text-green-400/60 mb-2">
-                {new Date(log.createdAt).toLocaleString()}
-              </div>
-              <pre className="whitespace-pre-wrap">{log.message}</pre>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function App() {
+function Document({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -67,7 +27,7 @@ export default function App() {
       </head>
       <body>
         <div className="flex h-screen">
-          <Outlet />
+          {children}
           <Debug />
         </div>
         <ScrollRestoration />
@@ -75,5 +35,40 @@ export default function App() {
         <LiveReload />
       </body>
     </html>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  return (
+    <Document>
+      <div className="flex-1 p-4">
+        <h1>Error</h1>
+        {isRouteErrorResponse(error) ? (
+          <div>
+            <h2>
+              {error.status} {error.statusText}
+            </h2>
+            <pre>{JSON.stringify(error.data, null, 2)}</pre>
+          </div>
+        ) : error instanceof Error ? (
+          <div>
+            <h2>{error.message}</h2>
+            <pre>{error.stack}</pre>
+          </div>
+        ) : (
+          <h2>Unknown Error</h2>
+        )}
+      </div>
+    </Document>
+  );
+}
+
+export default function App() {
+  return (
+    <Document>
+      <Outlet />
+    </Document>
   );
 }
