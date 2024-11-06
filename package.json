@@ -20,7 +20,8 @@
     "reset-db": "sh reset-db.sh",
     "reset-all": "npm run clean-all && npm install && npm run reset-db && npm run fix",
     "truncate-db": "tsx scripts/truncate-db.ts",
-    "remove-console": "tsx scripts/remove-console.ts"
+    "remove-console": "tsx scripts/remove-console.ts",
+    "instructions": "tsx scripts/generate-instructions.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.2",
