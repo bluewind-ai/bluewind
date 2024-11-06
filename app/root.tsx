@@ -1,4 +1,6 @@
 // app/root.tsx
+
+import { type LinksFunction } from "@remix-run/node";
 import {
   Links,
   Meta,
@@ -8,8 +10,9 @@ import {
   isRouteErrorResponse,
   useRouteError,
 } from "@remix-run/react";
-import "./tailwind.css"; // Direct import instead of using links
-import { Debug } from "~/components/DebugPanel";
+import "./tailwind.css";
+import { Debug } from "~/routes/debug/route"; // Simple debug panel for root errors
+import DebugPanel from "~/routes/debug-panel"; // Fancy debug panel for the app
 
 function Document({ children }: { children: React.ReactNode }) {
   return (
@@ -23,7 +26,7 @@ function Document({ children }: { children: React.ReactNode }) {
       <body className="h-full overflow-hidden">
         <div className="flex h-full">
           <div className="flex-1 overflow-auto">{children}</div>
-          <Debug />
+          <DebugPanel />
         </div>
         <ScrollRestoration />
         <Scripts />

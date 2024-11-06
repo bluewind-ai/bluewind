@@ -1,11 +1,12 @@
-// app/components/DebugPanel.tsx
+// app/routes/debug-panel.tsx
 
-import { json } from "@remix-run/server-runtime";
-import { useLoaderData } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import { db } from "~/db";
 import { debugLogs } from "~/db/schema";
 import { desc } from "drizzle-orm";
+import { json } from "@remix-run/server-runtime";
 import type { InferSelectModel } from "drizzle-orm";
+import { useEffect } from "react";
 
 type DebugLog = InferSelectModel<typeof debugLogs>;
 type SerializedDebugLog = Omit<DebugLog, "createdAt"> & {
@@ -21,8 +22,14 @@ export async function loader() {
   return json({ logs: serializedLogs });
 }
 
-export function Debug() {
-  const { logs } = useLoaderData<typeof loader>();
+export default function DebugPanel() {
+  const fetcher = useFetcher<typeof loader>();
+
+  useEffect(() => {
+    fetcher.load("/debug-panel");
+  }, [fetcher]);
+
+  const logs = fetcher.data?.logs ?? [];
 
   return (
     <div className="w-[500px] border-l bg-[#1e1e1e] overflow-auto">
