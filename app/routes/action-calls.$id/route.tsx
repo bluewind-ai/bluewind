@@ -20,8 +20,14 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json(actionCall);
 };
 
-// For loader errors only
+// For loader errors
 export function ErrorBoundary() {
+  const error = useRouteError();
+  return <DebugPanel data={error} />;
+}
+
+// For action errors
+export function Form() {
   const error = useRouteError();
   return <DebugPanel data={error} />;
 }
@@ -31,7 +37,7 @@ export default function Route() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
+      <div className="flex flex-col gap-2">
         <GoNextButton actionCall={actionCall} />
       </div>
       <main className="flex-1 bg-black text-green-400 p-4 font-mono">
