@@ -31,12 +31,13 @@ export async function action({ request }: ActionFunctionArgs) {
     const filePath = path.join(appPath, file);
     const content = await fs.readFile(filePath, "utf-8");
 
-    const newContent = content.replace(/\bconsole\.[^(]*\([^)]*\);?\n?/g, "");
+    // Replace console.log calls with void 0
+    const newContent = content.replace(/console\.[a-zA-Z]+\((.*?)\)/g, "void 0");
 
     if (content !== newContent) {
       await fs.writeFile(filePath, newContent);
-      const removedCalls = (content.match(/\bconsole\.[^(]*\([^)]*\);?\n?/g) || []).length;
-      totalRemoved += removedCalls;
+      const matches = (content.match(/console\.[a-zA-Z]+\(/g) || []).length;
+      totalRemoved += matches;
       modifiedFiles++;
       modifiedFilePaths.push(filePath);
     }

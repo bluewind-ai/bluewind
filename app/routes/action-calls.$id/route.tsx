@@ -36,7 +36,7 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
-  console.log("🔍 Loader called with params:", params);
+  void 0;
 
   if (!params.id || isNaN(Number(params.id))) {
     throw new Response("Invalid ID", { status: 400 });
@@ -47,23 +47,23 @@ export const loader: LoaderFunction = async ({ params }) => {
     with: { action: true },
   });
 
-  console.log("📦 Loader returning actionCall:", actionCall);
+  void 0;
   return json(actionCall);
 };
 
 export const action: ActionFunction = async ({ params }) => {
-  console.log("🎯 Action called with params:", params);
+  void 0;
 
   if (!params.id || isNaN(Number(params.id))) {
     return json({ error: "Invalid ID" }, { status: 400 });
   }
 
   const id = parseInt(params.id);
-  console.log("⚡ Updating actionCall:", id);
+  void 0;
 
   await db.update(actionCalls).set({ status: "completed" }).where(eq(actionCalls.id, id));
 
-  console.log("✅ Update complete");
+  void 0;
   return json({ success: true });
 };
 

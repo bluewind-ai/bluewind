@@ -14,7 +14,7 @@ const ResizableHandle = ({
 }: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & {
   withHandle?: boolean;
 }) => {
-  console.log("Handle render");
+  void 0;
   const lastLogTime = useRef(Date.now());
   const resistancePointX = useRef<number | null>(null);
   const isResisting = useRef(false);
@@ -35,13 +35,13 @@ const ResizableHandle = ({
         className,
       )}
       onDragStart={(e) => {
-        console.log("Drag START", e);
+        void 0;
         resistancePointX.current = null;
         isResisting.current = false;
       }}
       onDrag={(e) => {
         if (!e) return;
-        console.log("ON DRAG", e);
+        void 0;
         const panel = document.querySelector("[data-panel-id]") as HTMLElement;
         const parent = panel?.parentElement as HTMLElement;
 
@@ -60,7 +60,7 @@ const ResizableHandle = ({
           });
 
           if (percentage <= 15 && !isResisting.current) {
-            console.log("Hit resistance point!");
+            void 0;
             resistancePointX.current = e.clientX;
             isResisting.current = true;
             panel.style.width = "15%";
@@ -75,7 +75,7 @@ const ResizableHandle = ({
             });
 
             if (distance > 50) {
-              console.log("POUF!");
+              void 0;
               panel.style.width = "0%";
               isResisting.current = false;
               resistancePointX.current = null;
@@ -84,7 +84,7 @@ const ResizableHandle = ({
         }
       }}
       onDragEnd={(e) => {
-        console.log("Drag END", e);
+        void 0;
         resistancePointX.current = null;
         isResisting.current = false;
       }}
@@ -93,9 +93,9 @@ const ResizableHandle = ({
       {withHandle && (
         <div
           className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border"
-          onClick={() => console.log("Handle clicked")}
-          onMouseEnter={() => console.log("Handle mouse enter")}
-          onMouseLeave={() => console.log("Handle mouse leave")}
+          onClick={() => void 0}
+          onMouseEnter={() => void 0}
+          onMouseLeave={() => void 0}
         >
           <DragHandleDots2Icon className="h-2.5 w-2.5" />
         </div>

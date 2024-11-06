@@ -5,7 +5,7 @@ import { actionCalls, actions } from "~/db/schema";
 import { and, inArray, isNull, eq, desc } from "drizzle-orm";
 
 export async function findNextOrCreateMaster() {
-  console.log("=== findNextOrCreateMaster START ===");
+  void 0;
 
   // First check for any existing action calls that need approval
   const existingActionCall = await db.query.actionCalls.findFirst({
@@ -17,10 +17,10 @@ export async function findNextOrCreateMaster() {
       action: true,
     },
   });
-  console.log("Existing action call:", existingActionCall);
+  void 0;
 
   if (existingActionCall) {
-    console.log("Returning existing action call");
+    void 0;
     return existingActionCall;
   }
 
@@ -28,10 +28,10 @@ export async function findNextOrCreateMaster() {
   const lastActionCall = await db.query.actionCalls.findFirst({
     orderBy: [desc(actionCalls.id)],
   });
-  console.log("Last action call:", lastActionCall);
+  void 0;
 
   if (lastActionCall) {
-    console.log("Returning last action call");
+    void 0;
     return lastActionCall;
   }
 
@@ -39,17 +39,17 @@ export async function findNextOrCreateMaster() {
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });
-  console.log("Master action:", masterAction);
+  void 0;
 
   const action =
     masterAction || (await db.insert(actions).values({ name: "master" }).returning())[0];
-  console.log("Action to use:", action);
+  void 0;
 
   const [newActionCall] = await db
     .insert(actionCalls)
     .values({ actionId: action.id, status: "ready_for_approval" })
     .returning();
 
-  console.log("Created new action call:", newActionCall);
+  void 0;
   return newActionCall;
 }

@@ -11,9 +11,9 @@ const actionMap = {
 } as const;
 
 export async function goNext(args: ActionFunctionArgs) {
-  console.log("🟢 Starting goNext");
+  void 0;
 
-  console.log("🟡 Fetching action call from DB");
+  void 0;
   const currentActionCall = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.id, parseInt(args.params.id || "")),
     with: {
@@ -23,25 +23,25 @@ export async function goNext(args: ActionFunctionArgs) {
 
   // Let's test our new dd!
 
-  console.log("🟡 Found action call:", currentActionCall);
+  void 0;
 
   if (!currentActionCall) {
-    console.log("🔴 Action call not found");
+    void 0;
     throw new Response("Action call not found", { status: 404 });
   }
 
   if (currentActionCall.status === "ready_for_approval") {
-    console.log("🟡 Action is ready for approval, executing...");
+    void 0;
     const action = actionMap[currentActionCall.action.name as keyof typeof actionMap];
     const actionResult = await action(args);
-    console.log("🟢 Action executed successfully:", actionResult);
+    void 0;
 
-    console.log("🟡 Updating action call status...");
+    void 0;
     await db
       .update(actionCalls)
       .set({ status: "completed" })
       .where(eq(actionCalls.id, currentActionCall.id));
-    console.log("🟢 Status updated successfully");
+    void 0;
 
     return json({
       actionCall: currentActionCall,
