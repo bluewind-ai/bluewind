@@ -1,12 +1,6 @@
 // app/routes/action-calls.$id/route.tsx
 
-import {
-  useLoaderData,
-  useRouteError,
-  useNavigation,
-  Form,
-  isRouteErrorResponse,
-} from "@remix-run/react";
+import { useLoaderData, useNavigation, Form } from "@remix-run/react";
 import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
@@ -63,26 +57,6 @@ export const action: ActionFunction = async ({ params }) => {
   const result = await master({ id: parseInt(params.id as string) });
   return json(result);
 };
-
-// For loader errors
-export function ErrorBoundary() {
-  const error = useRouteError();
-  console.log("Error boundary triggered with:", error);
-
-  if (isRouteErrorResponse(error)) {
-    console.log("Route error response:", {
-      status: error.status,
-      statusText: error.statusText,
-      data: error.data,
-    });
-  }
-
-  return (
-    <main className="flex-1 bg-black text-green-400 p-4 font-mono">
-      <pre className="whitespace-pre-wrap">{JSON.stringify(error, null, 2)}</pre>
-    </main>
-  );
-}
 
 // Route Component
 export default function Route() {
