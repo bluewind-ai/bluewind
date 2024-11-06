@@ -1,72 +1,12 @@
 // app/root.tsx
 
-import { json, type LinksFunction } from "@remix-run/node";
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  useLoaderData,
-  useRouteError,
-  isRouteErrorResponse,
-} from "@remix-run/react";
-import { db } from "~/db";
-import { debugLogs } from "~/db/schema";
-import { desc } from "drizzle-orm";
+import { type LinksFunction } from "@remix-run/node";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
+import { Debug } from "~/routes/debug/route";
 
 import tailwindStylesheetUrl from "./tailwind.css?url";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
-
-type SerializedDebugLog = {
-  id: number;
-  message: string;
-  createdAt: string;
-};
-
-export const loader = async () => {
-  console.log("🟢 Root loader starting");
-  const logs = await db.select().from(debugLogs).orderBy(desc(debugLogs.createdAt)).limit(50);
-  console.log("🟢 Fetched debug logs:", logs);
-  return json({ logs });
-};
-
-function DebugPanel() {
-  const { logs } = useLoaderData<typeof loader>();
-  console.log("🟢 Root route data:", logs);
-
-  return (
-    <div className="w-[500px] border-l bg-[#1e1e1e]">
-      <div className="h-full text-green-400 font-mono p-4 overflow-auto">
-        <h1 className="text-2xl mb-6">Debug Panel</h1>
-        <div className="space-y-6">
-          {logs.map((log: SerializedDebugLog) => (
-            <div key={log.id} className="border border-green-400/20 rounded p-4">
-              <div className="text-xs text-green-400/60 mb-2">
-                {new Date(log.createdAt).toLocaleString()}
-              </div>
-              <pre className="whitespace-pre-wrap">{log.message}</pre>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function App() {
-  return (
-    <AppLayout>
-      <div className="flex min-h-screen">
-        <div className="flex-1">
-          <Outlet />
-        </div>
-        <DebugPanel />
-      </div>
-    </AppLayout>
-  );
-}
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -86,23 +26,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError();
-
+export default function App() {
   return (
     <AppLayout>
       <div className="flex min-h-screen">
-        <div className="flex-1 p-4">
-          <h1 className="text-2xl text-red-500">Error</h1>
-          <pre className="mt-4 text-sm overflow-auto">
-            {isRouteErrorResponse(error)
-              ? error.data
-              : error instanceof Error
-                ? error.message
-                : "Unknown error"}
-          </pre>
+        <div className="flex-1">
+          <Outlet />
         </div>
-        <DebugPanel />
+        <Debug />
       </div>
     </AppLayout>
   );
