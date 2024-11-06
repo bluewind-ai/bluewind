@@ -59,7 +59,6 @@ function handleBotRequest(
           responseStatusCode = 500;
 
           if (shellRendered) {
-            console.error(error);
           }
         },
       },
@@ -103,7 +102,6 @@ function handleBrowserRequest(
           responseStatusCode = 500;
 
           if (shellRendered) {
-            console.error(error);
           }
         },
       },

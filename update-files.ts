@@ -34,8 +34,6 @@ function extractFileSnippets(text: string): CodeSnippet[] {
 
     const code = `// ${filepath}\n\n${match[2].trim()}`;
     snippets.push({ filepath, code });
-    console.log(`Found snippet for file: ${filepath}`);
-    console.log(`Code length: ${code.length} characters`);
   }
 
   return snippets;
@@ -46,25 +44,15 @@ function writeFiles(snippets: CodeSnippet[], baseDir: string = "."): void {
     const fullPath = path.join(baseDir, filepath);
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
     fs.writeFileSync(fullPath, code);
-    console.log(`Written: ${filepath}`);
   }
 }
 
 function main(): void {
   const text = fs.readFileSync("claude-answer.txt", "utf-8");
-  console.log("Read input file, content length:", text.length);
-
   const snippets = extractFileSnippets(text);
-
-  console.log("\nFound the following files to update:");
-  snippets.forEach(({ filepath }) => {
-    console.log(`- ${filepath}`);
-  });
-
-  console.log("\nProceeding with file updates...");
+  snippets.forEach(({ filepath }) => {});
   writeFiles(snippets);
   insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
-  console.log("\nAll files updated successfully!");
 }
 
 main();

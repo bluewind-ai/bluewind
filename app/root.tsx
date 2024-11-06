@@ -35,8 +35,6 @@ function Document({ children }: { children: React.ReactNode }) {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  console.error(error);
-
   let errorOutput = "";
 
   if (isRouteErrorResponse(error)) {
