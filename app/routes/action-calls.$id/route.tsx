@@ -37,9 +37,11 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
           {actionCall.status === "completed" ? "Next" : "Approve"}
         </Button>
       </fetcher.Form>
-      {fetcher.data && (
+      {(fetcher.data || fetcher.error) && (
         <main className="flex-1 bg-black text-green-400 p-4 font-mono">
-          <pre className="whitespace-pre-wrap">{JSON.stringify(fetcher.data, null, 2)}</pre>
+          <pre className="whitespace-pre-wrap">
+            {JSON.stringify(fetcher.data || fetcher.error, null, 2)}
+          </pre>
         </main>
       )}
     </div>
@@ -57,6 +59,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 // Action
 export const action: ActionFunction = async ({ params }) => {
+  dd("Request");
   // @ts-expect-error - We are not using the request object
   const result = await master({ id: parseInt(params.id as string) });
   return json(result);
