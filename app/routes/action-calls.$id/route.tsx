@@ -36,15 +36,7 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  console.log("\n🔍 DEBUG LOADER START");
-  console.log("URL:", request.url);
-  console.log("Headers:", Object.fromEntries(request.headers.entries()));
-  console.log("Params:", params);
-
   if (!params.id || isNaN(Number(params.id))) {
-    console.log("❌ Invalid ID detected:", params.id);
-    console.log("Request URL:", request.url);
-    console.log("Full params:", params);
     throw new Response("Invalid ID", { status: 400 });
   }
 
@@ -52,9 +44,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     where: eq(actionCalls.id, parseInt(params.id)),
     with: { action: true },
   });
-
-  console.log("✅ Loader completing successfully");
-  console.log("🔍 DEBUG LOADER END\n");
 
   return json(actionCall);
 };

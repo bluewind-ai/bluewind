@@ -15,6 +15,7 @@ type ActionCall = InferSelectModel<typeof actionCalls>;
 
 // Layout Loader
 export const loader: LoaderFunction = async () => {
+  dd("loader");
   const lastAction = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.status, "ready_for_approval"),
     with: { action: true },
