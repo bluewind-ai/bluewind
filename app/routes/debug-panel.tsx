@@ -6,7 +6,7 @@ import { debugLogs } from "~/db/schema";
 import { desc } from "drizzle-orm";
 import { json } from "@remix-run/server-runtime";
 import type { InferSelectModel } from "drizzle-orm";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 type DebugLog = InferSelectModel<typeof debugLogs>;
 type SerializedDebugLog = Omit<DebugLog, "createdAt"> & {
@@ -24,10 +24,22 @@ export async function loader() {
 
 export default function DebugPanel() {
   const fetcher = useFetcher<typeof loader>();
+  const intervalRef = useRef<number>();
 
   useEffect(() => {
     fetcher.load("/debug-panel");
-  }, [fetcher]);
+
+    // Poll every 2 seconds instead of constantly
+    intervalRef.current = window.setInterval(() => {
+      fetcher.load("/debug-panel");
+    }, 2000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []); // Only setup polling once on mount
 
   const logs = fetcher.data?.logs ?? [];
 

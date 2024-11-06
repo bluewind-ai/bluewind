@@ -11,8 +11,7 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import "./tailwind.css";
-import { Debug } from "~/routes/debug/route"; // Simple debug panel for root errors
-import DebugPanel from "~/routes/debug-panel"; // Fancy debug panel for the app
+import DebugPanel from "~/routes/debug-panel";
 
 function Document({ children }: { children: React.ReactNode }) {
   return (
@@ -40,23 +39,14 @@ export function ErrorBoundary() {
 
   return (
     <Document>
-      <div className="p-4">
-        <h1>Error</h1>
-        {isRouteErrorResponse(error) ? (
-          <div>
-            <h2>
-              {error.status} {error.statusText}
-            </h2>
-            <pre className="whitespace-pre-wrap">{JSON.stringify(error.data, null, 2)}</pre>
-          </div>
-        ) : error instanceof Error ? (
-          <div>
-            <h2>{error.message}</h2>
-            <pre className="whitespace-pre-wrap">{error.stack}</pre>
-          </div>
-        ) : (
-          <h2>Unknown Error</h2>
-        )}
+      <div className="p-4 font-mono">
+        <pre className="text-red-500">
+          {isRouteErrorResponse(error)
+            ? `${error.status} ${error.statusText}\n${error.data}`
+            : error instanceof Error
+              ? `${error.name}: ${error.message}\n\n${error.stack}`
+              : JSON.stringify(error, null, 2)}
+        </pre>
       </div>
     </Document>
   );
