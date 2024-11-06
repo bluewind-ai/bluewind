@@ -21,7 +21,9 @@
     "reset-all": "npm run clean-all && npm install && npm run reset-db && npm run fix",
     "truncate-db": "tsx scripts/truncate-db.ts",
     "remove-console": "tsx scripts/remove-console.ts",
-    "instructions": "tsx scripts/generate-instructions.ts"
+    "instructions": "tsx scripts/generate-instructions.ts",
+    "tree": "tsx scripts/generate-tree.ts",
+    "get-first-prompt": "tsx scripts/get-first-prompt.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.2",
