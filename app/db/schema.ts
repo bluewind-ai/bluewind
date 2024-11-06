@@ -46,4 +46,10 @@ export const requestErrors = pgTable("request_errors", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const debugLogs = pgTable("debug_logs", {
+  id: serial("id").primaryKey(),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type ActionCallStatus = "ready_for_approval" | "completed";

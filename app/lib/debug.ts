@@ -1,5 +1,8 @@
 // app/lib/debug.ts
 
+import { db } from "~/db";
+import { debugLogs } from "~/db/schema";
+
 type DebugInfo = {
   type: string;
   message: string;
@@ -15,7 +18,12 @@ function formatDebugInfo(data: unknown): DebugInfo {
 }
 
 export function dd(data: unknown): never {
-  throw new Response(JSON.stringify(formatDebugInfo(data)), {
+  const debugInfo = formatDebugInfo(data);
+  db.insert(debugLogs).values({
+    message: JSON.stringify(debugInfo),
+  });
+
+  throw new Response(JSON.stringify(debugInfo), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
