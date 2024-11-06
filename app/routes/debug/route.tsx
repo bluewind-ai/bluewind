@@ -1,22 +1,26 @@
 // app/routes/debug/route.tsx
 
-import { json, type LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { db } from "~/db";
 import { debugLogs } from "~/db/schema";
 import { desc } from "drizzle-orm";
+import { type InferSelectModel } from "drizzle-orm";
 
-type SerializedDebugLog = {
-  id: number;
-  message: string;
+type DebugLog = InferSelectModel<typeof debugLogs>;
+type SerializedDebugLog = Omit<DebugLog, "createdAt"> & {
   createdAt: string;
 };
 
-export const loader: LoaderFunction = async () => {
+export const loader = async () => {
   console.log("🟢 Debug Panel Loader starting");
   const logs = await db.select().from(debugLogs).orderBy(desc(debugLogs.createdAt)).limit(50);
-  console.log("🟢 Fetched debug logs:", logs);
-  return json({ logs });
+  const serializedLogs: SerializedDebugLog[] = logs.map((log) => ({
+    ...log,
+    createdAt: log.createdAt.toISOString(),
+  }));
+  console.log("🟢 Fetched debug logs:", serializedLogs);
+  return json({ logs: serializedLogs });
 };
 
 export function Debug() {
@@ -27,7 +31,7 @@ export function Debug() {
       <div className="h-full text-green-400 font-mono p-4 overflow-auto">
         <h1 className="text-2xl mb-6">Debug Panel</h1>
         <div className="space-y-6">
-          {logs.map((log: SerializedDebugLog) => (
+          {logs.map((log) => (
             <div key={log.id} className="border border-green-400/20 rounded p-4">
               <div className="text-xs text-green-400/60 mb-2">
                 {new Date(log.createdAt).toLocaleString()}
@@ -41,4 +45,5 @@ export function Debug() {
   );
 }
 
+// Keep both exports to maintain compatibility
 export default Debug;
