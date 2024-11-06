@@ -23,7 +23,8 @@
     "remove-console": "tsx scripts/remove-console.ts",
     "instructions": "tsx scripts/generate-instructions.ts",
     "tree": "tsx scripts/generate-tree.ts",
-    "get-first-prompt": "tsx scripts/get-first-prompt.ts"
+    "get-first-prompt": "tsx scripts/get-first-prompt.ts",
+    "check-empty": "tsx scripts/check-empty-folders.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.2",
