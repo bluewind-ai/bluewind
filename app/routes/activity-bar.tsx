@@ -38,7 +38,7 @@ export function ActivityBar({
   };
 
   return (
-    <div className={cn("flex flex-col gap-2 p-2 bg-muted w-12", className)}>
+    <div className={cn("flex flex-col gap-2 p-2 bg-muted w-12 border-r border-border", className)}>
       <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => navigate("/")}>
         <Logo />
       </Button>
