@@ -7,6 +7,7 @@ import { desc } from "drizzle-orm";
 import { json } from "@remix-run/server-runtime";
 import type { InferSelectModel } from "drizzle-orm";
 import { useEffect, useRef } from "react";
+import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
 
 type DebugLog = InferSelectModel<typeof debugLogs>;
 type SerializedDebugLog = Omit<DebugLog, "createdAt"> & {
@@ -29,7 +30,6 @@ export default function DebugPanel() {
   useEffect(() => {
     fetcher.load("/debug-panel");
 
-    // Poll every 2 seconds instead of constantly
     intervalRef.current = window.setInterval(() => {
       fetcher.load("/debug-panel");
     }, 2000);
@@ -39,12 +39,12 @@ export default function DebugPanel() {
         clearInterval(intervalRef.current);
       }
     };
-  }); // Only setup polling once on mount
+  }, []); // Empty deps array - we only want this to run once on mount
 
   const logs = fetcher.data?.logs ?? [];
 
   return (
-    <div className="w-[500px] border-l bg-[#1e1e1e] overflow-auto">
+    <div className="h-full border-l bg-[#1e1e1e] overflow-auto">
       <div className="text-green-400 font-mono p-4">
         <h1 className="text-2xl mb-6">Debug Panel</h1>
         <div className="space-y-6">
