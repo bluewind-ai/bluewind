@@ -1,7 +1,16 @@
 // app/root.tsx
 
 import { json, type LinksFunction } from "@remix-run/node";
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useLoaderData,
+  useRouteError,
+  isRouteErrorResponse,
+} from "@remix-run/react";
 import { db } from "~/db";
 import { debugLogs } from "~/db/schema";
 import { desc } from "drizzle-orm";
@@ -23,31 +32,37 @@ export const loader = async () => {
   return json({ logs });
 };
 
-export default function App() {
+function DebugPanel() {
   const { logs } = useLoaderData<typeof loader>();
   console.log("🟢 Root route data:", logs);
 
+  return (
+    <div className="w-[500px] border-l bg-[#1e1e1e]">
+      <div className="h-full text-green-400 font-mono p-4 overflow-auto">
+        <h1 className="text-2xl mb-6">Debug Panel</h1>
+        <div className="space-y-6">
+          {logs.map((log: SerializedDebugLog) => (
+            <div key={log.id} className="border border-green-400/20 rounded p-4">
+              <div className="text-xs text-green-400/60 mb-2">
+                {new Date(log.createdAt).toLocaleString()}
+              </div>
+              <pre className="whitespace-pre-wrap">{log.message}</pre>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
   return (
     <AppLayout>
       <div className="flex min-h-screen">
         <div className="flex-1">
           <Outlet />
         </div>
-        <div className="w-[500px] border-l bg-[#1e1e1e]">
-          <div className="h-full text-green-400 font-mono p-4 overflow-auto">
-            <h1 className="text-2xl mb-6">Debug Panel</h1>
-            <div className="space-y-6">
-              {logs.map((log: SerializedDebugLog) => (
-                <div key={log.id} className="border border-green-400/20 rounded p-4">
-                  <div className="text-xs text-green-400/60 mb-2">
-                    {new Date(log.createdAt).toLocaleString()}
-                  </div>
-                  <pre className="whitespace-pre-wrap">{log.message}</pre>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <DebugPanel />
       </div>
     </AppLayout>
   );
@@ -68,5 +83,27 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  return (
+    <AppLayout>
+      <div className="flex min-h-screen">
+        <div className="flex-1 p-4">
+          <h1 className="text-2xl text-red-500">Error</h1>
+          <pre className="mt-4 text-sm overflow-auto">
+            {isRouteErrorResponse(error)
+              ? error.data
+              : error instanceof Error
+                ? error.message
+                : "Unknown error"}
+          </pre>
+        </div>
+        <DebugPanel />
+      </div>
+    </AppLayout>
   );
 }
