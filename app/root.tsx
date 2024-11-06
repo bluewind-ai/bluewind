@@ -36,17 +36,22 @@ function Document({ children }: { children: React.ReactNode }) {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  console.error(error);
+
+  let errorOutput = "";
+
+  if (isRouteErrorResponse(error)) {
+    errorOutput = `${error.status} ${error.statusText}\n${JSON.stringify(error.data, null, 2)}`;
+  } else if (error instanceof Error) {
+    errorOutput = `${error.name}: ${error.message}\n\n${error.stack}`;
+  } else {
+    errorOutput = JSON.stringify(error, null, 2);
+  }
 
   return (
     <Document>
       <div className="p-4 font-mono">
-        <pre className="text-red-500">
-          {isRouteErrorResponse(error)
-            ? `${error.status} ${error.statusText}\n${error.data}`
-            : error instanceof Error
-              ? `${error.name}: ${error.message}\n\n${error.stack}`
-              : JSON.stringify(error, null, 2)}
-        </pre>
+        <pre className="text-red-500 whitespace-pre-wrap">{errorOutput}</pre>
       </div>
     </Document>
   );
