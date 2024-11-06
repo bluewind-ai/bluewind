@@ -36,8 +36,8 @@ export function Debug() {
   const logs = fetcher.data?.logs ?? [];
 
   return (
-    <div className="w-[500px] border-l bg-[#1e1e1e]">
-      <div className="h-full text-green-400 font-mono p-4 overflow-auto">
+    <div className="w-[500px] border-l bg-[#1e1e1e] overflow-auto">
+      <div className="text-green-400 font-mono p-4">
         <h1 className="text-2xl mb-6">Debug Panel</h1>
         <div className="space-y-6">
           {logs.map((log) => (

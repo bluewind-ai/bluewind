@@ -18,16 +18,16 @@ export const links: LinksFunction = () => [{ rel: "stylesheet", href: stylesheet
 
 function Document({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
-        <div className="flex h-screen">
-          {children}
+      <body className="h-full overflow-hidden">
+        <div className="flex h-full">
+          <div className="flex-1 overflow-auto">{children}</div>
           <Debug />
         </div>
         <ScrollRestoration />
@@ -43,19 +43,19 @@ export function ErrorBoundary() {
 
   return (
     <Document>
-      <div className="flex-1 p-4">
+      <div className="p-4">
         <h1>Error</h1>
         {isRouteErrorResponse(error) ? (
           <div>
             <h2>
               {error.status} {error.statusText}
             </h2>
-            <pre>{JSON.stringify(error.data, null, 2)}</pre>
+            <pre className="whitespace-pre-wrap">{JSON.stringify(error.data, null, 2)}</pre>
           </div>
         ) : error instanceof Error ? (
           <div>
             <h2>{error.message}</h2>
-            <pre>{error.stack}</pre>
+            <pre className="whitespace-pre-wrap">{error.stack}</pre>
           </div>
         ) : (
           <h2>Unknown Error</h2>
