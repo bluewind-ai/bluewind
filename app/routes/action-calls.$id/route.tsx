@@ -8,43 +8,18 @@ import { eq } from "drizzle-orm";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { master } from "~/actions/master.server";
+import type { InferSelectModel } from "drizzle-orm";
+import type { ButtonProps } from "~/components/ui/button";
 
-// GoNext function (previously in go-next.server.ts)
-const actionMap = { master } as const;
-
-async function goNext(args: ActionFunctionArgs) {
-  const currentActionCall = await db.query.actionCalls.findFirst({
-    where: eq(actionCalls.id, parseInt(args.params.id || "")),
-    with: { action: true },
-  });
-
-  if (!currentActionCall) {
-    throw new Response("Action call not found", { status: 404 });
-  }
-
-  if (currentActionCall.status === "ready_for_approval") {
-    const action = actionMap[currentActionCall.action.name as keyof typeof actionMap];
-    await action(args);
-    await db
-      .update(actionCalls)
-      .set({ status: "completed" })
-      .where(eq(actionCalls.id, currentActionCall.id));
-    return json({ actionCall: currentActionCall });
-  }
-
-  throw new Response(`Action ${currentActionCall.id} is not ready for approval`, { status: 400 });
-}
+type ActionCall = InferSelectModel<typeof actionCalls>;
 
 // GoNext Button Component
-function GoNextButton({
-  actionCall,
-  className,
-  ...props
-}: {
-  actionCall: any;
+interface GoNextButtonProps extends ButtonProps {
+  actionCall: ActionCall;
   className?: string;
-  [key: string]: any;
-}) {
+}
+
+function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
   const fetcher = useFetcher();
   return (
     <div className="flex flex-col gap-4">

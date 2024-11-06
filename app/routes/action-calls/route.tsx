@@ -1,15 +1,17 @@
 // app/routes/action-calls/route.tsx
 
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData, useNavigate } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Network, Play, GitBranch, Bug, PackageSearch } from "lucide-react";
-import { useNavigate } from "@remix-run/react";
 import { Logo } from "~/components/icons/logo";
 import { json, type LoaderFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { cn } from "~/lib/utils";
+import type { InferSelectModel } from "drizzle-orm";
+
+type ActionCall = InferSelectModel<typeof actionCalls>;
 
 // Layout Loader
 export const loader: LoaderFunction = async () => {
@@ -21,7 +23,7 @@ export const loader: LoaderFunction = async () => {
 };
 
 // Activity Bar Component
-function ActivityBar({ className, lastAction }: { className?: string; lastAction?: any }) {
+function ActivityBar({ className, lastAction }: { className?: string; lastAction?: ActionCall }) {
   const navigate = useNavigate();
   return (
     <div className={cn("flex flex-col gap-2 p-2 bg-muted w-12", className)}>
