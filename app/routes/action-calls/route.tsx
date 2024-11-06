@@ -104,7 +104,7 @@ export default function ActionCallsLayout() {
     <div className="flex h-full">
       <ActivityBar className="w-12" lastAction={lastAction} />
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={20} minSize={15}>
+        <ResizablePanel defaultSize={20} minSize={0}>
           <ActionCallTree initialTreeData={mockTreeData} />
         </ResizablePanel>
         <ResizableHandle />
