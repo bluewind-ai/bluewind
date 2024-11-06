@@ -1,0 +1,28 @@
+// In your action-calls/route.tsx, update the layout:
+
+export default function ActionCallsLayout() {
+  const { lastAction } = useLoaderData<typeof loader>();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  return (
+    <div className="flex h-full">
+      <ActivityBar className="w-12" lastAction={lastAction} />
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel
+          defaultSize={20}
+          collapsible
+          collapsed={isCollapsed}
+          onCollapse={setIsCollapsed}
+        >
+          <ActionCallTree initialTreeData={mockTreeData} />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={80}>
+          <main className="h-full">
+            <Outlet />
+          </main>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
+  );
+}

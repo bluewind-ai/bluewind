@@ -1,26 +1,14 @@
-// app/routes/activity-bar.tsx
+// app/components/ActivityBar.tsx
 
 import { useNavigate } from "@remix-run/react";
-import { json, type LoaderFunction } from "@remix-run/node";
-import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
-import { eq } from "drizzle-orm";
 import { Button } from "~/components/ui/button";
 import { Network, Play, GitBranch, Bug, PackageSearch } from "lucide-react";
 import { Logo } from "~/components/icons/logo";
 import { cn } from "~/lib/utils";
 import type { InferSelectModel } from "drizzle-orm";
+import { actionCalls } from "~/db/schema";
 
 type ActionCall = InferSelectModel<typeof actionCalls>;
-
-export const loader: LoaderFunction = async () => {
-  const lastAction = await db.query.actionCalls.findFirst({
-    where: eq(actionCalls.status, "ready_for_approval"),
-    with: { action: true },
-  });
-
-  return json({ lastAction });
-};
 
 export function ActivityBar({
   className,
@@ -65,5 +53,3 @@ export function ActivityBar({
     </div>
   );
 }
-
-export default ActivityBar;
