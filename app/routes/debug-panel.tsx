@@ -6,7 +6,7 @@ import { debugLogs } from "~/db/schema";
 import { desc } from "drizzle-orm";
 import { json } from "@remix-run/server-runtime";
 import type { InferSelectModel } from "drizzle-orm";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type DebugLog = InferSelectModel<typeof debugLogs>;
 type SerializedDebugLog = Omit<DebugLog, "createdAt"> & {
@@ -26,19 +26,22 @@ export default function DebugPanel() {
   const fetcher = useFetcher<typeof loader>();
   const intervalRef = useRef<number>();
 
-  useEffect(() => {
-    fetcher.load("/debug-panel");
-
-    intervalRef.current = window.setInterval(() => {
+  const loadData = useCallback(() => {
+    if (fetcher.state === "idle") {
       fetcher.load("/debug-panel");
-    }, 2000);
+    }
+  }, [fetcher]);
+
+  useEffect(() => {
+    loadData();
+    intervalRef.current = window.setInterval(loadData, 2000);
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [fetcher]); // Added fetcher to deps array
+  }, [loadData]);
 
   const logs = fetcher.data?.logs ?? [];
 
