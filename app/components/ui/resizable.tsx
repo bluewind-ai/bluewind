@@ -1,93 +1,78 @@
 // app/components/ui/resizable.tsx
 
-import { DragHandleDots2Icon } from "@radix-ui/react-icons";
-import * as ResizablePrimitive from "react-resizable-panels";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "~/lib/utils";
-import { useRef } from "react";
 
-const ResizablePanel = ResizablePrimitive.Panel;
+interface ResizablePanelProps {
+  direction?: "vertical" | "horizontal";
+  children: React.ReactNode;
+  className?: string;
+  defaultSize?: number;
+  minSize?: number;
+  maxSize?: number;
+}
 
-const ResizableHandle = ({
-  withHandle,
+export function ResizablePanel({
+  direction = "horizontal",
+  children,
   className,
-  ...props
-}: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & {
-  withHandle?: boolean;
-}) => {
-  void 0;
-  const lastLogTime = useRef(Date.now());
-  const resistancePointX = useRef<number | null>(null);
-  const isResisting = useRef(false);
+  defaultSize = 33,
+  minSize = 10,
+  maxSize = 90,
+}: ResizablePanelProps) {
+  const [isResizing, setIsResizing] = useState(false);
+  const [size, setSize] = useState(defaultSize);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const logEvent = (message: string, data: any) => {
-    void 0;
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      if (!isResizing) return;
+
+      const rect = ref.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      let newSize =
+        direction === "horizontal"
+          ? ((event.clientX - rect.left) / rect.width) * 100
+          : ((event.clientY - rect.top) / rect.height) * 100;
+
+      newSize = Math.max(minSize, Math.min(newSize, maxSize));
+      setSize(newSize);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing, direction, minSize, maxSize]);
+
+  const containerStyles =
+    direction === "horizontal" ? { width: `${size}%` } : { height: `${size}%` };
+
+  const handleResizeStart = () => {
+    setIsResizing(true);
   };
 
   return (
-    <ResizablePrimitive.PanelResizeHandle
-      className={cn(
-        "relative flex w-px items-center justify-center bg-border after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full",
-        className,
-      )}
-      onDragStart={(e) => {
-        void 0;
-        resistancePointX.current = null;
-        isResisting.current = false;
-      }}
-      onDrag={(e) => {
-        if (!e) return;
-        void 0;
-        const panel = document.querySelector("[data-panel-id]") as HTMLElement;
-        const parent = panel?.parentElement as HTMLElement;
-
-        if (panel && parent) {
-          const rect = panel.getBoundingClientRect();
-          const parentRect = parent.getBoundingClientRect();
-          const percentage = (rect.width / parentRect.width) * 100;
-
-          void 0;
-
-          if (percentage <= 15 && !isResisting.current) {
-            void 0;
-            resistancePointX.current = e.clientX;
-            isResisting.current = true;
-            panel.style.width = "15%";
-          }
-
-          if (isResisting.current && resistancePointX.current) {
-            const distance = Math.abs(resistancePointX.current - e.clientX);
-            void 0;
-
-            if (distance > 50) {
-              void 0;
-              panel.style.width = "0%";
-              isResisting.current = false;
-              resistancePointX.current = null;
-            }
-          }
-        }
-      }}
-      onDragEnd={(e) => {
-        void 0;
-        resistancePointX.current = null;
-        isResisting.current = false;
-      }}
-      {...props}
-    >
-      {withHandle && (
-        <div
-          className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border"
-          onClick={() => void 0}
-          onMouseEnter={() => void 0}
-          onMouseLeave={() => void 0}
-        >
-          <DragHandleDots2Icon className="h-2.5 w-2.5" />
-        </div>
-      )}
-    </ResizablePrimitive.PanelResizeHandle>
+    <div ref={ref} className={cn("relative", className)} style={containerStyles}>
+      {children}
+      <button
+        className={cn(
+          "absolute opacity-0 group-hover:opacity-100",
+          direction === "horizontal"
+            ? "right-0 top-0 w-1 h-full cursor-ew-resize"
+            : "bottom-0 left-0 h-1 w-full cursor-ns-resize",
+        )}
+        onMouseDown={handleResizeStart}
+        aria-label="Resize panel"
+      />
+    </div>
   );
-};
-
-const ResizablePanelGroup = ResizablePrimitive.PanelGroup;
-
-export { ResizablePanel, ResizableHandle, ResizablePanelGroup };
+}
