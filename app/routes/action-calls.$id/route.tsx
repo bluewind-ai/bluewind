@@ -38,7 +38,7 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
   );
 }
 
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader: LoaderFunction = async ({ params }) => {
   console.log("🔍 Loader called with params:", params);
 
   if (!params.id || isNaN(Number(params.id))) {
@@ -54,7 +54,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return json(actionCall);
 };
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action: ActionFunction = async ({ params }) => {
   console.log("🎯 Action called with params:", params);
 
   if (!params.id || isNaN(Number(params.id))) {

@@ -39,7 +39,7 @@ export default function DebugPanel() {
         clearInterval(intervalRef.current);
       }
     };
-  }, []); // Only setup polling once on mount
+  }); // Only setup polling once on mount
 
   const logs = fetcher.data?.logs ?? [];
 
