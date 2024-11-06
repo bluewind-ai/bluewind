@@ -2,7 +2,6 @@
 
 import { db } from "~/db";
 import { debugLogs } from "~/db/schema";
-import { emitter } from "~/services/emitter.server";
 
 type DebugInfo = {
   type: string;
@@ -18,17 +17,12 @@ function formatDebugInfo(data: unknown): DebugInfo {
   };
 }
 
-export async function dd(data: unknown): Promise<never> {
+export function dd(data: unknown): never {
   const debugInfo = formatDebugInfo(data);
 
-  const log = await db
-    .insert(debugLogs)
-    .values({
-      message: JSON.stringify(debugInfo),
-    })
-    .returning();
-
-  emitter.emit("debug", log[0]);
+  db.insert(debugLogs).values({
+    message: JSON.stringify(debugInfo),
+  });
 
   throw new Response(JSON.stringify(debugInfo), {
     status: 500,
@@ -40,7 +34,7 @@ export async function dd(data: unknown): Promise<never> {
 
 declare global {
   // eslint-disable-next-line no-var
-  var dd: (data: unknown) => Promise<never>;
+  var dd: (data: unknown) => never;
 }
 
 global.dd = dd;

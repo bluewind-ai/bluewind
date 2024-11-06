@@ -1,9 +1,0 @@
-// app/routes/action-calls.$id/route.tsx (relevant part)
-
-export const action: ActionFunction = async ({ params }) => {
-  console.log("Action called with params:", params);
-  await dd("Request");  // Added await here
-  // @ts-expect-error - We are not using the request object
-  const result = await master({ id: parseInt(params.id as string) });
-  return json(result);
-};
