@@ -9,9 +9,7 @@ type InstructionsProps = {
 export async function action({ request }: ActionFunctionArgs) {
   const { fileCount } = (await request.json()) as InstructionsProps;
 
-  const content = `Oh and ALWAYS REMEMBER
-
-0- Never use try {} catch {} unless the code was given to you
+  const content = `0- Never use try {} catch {} unless the code was given to you
 
 1- ONE FILE PER SNIPPET. meaning ${fileCount ? `${fileCount} copy paste` : "one copy paste"} icon per file.
 
