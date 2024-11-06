@@ -57,9 +57,6 @@ function handleBotRequest(
         },
         onError(error: unknown) {
           responseStatusCode = 500;
-
-          if (shellRendered) {
-          }
         },
       },
     );
@@ -100,9 +97,6 @@ function handleBrowserRequest(
         },
         onError(error: unknown) {
           responseStatusCode = 500;
-
-          if (shellRendered) {
-          }
         },
       },
     );

@@ -4,11 +4,6 @@ import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
-import { master } from "./master.server";
-
-const actionMap = {
-  master,
-} as const;
 
 export async function goNext(args: ActionFunctionArgs) {
   void 0;
@@ -32,8 +27,6 @@ export async function goNext(args: ActionFunctionArgs) {
 
   if (currentActionCall.status === "ready_for_approval") {
     void 0;
-    const action = actionMap[currentActionCall.action.name as keyof typeof actionMap];
-    const actionResult = await action(args);
     void 0;
 
     void 0;

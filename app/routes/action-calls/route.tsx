@@ -107,27 +107,22 @@ export default function ActionCallsLayout() {
   const handleLayout = (sizes: number[]) => {
     if (!sizes[0]) return;
 
-    // If we're dragging
     if (dragStartSize.current !== null) {
-      // If panel is getting smaller and hits resistance point
       if (sizes[0] <= 15 && isExpanded) {
         setIsExpanded(false);
         dragStartSize.current = null;
-      }
-      // If panel is getting larger from collapsed state
-      else if (sizes[0] > 0 && !isExpanded) {
+      } else if (sizes[0] > 0 && !isExpanded) {
         setIsExpanded(true);
         dragStartSize.current = null;
       }
     }
 
-    // Store last known good size when expanded
     if (sizes[0] > 15 && isExpanded) {
       lastSize.current = sizes[0];
     }
   };
 
-  const handleDragStart = (event: React.PointerEvent) => {
+  const handleDragStart = () => {
     dragStartSize.current = lastSize.current;
   };
 

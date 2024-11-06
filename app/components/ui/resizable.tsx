@@ -10,6 +10,57 @@ interface ResizablePanelProps {
   defaultSize?: number;
   minSize?: number;
   maxSize?: number;
+  size?: number;
+  onLayout?: (sizes: number[]) => void;
+}
+
+interface ResizablePanelGroupProps {
+  direction?: "vertical" | "horizontal";
+  children: React.ReactNode;
+  className?: string;
+  onLayout?: (sizes: number[]) => void;
+}
+
+interface ResizableHandleProps {
+  withHandle?: boolean;
+  className?: string;
+  onDragStart?: () => void;
+}
+
+export function ResizablePanelGroup({
+  direction = "horizontal",
+  children,
+  className,
+}: ResizablePanelGroupProps) {
+  return (
+    <div className={cn("flex", direction === "horizontal" ? "flex-row" : "flex-col", className)}>
+      {children}
+    </div>
+  );
+}
+
+export function ResizableHandle({
+  withHandle = false,
+  className,
+  onDragStart,
+}: ResizableHandleProps) {
+  const handleMouseDown = () => {
+    if (onDragStart) onDragStart();
+  };
+
+  return (
+    <button
+      className={cn(
+        "flex items-center justify-center",
+        withHandle ? "w-2 cursor-col-resize hover:bg-gray-200" : "w-1 cursor-col-resize",
+        className,
+      )}
+      onMouseDown={handleMouseDown}
+      aria-label="Resize panel"
+    >
+      {withHandle && <div className="w-1 h-8 bg-gray-300 rounded-full" />}
+    </button>
+  );
 }
 
 export function ResizablePanel({
@@ -19,10 +70,17 @@ export function ResizablePanel({
   defaultSize = 33,
   minSize = 10,
   maxSize = 90,
+  size,
 }: ResizablePanelProps) {
   const [isResizing, setIsResizing] = useState(false);
-  const [size, setSize] = useState(defaultSize);
+  const [currentSize, setCurrentSize] = useState(size ?? defaultSize);
   const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (size !== undefined) {
+      setCurrentSize(size);
+    }
+  }, [size]);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -37,7 +95,7 @@ export function ResizablePanel({
           : ((event.clientY - rect.top) / rect.height) * 100;
 
       newSize = Math.max(minSize, Math.min(newSize, maxSize));
-      setSize(newSize);
+      setCurrentSize(newSize);
     };
 
     const handleMouseUp = () => {
@@ -54,7 +112,7 @@ export function ResizablePanel({
   }, [isResizing, direction, minSize, maxSize]);
 
   const containerStyles =
-    direction === "horizontal" ? { width: `${size}%` } : { height: `${size}%` };
+    direction === "horizontal" ? { width: `${currentSize}%` } : { height: `${currentSize}%` };
 
   const handleResizeStart = () => {
     setIsResizing(true);

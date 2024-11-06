@@ -50,7 +50,6 @@ function writeFiles(snippets: CodeSnippet[], baseDir: string = "."): void {
 function main(): void {
   const text = fs.readFileSync("claude-answer.txt", "utf-8");
   const snippets = extractFileSnippets(text);
-  snippets.forEach(({ filepath }) => {});
   writeFiles(snippets);
   insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
 }

@@ -1,4 +1,5 @@
 // app/routes/admin.remove-console.ts
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import fs from "fs/promises";
@@ -19,13 +20,13 @@ type ActionResponse =
       stack?: string;
     };
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action(_: ActionFunctionArgs) {
   const appPath = path.join(process.cwd(), "app");
   const files = await glob("**/*.{ts,tsx}", { cwd: appPath });
 
   let totalRemoved = 0;
   let modifiedFiles = 0;
-  let modifiedFilePaths: string[] = [];
+  const modifiedFilePaths: string[] = [];
 
   for (const file of files) {
     const filePath = path.join(appPath, file);

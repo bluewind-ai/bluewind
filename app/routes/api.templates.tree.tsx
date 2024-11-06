@@ -1,4 +1,5 @@
 // app/routes/api.templates.tree.tsx
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import { exec } from "child_process";

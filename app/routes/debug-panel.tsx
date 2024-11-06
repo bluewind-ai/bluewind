@@ -7,7 +7,6 @@ import { desc } from "drizzle-orm";
 import { json } from "@remix-run/server-runtime";
 import type { InferSelectModel } from "drizzle-orm";
 import { useEffect, useRef } from "react";
-import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
 
 type DebugLog = InferSelectModel<typeof debugLogs>;
 type SerializedDebugLog = Omit<DebugLog, "createdAt"> & {
@@ -39,7 +38,7 @@ export default function DebugPanel() {
         clearInterval(intervalRef.current);
       }
     };
-  }, []); // Empty deps array - we only want this to run once on mount
+  }, [fetcher]); // Added fetcher to deps array
 
   const logs = fetcher.data?.logs ?? [];
 
