@@ -11,6 +11,7 @@ import { eq } from "drizzle-orm";
 import { cn } from "~/lib/utils";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
+import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
 import type { InferSelectModel } from "drizzle-orm";
 
 type ActionCall = InferSelectModel<typeof actionCalls>;
@@ -131,7 +132,7 @@ function ActionCallNode({ node, level = 0 }: { node: TreeNode; level?: number })
 
 function ActionCallTree({ initialTreeData }: { initialTreeData: TreeNode }) {
   return (
-    <div className="w-64 border-r h-full overflow-y-auto bg-white">
+    <div className="border-r h-full overflow-y-auto bg-white">
       <div className="p-4">
         <ActionCallNode node={initialTreeData} />
       </div>
@@ -144,10 +145,17 @@ export default function ActionCallsLayout() {
   return (
     <div className="flex h-full">
       <ActivityBar className="w-12" lastAction={lastAction} />
-      <ActionCallTree initialTreeData={mockTreeData} />
-      <main className="flex-1">
-        <Outlet />
-      </main>
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel defaultSize={20} minSize={15}>
+          <ActionCallTree initialTreeData={mockTreeData} />
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={80}>
+          <main className="h-full">
+            <Outlet />
+          </main>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }
