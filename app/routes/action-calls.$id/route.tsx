@@ -1,6 +1,6 @@
 // app/routes/action-calls.$id/route.tsx
 
-import { useLoaderData, useRouteError, useFetcher } from "@remix-run/react";
+import { useLoaderData, useRouteError, useNavigation } from "@remix-run/react";
 import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
@@ -10,35 +10,30 @@ import { cn } from "~/lib/utils";
 import { master } from "~/actions/master.server";
 import type { InferSelectModel } from "drizzle-orm";
 import type { ButtonProps } from "~/components/ui/button";
+import { Form } from "@remix-run/react";
 
 type ActionCall = InferSelectModel<typeof actionCalls>;
 
-// GoNext Button Component
 interface GoNextButtonProps extends ButtonProps {
   actionCall: ActionCall;
   className?: string;
 }
 
-type ActionResponse = {
-  message: string;
-  status: string;
-};
-
 function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
-  const fetcher = useFetcher<ActionResponse>();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
 
   return (
-    <div className="flex flex-col gap-4">
-      <fetcher.Form method="post" action={`/action-calls/${actionCall.id}`}>
-        <Button
-          type="submit"
-          className={cn("bg-primary text-primary-foreground hover:bg-primary/90", className)}
-          {...props}
-        >
-          {actionCall.status === "completed" ? "Next" : "Approve"}
-        </Button>
-      </fetcher.Form>
-    </div>
+    <Form method="post" action={`/action-calls/${actionCall.id}`}>
+      <Button
+        type="submit"
+        disabled={isSubmitting}
+        className={cn("bg-primary text-primary-foreground hover:bg-primary/90", className)}
+        {...props}
+      >
+        {actionCall.status === "completed" ? "Next" : "Approve"}
+      </Button>
+    </Form>
   );
 }
 
