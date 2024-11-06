@@ -1,6 +1,12 @@
 // app/routes/action-calls.$id/route.tsx
 
-import { useLoaderData, useRouteError, useNavigation } from "@remix-run/react";
+import {
+  useLoaderData,
+  useRouteError,
+  useNavigation,
+  Form,
+  isRouteErrorResponse,
+} from "@remix-run/react";
 import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
@@ -10,7 +16,6 @@ import { cn } from "~/lib/utils";
 import { master } from "~/actions/master.server";
 import type { InferSelectModel } from "drizzle-orm";
 import type { ButtonProps } from "~/components/ui/button";
-import { Form } from "@remix-run/react";
 
 type ActionCall = InferSelectModel<typeof actionCalls>;
 
@@ -24,7 +29,7 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
   const isSubmitting = navigation.state === "submitting";
 
   return (
-    <Form method="post" action={`/action-calls/${actionCall.id}`}>
+    <Form method="post" replace>
       <Button
         type="submit"
         disabled={isSubmitting}
@@ -57,6 +62,13 @@ export const action: ActionFunction = async ({ params }) => {
 // For loader errors
 export function ErrorBoundary() {
   const error = useRouteError();
+  if (isRouteErrorResponse(error)) {
+    return (
+      <main className="flex-1 bg-black text-green-400 p-4 font-mono">
+        <pre className="whitespace-pre-wrap">{JSON.stringify(error, null, 2)}</pre>
+      </main>
+    );
+  }
   return (
     <main className="flex-1 bg-black text-green-400 p-4 font-mono">
       <pre className="whitespace-pre-wrap">{JSON.stringify(error, null, 2)}</pre>
