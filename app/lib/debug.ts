@@ -2,6 +2,7 @@
 
 import { db } from "~/db";
 import { debugLogs } from "~/db/schema";
+import { emitter } from "~/services/emitter.server";
 
 type DebugInfo = {
   type: string;
@@ -18,23 +19,23 @@ function formatDebugInfo(data: unknown): DebugInfo {
 }
 
 export async function dd(data: unknown): Promise<never> {
-  console.log("🟢 dd function called with data:", data);
-
   const debugInfo = formatDebugInfo(data);
-  console.log("🟢 Formatted debug info:", debugInfo);
 
-  console.log("🟡 Attempting to insert into debugLogs...");
-  await db.insert(debugLogs).values({
-    message: JSON.stringify(debugInfo),
-  });
-  console.log("🟢 Insert completed");
+  const log = await db
+    .insert(debugLogs)
+    .values({
+      message: JSON.stringify(debugInfo),
+    })
+    .returning();
 
-  return new Response(JSON.stringify(debugInfo), {
+  emitter.emit("debug", log[0]);
+
+  throw new Response(JSON.stringify(debugInfo), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
     },
-  }) as never;
+  });
 }
 
 declare global {
