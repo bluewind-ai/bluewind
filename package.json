@@ -15,7 +15,7 @@
     "db:studio": "drizzle-kit studio",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,mjs,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,mjs,json,css,md}\"",
-    "fix": "npm run format && npm run lint && tsc --noEmit",
+    "fix": "npm run format && npm run lint && tsc --noEmit && npm run delete-empty",
     "clean-all": "rm -rf build && rm -rf .drizzle && rm -rf .drizzle-kit && rm -rf node_modules && rm -rf .eslintcache && rm -rf .prettiercache",
     "reset-db": "sh reset-db.sh",
     "reset-all": "npm run clean-all && npm install && npm run reset-db && npm run fix",
