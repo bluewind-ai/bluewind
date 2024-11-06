@@ -21,9 +21,6 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
-  console.log("Navigation state:", navigation.state);
-  console.log("Button render, actionCall:", actionCall);
-
   return (
     <Form method="post" replace>
       <Button
@@ -72,7 +69,6 @@ export const action: ActionFunction = async ({ params }) => {
 
 export default function Route() {
   const actionCall = useLoaderData<typeof loader>();
-  console.log("Route render, actionCall:", actionCall);
 
   return (
     <div className="flex flex-col gap-4">
