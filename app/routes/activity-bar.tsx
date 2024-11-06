@@ -30,17 +30,19 @@ export function ActivityBar({
   lastAction?: ActionCall;
 }) {
   const navigate = useNavigate();
+
+  const handleNetworkClick = () => {
+    if (lastAction) {
+      navigate(`/action-calls/${lastAction.id}`);
+    }
+  };
+
   return (
-    <div className={cn("flex flex-col gap-2 p-2 bg-muted", className)}>
+    <div className={cn("flex flex-col gap-2 p-2 bg-muted w-12", className)}>
       <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => navigate("/")}>
         <Logo />
       </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-10 w-10"
-        onClick={() => lastAction && navigate(`/action-calls/${lastAction.id}`)}
-      >
+      <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleNetworkClick}>
         <Network className="h-5 w-5" />
       </Button>
       <Button
