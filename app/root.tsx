@@ -1,9 +1,6 @@
 // app/root.tsx
-
-import { type LinksFunction } from "@remix-run/node";
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -11,10 +8,8 @@ import {
   isRouteErrorResponse,
   useRouteError,
 } from "@remix-run/react";
-import stylesheet from "~/tailwind.css";
+import "./tailwind.css"; // Direct import instead of using links
 import { Debug } from "~/components/DebugPanel";
-
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: stylesheet }];
 
 function Document({ children }: { children: React.ReactNode }) {
   return (
@@ -32,7 +27,6 @@ function Document({ children }: { children: React.ReactNode }) {
         </div>
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );

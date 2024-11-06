@@ -2,7 +2,7 @@
 
 import { json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { db } from "~/db";
 import { debugLogs } from "~/db/schema";
 import { desc } from "drizzle-orm";
@@ -14,26 +14,35 @@ type SerializedDebugLog = Omit<DebugLog, "createdAt"> & {
 };
 
 export async function loader() {
-  console.log("🟢 Debug Panel Loader starting");
-  const logs = await db.select().from(debugLogs).orderBy(desc(debugLogs.createdAt)).limit(50);
+  const logs = await db.select().from(debugLogs).orderBy(desc(debugLogs.createdAt)).limit(1);
   const serializedLogs: SerializedDebugLog[] = logs.map((log) => ({
     ...log,
     createdAt: log.createdAt.toISOString(),
   }));
-  console.log("🟢 Fetched debug logs:", serializedLogs);
   return json({ logs: serializedLogs });
 }
 
 export function Debug() {
   const fetcher = useFetcher<typeof loader>();
+  const lastLogsRef = useRef<SerializedDebugLog[]>([]);
 
   useEffect(() => {
-    if (fetcher.state === "idle" && !fetcher.data) {
+    const poll = () => {
       fetcher.load("/debug-data");
-    }
+    };
+
+    poll();
+    const interval = setInterval(poll, 1000);
+    return () => clearInterval(interval);
   }, [fetcher]);
 
-  const logs = fetcher.data?.logs ?? [];
+  const newLogs = fetcher.data?.logs ?? [];
+
+  if (JSON.stringify(newLogs) !== JSON.stringify(lastLogsRef.current)) {
+    lastLogsRef.current = newLogs;
+  }
+
+  const logs = lastLogsRef.current;
 
   return (
     <div className="w-[500px] border-l bg-[#1e1e1e] overflow-auto">
