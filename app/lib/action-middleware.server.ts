@@ -87,7 +87,7 @@ export function suspend() {
   throw new SuspendError();
 }
 
-export async function executeAction(name: string) {
+export async function executeAction(name: keyof typeof actionMap) {
   if (!name || !(name in actionMap)) {
     throw new Error(`Action ${name} not found`);
   }
