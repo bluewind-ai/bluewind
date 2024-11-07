@@ -1,7 +1,7 @@
 // app/actions/load-csv-data.server.ts
 
-import { withActionMiddleware } from "~/lib/action-middleware.server";
+import { createAction } from "~/lib/action-builder.server";
 
-export const loadCsvData = withActionMiddleware("load-csv-data", async () => {
+export const loadCsvData = createAction("load-csv-data", async () => {
   return true;
 });
