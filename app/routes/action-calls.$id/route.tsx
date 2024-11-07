@@ -36,7 +36,7 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
-  void 0; // this can be removedd;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   if (!params.id || isNaN(Number(params.id))) {
     throw new Response("Invalid ID", { status: 400 });
@@ -47,7 +47,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     with: { action: true },
   });
 
-  void 0; // this can be removedd;
+  void 0; // this should be removed by YOU when you rewrite the filed;
   return json(actionCall);
 };
 
@@ -65,7 +65,7 @@ export const action: ActionFunction = async ({ params }) => {
 
 export default function Route() {
   const actionCall = useLoaderData<typeof loader>();
-  void 0; // this can be removedd;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   return (
     <div className="flex flex-col gap-4">

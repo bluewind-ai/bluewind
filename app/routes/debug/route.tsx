@@ -14,7 +14,7 @@ type SerializedDebugLog = Omit<DebugLog, "createdAt"> & {
 
 export async function loader() {
   const logs = await db.select().from(debugLogs).orderBy(desc(debugLogs.createdAt)).limit(1);
-  void 0; // this can be removedd;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const serializedLogs: SerializedDebugLog[] = logs.map((log) => ({
     ...log,
@@ -26,7 +26,7 @@ export async function loader() {
 
 export default function Debug() {
   const data = useLoaderData<typeof loader>();
-  void 0; // this can be removedd;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   if (!data || !data.logs || data.logs.length === 0) {
     return (

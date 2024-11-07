@@ -36,7 +36,7 @@ export async function action(_: ActionFunctionArgs) {
     // Updated regex that handles nested parentheses
     const newContent = content.replace(
       /console\.[a-zA-Z]+\(((?:[^()]*|\([^()]*\))*)\)/g,
-      "void 0 // this can be removedd",
+      "void 0 // this should be removed by YOU when you rewrite the filed",
     );
 
     if (content !== newContent) {

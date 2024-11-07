@@ -23,10 +23,10 @@ const actions = {
 } as const;
 
 const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
-  void 0; // this can be removedd;
-  void 0; // this can be removedd;
+  void 0; // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
   const actionName = params.name;
-  void 0; // this can be removedd;
+  void 0; // this should be removed by YOU when you rewrite the filed;
   const action = actions[actionName as keyof typeof actions];
 
   if (!action) {
@@ -78,51 +78,13 @@ export function ErrorBoundary() {
   const error = useRouteError();
 
   return (
-    <div className="p-4 text-red-500">
-      <h2 className="text-xl font-bold mb-4">Error Details</h2>
-      <pre className="mt-4 rounded bg-slate-100 p-4 whitespace-pre-wrap">
-        {isRouteErrorResponse(error) ? (
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-bold">Response Error:</h3>
-              {JSON.stringify(error.data, null, 2)}
-            </div>
-            <div>
-              <h3 className="font-bold">Status:</h3>
-              {error.status}
-            </div>
-            <div>
-              <h3 className="font-bold">Status Text:</h3>
-              {error.statusText}
-            </div>
-          </div>
-        ) : error instanceof Error ? (
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-bold">Error Message:</h3>
-              {error.message}
-            </div>
-            <div>
-              <h3 className="font-bold">Stack Trace:</h3>
-              {error.stack}
-            </div>
-            <div>
-              <h3 className="font-bold">Error Name:</h3>
-              {error.name}
-            </div>
-            {error.cause && (
-              <div>
-                <h3 className="font-bold">Error Cause:</h3>
-                {JSON.stringify(error.cause, null, 2)}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div>
-            <h3 className="font-bold">Unknown Error:</h3>
-            {JSON.stringify(error, null, 2)}
-          </div>
-        )}
+    <div className="p-4 overflow-auto max-h-screen">
+      <pre className="whitespace-pre-wrap break-words">
+        {isRouteErrorResponse(error)
+          ? error.data
+          : error instanceof Error
+            ? `${error.name}: ${error.message}\n\n${error.stack}`
+            : "Unknown error"}
       </pre>
     </div>
   );

@@ -24,7 +24,7 @@ async function getOrCreateAction(functionName: string, actionMap: Record<string,
   });
 
   if (!existingAction) {
-    console.log("Creating action:", kebabName);
+    void 0; // this should be removed by YOU when you rewrite the filed;
     const newAction = await db
       .insert(actions)
       .values({
@@ -32,7 +32,7 @@ async function getOrCreateAction(functionName: string, actionMap: Record<string,
       })
       .returning();
     existingAction = newAction[0];
-    console.log("Created action:", existingAction);
+    void 0; // this should be removed by YOU when you rewrite the filed;
   }
 
   return existingAction;
@@ -47,17 +47,17 @@ export function withActionMiddleware(
 
     return await hitCounter.run(currentCount, async () => {
       const actionName = action.name;
-      console.log("Action function name:", actionName);
-      console.log("Action function:", action);
+      void 0; // this should be removed by YOU when you rewrite the filed;
+      void 0; // this should be removed by YOU when you rewrite the filed;
       context.hitCount = currentCount;
-      console.log(`Middleware hit count: ${currentCount}`);
+      void 0; // this should be removed by YOU when you rewrite the filed;
 
       const existingAction = await getOrCreateAction(actionName, actionContext.actions);
 
       if (currentCount === 2) {
-        console.log(`Recording approval request for ${actionName}`);
+        void 0; // this should be removed by YOU when you rewrite the filed;
 
-        console.log("Creating approval request...");
+        void 0; // this should be removed by YOU when you rewrite the filed;
         const newCall = await db
           .insert(actionCalls)
           .values({
@@ -66,22 +66,22 @@ export function withActionMiddleware(
             parentId: parentActionCallId.getStore(),
           })
           .returning();
-        console.log("Created approval request:", newCall[0]);
+        void 0; // this should be removed by YOU when you rewrite the filed;
 
         throw new RequireApprovalError();
       }
 
-      console.log("Looking for existing action calls...");
+      void 0; // this should be removed by YOU when you rewrite the filed;
       const actionCall = await db.query.actionCalls.findMany({
         with: {
           action: true,
         },
         where: (fields, { eq }) => eq(fields.actionId, existingAction.id),
       });
-      console.log("Found action calls:", actionCall);
+      void 0; // this should be removed by YOU when you rewrite the filed;
 
       if (actionCall.length === 0) {
-        console.log("Creating initial action call...");
+        void 0; // this should be removed by YOU when you rewrite the filed;
         const newActionCall = await db
           .insert(actionCalls)
           .values({
@@ -90,7 +90,7 @@ export function withActionMiddleware(
           })
           .returning();
 
-        console.log("Created initial action call:", newActionCall[0]);
+        void 0; // this should be removed by YOU when you rewrite the filed;
 
         await parentActionCallId.run(newActionCall[0].id, async () => {
           context.startTime = Date.now();
