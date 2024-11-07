@@ -12,6 +12,7 @@ type Context = {
 };
 
 const hitCounter = new AsyncLocalStorage<number>();
+const parentActionCallId = new AsyncLocalStorage<number>();
 
 export function withActionMiddleware(
   action: ActionFunction,
@@ -27,6 +28,7 @@ export function withActionMiddleware(
         console.log(`Middleware hit count: ${currentCount}`);
 
         if (currentCount === 2) {
+          console.log(`Recording approval request for ${actionName}`);
           const existingAction = await tx.query.actions.findFirst({
             where: (fields, { eq }) => eq(fields.name, actionName),
           });
@@ -37,6 +39,7 @@ export function withActionMiddleware(
               .values({
                 actionId: existingAction.id,
                 status: "ready_for_approval",
+                parentId: parentActionCallId.getStore(),
               })
               .returning();
           }
@@ -65,13 +68,18 @@ export function withActionMiddleware(
           });
 
           if (existingAction) {
-            await tx
+            const newActionCall = await tx
               .insert(actionCalls)
               .values({
                 actionId: existingAction.id,
                 status: "running",
               })
               .returning();
+
+            await parentActionCallId.run(newActionCall[0].id, async () => {
+              context.startTime = Date.now();
+              return await action({ request, params, context: actionContext });
+            });
           }
         }
 
