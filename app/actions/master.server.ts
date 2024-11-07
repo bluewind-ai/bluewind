@@ -2,8 +2,10 @@
 
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { loadCsvData } from "./load-csv-data.server";
+import { withActionMiddleware } from "~/lib/action-middleware.server";
 
-export async function master(args: ActionFunctionArgs) {
-  // Just call the CSV loading function
+async function masterImpl(args: ActionFunctionArgs) {
   return await loadCsvData(args);
 }
+
+export const master = withActionMiddleware(masterImpl);
