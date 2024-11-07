@@ -7,8 +7,8 @@ import { loadActions } from "~/actions/load-actions.server";
 import { goNext } from "~/actions/go-next.server";
 
 export const actions = {
-  master: master,
+  "master": master,
   "load-csv-data": loadCsvData,
   "load-actions": loadActions,
-  "go-next": goNext,
+  "go-next": goNext
 } as const;
