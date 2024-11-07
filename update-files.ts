@@ -74,7 +74,6 @@ async function main(): Promise<void> {
 
     if (updatedFiles.length > 0) {
       await git.add(updatedFiles);
-      await git.add("claude-answer.txt");
       await git.commit("Update files from Claude suggestions");
       console.log("Files updated and changes committed successfully");
     } else {
