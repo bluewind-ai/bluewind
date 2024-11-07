@@ -7,8 +7,12 @@ import { actions, actionCalls } from "~/db/schema";
 import { RequireApprovalError } from "~/lib/errors";
 import { actions as actionMap } from "~/lib/generated/actions";
 
-const hitCounter = new AsyncLocalStorage<number>();
-const parentCallId = new AsyncLocalStorage<number>();
+type ActionContext = {
+  hitCount: number;
+  parentId: number | null;
+};
+
+const contextStore = new AsyncLocalStorage<ActionContext>();
 
 async function getOrCreateAction(functionName: string) {
   console.log("==== Action Debug ====");
@@ -40,17 +44,17 @@ export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
     console.log("\n=== START MIDDLEWARE EXECUTION ===");
     console.log("Params:", params);
     console.log("Action name from params:", params.name);
-    console.log("Initial parent call ID:", parentCallId.getStore());
-    console.log("Initial hit count:", hitCounter.getStore());
 
-    const currentCount = (hitCounter.getStore() || 0) + 1;
-    console.log("New hit count will be:", currentCount);
+    const currentContext = getMiddlewareContext();
+    const nextContext: ActionContext = {
+      hitCount: (currentContext?.hitCount || 0) + 1,
+      parentId: currentContext?.parentId || null,
+    };
 
-    return await hitCounter.run(currentCount, async () => {
-      console.log("\n=== INSIDE HIT COUNTER RUN ===");
-      console.log("Hit count now:", hitCounter.getStore());
-      console.log("Parent ID now:", parentCallId.getStore());
+    console.log("Current context:", currentContext);
+    console.log("Next context:", nextContext);
 
+    return await contextStore.run(nextContext, async () => {
       const actionName = params.name;
       if (!actionName || !(actionName in actionMap)) {
         throw new Response(`Action ${actionName} not found`, { status: 404 });
@@ -62,7 +66,7 @@ export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
         throw new Response(`Action ${actionName} not found in database`, { status: 404 });
       }
 
-      if (currentCount === 1) {
+      if (nextContext.hitCount === 1) {
         console.log("\n=== CREATING INITIAL ACTION CALL ===");
         const newActionCall = await db
           .insert(actionCalls)
@@ -73,29 +77,21 @@ export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
           .returning();
 
         console.log("Created action call:", newActionCall[0]);
-        console.log("About to store parent ID:", newActionCall[0].id);
 
-        return await parentCallId.run(newActionCall[0].id, async () => {
-          console.log("\n=== INSIDE PARENT ID RUN ===");
-          console.log("Stored parent ID is now:", parentCallId.getStore());
-          console.log("Hit count is now:", hitCounter.getStore());
-          const result = await actionFn({ request, params, context: actionContext });
-          console.log("After action execution, parent ID is:", parentCallId.getStore());
-          return result;
-        });
+        nextContext.parentId = newActionCall[0].id;
+        return await actionFn({ request, params, context: actionContext });
       }
 
-      if (currentCount === 2) {
+      if (nextContext.hitCount === 2) {
         console.log("\n=== CREATING APPROVAL REQUEST ===");
-        console.log("Current hit count:", hitCounter.getStore());
-        console.log("Current parent ID:", parentCallId.getStore());
+        console.log("Current context:", getMiddlewareContext());
 
         const newCall = await db
           .insert(actionCalls)
           .values({
             actionId: existingAction.id,
             status: "ready_for_approval",
-            parentId: parentCallId.getStore() || null,
+            parentId: nextContext.parentId,
           })
           .returning();
         console.log("Created approval request:", newCall[0]);
@@ -103,15 +99,15 @@ export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
         throw new RequireApprovalError();
       }
 
-      console.log("\n=== EXECUTING NORMAL ACTION ===");
-      console.log("Current hit count:", hitCounter.getStore());
-      console.log("Current parent ID:", parentCallId.getStore());
-
       return await actionFn({ request, params, context: actionContext });
     });
   };
 }
 
+export function getMiddlewareContext(): ActionContext | undefined {
+  return contextStore.getStore();
+}
+
 export function getMiddlewareHitCount(): number {
-  return hitCounter.getStore() || 0;
+  return getMiddlewareContext()?.hitCount || 0;
 }
