@@ -1,45 +1,61 @@
 // app/routes/actions+/$name.tsx
 
-import { json, type ActionFunctionArgs } from "@remix-run/node";
+import { json, type ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import {
   Form,
   useActionData,
   useParams,
   useRouteError,
   isRouteErrorResponse,
+  useLoaderData,
 } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { withActionMiddleware } from "~/lib/action-middleware.server";
-import { goNext } from "~/actions/go-next.server";
-import { loadCsvData } from "~/actions/load-csv-data.server";
-import { master } from "~/actions/master.server";
-import { loadActions } from "~/actions/load-actions.server";
+import { db } from "~/db";
 
-const actions = {
-  "load-csv-data": loadCsvData,
-  "load-actions": loadActions,
-  "go-next": goNext,
-  master,
-} as const;
+export async function loader({ params }: LoaderFunctionArgs) {
+  const existingAction = await db.query.actions.findFirst({
+    where: (fields, { eq }) => eq(fields.name, params.name as string),
+  });
 
-const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
-  void 0; // this can be removedd;
-  void 0; // this can be removedd;
-  const actionName = params.name;
-  void 0; // this can be removedd;
-  const action = actions[actionName as keyof typeof actions];
+  console.log("Found action in DB:", existingAction);
 
-  if (!action) {
-    return json({ error: `Action ${actionName} not found in actions map` });
+  if (!existingAction) {
+    throw new Response(`Action ${params.name} not found in database`, { status: 404 });
   }
 
-  return action({ request, params, context: { ...context, actions } });
+  return json({ action: existingAction });
+}
+
+const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
+  const actionName = params.name;
+
+  let selectedAction;
+  switch (actionName) {
+    case "load-csv-data":
+      selectedAction = (await import("~/actions/load-csv-data.server")).loadCsvData;
+      break;
+    case "load-actions":
+      selectedAction = (await import("~/actions/load-actions.server")).loadActions;
+      break;
+    case "go-next":
+      selectedAction = (await import("~/actions/go-next.server")).goNext;
+      break;
+    case "master":
+      selectedAction = (await import("~/actions/master.server")).master;
+      break;
+    default:
+      throw new Response(`Action ${actionName} not found in actions map`, { status: 404 });
+  }
+
+  return selectedAction({ request, params, context: { ...context } });
 };
 
 export const action = withActionMiddleware(runAction);
 
 export default function ActionRunner() {
   const { name } = useParams();
+  useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const vscodeUrl = `vscode://file/Users/merwanehamadi/code/bluewind/app/actions/${name}.server.ts`;
 
