@@ -1,104 +1,62 @@
 // app/lib/action-middleware.server.ts
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
-import { RequireApprovalError } from "~/lib/errors";
 
-export type ActionCallNode = {
-  name: string;
-  id?: number;
-  actionId?: number;
-  children: ActionCallNode[];
-  status: "running" | "ready_for_approval";
-};
+export type ActionCallNode = typeof actionCalls.$inferSelect;
+export type Action = typeof actions.$inferSelect;
 
 export type ActionContext = {
-  tree: ActionCallNode;
-  hitCount: number;
+  currentNode: ActionCallNode;
 };
 
 const contextStore = new AsyncLocalStorage<ActionContext>();
 
-async function getOrCreateAction(functionName: string) {
-  let existingAction = await db.query.actions.findFirst({
-    where: (fields, { eq }) => eq(fields.name, functionName),
-  });
-
-  if (!existingAction) {
-    console.log("Creating action:", functionName);
-    const newAction = await db
-      .insert(actions)
-      .values({
-        name: functionName,
-      })
-      .returning();
-    existingAction = newAction[0];
-  }
-
-  return existingAction;
-}
-
-export function getActionContext(): ActionContext | undefined {
-  return contextStore.getStore();
-}
-
-export const runInActionContext = contextStore.run.bind(contextStore);
-
 export function withActionMiddleware(name: string, actionFn: ActionFunction): ActionFunction {
   return async (args) => {
-    const context = getActionContext();
-
+    const context = contextStore.getStore();
     if (!context) {
       throw new Error("Action context not initialized");
     }
 
-    console.log("Current tree:", context.tree);
-    context.hitCount++;
+    try {
+      const result = await actionFn(args);
+      await db
+        .update(actionCalls)
+        .set({ status: "completed" })
+        .where({ id: context.currentNode.id });
+      return result;
+    } catch (error) {
+      if (error.name === "SuspendForApproval") {
+        // Create the next action call record
+        const nextActionCall = await db
+          .insert(actionCalls)
+          .values({
+            actionId: error.nextActionId,
+            parentId: context.currentNode.id,
+            status: "ready_for_approval",
+            savedInput: error.args,
+          })
+          .returning();
 
-    if (context.hitCount === 1) {
-      const action = await getOrCreateAction(name);
-      const dbNode = await db
-        .insert(actionCalls)
-        .values({
-          actionId: action.id,
-          status: "running",
-        })
-        .returning();
-
-      context.tree.id = dbNode[0].id;
-      context.tree.actionId = action.id;
-
-      return actionFn(args);
-    }
-
-    if (context.hitCount === 2) {
-      const action = await getOrCreateAction(name);
-      const newNode: ActionCallNode = {
-        name,
-        children: [],
-        status: "ready_for_approval",
-        actionId: action.id,
-      };
-
-      const dbNode = await db
-        .insert(actionCalls)
-        .values({
-          actionId: action.id,
-          parentId: context.tree.id,
+        return {
           status: "ready_for_approval",
-        })
-        .returning();
-
-      newNode.id = dbNode[0].id;
-      context.tree.children.push(newNode);
-
-      throw new RequireApprovalError();
+          nextActionCall: nextActionCall[0],
+        };
+      }
+      throw error;
     }
-
-    return actionFn(args);
   };
+}
+
+export function suspend(nextActionId: Action["id"], args?: any) {
+  const error = new Error("Action suspended for approval");
+  error.name = "SuspendForApproval";
+  error.nextActionId = nextActionId;
+  error.args = args;
+  throw error;
 }
 
 export async function executeAction(args: ActionFunctionArgs) {
@@ -106,21 +64,29 @@ export async function executeAction(args: ActionFunctionArgs) {
   const actionName = args.params.name as keyof typeof wrappedActions;
 
   if (!(actionName in wrappedActions)) {
-    throw new Response(`Action ${actionName} not found in actions map`, { status: 404 });
+    throw new Response(`Action ${actionName} not found`, { status: 404 });
   }
 
-  const selectedAction = wrappedActions[actionName];
-  const rootNode: ActionCallNode = {
-    name: actionName,
-    children: [],
-    status: "running",
-  };
+  const action = await db.query.actions.findFirst({
+    where: (fields, { eq }) => eq(fields.name, actionName),
+  });
+
+  if (!action) {
+    throw new Error(`Action ${actionName} not found in database`);
+  }
+
+  const rootCall = await db
+    .insert(actionCalls)
+    .values({
+      actionId: action.id,
+      status: "ready_for_approval",
+    })
+    .returning();
 
   return await runInActionContext(
     {
-      tree: rootNode,
-      hitCount: 0,
+      currentNode: rootCall[0],
     },
-    () => selectedAction(args),
+    () => wrappedActions[actionName](args),
   );
 }
