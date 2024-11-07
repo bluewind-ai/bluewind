@@ -10,7 +10,11 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
-import { withActionMiddleware } from "~/lib/action-middleware.server";
+import {
+  withActionMiddleware,
+  type ActionCallNode,
+  actionContext,
+} from "~/lib/action-middleware.server";
 import { db } from "~/db";
 
 export async function loader({ params }: LoaderFunctionArgs) {
@@ -48,7 +52,19 @@ const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
       throw new Response(`Action ${actionName} not found in actions map`, { status: 404 });
   }
 
-  return selectedAction({ request, params, context: { ...context } });
+  const rootNode: ActionCallNode = {
+    name: actionName,
+    children: [],
+    status: "running",
+  };
+
+  return await actionContext.run(
+    {
+      tree: rootNode,
+      hitCount: 0,
+    },
+    () => selectedAction({ request, params, context }),
+  );
 };
 
 export const action = ({ request, params, context }: ActionFunctionArgs) =>

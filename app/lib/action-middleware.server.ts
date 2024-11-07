@@ -46,19 +46,17 @@ export function getActionContext(): ActionContext | undefined {
 
 export function withActionMiddleware(name: string, actionFn: ActionFunction): ActionFunction {
   return async (args) => {
-    const currentContext = getActionContext();
+    const context = getActionContext();
 
-    if (!currentContext) {
-      // First call - initialize the tree
+    if (!context) {
+      throw new Error("Action context not initialized");
+    }
+
+    console.log("Current tree:", context.tree);
+    context.hitCount++;
+
+    if (context.hitCount === 1) {
       const action = await getOrCreateAction(name);
-      const rootNode: ActionCallNode = {
-        name,
-        children: [],
-        status: "running",
-        actionId: action.id,
-      };
-
-      // Create DB entry for this node
       const dbNode = await db
         .insert(actionCalls)
         .values({
@@ -67,40 +65,33 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
         })
         .returning();
 
-      rootNode.id = dbNode[0].id;
+      context.tree.id = dbNode[0].id;
+      context.tree.actionId = action.id;
 
-      return await actionContext.run(
-        {
-          tree: rootNode,
-          hitCount: 1,
-        },
-        () => actionFn(args),
-      );
+      return actionFn(args);
     }
 
-    // Subsequent calls - add to existing tree
-    const newNode: ActionCallNode = {
-      name,
-      children: [],
-      status: "ready_for_approval",
-      actionId: (await getOrCreateAction(name)).id,
-    };
-
-    // Create DB entry with parent reference
-    const dbNode = await db
-      .insert(actionCalls)
-      .values({
-        actionId: newNode.actionId!,
-        parentId: currentContext.tree.id,
+    if (context.hitCount === 2) {
+      const action = await getOrCreateAction(name);
+      const newNode: ActionCallNode = {
+        name,
+        children: [],
         status: "ready_for_approval",
-      })
-      .returning();
+        actionId: action.id,
+      };
 
-    newNode.id = dbNode[0].id;
-    currentContext.tree.children.push(newNode);
-    currentContext.hitCount++;
+      const dbNode = await db
+        .insert(actionCalls)
+        .values({
+          actionId: action.id,
+          parentId: context.tree.id,
+          status: "ready_for_approval",
+        })
+        .returning();
 
-    if (currentContext.hitCount === 2) {
+      newNode.id = dbNode[0].id;
+      context.tree.children.push(newNode);
+
       throw new RequireApprovalError();
     }
 
