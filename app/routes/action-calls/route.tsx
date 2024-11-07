@@ -8,7 +8,6 @@ import { eq } from "drizzle-orm";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
-import { ActivityBar } from "~/components/ActivityBar";
 
 type TreeNode = {
   id: number;
@@ -102,19 +101,16 @@ export default function ActionCallsLayout() {
   const { lastAction } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex h-full">
-      <ActivityBar className="w-12" lastAction={lastAction} />
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={20}>
-          <ActionCallTree initialTreeData={mockTreeData} />
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={80}>
-          <main className="h-full">
-            <Outlet />
-          </main>
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </div>
+    <ResizablePanelGroup direction="horizontal">
+      <ResizablePanel defaultSize={20}>
+        <ActionCallTree initialTreeData={mockTreeData} />
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel defaultSize={80}>
+        <main className="h-full">
+          <Outlet />
+        </main>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 }
