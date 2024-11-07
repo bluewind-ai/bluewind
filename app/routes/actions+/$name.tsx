@@ -10,7 +10,7 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
-import { executeAction } from "~/lib/action-middleware.server";
+import { executeAction } from "~/lib/action-builder.server";
 import { db } from "~/db";
 
 export async function loader({ params }: LoaderFunctionArgs) {
