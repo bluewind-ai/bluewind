@@ -61,8 +61,9 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
         where: (fields, { eq }) => eq(fields.id, context.currentNode.id),
       });
 
-      return {
-        ...currentCall,
+      // Update the context's currentNode with new child
+      context.currentNode = {
+        ...currentCall!,
         actionName: name,
         children: [{ ...nextCall[0], actionName: nextAction.name, children: [] }],
       };
