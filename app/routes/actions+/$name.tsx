@@ -22,7 +22,7 @@ const actions = {
   master,
 } as const;
 
-const runAction = async ({ request, params }: ActionFunctionArgs) => {
+const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
   void 0; // this can be removedd;
   void 0; // this can be removedd;
   const actionName = params.name;
@@ -33,7 +33,7 @@ const runAction = async ({ request, params }: ActionFunctionArgs) => {
     return json({ error: `Action ${actionName} not found in actions map` });
   }
 
-  return action(request);
+  return action({ request, params, context });
 };
 
 export const action = withActionMiddleware(runAction);
