@@ -5,7 +5,7 @@ import { json, type LoaderFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
 import { ActivityBar } from "~/components/ActivityBar";
@@ -100,46 +100,16 @@ function ActionCallTree({ initialTreeData }: { initialTreeData: TreeNode }) {
 
 export default function ActionCallsLayout() {
   const { lastAction } = useLoaderData<typeof loader>();
-  const [isExpanded, setIsExpanded] = useState(true);
-  const lastSize = useRef(20);
-  const dragStartSize = useRef<number | null>(null);
-
-  const handleLayout = (sizes: number[]) => {
-    if (!sizes[0]) return;
-
-    if (dragStartSize.current !== null) {
-      if (sizes[0] <= 15 && isExpanded) {
-        setIsExpanded(false);
-        dragStartSize.current = null;
-      } else if (sizes[0] > 0 && !isExpanded) {
-        setIsExpanded(true);
-        dragStartSize.current = null;
-      }
-    }
-
-    if (sizes[0] > 15 && isExpanded) {
-      lastSize.current = sizes[0];
-    }
-  };
-
-  const handleDragStart = () => {
-    dragStartSize.current = lastSize.current;
-  };
 
   return (
     <div className="flex h-full">
       <ActivityBar className="w-12" lastAction={lastAction} />
-      <ResizablePanelGroup direction="horizontal" onLayout={handleLayout}>
-        <ResizablePanel
-          defaultSize={20}
-          minSize={isExpanded ? 15 : 0}
-          maxSize={isExpanded ? 100 : 0}
-          size={isExpanded ? undefined : 0}
-        >
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel defaultSize={20}>
           <ActionCallTree initialTreeData={mockTreeData} />
         </ResizablePanel>
-        <ResizableHandle withHandle onDragStart={handleDragStart} />
-        <ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={80}>
           <main className="h-full">
             <Outlet />
           </main>

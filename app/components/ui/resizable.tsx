@@ -1,136 +1,42 @@
 // app/components/ui/resizable.tsx
 
-import { useEffect, useRef, useState } from "react";
+import * as ResizablePrimitive from "react-resizable-panels";
+
 import { cn } from "~/lib/utils";
+import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 
-interface ResizablePanelProps {
-  direction?: "vertical" | "horizontal";
-  children: React.ReactNode;
-  className?: string;
-  defaultSize?: number;
-  minSize?: number;
-  maxSize?: number;
-  size?: number;
-  onLayout?: (sizes: number[]) => void;
-}
+const ResizablePanelGroup = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof ResizablePrimitive.PanelGroup>) => (
+  <ResizablePrimitive.PanelGroup
+    className={cn("flex h-full w-full data-[panel-group-direction=vertical]:flex-col", className)}
+    {...props}
+  />
+);
 
-interface ResizablePanelGroupProps {
-  direction?: "vertical" | "horizontal";
-  children: React.ReactNode;
-  className?: string;
-  onLayout?: (sizes: number[]) => void;
-}
+const ResizablePanel = ResizablePrimitive.Panel;
 
-interface ResizableHandleProps {
+const ResizableHandle = ({
+  withHandle,
+  className,
+  ...props
+}: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & {
   withHandle?: boolean;
-  className?: string;
-  onDragStart?: () => void;
-}
+}) => (
+  <ResizablePrimitive.PanelResizeHandle
+    className={cn(
+      "relative flex w-px items-center justify-center bg-border after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:after:left-0 data-[panel-group-direction=vertical]:after:h-1 data-[panel-group-direction=vertical]:after:w-full data-[panel-group-direction=vertical]:after:-translate-y-1/2 data-[panel-group-direction=vertical]:after:translate-x-0 [&[data-panel-group-direction=vertical]>div]:rotate-90",
+      className,
+    )}
+    {...props}
+  >
+    {withHandle && (
+      <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border">
+        <DragHandleDots2Icon className="h-2.5 w-2.5" />
+      </div>
+    )}
+  </ResizablePrimitive.PanelResizeHandle>
+);
 
-export function ResizablePanelGroup({
-  direction = "horizontal",
-  children,
-  className,
-}: ResizablePanelGroupProps) {
-  return (
-    <div className={cn("flex", direction === "horizontal" ? "flex-row" : "flex-col", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function ResizableHandle({
-  withHandle = false,
-  className,
-  onDragStart,
-}: ResizableHandleProps) {
-  const handleMouseDown = () => {
-    if (onDragStart) onDragStart();
-  };
-
-  return (
-    <button
-      className={cn(
-        "flex items-center justify-center",
-        withHandle ? "w-2 cursor-col-resize hover:bg-gray-200" : "w-1 cursor-col-resize",
-        className,
-      )}
-      onMouseDown={handleMouseDown}
-      aria-label="Resize panel"
-    >
-      {withHandle && <div className="w-1 h-8 bg-gray-300 rounded-full" />}
-    </button>
-  );
-}
-
-export function ResizablePanel({
-  direction = "horizontal",
-  children,
-  className,
-  defaultSize = 33,
-  minSize = 10,
-  maxSize = 90,
-  size,
-}: ResizablePanelProps) {
-  const [isResizing, setIsResizing] = useState(false);
-  const [currentSize, setCurrentSize] = useState(size ?? defaultSize);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (size !== undefined) {
-      setCurrentSize(size);
-    }
-  }, [size]);
-
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      if (!isResizing) return;
-
-      const rect = ref.current?.getBoundingClientRect();
-      if (!rect) return;
-
-      let newSize =
-        direction === "horizontal"
-          ? ((event.clientX - rect.left) / rect.width) * 100
-          : ((event.clientY - rect.top) / rect.height) * 100;
-
-      newSize = Math.max(minSize, Math.min(newSize, maxSize));
-      setCurrentSize(newSize);
-    };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isResizing, direction, minSize, maxSize]);
-
-  const containerStyles =
-    direction === "horizontal" ? { width: `${currentSize}%` } : { height: `${currentSize}%` };
-
-  const handleResizeStart = () => {
-    setIsResizing(true);
-  };
-
-  return (
-    <div ref={ref} className={cn("relative", className)} style={containerStyles}>
-      {children}
-      <button
-        className={cn(
-          "absolute opacity-0 group-hover:opacity-100",
-          direction === "horizontal"
-            ? "right-0 top-0 w-1 h-full cursor-ew-resize"
-            : "bottom-0 left-0 h-1 w-full cursor-ns-resize",
-        )}
-        onMouseDown={handleResizeStart}
-        aria-label="Resize panel"
-      />
-    </div>
-  );
-}
+export { ResizablePanelGroup, ResizablePanel, ResizableHandle };
