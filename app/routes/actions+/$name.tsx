@@ -23,10 +23,10 @@ const actions = {
 } as const;
 
 const runAction = async ({ request, params }: ActionFunctionArgs) => {
-  console.log("Running action with params:", params);
-  console.log("Available actions:", Object.keys(actions));
+  void 0; // this can be removedd;
+  void 0; // this can be removedd;
   const actionName = params.name;
-  console.log("Looking for action:", actionName);
+  void 0; // this can be removedd;
   const action = actions[actionName as keyof typeof actions];
 
   if (!action) {

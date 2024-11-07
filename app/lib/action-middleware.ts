@@ -1,56 +1,74 @@
 // app/lib/action-middleware.ts
 
+import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
+import { RequireApprovalError } from "~/lib/errors";
 
 type Context = {
   startTime?: number;
+  hitCount?: number;
 };
+
+const hitCounter = new AsyncLocalStorage<number>();
 
 export function withActionMiddleware(
   action: ActionFunction,
   context: Context = {},
 ): ActionFunction {
   return async (args) => {
-    console.log("withActionMiddleware");
-    return await db.transaction(async (tx) => {
-      const actionName = action.name;
+    const currentCount = (hitCounter.getStore() || 0) + 1;
 
-      const actionCall = await tx.query.actionCalls.findMany({
-        with: {
-          action: true,
-        },
-        where: (fields, { eq }) =>
-          eq(
-            fields.actionId,
-            tx
-              .select({ id: actions.id })
-              .from(actions)
-              .where(eq(actions.name, actionName))
-              .limit(1),
-          ),
-      });
+    return await hitCounter.run(currentCount, async () => {
+      return await db.transaction(async (tx) => {
+        const actionName = action.name;
+        context.hitCount = currentCount;
+        console.log(`Middleware hit count: ${currentCount}`);
 
-      if (actionCall.length === 0) {
-        const existingAction = await tx.query.actions.findFirst({
-          where: (fields, { eq }) => eq(fields.name, actionName),
+        if (currentCount === 2) {
+          throw new RequireApprovalError();
+        }
+
+        const actionCall = await tx.query.actionCalls.findMany({
+          with: {
+            action: true,
+          },
+          where: (fields, { eq }) =>
+            eq(
+              fields.actionId,
+              tx
+                .select({ id: actions.id })
+                .from(actions)
+                .where(eq(actions.name, actionName))
+                .limit(1),
+            ),
         });
 
-        if (existingAction) {
-          await tx
-            .insert(actionCalls)
-            .values({
-              actionId: existingAction.id,
-              status: "running",
-            })
-            .returning();
-        }
-      }
+        if (actionCall.length === 0) {
+          const existingAction = await tx.query.actions.findFirst({
+            where: (fields, { eq }) => eq(fields.name, actionName),
+          });
 
-      context.startTime = Date.now();
-      // Removed the try/catch so dd() can work as expected
-      return await action(args);
+          if (existingAction) {
+            await tx
+              .insert(actionCalls)
+              .values({
+                actionId: existingAction.id,
+                status: "running",
+                hitCount: currentCount,
+              })
+              .returning();
+          }
+        }
+
+        context.startTime = Date.now();
+        return await action(args);
+      });
     });
   };
+}
+
+export function getMiddlewareHitCount(): number {
+  return hitCounter.getStore() || 0;
 }

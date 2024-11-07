@@ -7,19 +7,19 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 export const loadActions = async () => {
-  console.log("Starting loadActionsAction");
+  void 0; // this can be removedd;
 
   const actionsDir = path.join(process.cwd(), "app", "actions");
-  console.log("Actions directory:", actionsDir);
+  void 0; // this can be removedd;
 
   const files = await fs.readdir(actionsDir);
-  console.log("Found files:", files);
+  void 0; // this can be removedd;
 
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
-  console.log("Action files:", actionFiles);
+  void 0; // this can be removedd;
 
   const actionNames = actionFiles.map((file) => path.basename(file, ".server.ts"));
-  console.log("Action names:", actionNames);
+  void 0; // this can be removedd;
 
   const results = [];
 

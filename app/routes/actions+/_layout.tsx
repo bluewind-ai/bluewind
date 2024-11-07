@@ -87,7 +87,7 @@ function FileExplorer({ initialFileData }: { initialFileData: FileNode }) {
 export const loader = async () => {
   const rawActions = await db.query.actions.findMany();
   const enrichedActions = rawActions.map(enrichAction);
-  console.log("Enriched actions:", enrichedActions);
+  void 0; // this can be removedd;
 
   const fileData = {
     id: 0,
