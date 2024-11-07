@@ -92,12 +92,16 @@ export default function ActionRunner() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  const { name } = useParams();
+  const routePath = `file:///Users/merwanehamadi/code/bluewind/app/routes/actions+/${name}.tsx`;
 
-  const errorText = isRouteErrorResponse(error)
-    ? error.data
-    : error instanceof Error
-      ? `${error.name}: ${error.message}\n\n${error.stack}`
-      : "Unknown error";
+  const errorText = `Caught in ${routePath}:\n\n${
+    isRouteErrorResponse(error)
+      ? error.data
+      : error instanceof Error
+        ? `${error.name}: ${error.message}\n\n${error.stack}`
+        : "Unknown error"
+  }`;
 
   return (
     <div className="p-4">
