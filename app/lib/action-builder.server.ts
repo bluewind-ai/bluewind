@@ -1,8 +1,9 @@
 // app/lib/action-builder.server.ts
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { AsyncLocalStorage } from "async_hooks";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
+import { actions as actionMap } from "./generated/actions";
 
 export type ActionCallNode = typeof actionCalls.$inferSelect & {
   actionName: string;
@@ -89,7 +90,7 @@ export function suspend() {
   throw new SuspendError();
 }
 
-export async function executeAction(name: string) {
+export async function executeAction(name: keyof typeof actionMap) {
   const action = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, name),
   });
@@ -110,11 +111,6 @@ export async function executeAction(name: string) {
 
   console.log("Created root call:", rootCall[0]);
 
-  const wrappedAction = require(`~/actions/${name}.server`)[name];
-  if (!wrappedAction) {
-    throw new Error(`Action ${name} not found in actions directory`);
-  }
-
   return await contextStore.run(
     {
       currentNode: {
@@ -124,6 +120,6 @@ export async function executeAction(name: string) {
       },
       hitCount: 0,
     },
-    () => wrappedAction(),
+    () => actionMap[name](),
   );
 }
