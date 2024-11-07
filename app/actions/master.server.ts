@@ -7,19 +7,27 @@ import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 
 export async function master(_args: ActionFunctionArgs) {
-  // First ensure the master action itself is created
-  const loadCsvAction = await db
-    .insert(actions)
-    .values({
-      name: "load-csv-data",
-    })
-    .returning();
+  // First get or create the load-csv-data action
+  const existingAction = await db.query.actions.findFirst({
+    where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
+  });
+
+  const loadCsvAction =
+    existingAction ||
+    (
+      await db
+        .insert(actions)
+        .values({
+          name: "load-csv-data",
+        })
+        .returning()
+    )[0];
 
   // Create an action call for approval
   const actionCall = await db
     .insert(actionCalls)
     .values({
-      actionId: loadCsvAction[0].id,
+      actionId: loadCsvAction.id,
       status: "ready_for_approval",
     })
     .returning();
