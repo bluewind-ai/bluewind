@@ -12,14 +12,10 @@ import {
 import { Button } from "~/components/ui/button";
 import { withActionMiddleware } from "~/lib/action-middleware.server";
 import { db } from "~/db";
-import { enrichAction } from "~/db/schema";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const existingAction = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, params.name as string),
-    with: {
-      calls: true,
-    },
   });
 
   console.log("Found action in DB:", existingAction);
@@ -28,7 +24,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw new Response(`Action ${params.name} not found in database`, { status: 404 });
   }
 
-  return json({ action: enrichAction(existingAction) });
+  return json({ action: existingAction });
 }
 
 const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
@@ -55,7 +51,7 @@ const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
   return selectedAction({ request, params, context: { ...context } });
 };
 
-export const action = withActionMiddleware(runAction);
+export const action = withActionMiddleware(params.name as string, runAction);
 
 export default function ActionRunner() {
   const { name } = useParams();
