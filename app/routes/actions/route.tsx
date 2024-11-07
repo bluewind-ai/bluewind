@@ -1,6 +1,6 @@
 // app/routes/actions/route.tsx
 
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData, Link } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { db } from "~/db";
 import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
@@ -18,39 +18,51 @@ function FileExplorerNode({ node, level = 0 }: { node: FileNode; level?: number 
   const [isOpen, setIsOpen] = useState(true);
   const paddingLeft = `${level * 20}px`;
 
+  const content = (
+    <>
+      {node.children.length > 0 &&
+        (isOpen ? (
+          <svg
+            className="w-4 h-4 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        ) : (
+          <svg
+            className="w-4 h-4 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        ))}
+      <span className="mr-2">{node.name}</span>
+      <span className="text-sm text-gray-500">({node.type})</span>
+    </>
+  );
+
   return (
     <div>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div
-          className="flex items-center py-1 hover:bg-slate-100 cursor-pointer"
-          style={{ paddingLeft }}
-        >
-          <CollapsibleTrigger className="flex items-center">
-            {node.children.length > 0 &&
-              (isOpen ? (
-                <svg
-                  className="w-4 h-4 mr-2"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              ) : (
-                <svg
-                  className="w-4 h-4 mr-2"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M9 6l6 6-6 6" />
-                </svg>
-              ))}
-            <span className="mr-2">{node.name}</span>
-            <span className="text-sm text-gray-500">({node.type})</span>
-          </CollapsibleTrigger>
+        <div style={{ paddingLeft }}>
+          {node.type === "file" ? (
+            <Link
+              to={node.name}
+              className="flex items-center w-full hover:bg-slate-100 p-1 rounded"
+            >
+              {content}
+            </Link>
+          ) : (
+            <CollapsibleTrigger className="flex items-center w-full p-1 hover:bg-slate-100 rounded">
+              {content}
+            </CollapsibleTrigger>
+          )}
         </div>
         <CollapsibleContent>
           {node.children.map((child) => (
