@@ -119,7 +119,7 @@ export async function executeAction(args: ActionFunctionArgs) {
         children: [],
       },
     },
-    () => wrappedActions[actionName]({}),
+    () => wrappedActions[actionName](args),
   );
 
   return result;
