@@ -6,18 +6,22 @@ import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { RequireApprovalError } from "~/lib/errors";
 
-type ActionContext = {
-  hitCount: number;
-  parentId: number | null;
+type ActionCallNode = {
+  name: string;
+  id?: number;
+  actionId?: number;
+  children: ActionCallNode[];
+  status: "running" | "ready_for_approval";
 };
 
-const contextStore = new AsyncLocalStorage<ActionContext>();
+type ActionContext = {
+  tree: ActionCallNode;
+  hitCount: number;
+};
+
+const actionContext = new AsyncLocalStorage<ActionContext>();
 
 async function getOrCreateAction(functionName: string) {
-  console.log("==== Action Debug ====");
-  console.log("Function name:", functionName);
-  console.log("==================");
-
   let existingAction = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, functionName),
   });
@@ -31,82 +35,75 @@ async function getOrCreateAction(functionName: string) {
       })
       .returning();
     existingAction = newAction[0];
-    console.log("Created action:", existingAction);
   }
 
   return existingAction;
 }
 
-export function withActionMiddleware(actionName: string, actionFn: ActionFunction): ActionFunction {
-  return async ({ request, params, context: actionContext }) => {
-    console.log("\n=== START MIDDLEWARE EXECUTION ===");
-    console.log("Action name:", actionName);
+export function getActionContext(): ActionContext | undefined {
+  return actionContext.getStore();
+}
 
-    const currentContext = getMiddlewareContext();
-    const nextContext: ActionContext = {
-      hitCount: (currentContext?.hitCount || 0) + 1,
-      parentId: currentContext?.parentId || null,
-    };
+export function withActionMiddleware(name: string, actionFn: ActionFunction): ActionFunction {
+  return async (args) => {
+    const currentContext = getActionContext();
 
-    console.log("Current context:", currentContext);
-    console.log("Next context:", nextContext);
+    if (!currentContext) {
+      // First call - initialize the tree
+      const action = await getOrCreateAction(name);
+      const rootNode: ActionCallNode = {
+        name,
+        children: [],
+        status: "running",
+        actionId: action.id,
+      };
 
-    const existingAction = await getOrCreateAction(actionName);
-
-    if (!existingAction) {
-      throw new Response(`Action ${actionName} not found in database`, { status: 404 });
-    }
-
-    if (nextContext.hitCount === 1) {
-      console.log("\n=== CREATING INITIAL ACTION CALL ===");
-      const newActionCall = await db
+      // Create DB entry for this node
+      const dbNode = await db
         .insert(actionCalls)
         .values({
-          actionId: existingAction.id,
+          actionId: action.id,
           status: "running",
         })
         .returning();
 
-      console.log("Created action call:", newActionCall[0]);
+      rootNode.id = dbNode[0].id;
 
-      const runContext = {
-        ...nextContext,
-        parentId: newActionCall[0].id,
-      };
-
-      console.log("Running with context:", runContext);
-      return await contextStore.run(runContext, async () => {
-        return await actionFn({ request, params, context: actionContext });
-      });
+      return await actionContext.run(
+        {
+          tree: rootNode,
+          hitCount: 1,
+        },
+        () => actionFn(args),
+      );
     }
 
-    if (nextContext.hitCount === 2) {
-      console.log("\n=== CREATING APPROVAL REQUEST ===");
-      console.log("Current context:", nextContext);
+    // Subsequent calls - add to existing tree
+    const newNode: ActionCallNode = {
+      name,
+      children: [],
+      status: "ready_for_approval",
+      actionId: (await getOrCreateAction(name)).id,
+    };
 
-      const newCall = await db
-        .insert(actionCalls)
-        .values({
-          actionId: existingAction.id,
-          status: "ready_for_approval",
-          parentId: nextContext.parentId,
-        })
-        .returning();
-      console.log("Created approval request:", newCall[0]);
+    // Create DB entry with parent reference
+    const dbNode = await db
+      .insert(actionCalls)
+      .values({
+        actionId: newNode.actionId!,
+        parentId: currentContext.tree.id,
+        status: "ready_for_approval",
+      })
+      .returning();
 
+    newNode.id = dbNode[0].id;
+    currentContext.tree.children.push(newNode);
+    currentContext.hitCount++;
+
+    if (currentContext.hitCount === 2) {
       throw new RequireApprovalError();
     }
 
-    return await contextStore.run(nextContext, async () => {
-      return await actionFn({ request, params, context: actionContext });
-    });
+    return actionFn(args);
   };
-}
-
-export function getMiddlewareContext(): ActionContext | undefined {
-  return contextStore.getStore();
-}
-
-export function getMiddlewareHitCount(): number {
-  return getMiddlewareContext()?.hitCount || 0;
 }
