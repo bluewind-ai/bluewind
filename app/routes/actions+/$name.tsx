@@ -23,10 +23,10 @@ const actions = {
 } as const;
 
 const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
-  void 0; // this should be removed by YOU when you rewrite the filed;
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  void 0; // this can be removedd;
+  void 0; // this can be removedd;
   const actionName = params.name;
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  void 0; // this can be removedd;
   const action = actions[actionName as keyof typeof actions];
 
   if (!action) {
@@ -78,8 +78,23 @@ export function ErrorBoundary() {
   const error = useRouteError();
 
   return (
-    <div className="p-4 overflow-auto max-h-screen">
-      <pre className="whitespace-pre-wrap break-words">
+    <div
+      role="region"
+      aria-label="Error details"
+      style={{
+        padding: "1rem",
+        overflow: "auto",
+        maxHeight: "100vh",
+        userSelect: "none",
+      }}
+    >
+      <pre
+        style={{
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
+          userSelect: "text",
+        }}
+      >
         {isRouteErrorResponse(error)
           ? error.data
           : error instanceof Error
