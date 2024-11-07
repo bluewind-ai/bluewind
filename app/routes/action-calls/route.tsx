@@ -1,6 +1,6 @@
 // app/routes/action-calls/route.tsx
 
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet } from "@remix-run/react";
 import { json, type LoaderFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
@@ -32,8 +32,6 @@ export const loader: LoaderFunction = async () => {
 };
 
 export default function ActionCallsLayout() {
-  const { lastAction } = useLoaderData<typeof loader>();
-
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20}>

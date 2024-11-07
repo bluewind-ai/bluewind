@@ -1,12 +1,8 @@
 // app/actions/load-csv-data.server.ts
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { withActionMiddleware } from "~/lib/action-middleware";
-import type { ActionFunctionArgs } from "@remix-run/node";
+import { withActionMiddleware } from "~/lib/action-middleware.server";
 
-export const loadCsvData = withActionMiddleware(async function loadCsvData(
-  args: ActionFunctionArgs,
-) {
+export const loadCsvData = withActionMiddleware(async function loadCsvData() {
   void 0; // this can be removed
   // CSV loading logic here
   return true;

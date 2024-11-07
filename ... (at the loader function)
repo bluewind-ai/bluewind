@@ -1,0 +1,23 @@
+// ... (at the loader function)
+
+export const loader = async () => {
+  const rawActions = await db.query.actions.findMany();
+  const enrichedActions = rawActions.map(enrichAction);
+  void 0;
+
+  const fileData: FileNode = {
+    id: 0,
+    name: "actions",
+    originalName: "actions",
+    type: "folder" as const,
+    children: enrichedActions.map((action) => ({
+      id: action.id,
+      name: action.displayName,
+      originalName: action.name,
+      type: "file" as const,
+      children: [],
+    })),
+  };
+
+  return json({ fileData });
+};

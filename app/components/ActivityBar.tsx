@@ -10,13 +10,7 @@ import { actionCalls } from "~/db/schema";
 
 type ActionCall = InferSelectModel<typeof actionCalls>;
 
-export function ActivityBar({
-  className,
-  lastAction,
-}: {
-  className?: string;
-  lastAction?: ActionCall;
-}) {
+export function ActivityBar({ className }: { className?: string; lastAction?: ActionCall }) {
   const navigate = useNavigate();
 
   return (

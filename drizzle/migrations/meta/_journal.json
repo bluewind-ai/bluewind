@@ -15,6 +15,13 @@
       "when": 1730862081705,
       "tag": "0001_tiresome_chamber",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1730955601175,
+      "tag": "0002_bent_blizzard",
+      "breakpoints": true
     }
   ]
 }

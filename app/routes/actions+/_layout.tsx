@@ -1,4 +1,4 @@
-// app/routes/actions/route.tsx
+// app/routes/actions+/_layout.tsx
 
 import { Outlet, useLoaderData, Link } from "@remix-run/react";
 import { json } from "@remix-run/node";
@@ -87,7 +87,7 @@ function FileExplorer({ initialFileData }: { initialFileData: FileNode }) {
 export const loader = async () => {
   const rawActions = await db.query.actions.findMany();
   const enrichedActions = rawActions.map(enrichAction);
-  void 0; // this can be removedd;
+  void 0;
 
   const fileData = {
     id: 0,

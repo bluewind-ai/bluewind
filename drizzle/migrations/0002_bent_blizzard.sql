@@ -1,0 +1,1 @@
+ALTER TABLE "action_calls" ADD COLUMN "saved_input" jsonb;
