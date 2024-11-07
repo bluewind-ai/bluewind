@@ -13,7 +13,7 @@ import { Button } from "~/components/ui/button";
 import {
   withActionMiddleware,
   type ActionCallNode,
-  actionContext,
+  runInActionContext,
 } from "~/lib/action-middleware.server";
 import { db } from "~/db";
 
@@ -58,7 +58,7 @@ const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
     status: "running",
   };
 
-  return await actionContext.run(
+  return await runInActionContext(
     {
       tree: rootNode,
       hitCount: 0,

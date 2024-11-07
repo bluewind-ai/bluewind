@@ -6,7 +6,7 @@ import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { RequireApprovalError } from "~/lib/errors";
 
-type ActionCallNode = {
+export type ActionCallNode = {
   name: string;
   id?: number;
   actionId?: number;
@@ -14,12 +14,12 @@ type ActionCallNode = {
   status: "running" | "ready_for_approval";
 };
 
-type ActionContext = {
+export type ActionContext = {
   tree: ActionCallNode;
   hitCount: number;
 };
 
-const actionContext = new AsyncLocalStorage<ActionContext>();
+const contextStore = new AsyncLocalStorage<ActionContext>();
 
 async function getOrCreateAction(functionName: string) {
   let existingAction = await db.query.actions.findFirst({
@@ -41,8 +41,10 @@ async function getOrCreateAction(functionName: string) {
 }
 
 export function getActionContext(): ActionContext | undefined {
-  return actionContext.getStore();
+  return contextStore.getStore();
 }
+
+export const runInActionContext = contextStore.run.bind(contextStore);
 
 export function withActionMiddleware(name: string, actionFn: ActionFunction): ActionFunction {
   return async (args) => {
