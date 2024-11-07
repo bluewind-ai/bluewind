@@ -8,4 +8,4 @@ async function loadCsvDataImpl(_args: ActionFunctionArgs) {
   return true;
 }
 
-export const loadCsvData = withActionMiddleware(loadCsvDataImpl, "load-csv-data");
+export const loadCsvData = withActionMiddleware("load-csv-data", loadCsvDataImpl);

@@ -8,4 +8,4 @@ async function masterImpl(args: ActionFunctionArgs) {
   return await loadCsvData(args);
 }
 
-export const master = withActionMiddleware(masterImpl, "master");
+export const master = withActionMiddleware("master", masterImpl);
