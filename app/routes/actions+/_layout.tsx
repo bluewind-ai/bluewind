@@ -1,5 +1,5 @@
 // app/routes/actions+/_layout.tsx
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Outlet, useLoaderData, Link } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { db } from "~/db";
@@ -112,7 +112,7 @@ export default function ActionsLayout() {
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20}>
-        <FileExplorer initialFileData={fileData} />
+        <FileExplorer initialFileData={fileData as any} />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={80}>

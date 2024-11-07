@@ -89,25 +89,33 @@ export const loader = async () => {
   const enrichedActions = rawActions.map(enrichAction);
   void 0;
 
-  const fileData: FileNode = {
-    id: 0,
-    name: "actions",
-    originalName: "actions",
-    type: "folder" as const,
-    children: enrichedActions.map((action) => ({
-      id: action.id,
-      name: action.displayName,
-      originalName: action.name,
-      type: "file" as const,
-      children: [],
-    })),
-  };
-
-  return json({ fileData });
+  return json({
+    rootId: 0,
+    rootName: "actions",
+    rootOriginalName: "actions",
+    childrenIds: enrichedActions.map((action) => action.id),
+    childrenNames: enrichedActions.map((action) => action.displayName),
+    childrenOriginalNames: enrichedActions.map((action) => action.name),
+  });
 };
 
 export default function ActionsLayout() {
-  const { fileData } = useLoaderData<typeof loader>();
+  const { rootId, rootName, rootOriginalName, childrenIds, childrenNames, childrenOriginalNames } =
+    useLoaderData<typeof loader>();
+
+  const fileData: FileNode = {
+    id: rootId,
+    name: rootName,
+    originalName: rootOriginalName,
+    type: "folder",
+    children: childrenIds.map((id, index) => ({
+      id,
+      name: childrenNames[index],
+      originalName: childrenOriginalNames[index],
+      type: "file",
+      children: [],
+    })),
+  };
 
   return (
     <ResizablePanelGroup direction="horizontal">
