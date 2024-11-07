@@ -11,7 +11,6 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import "./tailwind.css";
-import Debug from "~/routes/debug/route";
 import { ActivityBar } from "~/components/ActivityBar";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
@@ -40,7 +39,6 @@ function Document({ children }: { children: React.ReactNode }) {
       <body className="h-full">
         <div className="flex h-full">
           <div className="flex-1">{children}</div>
-          <Debug />
         </div>
         <ScrollRestoration />
         <Scripts />
