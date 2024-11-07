@@ -1,42 +1,67 @@
 // app/routes/action-calls/route.tsx
 
-import { Outlet } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import { json, type LoaderFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
-import { eq } from "drizzle-orm";
 import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
 import { FileExplorer } from "~/components/ui/FileExplorer";
+import type { InferSelectModel } from "drizzle-orm";
 
-const mockTreeData = {
-  id: 1,
-  actionName: "Root Action",
-  status: "completed",
-  children: [
-    {
-      id: 2,
-      actionName: "Child Action 1",
-      status: "in_progress",
-      children: [],
-    },
-  ],
-};
+type ActionCall = InferSelectModel<typeof actionCalls>;
 
-export const loader: LoaderFunction = async () => {
-  const lastAction = await db.query.actionCalls.findFirst({
-    where: eq(actionCalls.status, "ready_for_approval"),
+interface ActionCallNode {
+  id: number;
+  actionName: string;
+  status: string;
+  children: ActionCallNode[];
+}
+
+async function buildRootActionCallsTree(): Promise<ActionCallNode[]> {
+  // Get all action calls
+  const allCalls = await db.query.actionCalls.findMany({
     with: { action: true },
   });
 
-  return json({ lastAction });
+  console.log("[buildRootActionCallsTree] Found all calls:", allCalls);
+
+  // First get root level calls (no parent)
+  const rootCalls = allCalls.filter((call) => !call.parentId);
+
+  // Build tree for each root call
+  function buildTree(call: ActionCall): ActionCallNode {
+    const children = allCalls.filter((c) => c.parentId === call.id);
+    return {
+      id: call.id,
+      actionName: call.action?.name || "Unknown Action",
+      status: call.status,
+      children: children.map(buildTree),
+    };
+  }
+
+  return rootCalls.map(buildTree);
+}
+
+export const loader: LoaderFunction = async () => {
+  console.log("[loader] Starting to load root action calls");
+
+  const rootActionCalls = await buildRootActionCallsTree();
+  console.log("[loader] Built root action calls tree:", rootActionCalls);
+
+  return json({ rootActionCalls });
 };
 
 export default function ActionCallsLayout() {
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  const { rootActionCalls } = useLoaderData<typeof loader>();
+  console.log("[ActionCallsLayout] Rendering with root action calls:", rootActionCalls);
+
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20}>
-        <FileExplorer data={mockTreeData} type="actionCall" />
+        <FileExplorer
+          data={{ id: 0, actionName: "Workflows", children: rootActionCalls }}
+          type="actionCall"
+        />
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={80}>
