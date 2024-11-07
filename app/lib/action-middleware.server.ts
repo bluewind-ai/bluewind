@@ -5,6 +5,7 @@ import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
+import { actions as actionMap } from "./generated/actions";
 
 export type ActionCallNode = typeof actionCalls.$inferSelect & {
   actionName: string;
@@ -39,7 +40,8 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
     console.log(`[${name}] Current node:`, context.currentNode);
 
     if (context.hitCount === 2) {
-      console.log(`[${name}] Hit 2 - Loading loadCsvData action`);
+      // We're about to call loadCsvData - we know this because
+      // hitCount = 2 means we're at the await loadCsvData() line
       const nextAction = await db.query.actions.findFirst({
         where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
       });
@@ -90,8 +92,8 @@ export function suspend() {
 
 export async function executeAction(args: ActionFunctionArgs) {
   const actionName = args.params.name;
-  if (!actionName) {
-    throw new Error("Action name is required");
+  if (!actionName || !(actionName in actionMap)) {
+    throw new Error(`Action ${actionName} not found`);
   }
 
   const action = await db.query.actions.findFirst({
@@ -114,11 +116,6 @@ export async function executeAction(args: ActionFunctionArgs) {
 
   console.log("Created root call:", rootCall[0]);
 
-  const module = await import(`~/actions/${actionName}.server`);
-  if (!module[actionName]) {
-    throw new Error(`Action ${actionName} not found in module`);
-  }
-
   return await contextStore.run(
     {
       currentNode: {
@@ -128,6 +125,6 @@ export async function executeAction(args: ActionFunctionArgs) {
       },
       hitCount: 0,
     },
-    () => module[actionName](args),
+    () => actionMap[actionName](args),
   );
 }
