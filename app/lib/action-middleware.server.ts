@@ -90,6 +90,9 @@ export function suspend() {
 
 export async function executeAction(args: ActionFunctionArgs) {
   const actionName = args.params.name;
+  if (!actionName) {
+    throw new Error("Action name is required");
+  }
 
   const action = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, actionName),
@@ -111,9 +114,10 @@ export async function executeAction(args: ActionFunctionArgs) {
 
   console.log("Created root call:", rootCall[0]);
 
-  // Dynamic import of the specific action
   const module = await import(`~/actions/${actionName}.server`);
-  const actionFn = module[actionName];
+  if (!module[actionName]) {
+    throw new Error(`Action ${actionName} not found in module`);
+  }
 
   return await contextStore.run(
     {
@@ -124,6 +128,6 @@ export async function executeAction(args: ActionFunctionArgs) {
       },
       hitCount: 0,
     },
-    () => actionFn(args),
+    () => module[actionName](args),
   );
 }
