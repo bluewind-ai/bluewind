@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
-import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
+import { type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { actions as actionMap } from "./generated/actions";
@@ -28,8 +28,8 @@ class SuspendError extends Error {
   }
 }
 
-export function withActionMiddleware(name: string, actionFn: ActionFunction): ActionFunction {
-  return async (args) => {
+export function withActionMiddleware(name: string, fn: () => Promise<any>) {
+  return async () => {
     const context = contextStore.getStore();
     if (!context) {
       throw new Error("Action context not initialized");
@@ -70,7 +70,7 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
 
     console.log(`[${name}] Executing function`);
     try {
-      await actionFn(args);
+      await fn();
       console.log(`[${name}] Function executed successfully`);
 
       return context.currentNode;
@@ -123,6 +123,6 @@ export async function executeAction(args: ActionFunctionArgs) {
       },
       hitCount: 0,
     },
-    () => actionMap[actionName](args),
+    () => actionMap[actionName](),
   );
 }
