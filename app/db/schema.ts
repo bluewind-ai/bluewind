@@ -37,7 +37,7 @@ export const actionCalls = pgTable("action_calls", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const actionCallsRelations = relations(actionCalls, ({ one }) => ({
+export const actionCallsRelations = relations(actionCalls, ({ one, many }) => ({
   action: one(actions, {
     fields: [actionCalls.actionId],
     references: [actions.id],
@@ -45,6 +45,10 @@ export const actionCallsRelations = relations(actionCalls, ({ one }) => ({
   parent: one(actionCalls, {
     fields: [actionCalls.parentId],
     references: [actionCalls.id],
+  }),
+  children: many(actionCalls, {
+    fields: [actionCalls.id],
+    references: [actionCalls.parentId],
   }),
 }));
 
