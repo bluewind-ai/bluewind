@@ -3,6 +3,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { simpleGit } from "simple-git";
+import { execSync } from "child_process";
 
 interface CodeSnippet {
   filepath: string;
@@ -73,6 +74,9 @@ async function main(): Promise<void> {
     insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
 
     if (updatedFiles.length > 0) {
+      // Run npm run fix before committing
+      execSync("npm run fix", { stdio: "inherit" });
+
       await git.add(updatedFiles);
       await git.commit("Update files from Claude suggestions");
       console.log("Files updated and changes committed successfully");
