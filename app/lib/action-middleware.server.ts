@@ -6,54 +6,32 @@ import { type ActionFunction, type AppLoadContext } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { RequireApprovalError } from "~/lib/errors";
+import { actions as actionMap } from "~/lib/generated/actions";
 
 type Context = {
   startTime?: number;
   hitCount?: number;
 };
 
-type ActionContextWithActions = AppLoadContext & {
-  actions?: Record<string, unknown>;
-};
-
 const hitCounter = new AsyncLocalStorage<number>();
 const parentActionCallId = new AsyncLocalStorage<number>();
 
-async function getOrCreateAction(
-  functionName: string,
-  actionMap: Record<string, unknown> | undefined,
-) {
-  console.log("==== Action Map Debug ====");
+async function getOrCreateAction(functionName: string) {
+  console.log("==== Action Debug ====");
   console.log("Function name:", functionName);
-  console.log("Action map received:", actionMap);
-  console.log("Action map type:", typeof actionMap);
-  if (actionMap) {
-    console.log("Action map keys:", Object.keys(actionMap));
-    console.log("Action map prototype:", Object.getPrototypeOf(actionMap));
-  }
-  console.log("========================");
-
-  if (!actionMap) {
-    console.log("Action map is undefined!");
-    return null;
-  }
-
-  // Find the kebab-case name from the action map
-  const kebabName =
-    Object.entries(actionMap).find(([_, fn]) => fn === functionName)?.[0] || functionName;
-
-  console.log("Found kebab name:", kebabName);
+  console.log("Action map:", actionMap);
+  console.log("==================");
 
   let existingAction = await db.query.actions.findFirst({
-    where: (fields, { eq }) => eq(fields.name, kebabName),
+    where: (fields, { eq }) => eq(fields.name, functionName),
   });
 
   if (!existingAction) {
-    console.log("Creating action:", kebabName);
+    console.log("Creating action:", functionName);
     const newAction = await db
       .insert(actions)
       .values({
-        name: kebabName,
+        name: functionName,
       })
       .returning();
     existingAction = newAction[0];
@@ -69,29 +47,25 @@ export function withActionMiddleware(
 ): ActionFunction {
   return async ({ request, params, context: actionContext }) => {
     console.log("==== Middleware Context Debug ====");
-    console.log("Action name:", action.name);
-    console.log("Context received:", actionContext);
-    console.log("Context keys:", Object.keys(actionContext || {}));
-    console.log("Actions property:", (actionContext as ActionContextWithActions).actions);
+    console.log("Params:", params);
+    console.log("Action name from params:", params.name);
     console.log("===============================");
 
     const currentCount = (hitCounter.getStore() || 0) + 1;
 
     return await hitCounter.run(currentCount, async () => {
-      const actionName = action.name;
-      console.log("Action function name:", actionName);
-      console.log("Action function:", action.toString());
+      const actionName = params.name;
+      if (!actionName || !(actionName in actionMap)) {
+        throw new Response(`Action ${actionName} not found`, { status: 404 });
+      }
+
       context.hitCount = currentCount;
       console.log(`Middleware hit count: ${currentCount}`);
 
-      const existingAction = await getOrCreateAction(
-        actionName,
-        (actionContext as ActionContextWithActions).actions,
-      );
+      const existingAction = await getOrCreateAction(actionName);
 
       if (!existingAction) {
-        console.log("No existing action found and couldn't create one");
-        return null;
+        throw new Response(`Action ${actionName} not found in database`, { status: 404 });
       }
 
       if (currentCount === 2) {
