@@ -74,8 +74,12 @@ async function main(): Promise<void> {
     insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
 
     if (updatedFiles.length > 0) {
-      // Run npm run fix before committing
-      execSync("npm run fix", { stdio: "inherit" });
+      // Try to run fix but don't fail if it errors
+      try {
+        execSync("npm run fix", { stdio: "inherit" });
+      } catch (error) {
+        console.log("Fix command failed but continuing with commit");
+      }
 
       await git.add(updatedFiles);
       await git.commit("Update files from Claude suggestions");
