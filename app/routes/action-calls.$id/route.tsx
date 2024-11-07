@@ -61,7 +61,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (currentCall.parentId) {
     let currentParentId: number | null = currentCall.parentId;
     while (currentParentId) {
-      const parent = await db.query.actionCalls.findFirst({
+      const parent: ActionCall | undefined = await db.query.actionCalls.findFirst({
         where: eq(actionCalls.id, currentParentId),
       });
       if (!parent) break;
