@@ -37,9 +37,9 @@ function Document({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="h-full overflow-hidden">
+      <body className="h-full">
         <div className="flex h-full">
-          <div className="flex-1 overflow-auto">{children}</div>
+          <div className="flex-1">{children}</div>
           <Debug />
         </div>
         <ScrollRestoration />
@@ -77,7 +77,7 @@ export default function App() {
     <Document>
       <div className="flex h-full">
         <ActivityBar lastAction={lastAction} />
-        <div className="flex-1">
+        <div className="flex-1 overflow-auto">
           <Outlet />
         </div>
       </div>
