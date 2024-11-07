@@ -35,8 +35,9 @@ ${actionFiles
     return `import { ${camelName} } from "~/actions/${basename}.server";`;
   })
   .join("\n")}
+import { withActionMiddleware } from "~/lib/action-middleware.server";
 
-export const actions = {
+const rawActions = {
   ${actionFiles
     .map((file) => {
       const basename = path.basename(file, ".server.ts");
@@ -44,7 +45,15 @@ export const actions = {
       return `"${basename}": ${camelName}`;
     })
     .join(",\n  ")}
-} as const;`;
+} as const;
+
+// Wrap each action with the middleware
+export const actions = Object.fromEntries(
+  Object.entries(rawActions).map(([name, fn]) => [
+    name,
+    withActionMiddleware(name, (args) => fn(args))
+  ])
+) as typeof rawActions;`;
 
   // Ensure directory exists
   await fs.mkdir("app/lib/generated", { recursive: true });
