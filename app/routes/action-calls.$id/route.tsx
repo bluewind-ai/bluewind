@@ -6,8 +6,15 @@ import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { Main } from "~/components/Main";
+import type { InferSelectModel } from "drizzle-orm";
 
-async function buildActionCallTree(rootId: number) {
+type ActionCall = InferSelectModel<typeof actionCalls>;
+
+interface ActionCallTree extends ActionCall {
+  children: ActionCallTree[];
+}
+
+async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
   // First get all action calls that could be part of this tree
   const allCalls = await db.query.actionCalls.findMany({
     with: { action: true },
@@ -20,7 +27,7 @@ async function buildActionCallTree(rootId: number) {
   if (!rootCall) return null;
 
   // Recursive function to build tree
-  function buildTree(call: typeof rootCall) {
+  function buildTree(call: ActionCall): ActionCallTree {
     const children = allCalls.filter((c) => c.parentId === call.id);
     return {
       ...call,
@@ -52,14 +59,14 @@ export const loader: LoaderFunction = async ({ params }) => {
   // Find the root of the tree
   let rootId = id;
   if (currentCall.parentId) {
-    let parentId = currentCall.parentId;
-    while (parentId) {
+    let currentParentId = currentCall.parentId;
+    while (currentParentId) {
       const parent = await db.query.actionCalls.findFirst({
-        where: eq(actionCalls.id, parentId),
+        where: eq(actionCalls.id, currentParentId),
       });
       if (!parent) break;
       rootId = parent.id;
-      parentId = parent.parentId;
+      currentParentId = parent.parentId ?? null;
     }
   }
 
