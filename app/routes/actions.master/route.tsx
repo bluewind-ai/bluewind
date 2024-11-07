@@ -16,9 +16,8 @@ export default function MasterAction() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Master Action</h2>
       <Form method="post">
-        <Button type="submit">Run Master Action</Button>
+        <Button type="submit">Master</Button>
       </Form>
       {actionData && (
         <pre className="mt-4 p-4 bg-slate-100 rounded">{JSON.stringify(actionData, null, 2)}</pre>

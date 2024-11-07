@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/component
 type FileNode = {
   id: number;
   name: string;
+  originalName: string;
   type: "file" | "folder";
   children: FileNode[];
 };
@@ -52,7 +53,7 @@ function FileExplorerNode({ node, level = 0 }: { node: FileNode; level?: number 
         <div style={{ paddingLeft }}>
           {node.type === "file" ? (
             <Link
-              to={node.name}
+              to={node.originalName}
               className="flex items-center w-full hover:bg-slate-100 p-1 rounded"
             >
               {content}
@@ -91,10 +92,12 @@ export const loader = async () => {
   const fileData = {
     id: 0,
     name: "actions",
+    originalName: "actions",
     type: "folder",
     children: enrichedActions.map((action) => ({
       id: action.id,
       name: action.displayName,
+      originalName: action.name,
       type: "file",
       children: [],
     })),

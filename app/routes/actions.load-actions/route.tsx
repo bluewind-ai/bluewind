@@ -57,9 +57,8 @@ export default function LoadActionsAction() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Load Actions</h2>
       <Form method="post">
-        <Button type="submit">Sync Actions from Filesystem</Button>
+        <Button type="submit">Load Actions</Button>
       </Form>
       {actionData && (
         <pre className="mt-4 p-4 bg-slate-100 rounded">{JSON.stringify(actionData, null, 2)}</pre>
