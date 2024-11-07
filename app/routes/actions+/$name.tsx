@@ -1,6 +1,6 @@
 // app/routes/actions+/$name.tsx
 
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { json, type LoaderFunctionArgs, redirect } from "@remix-run/node";
 import {
   Form,
   useActionData,
@@ -27,7 +27,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return json({ action: existingAction });
 }
 
-export const action = executeAction;
+export async function action(args: LoaderFunctionArgs) {
+  const result = await executeAction(args);
+  return redirect(`/action-calls/${result.id}`);
+}
 
 export default function ActionRunner() {
   const { name } = useParams();
