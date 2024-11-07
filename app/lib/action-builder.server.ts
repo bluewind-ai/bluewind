@@ -1,5 +1,5 @@
 // app/lib/action-builder.server.ts
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
