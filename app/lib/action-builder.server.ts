@@ -127,6 +127,8 @@ export async function executeAction({ params }: ActionFunctionArgs) {
       },
       hitCount: 0,
     },
+    // @ts-expect-error - This is a bug in the types
+
     () => actionMap[name](),
   );
 }
