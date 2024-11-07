@@ -59,14 +59,14 @@ export const loader: LoaderFunction = async ({ params }) => {
   // Find the root of the tree
   let rootId = id;
   if (currentCall.parentId) {
-    let currentParentId = currentCall.parentId;
+    let currentParentId: number | null = currentCall.parentId;
     while (currentParentId) {
       const parent = await db.query.actionCalls.findFirst({
         where: eq(actionCalls.id, currentParentId),
       });
       if (!parent) break;
       rootId = parent.id;
-      currentParentId = parent.parentId ?? null;
+      currentParentId = parent.parentId;
     }
   }
 
