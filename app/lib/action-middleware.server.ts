@@ -1,8 +1,7 @@
 // app/lib/action-middleware.server.ts
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AsyncLocalStorage } from "async_hooks";
-import { type ActionFunction, type AppLoadContext } from "@remix-run/node";
+import { type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { RequireApprovalError } from "~/lib/errors";
@@ -68,33 +67,7 @@ export function withActionMiddleware(
         throw new Response(`Action ${actionName} not found in database`, { status: 404 });
       }
 
-      if (currentCount === 2) {
-        console.log("Recording approval request");
-
-        console.log("Creating approval request...");
-        const newCall = await db
-          .insert(actionCalls)
-          .values({
-            actionId: existingAction.id,
-            status: "ready_for_approval",
-            parentId: parentActionCallId.getStore(),
-          })
-          .returning();
-        console.log("Created approval request:", newCall[0]);
-
-        throw new RequireApprovalError();
-      }
-
-      console.log("Looking for existing action calls...");
-      const actionCall = await db.query.actionCalls.findMany({
-        with: {
-          action: true,
-        },
-        where: (fields, { eq }) => eq(fields.actionId, existingAction.id),
-      });
-      console.log("Found action calls:", actionCall);
-
-      if (actionCall.length === 0) {
+      if (currentCount === 1) {
         console.log("Creating initial action call...");
         const newActionCall = await db
           .insert(actionCalls)
@@ -106,10 +79,28 @@ export function withActionMiddleware(
 
         console.log("Created initial action call:", newActionCall[0]);
 
-        await parentActionCallId.run(newActionCall[0].id, async () => {
+        return await parentActionCallId.run(newActionCall[0].id, async () => {
           context.startTime = Date.now();
           return await action({ request, params, context: actionContext });
         });
+      }
+
+      if (currentCount === 2) {
+        const parentId = parentActionCallId.getStore();
+        console.log("Recording approval request with parent:", parentId);
+
+        console.log("Creating approval request...");
+        const newCall = await db
+          .insert(actionCalls)
+          .values({
+            actionId: existingAction.id,
+            status: "ready_for_approval",
+            parentId: parentId,
+          })
+          .returning();
+        console.log("Created approval request:", newCall[0]);
+
+        throw new RequireApprovalError();
       }
 
       context.startTime = Date.now();
