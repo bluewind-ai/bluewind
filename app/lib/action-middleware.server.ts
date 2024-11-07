@@ -22,70 +22,74 @@ export function withActionMiddleware(
     const currentCount = (hitCounter.getStore() || 0) + 1;
 
     return await hitCounter.run(currentCount, async () => {
-      return await db.transaction(async (tx) => {
-        const actionName = action.name;
-        context.hitCount = currentCount;
-        console.log(`Middleware hit count: ${currentCount}`);
+      const actionName = action.name;
+      console.log("Action function name:", actionName);
+      console.log("Action function:", action);
+      context.hitCount = currentCount;
+      console.log(`Middleware hit count: ${currentCount}`);
 
-        if (currentCount === 2) {
-          console.log(`Recording approval request for ${actionName}`);
-          const existingAction = await tx.query.actions.findFirst({
-            where: (fields, { eq }) => eq(fields.name, actionName),
-          });
-
-          if (existingAction) {
-            await tx
-              .insert(actionCalls)
-              .values({
-                actionId: existingAction.id,
-                status: "ready_for_approval",
-                parentId: parentActionCallId.getStore(),
-              })
-              .returning();
-          }
-
-          throw new RequireApprovalError();
-        }
-
-        const actionCall = await tx.query.actionCalls.findMany({
-          with: {
-            action: true,
-          },
-          where: (fields, { eq }) =>
-            eq(
-              fields.actionId,
-              tx
-                .select({ id: actions.id })
-                .from(actions)
-                .where(eq(actions.name, actionName))
-                .limit(1),
-            ),
-        });
-
-        if (actionCall.length === 0) {
-          const existingAction = await tx.query.actions.findFirst({
-            where: (fields, { eq }) => eq(fields.name, actionName),
-          });
-
-          if (existingAction) {
-            const newActionCall = await tx
-              .insert(actionCalls)
-              .values({
-                actionId: existingAction.id,
-                status: "running",
-              })
-              .returning();
-
-            await parentActionCallId.run(newActionCall[0].id, async () => {
-              context.startTime = Date.now();
-              return await action({ request, params, context: actionContext });
-            });
-          }
-        }
-
-        context.startTime = Date.now();
-        return await action({ request, params, context: actionContext });
+      let existingAction = await db.query.actions.findFirst({
+        where: (fields, { eq }) => eq(fields.name, actionName),
       });
+
+      if (!existingAction) {
+        console.log("Creating action:", actionName);
+        const newAction = await db
+          .insert(actions)
+          .values({
+            name: actionName,
+          })
+          .returning();
+        existingAction = newAction[0];
+        console.log("Created action:", existingAction);
+      }
+
+      if (currentCount === 2) {
+        console.log(`Recording approval request for ${actionName}`);
+
+        console.log("Creating approval request...");
+        const newCall = await db
+          .insert(actionCalls)
+          .values({
+            actionId: existingAction.id,
+            status: "ready_for_approval",
+            parentId: parentActionCallId.getStore(),
+          })
+          .returning();
+        console.log("Created approval request:", newCall[0]);
+
+        throw new RequireApprovalError();
+      }
+
+      console.log("Looking for existing action calls...");
+      const actionCall = await db.query.actionCalls.findMany({
+        with: {
+          action: true,
+        },
+        where: (fields, { eq }) => eq(fields.actionId, existingAction.id),
+      });
+      console.log("Found action calls:", actionCall);
+
+      if (actionCall.length === 0) {
+        console.log("Creating initial action call...");
+        const newActionCall = await db
+          .insert(actionCalls)
+          .values({
+            actionId: existingAction.id,
+            status: "running",
+          })
+          .returning();
+
+        console.log("Created initial action call:", newActionCall[0]);
+
+        await parentActionCallId.run(newActionCall[0].id, async () => {
+          context.startTime = Date.now();
+          return await action({ request, params, context: actionContext });
+        });
+      }
+
+      context.startTime = Date.now();
+      return await action({ request, params, context: actionContext });
     });
   };
 }
