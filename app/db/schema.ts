@@ -69,4 +69,4 @@ export const debugLogs = pgTable("debug_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export type ActionCallStatus = "ready_for_approval" | "completed";
+export type ActionCallStatus = "ready_for_approval" | "running" | "completed";
