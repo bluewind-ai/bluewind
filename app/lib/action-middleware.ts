@@ -13,6 +13,7 @@ export function withActionMiddleware(
   context: Context = {},
 ): ActionFunction {
   return async (args) => {
+    console.log("withActionMiddleware");
     return await db.transaction(async (tx) => {
       const actionName = action.name;
 
