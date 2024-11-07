@@ -1,4 +1,4 @@
-// app/routes/actions.$name/route.tsx
+// app/routes/actions+/$name.tsx
 
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useParams } from "@remix-run/react";
@@ -7,10 +7,12 @@ import { withActionMiddleware } from "~/lib/action-middleware.server";
 import { goNext } from "~/actions/go-next.server";
 import { loadCsvData } from "~/actions/load-csv-data.server";
 import { master } from "~/actions/master.server";
+import { loadActions } from "~/actions/load-actions.server";
 
 const actions = {
-  "go-next": goNext,
   "load-csv-data": loadCsvData,
+  "load-actions": loadActions,
+  "go-next": goNext,
   master,
 } as const;
 
@@ -20,7 +22,10 @@ const runAction = async ({ request, params }: ActionFunctionArgs) => {
   const actionName = params.name;
   console.log("Looking for action:", actionName);
   const action = actions[actionName as keyof typeof actions];
-  console.log("Found action?", !!action);
+
+  if (!action) {
+    return json({ error: `Action ${actionName} not found in actions map` });
+  }
 
   return action(request);
 };
@@ -29,7 +34,6 @@ export const action = withActionMiddleware(runAction);
 
 export default function ActionRunner() {
   const { name } = useParams();
-  console.log("Component rendered with name:", name);
   const actionData = useActionData<typeof action>();
 
   return (

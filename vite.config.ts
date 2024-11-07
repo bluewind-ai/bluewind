@@ -5,6 +5,7 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
+import { flatRoutes } from "remix-flat-routes";
 
 declare module "@remix-run/node" {
   interface Future {
@@ -23,6 +24,9 @@ export default defineConfig({
         v3_lazyRouteDiscovery: true,
       },
       serverModuleFormat: "esm",
+      routes: async (defineRoutes) => {
+        return flatRoutes("routes", defineRoutes);
+      },
     }),
     tsconfigPaths(),
   ],
