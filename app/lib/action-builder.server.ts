@@ -4,6 +4,7 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
+import { eq } from "drizzle-orm";
 
 export type ActionCallNode = typeof actionCalls.$inferSelect & {
   actionName: string;
@@ -39,7 +40,7 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
     await db
       .update(actionCalls)
       .set({ status: "running" })
-      .where(({ id }) => id.eq(context.currentNode.id));
+      .where(eq(actionCalls.id, context.currentNode.id));
     context.currentNode.status = "running";
 
     if (context.hitCount === 2) {
