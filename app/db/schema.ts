@@ -32,7 +32,8 @@ export const actionCalls = pgTable("action_calls", {
     onDelete: "cascade",
   }),
   status: varchar("status", { length: 256 }).notNull().default("ready_for_approval"),
-  savedInput: jsonb("saved_input"), // Adding this field to store the input
+  args: jsonb("args"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const actionCallsRelations = relations(actionCalls, ({ one }) => ({
