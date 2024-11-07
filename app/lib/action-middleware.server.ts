@@ -54,51 +54,58 @@ export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
     console.log("Current context:", currentContext);
     console.log("Next context:", nextContext);
 
-    return await contextStore.run(nextContext, async () => {
-      const actionName = params.name;
-      if (!actionName || !(actionName in actionMap)) {
-        throw new Response(`Action ${actionName} not found`, { status: 404 });
-      }
+    const actionName = params.name;
+    if (!actionName || !(actionName in actionMap)) {
+      throw new Response(`Action ${actionName} not found`, { status: 404 });
+    }
 
-      const existingAction = await getOrCreateAction(actionName);
+    const existingAction = await getOrCreateAction(actionName);
 
-      if (!existingAction) {
-        throw new Response(`Action ${actionName} not found in database`, { status: 404 });
-      }
+    if (!existingAction) {
+      throw new Response(`Action ${actionName} not found in database`, { status: 404 });
+    }
 
-      if (nextContext.hitCount === 1) {
-        console.log("\n=== CREATING INITIAL ACTION CALL ===");
-        const newActionCall = await db
-          .insert(actionCalls)
-          .values({
-            actionId: existingAction.id,
-            status: "running",
-          })
-          .returning();
+    if (nextContext.hitCount === 1) {
+      console.log("\n=== CREATING INITIAL ACTION CALL ===");
+      const newActionCall = await db
+        .insert(actionCalls)
+        .values({
+          actionId: existingAction.id,
+          status: "running",
+        })
+        .returning();
 
-        console.log("Created action call:", newActionCall[0]);
+      console.log("Created action call:", newActionCall[0]);
 
-        nextContext.parentId = newActionCall[0].id;
+      const runContext = {
+        ...nextContext,
+        parentId: newActionCall[0].id,
+      };
+
+      console.log("Running with context:", runContext);
+      return await contextStore.run(runContext, async () => {
         return await actionFn({ request, params, context: actionContext });
-      }
+      });
+    }
 
-      if (nextContext.hitCount === 2) {
-        console.log("\n=== CREATING APPROVAL REQUEST ===");
-        console.log("Current context:", getMiddlewareContext());
+    if (nextContext.hitCount === 2) {
+      console.log("\n=== CREATING APPROVAL REQUEST ===");
+      console.log("Current context:", nextContext);
 
-        const newCall = await db
-          .insert(actionCalls)
-          .values({
-            actionId: existingAction.id,
-            status: "ready_for_approval",
-            parentId: nextContext.parentId,
-          })
-          .returning();
-        console.log("Created approval request:", newCall[0]);
+      const newCall = await db
+        .insert(actionCalls)
+        .values({
+          actionId: existingAction.id,
+          status: "ready_for_approval",
+          parentId: nextContext.parentId,
+        })
+        .returning();
+      console.log("Created approval request:", newCall[0]);
 
-        throw new RequireApprovalError();
-      }
+      throw new RequireApprovalError();
+    }
 
+    return await contextStore.run(nextContext, async () => {
       return await actionFn({ request, params, context: actionContext });
     });
   };
