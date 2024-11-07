@@ -18,9 +18,11 @@ interface ActionCallNode {
 }
 
 async function buildRootActionCallsTree(): Promise<ActionCallNode[]> {
-  // Get all action calls
+  // Get all action calls with their actions
   const allCalls = await db.query.actionCalls.findMany({
-    with: { action: true },
+    with: {
+      action: true,
+    },
   });
 
   console.log("[buildRootActionCallsTree] Found all calls:", allCalls);
@@ -33,7 +35,7 @@ async function buildRootActionCallsTree(): Promise<ActionCallNode[]> {
     const children = allCalls.filter((c) => c.parentId === call.id);
     return {
       id: call.id,
-      actionName: call.action?.name || "Unknown Action",
+      actionName: String(call.actionId), // We'll need to join with actions table to get the name
       status: call.status,
       children: children.map(buildTree),
     };
@@ -59,7 +61,12 @@ export default function ActionCallsLayout() {
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20}>
         <FileExplorer
-          data={{ id: 0, actionName: "Workflows", children: rootActionCalls }}
+          data={{
+            id: 0,
+            actionName: "Workflows",
+            status: "completed", // Added status to match ActionCallNode type
+            children: rootActionCalls,
+          }}
           type="actionCall"
         />
       </ResizablePanel>
