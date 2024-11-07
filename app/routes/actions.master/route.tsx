@@ -1,38 +1,20 @@
 // app/routes/actions.master/route.tsx
 
 import { json, type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { withActionMiddleware } from "~/lib/action-middleware.server";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
+import { db } from "~/db";
+import { actions } from "~/db/schema";
 
 type FileNode = {
   id: number;
   name: string;
   type: "file" | "folder";
   children: FileNode[];
-};
-
-const mockFileData: FileNode = {
-  id: 1,
-  name: "actions",
-  type: "folder",
-  children: [
-    {
-      id: 2,
-      name: "master",
-      type: "file",
-      children: [],
-    },
-    {
-      id: 3,
-      name: "load-csv",
-      type: "file",
-      children: [],
-    },
-  ],
 };
 
 function FileExplorerNode({ node, level = 0 }: { node: FileNode; level?: number }) {
@@ -100,16 +82,37 @@ const masterAction = async (_args: ActionFunctionArgs) => {
 export const action = withActionMiddleware(masterAction);
 
 export const loader = async () => {
-  return json({ message: "Master action endpoint" });
+  const allActions = await db.query.actions.findMany();
+
+  // Transform the flat list into our tree structure
+  const fileData: FileNode = {
+    id: 0,
+    name: "actions",
+    type: "folder",
+    children: allActions.map((action) => ({
+      id: action.id,
+      name: action.name,
+      type: "file",
+      children: [],
+    })),
+  };
+
+  console.log("Loaded actions:", allActions);
+
+  return json({
+    message: "Master action endpoint",
+    fileData,
+  });
 };
 
 export default function MasterAction() {
   const actionData = useActionData<typeof action>();
+  const { fileData } = useLoaderData<typeof loader>();
 
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20}>
-        <FileExplorer initialFileData={mockFileData} />
+        <FileExplorer initialFileData={fileData} />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={80}>
