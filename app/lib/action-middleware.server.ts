@@ -40,6 +40,14 @@ async function getOrCreateAction(functionName: string) {
   return existingAction;
 }
 
+async function getRunningActionCall(actionId: number) {
+  return await db.query.actionCalls.findFirst({
+    where: (fields, { and, eq }) =>
+      and(eq(fields.actionId, actionId), eq(fields.status, "running")),
+    orderBy: (fields, { desc }) => [desc(fields.id)],
+  });
+}
+
 export function withActionMiddleware(
   action: ActionFunction,
   context: Context = {},
@@ -48,7 +56,6 @@ export function withActionMiddleware(
     console.log("==== Middleware Context Debug ====");
     console.log("Params:", params);
     console.log("Action name from params:", params.name);
-    console.log("Current parent action call ID:", parentActionCallId.getStore());
     console.log("===============================");
 
     const currentCount = (hitCounter.getStore() || 0) + 1;
@@ -79,7 +86,6 @@ export function withActionMiddleware(
           .returning();
 
         console.log("Created initial action call:", newActionCall[0]);
-        console.log("Storing parent action call ID:", newActionCall[0].id);
 
         return await parentActionCallId.run(newActionCall[0].id, async () => {
           context.startTime = Date.now();
@@ -88,11 +94,8 @@ export function withActionMiddleware(
       }
 
       if (currentCount === 2) {
-        const parentId = parentActionCallId.getStore();
-        console.log("====== APPROVAL REQUEST DEBUG ======");
-        console.log("Current hit count:", currentCount);
-        console.log("Retrieved parent ID from storage:", parentId);
-        console.log("================================");
+        const runningCall = await getRunningActionCall(existingAction.id);
+        console.log("Found running call:", runningCall);
 
         console.log("Creating approval request...");
         const newCall = await db
@@ -100,10 +103,10 @@ export function withActionMiddleware(
           .values({
             actionId: existingAction.id,
             status: "ready_for_approval",
-            parentId: parentId,
+            parentId: runningCall?.id,
           })
           .returning();
-        console.log("Created approval request with details:", newCall[0]);
+        console.log("Created approval request:", newCall[0]);
 
         throw new RequireApprovalError();
       }
