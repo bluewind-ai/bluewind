@@ -26,9 +26,6 @@ export function withActionMiddleware(
         context.hitCount = currentCount;
         console.log(`Middleware hit count: ${currentCount}`);
 
-        const formData = await request.formData();
-        const input = Object.fromEntries(formData);
-
         if (currentCount === 2) {
           const existingAction = await tx.query.actions.findFirst({
             where: (fields, { eq }) => eq(fields.name, actionName),
@@ -40,7 +37,6 @@ export function withActionMiddleware(
               .values({
                 actionId: existingAction.id,
                 status: "ready_for_approval",
-                savedInput: input,
               })
               .returning();
           }
