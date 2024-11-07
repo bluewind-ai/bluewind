@@ -10,9 +10,8 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
-import { type ActionCallNode, runInActionContext } from "~/lib/action-middleware.server";
+import { executeAction } from "~/lib/action-middleware.server";
 import { db } from "~/db";
-import { wrappedActions } from "~/lib/generated/wrapped-actions";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const existingAction = await db.query.actions.findFirst({
@@ -28,30 +27,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return json({ action: existingAction });
 }
 
-const runAction = async (args: ActionFunctionArgs) => {
-  const actionName = args.params.name as keyof typeof wrappedActions;
-
-  if (!(actionName in wrappedActions)) {
-    throw new Response(`Action ${actionName} not found in actions map`, { status: 404 });
-  }
-
-  const selectedAction = wrappedActions[actionName];
-  const rootNode: ActionCallNode = {
-    name: actionName,
-    children: [],
-    status: "running",
-  };
-
-  return await runInActionContext(
-    {
-      tree: rootNode,
-      hitCount: 0,
-    },
-    () => selectedAction(args),
-  );
-};
-
-export const action = runAction;
+export const action = executeAction;
 
 export default function ActionRunner() {
   const { name } = useParams();

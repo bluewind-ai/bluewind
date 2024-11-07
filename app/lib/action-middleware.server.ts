@@ -1,7 +1,7 @@
 // app/lib/action-middleware.server.ts
 
 import { AsyncLocalStorage } from "async_hooks";
-import { type ActionFunction } from "@remix-run/node";
+import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { RequireApprovalError } from "~/lib/errors";
@@ -109,3 +109,26 @@ export const wrappedActions = Object.fromEntries(
     withActionMiddleware(name, (args) => fn(args)),
   ]),
 ) as typeof rawActions;
+
+export async function executeAction(args: ActionFunctionArgs) {
+  const actionName = args.params.name as keyof typeof wrappedActions;
+
+  if (!(actionName in wrappedActions)) {
+    throw new Response(`Action ${actionName} not found in actions map`, { status: 404 });
+  }
+
+  const selectedAction = wrappedActions[actionName];
+  const rootNode: ActionCallNode = {
+    name: actionName,
+    children: [],
+    status: "running",
+  };
+
+  return await runInActionContext(
+    {
+      tree: rootNode,
+      hitCount: 0,
+    },
+    () => selectedAction(args),
+  );
+}
