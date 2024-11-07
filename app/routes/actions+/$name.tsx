@@ -16,6 +16,7 @@ import {
   runInActionContext,
 } from "~/lib/action-middleware.server";
 import { db } from "~/db";
+import { actions } from "~/lib/generated/actions";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const existingAction = await db.query.actions.findFirst({
@@ -32,26 +33,13 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 
 const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
-  const actionName = params.name;
+  const actionName = params.name as keyof typeof actions;
 
-  let selectedAction;
-  switch (actionName) {
-    case "load-csv-data":
-      selectedAction = (await import("~/actions/load-csv-data.server")).loadCsvData;
-      break;
-    case "load-actions":
-      selectedAction = (await import("~/actions/load-actions.server")).loadActions;
-      break;
-    case "go-next":
-      selectedAction = (await import("~/actions/go-next.server")).goNext;
-      break;
-    case "master":
-      const { master } = await import("~/actions/master.server");
-      selectedAction = () => master();
-      break;
-    default:
-      throw new Response(`Action ${actionName} not found in actions map`, { status: 404 });
+  if (!(actionName in actions)) {
+    throw new Response(`Action ${actionName} not found in actions map`, { status: 404 });
   }
+
+  const selectedAction = actions[actionName];
 
   const rootNode: ActionCallNode = {
     name: actionName,
