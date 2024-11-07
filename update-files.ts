@@ -76,6 +76,13 @@ async function main(): Promise<void> {
       await git.add(updatedFiles);
       await git.commit("Update files from Claude suggestions");
       console.log("Files updated and changes committed successfully");
+
+      // Final check for unstaged changes
+      const finalChanges = await hasUnstagedChanges();
+      if (finalChanges) {
+        console.error("Warning: There are still unstaged changes after the operation completed");
+        process.exit(1);
+      }
     } else {
       console.log("No files were updated");
     }
