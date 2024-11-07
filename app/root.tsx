@@ -10,7 +10,7 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import "./tailwind.css";
-import DebugPanel from "~/routes/debug-panel";
+import Debug from "~/routes/debug/route";
 
 function Document({ children }: { children: React.ReactNode }) {
   return (
@@ -24,7 +24,7 @@ function Document({ children }: { children: React.ReactNode }) {
       <body className="h-full overflow-hidden">
         <div className="flex h-full">
           <div className="flex-1 overflow-auto">{children}</div>
-          <DebugPanel />
+          <Debug />
         </div>
         <ScrollRestoration />
         <Scripts />
