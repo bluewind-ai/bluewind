@@ -4,9 +4,8 @@ import type { ActionFunctionArgs } from "@remix-run/node";
 import { withActionMiddleware } from "~/lib/action-middleware.server";
 
 async function loadCsvDataImpl(_args: ActionFunctionArgs) {
-  void 0; // this should be removed by YOU when you rewrite the file
   // CSV loading logic here
   return true;
 }
 
-export const loadCsvData = withActionMiddleware(loadCsvDataImpl);
+export const loadCsvData = withActionMiddleware(loadCsvDataImpl, "load-csv-data");

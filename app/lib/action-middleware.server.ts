@@ -5,7 +5,6 @@ import { type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { RequireApprovalError } from "~/lib/errors";
-import { actions as actionMap } from "~/lib/generated/actions";
 
 type ActionContext = {
   hitCount: number;
@@ -17,7 +16,6 @@ const contextStore = new AsyncLocalStorage<ActionContext>();
 async function getOrCreateAction(functionName: string) {
   console.log("==== Action Debug ====");
   console.log("Function name:", functionName);
-  console.log("Action map:", actionMap);
   console.log("==================");
 
   let existingAction = await db.query.actions.findFirst({
@@ -39,11 +37,10 @@ async function getOrCreateAction(functionName: string) {
   return existingAction;
 }
 
-export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
+export function withActionMiddleware(actionFn: ActionFunction, actionName: string): ActionFunction {
   return async ({ request, params, context: actionContext }) => {
     console.log("\n=== START MIDDLEWARE EXECUTION ===");
-    console.log("Params:", params);
-    console.log("Action name from params:", params.name);
+    console.log("Action name:", actionName);
 
     const currentContext = getMiddlewareContext();
     const nextContext: ActionContext = {
@@ -53,11 +50,6 @@ export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
 
     console.log("Current context:", currentContext);
     console.log("Next context:", nextContext);
-
-    const actionName = params.name;
-    if (!actionName || !(actionName in actionMap)) {
-      throw new Response(`Action ${actionName} not found`, { status: 404 });
-    }
 
     const existingAction = await getOrCreateAction(actionName);
 
