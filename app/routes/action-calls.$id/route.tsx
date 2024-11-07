@@ -21,6 +21,9 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
+  console.log("[GoNextButton] Rendering with actionCall:", actionCall);
+  console.log("[GoNextButton] Navigation state:", navigation.state);
+
   return (
     <Form method="post" replace>
       <Button
@@ -36,7 +39,7 @@ function GoNextButton({ actionCall, className, ...props }: GoNextButtonProps) {
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  console.log("[loader] Starting with params:", params);
 
   if (!params.id || isNaN(Number(params.id))) {
     throw new Response("Invalid ID", { status: 400 });
@@ -47,11 +50,13 @@ export const loader: LoaderFunction = async ({ params }) => {
     with: { action: true },
   });
 
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  console.log("[loader] Found actionCall:", actionCall);
   return json(actionCall);
 };
 
 export const action: ActionFunction = async ({ params }) => {
+  console.log("[action] Starting with params:", params);
+
   if (!params.id || isNaN(Number(params.id))) {
     return json({ error: "Invalid ID" }, { status: 400 });
   }
@@ -59,16 +64,18 @@ export const action: ActionFunction = async ({ params }) => {
   const id = parseInt(params.id);
 
   await db.update(actionCalls).set({ status: "completed" }).where(eq(actionCalls.id, id));
+  console.log("[action] Updated actionCall status to completed for id:", id);
 
   return json({ success: true });
 };
 
 export default function Route() {
   const actionCall = useLoaderData<typeof loader>();
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  console.log("[Route] Rendering with actionCall:", actionCall);
 
   return (
     <div className="flex flex-col gap-4">
+      <pre className="bg-slate-100 p-4 rounded">{JSON.stringify(actionCall, null, 2)}</pre>
       <GoNextButton actionCall={actionCall} />
     </div>
   );
