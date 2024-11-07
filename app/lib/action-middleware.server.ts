@@ -37,7 +37,7 @@ async function getOrCreateAction(functionName: string) {
   return existingAction;
 }
 
-export function withActionMiddleware(actionFn: ActionFunction, actionName: string): ActionFunction {
+export function withActionMiddleware(actionName: string, actionFn: ActionFunction): ActionFunction {
   return async ({ request, params, context: actionContext }) => {
     console.log("\n=== START MIDDLEWARE EXECUTION ===");
     console.log("Action name:", actionName);
