@@ -36,6 +36,12 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
     console.log(`[${name}] Hit ${context.hitCount}`);
     console.log(`[${name}] Current node:`, context.currentNode);
 
+    await db
+      .update(actionCalls)
+      .set({ status: "running" })
+      .where(({ id }) => id.eq(context.currentNode.id));
+    context.currentNode.status = "running";
+
     if (context.hitCount === 2) {
       const nextAction = await db.query.actions.findFirst({
         where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
@@ -58,7 +64,6 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
         where: (fields, { eq }) => eq(fields.id, context.currentNode.id),
       });
 
-      // Keep the original actionName of currentNode
       context.currentNode = {
         ...currentCall!,
         actionName: context.currentNode.actionName,
@@ -90,4 +95,4 @@ export function suspend() {
   throw new SuspendError();
 }
 
-export { contextStore }; // Export for executeAction to use
+export { contextStore };
