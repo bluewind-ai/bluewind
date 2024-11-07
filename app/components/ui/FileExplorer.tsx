@@ -25,6 +25,13 @@ type NodeProps = {
   type: "file" | "actionCall";
 };
 
+function formatName(name: string): string {
+  return name
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 function isFileNode(node: any): node is FileNode {
   return "type" in node;
 }
@@ -48,7 +55,7 @@ function ExplorerNode({ node, level = 0, type }: NodeProps) {
       )}
       {isFileNode(node) ? (
         <>
-          <span className="mr-2">{node.name}</span>
+          <span className="mr-2">{formatName(node.name)}</span>
           <span className="text-sm text-gray-500">({node.type})</span>
         </>
       ) : (

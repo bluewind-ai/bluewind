@@ -9,6 +9,22 @@ export const actions = pgTable("actions", {
   name: varchar("name", { length: 256 }).notNull().unique(),
 });
 
+// Extend Drizzle's inferred type with computed properties
+export type Action = typeof actions.$inferSelect & {
+  displayName: string;
+};
+
+// Helper function to add computed properties
+export function enrichAction(action: typeof actions.$inferSelect): Action {
+  return {
+    ...action,
+    displayName: action.name
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" "),
+  };
+}
+
 export const actionCalls = pgTable("action_calls", {
   id: serial("id").primaryKey(),
   actionId: integer("action_id")
