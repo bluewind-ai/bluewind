@@ -51,7 +51,8 @@ const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
   return selectedAction({ request, params, context: { ...context } });
 };
 
-export const action = withActionMiddleware(params.name as string, runAction);
+export const action = ({ request, params, context }: ActionFunctionArgs) =>
+  withActionMiddleware(params.name as string, runAction)({ request, params, context });
 
 export default function ActionRunner() {
   const { name } = useParams();
