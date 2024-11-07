@@ -1,4 +1,5 @@
 // app/lib/action-middleware.server.ts
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
@@ -12,8 +13,7 @@ export type ActionInsert = typeof actionCalls.$inferInsert;
 
 export type ActionCallResult = {
   result: any;
-  call: ActionCallNode;
-  nextCall?: ActionCallNode;
+  action_call: ActionCallNode;
   status: "completed" | "ready_for_approval";
 };
 
@@ -38,14 +38,22 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
 
     try {
       const result = await actionFn(args);
-      await db
+
+      const updatedCall = await db
         .update(actionCalls)
-        .set({ status: "completed", result })
-        .where(eq(actionCalls.id, context.currentNode.id));
+        .set({
+          status: "completed",
+          result,
+        })
+        .where(eq(actionCalls.id, context.currentNode.id))
+        .returning();
 
       return {
         result,
-        call: context.currentNode,
+        action_call: {
+          ...updatedCall[0],
+          children: [], // Include empty children array from our relation
+        },
         status: "completed",
       } satisfies ActionCallResult;
     } catch (error) {
@@ -54,15 +62,18 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
           actionId: context.currentNode.actionId,
           parentId: context.currentNode.id,
           status: "ready_for_approval",
-          args,
+          args: {}, // Only store actual function args, not framework stuff
         };
 
         const nextCall = await db.insert(actionCalls).values(insertData).returning();
 
         return {
+          result: null,
+          action_call: {
+            ...context.currentNode,
+            children: [nextCall[0]],
+          },
           status: "ready_for_approval",
-          call: context.currentNode,
-          nextCall: nextCall[0],
         } satisfies ActionCallResult;
       }
       throw error;
@@ -90,18 +101,21 @@ export async function executeAction(args: ActionFunctionArgs) {
     throw new Error(`Action ${actionName} not found in database`);
   }
 
-  const insertData: ActionInsert = {
-    actionId: action.id,
-    status: "ready_for_approval",
-    args,
-  };
+  const rootCall = await db
+    .insert(actionCalls)
+    .values({
+      actionId: action.id,
+      status: "ready_for_approval",
+      args: {}, // Only store actual function args
+    } satisfies ActionInsert)
+    .returning();
 
-  const rootCall = await db.insert(actionCalls).values(insertData).returning();
-
-  return contextStore.run(
+  const result = await contextStore.run(
     {
-      currentNode: rootCall[0],
+      currentNode: { ...rootCall[0], children: [] },
     },
-    () => wrappedActions[actionName](args),
+    () => wrappedActions[actionName]({}),
   );
+
+  return result;
 }
