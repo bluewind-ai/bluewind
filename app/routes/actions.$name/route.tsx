@@ -15,8 +15,12 @@ const actions = {
 } as const;
 
 const runAction = async ({ request, params }: ActionFunctionArgs) => {
+  console.log("Running action with params:", params);
+  console.log("Available actions:", Object.keys(actions));
   const actionName = params.name;
+  console.log("Looking for action:", actionName);
   const action = actions[actionName as keyof typeof actions];
+  console.log("Found action?", !!action);
 
   return action(request);
 };
@@ -25,6 +29,7 @@ export const action = withActionMiddleware(runAction);
 
 export default function ActionRunner() {
   const { name } = useParams();
+  console.log("Component rendered with name:", name);
   const actionData = useActionData<typeof action>();
 
   return (
