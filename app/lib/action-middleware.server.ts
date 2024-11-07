@@ -40,8 +40,6 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
     console.log(`[${name}] Current node:`, context.currentNode);
 
     if (context.hitCount === 2) {
-      // We're about to call loadCsvData - we know this because
-      // hitCount = 2 means we're at the await loadCsvData() line
       const nextAction = await db.query.actions.findFirst({
         where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
       });
@@ -91,7 +89,7 @@ export function suspend() {
 }
 
 export async function executeAction(args: ActionFunctionArgs) {
-  const actionName = args.params.name;
+  const actionName = args.params.name as keyof typeof actionMap;
   if (!actionName || !(actionName in actionMap)) {
     throw new Error(`Action ${actionName} not found`);
   }
