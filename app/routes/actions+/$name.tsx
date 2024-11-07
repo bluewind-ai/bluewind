@@ -1,7 +1,13 @@
 // app/routes/actions+/$name.tsx
 
 import { json, type ActionFunctionArgs } from "@remix-run/node";
-import { Form, useActionData, useParams } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useParams,
+  useRouteError,
+  isRouteErrorResponse,
+} from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { withActionMiddleware } from "~/lib/action-middleware.server";
 import { goNext } from "~/actions/go-next.server";
@@ -49,6 +55,22 @@ export default function ActionRunner() {
       {actionData && (
         <pre className="mt-4 p-4 bg-slate-100 rounded">{JSON.stringify(actionData, null, 2)}</pre>
       )}
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  return (
+    <div className="p-4 text-red-500">
+      <pre className="mt-4 rounded bg-slate-100 p-4">
+        {isRouteErrorResponse(error)
+          ? JSON.stringify(error.data, null, 2)
+          : error instanceof Error
+            ? error.message
+            : "Unknown error"}
+      </pre>
     </div>
   );
 }
