@@ -5,7 +5,6 @@ import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
-import { eq } from "drizzle-orm";
 
 export type ActionCallNode = typeof actionCalls.$inferSelect & {
   actionName: string;
@@ -17,6 +16,7 @@ export type ActionInsert = typeof actionCalls.$inferInsert;
 
 export type ActionContext = {
   currentNode: ActionCallNode;
+  hitCount: number;
 };
 
 const contextStore = new AsyncLocalStorage<ActionContext>();
@@ -34,48 +34,50 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
       throw new Error("Action context not initialized");
     }
 
-    try {
-      await actionFn(args);
+    context.hitCount++;
+    console.log(`[${name}] Hit ${context.hitCount}`);
+    console.log(`[${name}] Current node:`, context.currentNode);
 
-      const updatedCall = await db
-        .update(actionCalls)
-        .set({ status: "completed" })
-        .where(eq(actionCalls.id, context.currentNode.id))
-        .returning();
+    if (context.hitCount === 2) {
+      console.log(`[${name}] Hit 2 - Loading loadCsvData action`);
+      const nextAction = await db.query.actions.findFirst({
+        where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
+      });
 
-      const action = await db.query.actions.findFirst({
-        where: (fields, { eq }) => eq(fields.id, updatedCall[0].actionId),
+      console.log(`[${name}] Found next action:`, nextAction);
+      if (!nextAction) return;
+
+      const insertData: ActionInsert = {
+        actionId: nextAction.id,
+        parentId: context.currentNode.id,
+        status: "ready_for_approval",
+        args: {},
+      };
+
+      const nextCall = await db.insert(actionCalls).values(insertData).returning();
+      console.log(`[${name}] Created next call:`, nextCall[0]);
+
+      const currentCall = await db.query.actionCalls.findFirst({
+        where: (fields, { eq }) => eq(fields.id, context.currentNode.id),
       });
 
       return {
-        action_call: {
-          ...updatedCall[0],
-          actionName: action?.name ?? "",
-          children: [],
-        },
+        ...currentCall,
+        actionName: name,
+        children: [{ ...nextCall[0], actionName: nextAction.name, children: [] }],
       };
+    }
+
+    console.log(`[${name}] Executing function`);
+    try {
+      await actionFn(args);
+      console.log(`[${name}] Function executed successfully`);
+
+      return context.currentNode;
     } catch (error) {
+      console.log(`[${name}] Caught suspend error`);
       if (error instanceof SuspendError) {
-        const insertData: ActionInsert = {
-          actionId: context.currentNode.actionId,
-          parentId: context.currentNode.id,
-          status: "ready_for_approval",
-          args: {},
-        };
-
-        const nextCall = await db.insert(actionCalls).values(insertData).returning();
-
-        const action = await db.query.actions.findFirst({
-          where: (fields, { eq }) => eq(fields.id, context.currentNode.actionId),
-        });
-
-        return {
-          action_call: {
-            ...context.currentNode,
-            actionName: action?.name ?? "",
-            children: [nextCall[0]],
-          },
-        };
+        return context.currentNode;
       }
       throw error;
     }
@@ -97,6 +99,7 @@ export async function executeAction(args: ActionFunctionArgs) {
   const action = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, actionName),
   });
+  console.log("Found action in DB:", action);
 
   if (!action) {
     throw new Error(`Action ${actionName} not found in database`);
@@ -111,16 +114,17 @@ export async function executeAction(args: ActionFunctionArgs) {
     } satisfies ActionInsert)
     .returning();
 
-  const result = await contextStore.run(
+  console.log("Created root call:", rootCall[0]);
+
+  return await contextStore.run(
     {
       currentNode: {
         ...rootCall[0],
         actionName: action.name,
         children: [],
       },
+      hitCount: 0,
     },
     () => wrappedActions[actionName](args),
   );
-
-  return result;
 }
