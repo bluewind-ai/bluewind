@@ -2,6 +2,7 @@
 
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
+import { actions, actionCalls } from "~/db/schema";
 import { actions as actionMap } from "./generated/actions";
 import { contextStore } from "./action-builder.server";
 import type { ActionInsert } from "./action-builder.server";
