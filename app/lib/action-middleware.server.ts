@@ -2,7 +2,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
-import { type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { actions as actionMap } from "./generated/actions";
@@ -88,19 +87,18 @@ export function suspend() {
   throw new SuspendError();
 }
 
-export async function executeAction(args: ActionFunctionArgs) {
-  const actionName = args.params.name as keyof typeof actionMap;
-  if (!actionName || !(actionName in actionMap)) {
-    throw new Error(`Action ${actionName} not found`);
+export async function executeAction(name: string) {
+  if (!name || !(name in actionMap)) {
+    throw new Error(`Action ${name} not found`);
   }
 
   const action = await db.query.actions.findFirst({
-    where: (fields, { eq }) => eq(fields.name, actionName),
+    where: (fields, { eq }) => eq(fields.name, name),
   });
   console.log("Found action in DB:", action);
 
   if (!action) {
-    throw new Error(`Action ${actionName} not found in database`);
+    throw new Error(`Action ${name} not found in database`);
   }
 
   const rootCall = await db
@@ -123,6 +121,6 @@ export async function executeAction(args: ActionFunctionArgs) {
       },
       hitCount: 0,
     },
-    () => actionMap[actionName](),
+    () => actionMap[name](),
   );
 }
