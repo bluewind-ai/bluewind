@@ -10,10 +10,10 @@ import { actions as actionMap } from "~/lib/generated/actions";
 type Context = {
   startTime?: number;
   hitCount?: number;
+  currentActionCallId?: number;
 };
 
-const hitCounter = new AsyncLocalStorage<number>();
-const parentActionCallId = new AsyncLocalStorage<number>();
+const hitCounter = new AsyncLocalStorage<Context>();
 
 async function getOrCreateAction(functionName: string) {
   console.log("==== Action Debug ====");
@@ -40,34 +40,26 @@ async function getOrCreateAction(functionName: string) {
   return existingAction;
 }
 
-async function getRunningActionCall(actionId: number) {
-  return await db.query.actionCalls.findFirst({
-    where: (fields, { and, eq }) =>
-      and(eq(fields.actionId, actionId), eq(fields.status, "running")),
-    orderBy: (fields, { desc }) => [desc(fields.id)],
-  });
-}
-
-export function withActionMiddleware(
-  action: ActionFunction,
-  context: Context = {},
-): ActionFunction {
+export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
   return async ({ request, params, context: actionContext }) => {
     console.log("==== Middleware Context Debug ====");
     console.log("Params:", params);
     console.log("Action name from params:", params.name);
     console.log("===============================");
 
-    const currentCount = (hitCounter.getStore() || 0) + 1;
+    const currentContext = hitCounter.getStore() || { hitCount: 0 };
+    const nextContext = {
+      ...currentContext,
+      hitCount: (currentContext.hitCount || 0) + 1,
+    };
 
-    return await hitCounter.run(currentCount, async () => {
+    return await hitCounter.run(nextContext, async () => {
       const actionName = params.name;
       if (!actionName || !(actionName in actionMap)) {
         throw new Response(`Action ${actionName} not found`, { status: 404 });
       }
 
-      context.hitCount = currentCount;
-      console.log(`Middleware hit count: ${currentCount}`);
+      console.log(`Middleware hit count: ${nextContext.hitCount}`);
 
       const existingAction = await getOrCreateAction(actionName);
 
@@ -75,35 +67,39 @@ export function withActionMiddleware(
         throw new Response(`Action ${actionName} not found in database`, { status: 404 });
       }
 
-      if (currentCount === 1) {
+      if (nextContext.hitCount === 1) {
         console.log("Creating initial action call...");
         const newActionCall = await db
           .insert(actionCalls)
           .values({
             actionId: existingAction.id,
             status: "running",
+            savedInput: JSON.stringify({ stage: "initial" }),
           })
           .returning();
 
         console.log("Created initial action call:", newActionCall[0]);
+        nextContext.currentActionCallId = newActionCall[0].id;
 
-        return await parentActionCallId.run(newActionCall[0].id, async () => {
-          context.startTime = Date.now();
-          return await action({ request, params, context: actionContext });
+        return await actionFn({
+          request,
+          params,
+          context: { ...actionContext, actionCallId: newActionCall[0].id },
         });
       }
 
-      if (currentCount === 2) {
-        const runningCall = await getRunningActionCall(existingAction.id);
-        console.log("Found running call:", runningCall);
-
-        console.log("Creating approval request...");
+      if (nextContext.hitCount === 2 && currentContext.currentActionCallId) {
+        console.log("Creating approval request with parent:", currentContext.currentActionCallId);
         const newCall = await db
           .insert(actionCalls)
           .values({
             actionId: existingAction.id,
             status: "ready_for_approval",
-            parentId: runningCall?.id,
+            parentId: currentContext.currentActionCallId,
+            savedInput: JSON.stringify({
+              stage: "approval",
+              parentId: currentContext.currentActionCallId,
+            }),
           })
           .returning();
         console.log("Created approval request:", newCall[0]);
@@ -111,12 +107,11 @@ export function withActionMiddleware(
         throw new RequireApprovalError();
       }
 
-      context.startTime = Date.now();
-      return await action({ request, params, context: actionContext });
+      return await actionFn({ request, params, context: actionContext });
     });
   };
 }
 
 export function getMiddlewareHitCount(): number {
-  return hitCounter.getStore() || 0;
+  return hitCounter.getStore()?.hitCount || 0;
 }
