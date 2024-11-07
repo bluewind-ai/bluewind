@@ -1,5 +1,5 @@
 // app/lib/action-middleware.server.ts
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";

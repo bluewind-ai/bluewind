@@ -79,12 +79,50 @@ export function ErrorBoundary() {
 
   return (
     <div className="p-4 text-red-500">
-      <pre className="mt-4 rounded bg-slate-100 p-4">
-        {isRouteErrorResponse(error)
-          ? JSON.stringify(error.data, null, 2)
-          : error instanceof Error
-            ? error.message
-            : "Unknown error"}
+      <h2 className="text-xl font-bold mb-4">Error Details</h2>
+      <pre className="mt-4 rounded bg-slate-100 p-4 whitespace-pre-wrap">
+        {isRouteErrorResponse(error) ? (
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-bold">Response Error:</h3>
+              {JSON.stringify(error.data, null, 2)}
+            </div>
+            <div>
+              <h3 className="font-bold">Status:</h3>
+              {error.status}
+            </div>
+            <div>
+              <h3 className="font-bold">Status Text:</h3>
+              {error.statusText}
+            </div>
+          </div>
+        ) : error instanceof Error ? (
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-bold">Error Message:</h3>
+              {error.message}
+            </div>
+            <div>
+              <h3 className="font-bold">Stack Trace:</h3>
+              {error.stack}
+            </div>
+            <div>
+              <h3 className="font-bold">Error Name:</h3>
+              {error.name}
+            </div>
+            {error.cause && (
+              <div>
+                <h3 className="font-bold">Error Cause:</h3>
+                {JSON.stringify(error.cause, null, 2)}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div>
+            <h3 className="font-bold">Unknown Error:</h3>
+            {JSON.stringify(error, null, 2)}
+          </div>
+        )}
       </pre>
     </div>
   );
