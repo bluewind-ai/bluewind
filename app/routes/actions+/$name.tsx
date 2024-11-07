@@ -95,6 +95,13 @@ export function ErrorBoundary() {
           overflowWrap: "normal",
           overflow: "auto",
         }}
+        onClick={(e) => {
+          const target = e.currentTarget;
+          requestAnimationFrame(() => {
+            const end = target.selectionEnd;
+            target.setSelectionRange(end, end);
+          });
+        }}
       />
     </div>
   );
