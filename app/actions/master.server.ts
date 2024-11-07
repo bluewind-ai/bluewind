@@ -1,14 +1,15 @@
 // app/actions/master.server.ts
 
 import { loadCsvData } from "./load-csv-data.server";
+import { withActionMiddleware } from "~/lib/action-middleware.server";
 
 export async function master() {
-  // We create a mock ActionFunctionArgs to pass to loadCsvData
   const mockArgs = {
     request: new Request("http://localhost"),
     params: {},
     context: {},
   };
 
-  return await loadCsvData(mockArgs);
+  const wrappedLoadCsvData = withActionMiddleware("load-csv-data", () => loadCsvData(mockArgs));
+  return await wrappedLoadCsvData(mockArgs);
 }
