@@ -5,6 +5,7 @@ import { type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { RequireApprovalError } from "~/lib/errors";
+import { actions as rawActions } from "./generated/actions";
 
 export type ActionCallNode = {
   name: string;
@@ -100,3 +101,11 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
     return actionFn(args);
   };
 }
+
+// Pre-wrap all actions with middleware
+export const wrappedActions = Object.fromEntries(
+  Object.entries(rawActions).map(([name, fn]) => [
+    name,
+    withActionMiddleware(name, (args) => fn(args)),
+  ]),
+) as typeof rawActions;
