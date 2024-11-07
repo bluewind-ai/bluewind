@@ -5,6 +5,7 @@ import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
+import { eq } from "drizzle-orm";
 
 export type ActionCallNode = typeof actionCalls.$inferSelect & {
   actionName: string;
@@ -89,12 +90,7 @@ export function suspend() {
 }
 
 export async function executeAction(args: ActionFunctionArgs) {
-  const { wrappedActions } = await import("~/lib/wrapped-actions.server");
-  const actionName = args.params.name as keyof typeof wrappedActions;
-
-  if (!(actionName in wrappedActions)) {
-    throw new Response(`Action ${actionName} not found`, { status: 404 });
-  }
+  const actionName = args.params.name;
 
   const action = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, actionName),
@@ -116,6 +112,10 @@ export async function executeAction(args: ActionFunctionArgs) {
 
   console.log("Created root call:", rootCall[0]);
 
+  // Dynamic import of the specific action
+  const module = await import(`~/actions/${actionName}.server`);
+  const actionFn = module[actionName];
+
   return await contextStore.run(
     {
       currentNode: {
@@ -125,6 +125,6 @@ export async function executeAction(args: ActionFunctionArgs) {
       },
       hitCount: 0,
     },
-    () => wrappedActions[actionName](args),
+    () => actionFn(args),
   );
 }
