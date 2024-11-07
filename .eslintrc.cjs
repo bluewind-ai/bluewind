@@ -17,13 +17,18 @@ module.exports = {
   ignorePatterns: ["!**/.server", "!**/.client", "website/**"],
 
   extends: ["eslint:recommended"],
-  plugins: ["local"],
+  plugins: ["local", "unused-imports"],
 
   overrides: [
     {
       files: ["*.js", "*.mjs", "*.ts", "*.tsx"],
       rules: {
         "local/file-header": "error",
+        "unused-imports/no-unused-imports": "error",
+        "unused-imports/no-unused-vars": [
+          "warn",
+          { vars: "all", varsIgnorePattern: "^_", args: "after-used", argsIgnorePattern: "^_" },
+        ],
       },
     },
     {
