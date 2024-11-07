@@ -1,6 +1,6 @@
 // app/routes/actions+/$name.tsx
 
-import { json, type ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import {
   Form,
   useActionData,
