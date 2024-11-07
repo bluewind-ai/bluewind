@@ -46,7 +46,8 @@ const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
       selectedAction = (await import("~/actions/go-next.server")).goNext;
       break;
     case "master":
-      selectedAction = (await import("~/actions/master.server")).master;
+      const { master } = await import("~/actions/master.server");
+      selectedAction = () => master();
       break;
     default:
       throw new Response(`Action ${actionName} not found in actions map`, { status: 404 });
