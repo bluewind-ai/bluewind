@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useNavigate } from "@remix-run/react";
+import { useNavigate, Form } from "@remix-run/react";
 import { Button } from "./ui/button";
 
 type ActionRecord = {
