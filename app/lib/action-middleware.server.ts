@@ -5,7 +5,6 @@ import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
-import { eq } from "drizzle-orm";
 
 export type ActionCallNode = typeof actionCalls.$inferSelect & {
   actionName: string;
