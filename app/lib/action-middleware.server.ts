@@ -37,21 +37,24 @@ async function getOrCreateAction(functionName: string) {
 
 export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
   return async ({ request, params, context: actionContext }) => {
-    console.log("==== Middleware Context Debug ====");
+    console.log("\n=== START MIDDLEWARE EXECUTION ===");
     console.log("Params:", params);
     console.log("Action name from params:", params.name);
-    console.log("Current parent call ID:", parentCallId.getStore());
-    console.log("===============================");
+    console.log("Initial parent call ID:", parentCallId.getStore());
+    console.log("Initial hit count:", hitCounter.getStore());
 
     const currentCount = (hitCounter.getStore() || 0) + 1;
+    console.log("New hit count will be:", currentCount);
 
     return await hitCounter.run(currentCount, async () => {
+      console.log("\n=== INSIDE HIT COUNTER RUN ===");
+      console.log("Hit count now:", hitCounter.getStore());
+      console.log("Parent ID now:", parentCallId.getStore());
+
       const actionName = params.name;
       if (!actionName || !(actionName in actionMap)) {
         throw new Response(`Action ${actionName} not found`, { status: 404 });
       }
-
-      console.log(`Middleware hit count: ${currentCount}`);
 
       const existingAction = await getOrCreateAction(actionName);
 
@@ -60,7 +63,7 @@ export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
       }
 
       if (currentCount === 1) {
-        console.log("Creating initial action call...");
+        console.log("\n=== CREATING INITIAL ACTION CALL ===");
         const newActionCall = await db
           .insert(actionCalls)
           .values({
@@ -69,30 +72,40 @@ export function withActionMiddleware(actionFn: ActionFunction): ActionFunction {
           })
           .returning();
 
-        console.log("Created initial action call:", newActionCall[0]);
+        console.log("Created action call:", newActionCall[0]);
+        console.log("About to store parent ID:", newActionCall[0].id);
 
         return await parentCallId.run(newActionCall[0].id, async () => {
-          console.log("Storing parent call ID:", newActionCall[0].id);
-          return await actionFn({ request, params, context: actionContext });
+          console.log("\n=== INSIDE PARENT ID RUN ===");
+          console.log("Stored parent ID is now:", parentCallId.getStore());
+          console.log("Hit count is now:", hitCounter.getStore());
+          const result = await actionFn({ request, params, context: actionContext });
+          console.log("After action execution, parent ID is:", parentCallId.getStore());
+          return result;
         });
       }
 
       if (currentCount === 2) {
-        const parentId = parentCallId.getStore();
-        console.log("Retrieved parent call ID for approval request:", parentId);
+        console.log("\n=== CREATING APPROVAL REQUEST ===");
+        console.log("Current hit count:", hitCounter.getStore());
+        console.log("Current parent ID:", parentCallId.getStore());
 
         const newCall = await db
           .insert(actionCalls)
           .values({
             actionId: existingAction.id,
             status: "ready_for_approval",
-            parentId: parentId || null,
+            parentId: parentCallId.getStore() || null,
           })
           .returning();
         console.log("Created approval request:", newCall[0]);
 
         throw new RequireApprovalError();
       }
+
+      console.log("\n=== EXECUTING NORMAL ACTION ===");
+      console.log("Current hit count:", hitCounter.getStore());
+      console.log("Current parent ID:", parentCallId.getStore());
 
       return await actionFn({ request, params, context: actionContext });
     });
