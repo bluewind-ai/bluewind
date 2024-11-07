@@ -1,5 +1,5 @@
 // app/lib/action-middleware.server.ts
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
@@ -9,6 +9,13 @@ import { eq } from "drizzle-orm";
 export type ActionCallNode = typeof actionCalls.$inferSelect;
 export type Action = typeof actions.$inferSelect;
 export type ActionInsert = typeof actionCalls.$inferInsert;
+
+export type ActionCallResult = {
+  result: any;
+  actionCall: ActionCallNode;
+  nextActionCall?: ActionCallNode;
+  status: "completed" | "ready_for_approval";
+};
 
 export type ActionContext = {
   currentNode: ActionCallNode;
@@ -35,7 +42,12 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
         .update(actionCalls)
         .set({ status: "completed" })
         .where(eq(actionCalls.id, context.currentNode.id));
-      return result;
+
+      return {
+        result,
+        actionCall: context.currentNode,
+        status: "completed",
+      } satisfies ActionCallResult;
     } catch (error) {
       if (error instanceof SuspendError) {
         const insertData: ActionInsert = {
@@ -49,8 +61,9 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
 
         return {
           status: "ready_for_approval",
+          actionCall: context.currentNode,
           nextActionCall: nextActionCall[0],
-        };
+        } satisfies ActionCallResult;
       }
       throw error;
     }
