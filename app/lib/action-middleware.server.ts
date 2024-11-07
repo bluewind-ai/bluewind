@@ -1,18 +1,26 @@
 // app/lib/action-middleware.server.ts
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
+import { eq } from "drizzle-orm";
 
 export type ActionCallNode = typeof actionCalls.$inferSelect;
 export type Action = typeof actions.$inferSelect;
+export type ActionInsert = typeof actionCalls.$inferInsert;
 
 export type ActionContext = {
   currentNode: ActionCallNode;
 };
 
 const contextStore = new AsyncLocalStorage<ActionContext>();
+
+class SuspendError extends Error {
+  constructor() {
+    super("Action suspended for approval");
+  }
+}
 
 export function withActionMiddleware(name: string, actionFn: ActionFunction): ActionFunction {
   return async (args) => {
@@ -26,20 +34,18 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
       await db
         .update(actionCalls)
         .set({ status: "completed" })
-        .where({ id: context.currentNode.id });
+        .where(eq(actionCalls.id, context.currentNode.id));
       return result;
     } catch (error) {
-      if (error.name === "SuspendForApproval") {
-        // Create the next action call record
-        const nextActionCall = await db
-          .insert(actionCalls)
-          .values({
-            actionId: error.nextActionId,
-            parentId: context.currentNode.id,
-            status: "ready_for_approval",
-            savedInput: error.args,
-          })
-          .returning();
+      if (error instanceof SuspendError) {
+        const insertData: ActionInsert = {
+          actionId: context.currentNode.actionId,
+          parentId: context.currentNode.id,
+          status: "ready_for_approval",
+          args,
+        };
+
+        const nextActionCall = await db.insert(actionCalls).values(insertData).returning();
 
         return {
           status: "ready_for_approval",
@@ -51,12 +57,8 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
   };
 }
 
-export function suspend(nextActionId: Action["id"], args?: any) {
-  const error = new Error("Action suspended for approval");
-  error.name = "SuspendForApproval";
-  error.nextActionId = nextActionId;
-  error.args = args;
-  throw error;
+export function suspend() {
+  throw new SuspendError();
 }
 
 export async function executeAction(args: ActionFunctionArgs) {
@@ -75,15 +77,15 @@ export async function executeAction(args: ActionFunctionArgs) {
     throw new Error(`Action ${actionName} not found in database`);
   }
 
-  const rootCall = await db
-    .insert(actionCalls)
-    .values({
-      actionId: action.id,
-      status: "ready_for_approval",
-    })
-    .returning();
+  const insertData: ActionInsert = {
+    actionId: action.id,
+    status: "ready_for_approval",
+    args,
+  };
 
-  return await runInActionContext(
+  const rootCall = await db.insert(actionCalls).values(insertData).returning();
+
+  return contextStore.run(
     {
       currentNode: rootCall[0],
     },
