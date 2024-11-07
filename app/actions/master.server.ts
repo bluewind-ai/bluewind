@@ -1,9 +1,9 @@
 // app/actions/master.server.ts
 
-import { withActionMiddleware } from "~/lib/action-middleware.server";
+import { createAction } from "~/lib/action-builder.server";
 import { loadCsvData } from "./load-csv-data.server";
 
-export const master = withActionMiddleware("master", async () => {
+export const master = createAction("master", async () => {
   const csvData = await loadCsvData();
   return csvData;
 });
