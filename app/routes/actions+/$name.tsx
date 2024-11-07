@@ -77,30 +77,25 @@ export default function ActionRunner() {
 export function ErrorBoundary() {
   const error = useRouteError();
 
+  const errorText = isRouteErrorResponse(error)
+    ? error.data
+    : error instanceof Error
+      ? `${error.name}: ${error.message}\n\n${error.stack}`
+      : "Unknown error";
+
   return (
-    <div
-      role="region"
-      aria-label="Error details"
-      style={{
-        padding: "1rem",
-        overflow: "auto",
-        maxHeight: "100vh",
-        userSelect: "none",
-      }}
-    >
-      <pre
+    <div className="p-4">
+      <textarea
+        readOnly
+        className="w-full h-[80vh] font-mono bg-slate-100 p-4"
+        value={errorText}
         style={{
-          whiteSpace: "pre-wrap",
-          wordBreak: "break-word",
-          userSelect: "text",
+          resize: "none",
+          whiteSpace: "pre",
+          overflowWrap: "normal",
+          overflow: "auto",
         }}
-      >
-        {isRouteErrorResponse(error)
-          ? error.data
-          : error instanceof Error
-            ? `${error.name}: ${error.message}\n\n${error.stack}`
-            : "Unknown error"}
-      </pre>
+      />
     </div>
   );
 }
