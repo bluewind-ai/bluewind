@@ -7,15 +7,13 @@ import { db } from "~/db";
 import { actions, actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
-export type ActionCallNode = typeof actionCalls.$inferSelect;
+export type ActionCallNode = typeof actionCalls.$inferSelect & {
+  actionName: string;
+  children: ActionCallNode[];
+};
+
 export type Action = typeof actions.$inferSelect;
 export type ActionInsert = typeof actionCalls.$inferInsert;
-
-export type ActionCallResult = {
-  result: any;
-  action_call: ActionCallNode;
-  status: "completed" | "ready_for_approval";
-};
 
 export type ActionContext = {
   currentNode: ActionCallNode;
@@ -37,44 +35,47 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
     }
 
     try {
-      const result = await actionFn(args);
+      await actionFn(args);
 
       const updatedCall = await db
         .update(actionCalls)
-        .set({
-          status: "completed",
-          result,
-        })
+        .set({ status: "completed" })
         .where(eq(actionCalls.id, context.currentNode.id))
         .returning();
 
+      const action = await db.query.actions.findFirst({
+        where: (fields, { eq }) => eq(fields.id, updatedCall[0].actionId),
+      });
+
       return {
-        result,
         action_call: {
           ...updatedCall[0],
-          children: [], // Include empty children array from our relation
+          actionName: action?.name ?? "",
+          children: [],
         },
-        status: "completed",
-      } satisfies ActionCallResult;
+      };
     } catch (error) {
       if (error instanceof SuspendError) {
         const insertData: ActionInsert = {
           actionId: context.currentNode.actionId,
           parentId: context.currentNode.id,
           status: "ready_for_approval",
-          args: {}, // Only store actual function args, not framework stuff
+          args: {},
         };
 
         const nextCall = await db.insert(actionCalls).values(insertData).returning();
 
+        const action = await db.query.actions.findFirst({
+          where: (fields, { eq }) => eq(fields.id, context.currentNode.actionId),
+        });
+
         return {
-          result: null,
           action_call: {
             ...context.currentNode,
+            actionName: action?.name ?? "",
             children: [nextCall[0]],
           },
-          status: "ready_for_approval",
-        } satisfies ActionCallResult;
+        };
       }
       throw error;
     }
@@ -106,13 +107,17 @@ export async function executeAction(args: ActionFunctionArgs) {
     .values({
       actionId: action.id,
       status: "ready_for_approval",
-      args: {}, // Only store actual function args
+      args: {},
     } satisfies ActionInsert)
     .returning();
 
   const result = await contextStore.run(
     {
-      currentNode: { ...rootCall[0], children: [] },
+      currentNode: {
+        ...rootCall[0],
+        actionName: action.name,
+        children: [],
+      },
     },
     () => wrappedActions[actionName]({}),
   );
