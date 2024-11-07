@@ -14,6 +14,30 @@ type Context = {
 const hitCounter = new AsyncLocalStorage<number>();
 const parentActionCallId = new AsyncLocalStorage<number>();
 
+async function getOrCreateAction(functionName: string, actionMap: Record<string, unknown>) {
+  // Find the kebab-case name from the action map
+  const kebabName =
+    Object.entries(actionMap).find(([_, fn]) => fn === functionName)?.[0] || functionName;
+
+  let existingAction = await db.query.actions.findFirst({
+    where: (fields, { eq }) => eq(fields.name, kebabName),
+  });
+
+  if (!existingAction) {
+    console.log("Creating action:", kebabName);
+    const newAction = await db
+      .insert(actions)
+      .values({
+        name: kebabName,
+      })
+      .returning();
+    existingAction = newAction[0];
+    console.log("Created action:", existingAction);
+  }
+
+  return existingAction;
+}
+
 export function withActionMiddleware(
   action: ActionFunction,
   context: Context = {},
@@ -28,21 +52,7 @@ export function withActionMiddleware(
       context.hitCount = currentCount;
       console.log(`Middleware hit count: ${currentCount}`);
 
-      let existingAction = await db.query.actions.findFirst({
-        where: (fields, { eq }) => eq(fields.name, actionName),
-      });
-
-      if (!existingAction) {
-        console.log("Creating action:", actionName);
-        const newAction = await db
-          .insert(actions)
-          .values({
-            name: actionName,
-          })
-          .returning();
-        existingAction = newAction[0];
-        console.log("Created action:", existingAction);
-      }
+      const existingAction = await getOrCreateAction(actionName, actionContext.actions);
 
       if (currentCount === 2) {
         console.log(`Recording approval request for ${actionName}`);
