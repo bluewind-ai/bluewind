@@ -1,13 +1,13 @@
 // app/actions/master.server.ts
 
+import { withActionMiddleware } from "~/lib/action-middleware.server";
 import { loadCsvData } from "./load-csv-data.server";
 
-export async function master() {
-  const mockArgs = {
-    request: new Request("http://localhost"),
-    params: {},
-    context: {},
-  };
+async function masterAction() {
+  // This await is where we'll intercept on hitCount = 2
+  const csvData = await loadCsvData();
 
-  return await loadCsvData(mockArgs);
+  return csvData;
 }
+
+export const master = withActionMiddleware("master", masterAction);
