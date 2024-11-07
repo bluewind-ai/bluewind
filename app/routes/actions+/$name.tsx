@@ -10,13 +10,9 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
-import {
-  withActionMiddleware,
-  type ActionCallNode,
-  runInActionContext,
-} from "~/lib/action-middleware.server";
+import { type ActionCallNode, runInActionContext } from "~/lib/action-middleware.server";
 import { db } from "~/db";
-import { actions } from "~/lib/generated/actions";
+import { wrappedActions } from "~/lib/generated/wrapped-actions";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const existingAction = await db.query.actions.findFirst({
@@ -32,15 +28,14 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return json({ action: existingAction });
 }
 
-const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
-  const actionName = params.name as keyof typeof actions;
+const runAction = async (args: ActionFunctionArgs) => {
+  const actionName = args.params.name as keyof typeof wrappedActions;
 
-  if (!(actionName in actions)) {
+  if (!(actionName in wrappedActions)) {
     throw new Response(`Action ${actionName} not found in actions map`, { status: 404 });
   }
 
-  const selectedAction = actions[actionName];
-
+  const selectedAction = wrappedActions[actionName];
   const rootNode: ActionCallNode = {
     name: actionName,
     children: [],
@@ -52,12 +47,11 @@ const runAction = async ({ request, params, context }: ActionFunctionArgs) => {
       tree: rootNode,
       hitCount: 0,
     },
-    () => selectedAction({ request, params, context }),
+    () => selectedAction(args),
   );
 };
 
-export const action = ({ request, params, context }: ActionFunctionArgs) =>
-  withActionMiddleware(params.name as string, runAction)({ request, params, context });
+export const action = runAction;
 
 export default function ActionRunner() {
   const { name } = useParams();
