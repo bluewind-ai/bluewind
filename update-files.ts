@@ -1,10 +1,19 @@
 // update-files.ts
+
 import * as fs from "fs";
 import * as path from "path";
+import { simpleGit } from "simple-git";
 
 interface CodeSnippet {
   filepath: string;
   code: string;
+}
+
+const git = simpleGit();
+
+async function hasUnstagedChanges(): Promise<boolean> {
+  const status = await git.status();
+  return status.files.length > 0;
 }
 
 function insertLineAtBeginning(filePath: string, lineToInsert: string): void {
@@ -16,7 +25,6 @@ function insertLineAtBeginning(filePath: string, lineToInsert: string): void {
 }
 
 function extractFileSnippets(text: string): CodeSnippet[] {
-  // Updated pattern to handle Remix file paths
   const pattern = /```(?:tsx?|typescript)\s*\n\/\/\s*([^\n]+)\s*\n([\s\S]+?)```/g;
   const snippets: CodeSnippet[] = [];
 
@@ -24,7 +32,6 @@ function extractFileSnippets(text: string): CodeSnippet[] {
   while ((match = pattern.exec(text)) !== null) {
     let filepath = match[1].trim();
 
-    // Convert Next.js paths to Remix paths
     if (filepath.startsWith("src/app/")) {
       filepath = filepath.replace("src/app/", "app/");
     }
@@ -39,19 +46,43 @@ function extractFileSnippets(text: string): CodeSnippet[] {
   return snippets;
 }
 
-function writeFiles(snippets: CodeSnippet[], baseDir: string = "."): void {
+async function writeFiles(snippets: CodeSnippet[], baseDir: string = "."): Promise<string[]> {
+  const updatedFiles: string[] = [];
+
   for (const { filepath, code } of snippets) {
     const fullPath = path.join(baseDir, filepath);
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
     fs.writeFileSync(fullPath, code);
+    updatedFiles.push(filepath);
   }
+
+  return updatedFiles;
 }
 
-function main(): void {
-  const text = fs.readFileSync("claude-answer.txt", "utf-8");
-  const snippets = extractFileSnippets(text);
-  writeFiles(snippets);
-  insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
+async function main(): Promise<void> {
+  try {
+    const hasChanges = await hasUnstagedChanges();
+    if (hasChanges) {
+      console.error("Error: You have unstaged changes. Please commit or stash them first.");
+      process.exit(1);
+    }
+
+    const text = fs.readFileSync("claude-answer.txt", "utf-8");
+    const snippets = extractFileSnippets(text);
+    const updatedFiles = await writeFiles(snippets);
+    insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
+
+    if (updatedFiles.length > 0) {
+      await git.add(updatedFiles);
+      await git.commit("Update files from Claude suggestions");
+      console.log("Files updated and changes committed successfully");
+    } else {
+      console.log("No files were updated");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    process.exit(1);
+  }
 }
 
 main();
