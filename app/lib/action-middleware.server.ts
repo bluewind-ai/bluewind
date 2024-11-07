@@ -1,5 +1,5 @@
 // app/lib/action-middleware.server.ts
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { AsyncLocalStorage } from "async_hooks";
 import { type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
@@ -12,8 +12,8 @@ export type ActionInsert = typeof actionCalls.$inferInsert;
 
 export type ActionCallResult = {
   result: any;
-  actionCall: ActionCallNode;
-  nextActionCall?: ActionCallNode;
+  call: ActionCallNode;
+  nextCall?: ActionCallNode;
   status: "completed" | "ready_for_approval";
 };
 
@@ -40,12 +40,12 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
       const result = await actionFn(args);
       await db
         .update(actionCalls)
-        .set({ status: "completed" })
+        .set({ status: "completed", result })
         .where(eq(actionCalls.id, context.currentNode.id));
 
       return {
         result,
-        actionCall: context.currentNode,
+        call: context.currentNode,
         status: "completed",
       } satisfies ActionCallResult;
     } catch (error) {
@@ -57,12 +57,12 @@ export function withActionMiddleware(name: string, actionFn: ActionFunction): Ac
           args,
         };
 
-        const nextActionCall = await db.insert(actionCalls).values(insertData).returning();
+        const nextCall = await db.insert(actionCalls).values(insertData).returning();
 
         return {
           status: "ready_for_approval",
-          actionCall: context.currentNode,
-          nextActionCall: nextActionCall[0],
+          call: context.currentNode,
+          nextCall: nextCall[0],
         } satisfies ActionCallResult;
       }
       throw error;

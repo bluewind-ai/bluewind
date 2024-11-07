@@ -33,6 +33,7 @@ export const actionCalls = pgTable("action_calls", {
   }),
   status: varchar("status", { length: 256 }).notNull().default("ready_for_approval"),
   args: jsonb("args"),
+  result: jsonb("result"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
