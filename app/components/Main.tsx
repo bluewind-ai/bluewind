@@ -1,12 +1,38 @@
 // app/components/Main.tsx
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Form, useNavigation } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 
 interface MainProps {
-  data: any; // This could be either an Action or ActionCall
+  data: any; // This could be either an Action or ActionCall tree
   buttonLabel: string;
   vscodeUrl?: string;
+}
+
+function TreeNode({
+  node,
+  currentId,
+  depth = 0,
+}: {
+  node: any;
+  currentId?: number;
+  depth?: number;
+}) {
+  const isCurrentNode = node.id === currentId;
+
+  return (
+    <div style={{ marginLeft: `${depth * 20}px` }}>
+      <div className={`p-2 ${isCurrentNode ? "bg-blue-100" : ""} rounded`}>
+        <div className="font-semibold">
+          ID: {node.id} - Status: {node.status}
+        </div>
+        <div className="text-sm text-gray-600">Action: {node.action?.name}</div>
+      </div>
+      {node.children?.map((child: any) => (
+        <TreeNode key={child.id} node={child} currentId={currentId} depth={depth + 1} />
+      ))}
+    </div>
+  );
 }
 
 export function Main({ data, buttonLabel, vscodeUrl }: MainProps) {
@@ -15,6 +41,8 @@ export function Main({ data, buttonLabel, vscodeUrl }: MainProps) {
 
   console.log("[Main] Rendering with data:", data);
   console.log("[Main] Navigation state:", navigation.state);
+
+  const isTree = data.tree && data.currentId;
 
   return (
     <div className="p-4">
@@ -43,7 +71,11 @@ export function Main({ data, buttonLabel, vscodeUrl }: MainProps) {
 
         <div className="bg-slate-100 p-4 rounded">
           <h2 className="text-lg font-semibold mb-2">Details</h2>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
+          {isTree ? (
+            <TreeNode node={data.tree} currentId={data.currentId} />
+          ) : (
+            <pre>{JSON.stringify(data, null, 2)}</pre>
+          )}
         </div>
       </div>
     </div>
