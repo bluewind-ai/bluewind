@@ -1,6 +1,7 @@
 // app/components/NavigationTree.tsx
 
 import { Network, Play, Filter, Table } from "lucide-react";
+import { Link } from "@remix-run/react";
 import { cn } from "~/lib/utils";
 
 export type NavigationNode = {
@@ -40,9 +41,10 @@ export function NavigationTree({ data }: NavigationTreeProps) {
 
     return (
       <div key={node.id} style={{ marginLeft: `${level * 20}px` }}>
-        <div
+        <Link
+          to={node.name.toLowerCase()}
           className={cn(
-            "flex items-center p-2 gap-2",
+            "flex items-center p-2 gap-2 hover:bg-gray-100 transition-colors",
             isRoot && "text-base font-semibold",
             isApp && "text-sm font-medium",
             !isRoot && !isApp && "text-xs font-normal",
@@ -50,7 +52,7 @@ export function NavigationTree({ data }: NavigationTreeProps) {
         >
           {icon}
           <span>{node.name}</span>
-        </div>
+        </Link>
         {node.children.map((child) => renderNode(child, level + 1))}
       </div>
     );
