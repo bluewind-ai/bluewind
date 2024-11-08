@@ -99,3 +99,53 @@ export const debugLogs = pgTable("debug_logs", {
 });
 
 export type ActionCallStatus = "ready_for_approval" | "running" | "completed";
+
+type TableConfig = {
+  displayName: string;
+  urlName: string;
+};
+
+export const TABLES: Record<string, TableConfig> = {
+  users: {
+    displayName: "Users",
+    urlName: "users",
+  },
+  sessions: {
+    displayName: "Sessions",
+    urlName: "sessions",
+  },
+  actions: {
+    displayName: "Actions",
+    urlName: "actions",
+  },
+  actionCalls: {
+    displayName: "Action Calls",
+    urlName: "action-calls",
+  },
+  requestErrors: {
+    displayName: "Request Errors",
+    urlName: "request-errors",
+  },
+  debugLogs: {
+    displayName: "Debug Logs",
+    urlName: "debug-logs",
+  },
+};
+
+export function getTableMetadata() {
+  return Object.entries(TABLES).map(([key, config]) => ({
+    name: key,
+    ...config,
+  }));
+}
+
+export function toDisplayName(urlName: string): string {
+  return urlName
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+export function toUrlName(displayName: string): string {
+  return displayName.toLowerCase().replace(/\s+/g, "-");
+}
