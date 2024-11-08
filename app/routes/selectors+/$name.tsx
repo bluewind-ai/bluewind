@@ -5,10 +5,11 @@ import { useParams, useRouteError, isRouteErrorResponse, useLoaderData } from "@
 import { executeAction } from "~/lib/execute-action.server";
 import { db } from "~/db";
 import { Main } from "~/components/Main";
+import { eq, and } from "drizzle-orm";
 
 export async function loader({ params }: LoaderFunctionArgs) {
-  const existingSelector = await db.query.selectors.findFirst({
-    where: (fields, { eq }) => eq(fields.name, params.name as string),
+  const existingSelector = await db.query.actions.findFirst({
+    where: (fields) => and(eq(fields.name, params.name as string), eq(fields.type, "selector")),
   });
 
   if (!existingSelector) {

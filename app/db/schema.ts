@@ -24,6 +24,7 @@ export const sessions = pgTable("sessions", {
 export const actions = pgTable("actions", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull().unique(),
+  type: varchar("type", { length: 256 }).notNull().default("action"), // 'action' or 'selector'
 });
 
 export type Action = typeof actions.$inferSelect & {
