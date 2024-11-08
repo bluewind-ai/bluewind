@@ -16,28 +16,25 @@ type FileNode = {
 export async function loader() {
   const tables = getTables();
 
-  const fileData: FileNode = {
-    id: 0,
-    name: "Objects",
-    type: "folder",
-    children: tables.map((tableName, index) => ({
-      id: index + 1,
-      name: tableName,
-      type: "file",
-      children: [] as FileNode[], // explicitly type the empty array
-    })),
-  };
+  const fileStructure = tables.map((tableName, index) => ({
+    id: index + 1,
+    name: tableName,
+    type: "file" as const,
+    children: [] as FileNode[],
+  }));
 
-  return json({ fileData });
+  return json({ fileStructure });
 }
 
 export default function ObjectsLayout() {
-  const { fileData } = useLoaderData<typeof loader>();
+  const { fileStructure } = useLoaderData<typeof loader>();
 
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20}>
-        <FileExplorer data={fileData} type="file" />
+        {fileStructure.map((node) => (
+          <FileExplorer key={node.id} data={node} type="file" />
+        ))}
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={80}>
