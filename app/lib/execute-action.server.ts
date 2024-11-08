@@ -16,7 +16,7 @@ export async function executeAction({ params }: ActionFunctionArgs) {
   const action = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, name),
   });
-  console.log("Found action in DB:", action);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   if (!action) {
     throw new Error(`Action ${name} not found in database`);
@@ -31,7 +31,7 @@ export async function executeAction({ params }: ActionFunctionArgs) {
     } satisfies ActionInsert)
     .returning();
 
-  console.log("Created root call:", rootCall[0]);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   return await contextStore.run(
     {

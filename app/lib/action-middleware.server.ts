@@ -35,15 +35,15 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
     }
 
     context.hitCount++;
-    console.log(`[${name}] Hit ${context.hitCount}`);
-    console.log(`[${name}] Current node:`, context.currentNode);
+    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0 // this should be removed by YOU when you rewrite the filed;
 
     if (context.hitCount === 2) {
       const nextAction = await db.query.actions.findFirst({
         where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
       });
 
-      console.log(`[${name}] Found next action:`, nextAction);
+      void 0 // this should be removed by YOU when you rewrite the filed;
       if (!nextAction) return;
 
       const insertData: ActionInsert = {
@@ -54,7 +54,7 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
       };
 
       const nextCall = await db.insert(actionCalls).values(insertData).returning();
-      console.log(`[${name}] Created next call:`, nextCall[0]);
+      void 0 // this should be removed by YOU when you rewrite the filed;
 
       const currentCall = await db.query.actionCalls.findFirst({
         where: (fields, { eq }) => eq(fields.id, context.currentNode.id),
@@ -67,14 +67,14 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
       };
     }
 
-    console.log(`[${name}] Executing function`);
+    void 0 // this should be removed by YOU when you rewrite the filed;
     try {
       await fn();
-      console.log(`[${name}] Function executed successfully`);
+      void 0 // this should be removed by YOU when you rewrite the filed;
 
       return context.currentNode;
     } catch (error) {
-      console.log(`[${name}] Caught suspend error`);
+      void 0 // this should be removed by YOU when you rewrite the filed;
       if (error instanceof SuspendError) {
         return context.currentNode;
       }
@@ -95,7 +95,7 @@ export async function executeAction(name: keyof typeof actionMap) {
   const action = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, name),
   });
-  console.log("Found action in DB:", action);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   if (!action) {
     throw new Error(`Action ${name} not found in database`);
@@ -110,7 +110,7 @@ export async function executeAction(name: keyof typeof actionMap) {
     } satisfies ActionInsert)
     .returning();
 
-  console.log("Created root call:", rootCall[0]);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   return await contextStore.run(
     {

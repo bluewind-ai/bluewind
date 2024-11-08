@@ -24,7 +24,7 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
     orderBy: (actionCalls, { asc }) => [asc(actionCalls.id)],
   });
 
-  console.log("[buildActionCallTree] Raw calls:", allCalls);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   const rootCall = allCalls.find((call) => call.id === rootId);
   if (!rootCall) return null;
@@ -47,7 +47,7 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
-  console.log("[loader] Starting with params:", params);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   if (!params.id || isNaN(Number(params.id))) {
     throw new Response("Invalid ID", { status: 400 });
@@ -82,10 +82,10 @@ export const loader: LoaderFunction = async ({ params }) => {
     }
   }
 
-  console.log("[loader] Found root ID:", rootId);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   const actionCallTree = await buildActionCallTree(rootId);
-  console.log("[loader] Built action call tree:", actionCallTree);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   const enrichedTree = {
     tree: actionCallTree,
@@ -96,7 +96,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 };
 
 export const action: ActionFunction = async ({ params }) => {
-  console.log("[action] Starting with params:", params);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   if (!params.id || isNaN(Number(params.id))) {
     return json({ error: "Invalid ID" }, { status: 400 });
@@ -105,14 +105,14 @@ export const action: ActionFunction = async ({ params }) => {
   const id = parseInt(params.id);
 
   await db.update(actionCalls).set({ status: "completed" }).where(eq(actionCalls.id, id));
-  console.log("[action] Updated actionCall status to completed for id:", id);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   return json({ success: true });
 };
 
 export default function Route() {
   const data = useLoaderData<typeof loader>();
-  console.log("[Route] Rendering with full tree data:", data);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   return <Main data={data} buttonLabel="Next" />;
 }

@@ -40,8 +40,8 @@ export function Main({ data, buttonLabel, vscodeUrl }: MainProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
-  console.log("[Main] Rendering with data:", data);
-  console.log("[Main] Navigation state:", navigation.state);
+  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   const isTree = data.tree && data.currentId;
 
