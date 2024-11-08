@@ -5,7 +5,7 @@ import { Link, useLocation } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Network, Play, Filter, Table } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { ViewSelector } from "~/components/ViewSelector";
+import { ViewSelector } from "./ViewSelector";
 
 export type NavigationNode = {
   id: number;
