@@ -23,7 +23,6 @@ type ActionCallWithAction = typeof actionCalls.$inferSelect & {
 };
 
 async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
-  // Get all action calls with their associated actions
   const allCalls = await db.query.actionCalls.findMany({
     with: {
       action: true,
@@ -37,7 +36,10 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
   if (!rootCall) return null;
 
   function buildTree(call: (typeof allCalls)[number]): ActionCallTree {
+    // First find all direct children
     const children = allCalls.filter((c) => c.parentId === call.id);
+
+    // Map the call data to match our ActionCallTree interface
     return {
       id: call.id,
       parentId: call.parentId,
@@ -45,7 +47,10 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
       args: call.args,
       result: call.result,
       createdAt: call.createdAt,
-      action: call.action,
+      action: {
+        id: call.action.id,
+        name: call.action.name, // This should be the actual name from the actions table
+      },
       children: children.map(buildTree),
     };
   }
@@ -62,6 +67,10 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   const id = parseInt(params.id);
 
+  // First, let's debug what's in the actions table
+  const action = await db.query.actions.findMany();
+  console.log("[loader] All actions:", action);
+
   const currentCall = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.id, id),
     with: {
@@ -72,6 +81,8 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (!currentCall) {
     throw new Response("Action call not found", { status: 404 });
   }
+
+  console.log("[loader] Current call with action:", currentCall);
 
   let rootId = id;
   if (currentCall.parentId) {
