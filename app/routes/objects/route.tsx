@@ -1,4 +1,4 @@
-// app/routes/sandbox.tsx
+// app/routes/objects/route.tsx
 
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -9,7 +9,6 @@ import { enrichAction } from "~/db/schema";
 import { getTables } from "~/actions/get-tables.server";
 
 export async function loader() {
-  // Get actions data for NewMain component
   const actions = await db.query.actions.findMany({
     with: {
       calls: {
@@ -26,7 +25,6 @@ export async function loader() {
     totalCalls: action.calls.length,
   }));
 
-  // Get all table names for FileExplorer
   const tables = getTables();
 
   const fileStructure: Array<{
