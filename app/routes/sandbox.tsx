@@ -1,17 +1,36 @@
 // app/routes/sandbox.tsx
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { FileExplorer } from "~/components/ui/FileExplorer";
+import { Main } from "~/components/Main";
 import * as schema from "~/db/schema";
+import { db } from "~/db";
+import { enrichAction } from "~/db/schema";
 
 export async function loader() {
-  // Get all table names from schema by looking at the objects that have a $type
+  // Get actions data for Main component
+  const actions = await db.query.actions.findMany({
+    with: {
+      calls: {
+        orderBy: (calls, { desc }) => [desc(calls.createdAt)],
+        limit: 1,
+      },
+    },
+  });
+
+  const enrichedActions = actions.map((action) => ({
+    ...enrichAction(action),
+    lastCallStatus: action.calls[0]?.status || "never_run",
+    lastRunAt: action.calls[0]?.createdAt || null,
+    totalCalls: action.calls.length,
+  }));
+
+  // Get all table names for FileExplorer
   const tables = Object.entries(schema)
     .filter(([_, value]) => typeof value === "object" && value !== null && "$type" in value)
     .map(([key]) => key);
 
-  // Create root nodes for each table
   const fileStructure: Array<{
     id: number;
     name: string;
@@ -24,15 +43,17 @@ export async function loader() {
     children: [],
   }));
 
-  // Wrap in a root container
-  const data = {
+  const explorerData = {
     id: 0,
     name: "Tables",
     type: "folder" as const,
     children: fileStructure,
   } satisfies FileNode;
 
-  return json({ data });
+  return json({
+    mainData: enrichedActions,
+    explorerData,
+  });
 }
 
 type BaseNode = {
@@ -46,11 +67,16 @@ type FileNode = BaseNode & {
 };
 
 export default function SandboxRoute() {
-  const { data } = useLoaderData<typeof loader>();
+  const { mainData, explorerData } = useLoaderData<typeof loader>();
 
   return (
-    <div className="h-screen w-full">
-      <FileExplorer data={data} type="file" />
+    <div className="h-screen w-full flex">
+      <div className="w-64">
+        <FileExplorer data={explorerData} type="file" />
+      </div>
+      <div className="flex-1">
+        <Main data={mainData} buttonLabel="Run Action" />
+      </div>
     </div>
   );
 }
