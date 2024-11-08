@@ -1,14 +1,15 @@
 // app/components/NavigationTree.tsx
 
 import * as React from "react";
+import { useState } from "react";
 import { Link } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { Network, Play, Filter, Table } from "lucide-react"; // Import icons we'll use
+import { Network, Play, Filter, Table } from "lucide-react";
 
 type NavigationNode = {
   id: number;
   name: string;
-  icon?: React.ReactNode | string; // Can be a component or an image URL
+  icon?: React.ReactNode | string;
   type: "root" | "app" | "file";
   children: NavigationNode[];
 };
