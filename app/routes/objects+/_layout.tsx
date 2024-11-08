@@ -1,5 +1,3 @@
-
-
 // app/routes/objects+/_layout.tsx
 
 import { json } from "@remix-run/node";
