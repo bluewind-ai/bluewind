@@ -25,26 +25,29 @@ type ActionCallWithAction = ActionCall & {
 };
 
 async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
+  // Get all action calls with their associated actions
   const allCalls = await db.query.actionCalls.findMany({
     with: {
       action: true,
     },
+    orderBy: (actionCalls, { asc }) => [asc(actionCalls.id)],
   });
 
-  console.log("[buildActionCallTree] Found all calls:", allCalls);
+  console.log("[buildActionCallTree] Raw calls:", allCalls);
 
   const rootCall = allCalls.find((call) => call.id === rootId);
   if (!rootCall) return null;
 
-  function buildTree(call: ActionCallWithAction): ActionCallTree {
+  function buildTree(call: (typeof allCalls)[number]): ActionCallTree {
     const children = allCalls.filter((c) => c.parentId === call.id);
     return {
       ...call,
-      children: children.map((child) => buildTree(child as ActionCallWithAction)),
+      actionName: call.action?.name,
+      children: children.map(buildTree),
     };
   }
 
-  return buildTree(rootCall as ActionCallWithAction);
+  return buildTree(rootCall);
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
