@@ -4,10 +4,9 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { FileExplorer } from "~/components/ui/FileExplorer";
 import { NewMain } from "~/components/NewMain";
-import * as schema from "~/db/schema";
 import { db } from "~/db";
 import { enrichAction } from "~/db/schema";
-import { type PgTableWithColumns } from "drizzle-orm/pg-core";
+import { getTables } from "~/actions/get-tables.server";
 
 export async function loader() {
   // Get actions data for NewMain component
@@ -28,15 +27,7 @@ export async function loader() {
   }));
 
   // Get all table names for FileExplorer
-  const tables = Object.entries(schema)
-    .filter(
-      ([_, value]): value is PgTableWithColumns<any> =>
-        typeof value === "object" &&
-        value !== null &&
-        "name" in value &&
-        typeof value.name === "string",
-    )
-    .map(([_, table]) => table.name);
+  const tables = getTables();
 
   const fileStructure: Array<{
     id: number;
