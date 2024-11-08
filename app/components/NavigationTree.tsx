@@ -6,7 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/component
 import { Network, Play, Filter, Table } from "lucide-react";
 import { cn } from "~/lib/utils";
 
-type NavigationNode = {
+export type NavigationNode = {
   id: number;
   name: string;
   urlName?: string;
