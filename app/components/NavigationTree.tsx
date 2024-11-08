@@ -1,12 +1,12 @@
 // app/components/NavigationTree.tsx
 
-import { Network, Play, Filter, Table } from "lucide-react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from "@remix-run/react";
-import { cn } from "~/lib/utils";
 
 export type NavigationNode = {
   id: number;
   name: string;
+  urlName?: string;
   iconKey?: string;
   type: "root" | "app" | "file";
   children: NavigationNode[];
@@ -16,44 +16,22 @@ type NavigationTreeProps = {
   data: NavigationNode;
 };
 
-function getIcon(node: NavigationNode) {
-  if (!node.iconKey) return null;
-
-  switch (node.iconKey) {
-    case "favicon":
-      return <img src="/favicon.ico" alt={`${node.name} icon`} className="h-5 w-5" />;
-    case "database":
-      return <Network className="h-5 w-5" />;
-    case "actions":
-      return <Play className="h-5 w-5" />;
-    case "selectors":
-      return <Filter className="h-5 w-5" />;
-    default:
-      return <Table className="h-5 w-5" />;
-  }
-}
-
 export function NavigationTree({ data }: NavigationTreeProps) {
-  const renderNode = (node: NavigationNode, level = 0) => {
-    const icon = getIcon(node);
-    const isRoot = node.type === "root";
-    const isApp = node.type === "app";
+  const renderNode = (node: NavigationNode) => {
+    const linkTo =
+      node.type === "file"
+        ? `/objects/${node.urlName}` // use the urlName which should already be kebab-case
+        : "";
 
     return (
-      <div key={node.id} style={{ marginLeft: `${level * 20}px` }}>
+      <div key={node.id}>
         <Link
-          to={node.name.toLowerCase()}
-          className={cn(
-            "flex items-center p-2 gap-2 hover:bg-gray-100 transition-colors",
-            isRoot && "text-base font-semibold",
-            isApp && "text-sm font-medium",
-            !isRoot && !isApp && "text-xs font-normal",
-          )}
+          to={linkTo}
+          className="flex items-center p-2 gap-2 hover:bg-gray-100 transition-colors"
         >
-          {icon}
           <span>{node.name}</span>
         </Link>
-        {node.children.map((child) => renderNode(child, level + 1))}
+        {node.children.map((child) => renderNode(child))}
       </div>
     );
   };
