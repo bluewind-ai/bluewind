@@ -8,23 +8,8 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   useRouteError,
-  useLoaderData,
 } from "@remix-run/react";
 import "./tailwind.css";
-import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
-import { eq } from "drizzle-orm";
-import { json } from "@remix-run/node";
-import type { LoaderFunction } from "@remix-run/node";
-
-export const loader: LoaderFunction = async () => {
-  const lastAction = await db.query.actionCalls.findFirst({
-    where: eq(actionCalls.status, "ready_for_approval"),
-    with: { action: true },
-  });
-
-  return json({ lastAction });
-};
 
 function Document({ children }: { children: React.ReactNode }) {
   return (
@@ -68,8 +53,6 @@ export function ErrorBoundary() {
 }
 
 export default function App() {
-  const { lastAction } = useLoaderData<typeof loader>();
-
   return (
     <Document>
       <div className="flex-1 overflow-auto">
