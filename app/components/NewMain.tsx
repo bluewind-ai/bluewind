@@ -36,6 +36,13 @@ const STATUS_COLORS = {
   never_run: "text-gray-500 bg-gray-50",
 } as const;
 
+const ACTION_DISPLAY_NAMES: Record<string, string> = {
+  "load-csv-data": "Load CSV from External Sources",
+  "go-next": "Process Next Batch",
+  master: "Run Master Analysis",
+  "load-actions": "Load Application Actions",
+};
+
 function createColumns(navigate: (path: string) => void) {
   return [
     columnHelper.accessor("displayName", {
@@ -45,7 +52,7 @@ function createColumns(navigate: (path: string) => void) {
           onClick={() => navigate(`/actions/${info.row.original.name}`)}
           className="hover:underline font-medium text-left"
         >
-          {info.getValue()}
+          {ACTION_DISPLAY_NAMES[info.row.original.name] || info.getValue()}
           <div className="text-xs text-gray-500">{info.row.original.name}</div>
         </button>
       ),
@@ -58,7 +65,7 @@ function createColumns(navigate: (path: string) => void) {
           <span
             className={`px-2 py-1 rounded-full text-sm ${STATUS_COLORS[status as keyof typeof STATUS_COLORS] || ""}`}
           >
-            {status.replace(/_/g, " ")}
+            {status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
           </span>
         );
       },
