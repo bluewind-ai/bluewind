@@ -1,6 +1,7 @@
 // vite-plugins/request-logger.ts
 
 import type { Plugin } from "vite";
+import chalk from "chalk";
 
 export function requestLoggerPlugin(): Plugin {
   return {
@@ -10,14 +11,40 @@ export function requestLoggerPlugin(): Plugin {
         const url = req.url;
         if (
           url &&
-          !url.startsWith("/app") && // skip all /app requests
-          !url.includes("/@") && // skip vite internal requests
-          !url.includes("node_modules") && // skip node_modules
-          !url.includes("favicon.ico") // skip favicon
+          !url.startsWith("/app") &&
+          !url.includes("/@") &&
+          !url.includes("node_modules") &&
+          !url.includes("favicon.ico")
         ) {
-          // Remove query parameters for cleaner logs
+          const start = Date.now();
           const cleanUrl = url.split("?")[0];
-          console.log(`[${req.method}] ${cleanUrl}`);
+
+          const originalEnd = res.end;
+          res.end = function (...args) {
+            const duration = Date.now() - start;
+            const status = res.statusCode;
+
+            const statusColor =
+              status >= 500
+                ? chalk.red
+                : status >= 400
+                  ? chalk.yellow
+                  : status >= 300
+                    ? chalk.cyan
+                    : status >= 200
+                      ? chalk.green
+                      : chalk.gray;
+
+            console.log(
+              `${chalk.dim(new Date().toISOString())} ` +
+                `${chalk.bold(req.method)} ` +
+                `${cleanUrl} ` +
+                `${statusColor(status)} ` +
+                `${chalk.dim(`${duration}ms`)}`,
+            );
+
+            return originalEnd.apply(res, args);
+          };
         }
         next();
       });
