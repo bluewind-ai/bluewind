@@ -82,7 +82,7 @@ async function main(): Promise<void> {
       }
 
       await git.add(updatedFiles);
-      await git.commit("Update files from Claude suggestions");
+      await git.commit("checkpoint");
       console.log("Files updated and changes committed successfully");
 
       // Final check for unstaged changes
