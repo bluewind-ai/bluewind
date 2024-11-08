@@ -1,5 +1,6 @@
 // app/components/GenericTableView.tsx
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   useReactTable,
   getCoreRowModel,
