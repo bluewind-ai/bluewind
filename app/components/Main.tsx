@@ -6,7 +6,7 @@ import { Form, useNavigation } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 
 interface MainProps {
-  data: any; // This could be either an Action or ActionCall tree
+  data: any;
   buttonLabel: string;
   vscodeUrl?: string;
 }
@@ -26,7 +26,7 @@ function TreeNode({
     <div style={{ marginLeft: `${depth * 20}px` }}>
       <div className={`p-2 ${isCurrentNode ? "bg-blue-100" : ""} rounded`}>
         <div className="font-semibold">
-          {node.action.name}({node.status})
+          {node.actionName}({node.status})
         </div>
       </div>
       {node.children?.map((child: any) => (

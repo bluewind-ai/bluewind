@@ -3,7 +3,7 @@
 import { useLoaderData } from "@remix-run/react";
 import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
-import { actionCalls, actions } from "~/db/schema";
+import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { Main } from "~/components/Main";
 import type { InferSelectModel } from "drizzle-orm";
@@ -12,17 +12,11 @@ type ActionCall = InferSelectModel<typeof actionCalls>;
 
 interface ActionCallTree extends Omit<ActionCall, "actionId"> {
   children: ActionCallTree[];
-  action: {
-    id: number;
-    name: string;
-  };
+  actionName: string;
 }
 
-type ActionCallWithAction = typeof actionCalls.$inferSelect & {
-  action: typeof actions.$inferSelect;
-};
-
 async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
+  // Get all action calls with their associated actions
   const allCalls = await db.query.actionCalls.findMany({
     with: {
       action: true,
@@ -36,10 +30,7 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
   if (!rootCall) return null;
 
   function buildTree(call: (typeof allCalls)[number]): ActionCallTree {
-    // First find all direct children
     const children = allCalls.filter((c) => c.parentId === call.id);
-
-    // Map the call data to match our ActionCallTree interface
     return {
       id: call.id,
       parentId: call.parentId,
@@ -47,10 +38,7 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
       args: call.args,
       result: call.result,
       createdAt: call.createdAt,
-      action: {
-        id: call.action.id,
-        name: call.action.name, // This should be the actual name from the actions table
-      },
+      actionName: call.action.name, // Store the name directly
       children: children.map(buildTree),
     };
   }
@@ -67,10 +55,6 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   const id = parseInt(params.id);
 
-  // First, let's debug what's in the actions table
-  const action = await db.query.actions.findMany();
-  console.log("[loader] All actions:", action);
-
   const currentCall = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.id, id),
     with: {
@@ -82,13 +66,11 @@ export const loader: LoaderFunction = async ({ params }) => {
     throw new Response("Action call not found", { status: 404 });
   }
 
-  console.log("[loader] Current call with action:", currentCall);
-
   let rootId = id;
   if (currentCall.parentId) {
     let currentParentId: number | null = currentCall.parentId;
     while (currentParentId) {
-      const parent: ActionCallWithAction | undefined = await db.query.actionCalls.findFirst({
+      const parent = await db.query.actionCalls.findFirst({
         where: eq(actionCalls.id, currentParentId),
         with: {
           action: true,
