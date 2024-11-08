@@ -4,7 +4,7 @@ import * as schema from "~/db/schema";
 import { type PgTableWithColumns } from "drizzle-orm/pg-core";
 
 export function getTables() {
-  return Object.entries(schema)
+  const tables = Object.entries(schema)
     .filter(
       ([_, value]): value is PgTableWithColumns<any> =>
         typeof value === "object" &&
@@ -13,4 +13,7 @@ export function getTables() {
         typeof value.name === "string",
     )
     .map(([_, table]) => table.name);
+
+  console.log("Tables found:", tables);
+  return tables;
 }
