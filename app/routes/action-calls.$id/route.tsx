@@ -3,7 +3,7 @@
 import { useLoaderData } from "@remix-run/react";
 import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
 import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
+import { actionCalls, actions } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { Main } from "~/components/Main";
 import type { InferSelectModel } from "drizzle-orm";
@@ -17,6 +17,10 @@ interface ActionCallTree extends Omit<ActionCall, "actionId"> {
     name: string;
   };
 }
+
+type ActionCallWithAction = typeof actionCalls.$inferSelect & {
+  action: typeof actions.$inferSelect;
+};
 
 async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
   // Get all action calls with their associated actions
@@ -73,7 +77,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (currentCall.parentId) {
     let currentParentId: number | null = currentCall.parentId;
     while (currentParentId) {
-      const parent = await db.query.actionCalls.findFirst({
+      const parent: ActionCallWithAction | undefined = await db.query.actionCalls.findFirst({
         where: eq(actionCalls.id, currentParentId),
         with: {
           action: true,
