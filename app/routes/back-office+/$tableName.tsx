@@ -1,4 +1,4 @@
-// app/routes/objects+/$tableName.tsx
+// app/routes/back-office+/$tableName.tsx
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";

@@ -1,4 +1,4 @@
-// app/routes/objects+/_root.tsx
+// app/routes/back-office+/_root.tsx
 
 import { Outlet } from "@remix-run/react";
 import { NavigationTree } from "~/components/NavigationTree";
