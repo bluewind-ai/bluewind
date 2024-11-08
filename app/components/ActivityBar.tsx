@@ -2,7 +2,7 @@
 
 import { useNavigate } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
-import { Network, Play, Table } from "lucide-react";
+import { Network, Play, Table, Filter } from "lucide-react";
 import { Logo } from "~/components/icons/logo";
 import { cn } from "~/lib/utils";
 import type { InferSelectModel } from "drizzle-orm";
@@ -38,6 +38,14 @@ export function ActivityBar({ className }: { className?: string; lastAction?: Ac
         onClick={() => navigate("/actions/master")}
       >
         <Play className="h-5 w-5" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-10 w-10"
+        onClick={() => navigate("/selectors/get-action-call-tree")}
+      >
+        <Filter className="h-5 w-5" />
       </Button>
       <Button
         variant="ghost"
