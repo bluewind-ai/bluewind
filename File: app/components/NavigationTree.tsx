@@ -1,18 +1,10 @@
 // File: app/components/NavigationTree.tsx
 
 import { useState } from "react";
-import { Link, useNavigate } from "@remix-run/react";
+import { Link, useLocation } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { Network, Play, Filter, Table, Check } from "lucide-react";
+import { Network, Play, Filter, Table } from "lucide-react";
 import { cn } from "~/lib/utils";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "~/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 
 export type NavigationNode = {
   id: number;
@@ -22,17 +14,6 @@ export type NavigationNode = {
   type: "root" | "app" | "file";
   children: NavigationNode[];
 };
-
-const routes = [
-  {
-    value: "objects",
-    label: "Objects",
-  },
-  {
-    value: "back-office",
-    label: "Back Office",
-  },
-] as const;
 
 function getIcon(node: NavigationNode) {
   if (!node.iconKey) return null;
@@ -57,6 +38,9 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   const hasChildren = node.children.length > 0;
   const isRoot = node.type === "root";
   const isApp = node.type === "app";
+  const location = useLocation();
+  const isBackOffice = location.pathname.startsWith("/back-office");
+  const baseRoute = isBackOffice ? "/back-office" : "/objects";
 
   const content = (
     <div className="flex items-center gap-2">
@@ -82,14 +66,10 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   );
 
   if (!hasChildren) {
-    // Use urlName for the link if available, otherwise fallback to lowercase name
-    const to =
-      node.type === "file"
-        ? `/objects/${node.urlName || node.name.toLowerCase()}`
-        : node.name.toLowerCase();
+    const to = `${baseRoute}/${node.urlName || node.name.toLowerCase()}`;
 
     return (
-      <Link to={to} className={itemClasses}>
+      <Link to={to} className={itemClasses} data-discover="true">
         {content}
       </Link>
     );
@@ -114,50 +94,6 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   );
 }
 
-function RouteSelector() {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("objects");
-  const navigate = useNavigate();
-
-  return (
-    <div className="mb-2">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <button className="flex items-center justify-between w-full px-2 py-1 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground transition-colors">
-            {routes.find((route) => route.value === value)?.label ?? "Select view..."}
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
-          <Command>
-            <CommandInput placeholder="Search view..." />
-            <CommandEmpty>No view found.</CommandEmpty>
-            <CommandGroup>
-              {routes.map((route) => (
-                <CommandItem
-                  key={route.value}
-                  onSelect={() => {
-                    setValue(route.value);
-                    navigate(`/${route.value}`);
-                    setOpen(false);
-                  }}
-                >
-                  {route.label}
-                  <Check
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      value === route.value ? "opacity-100" : "opacity-0",
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-}
-
 interface NavigationTreeProps {
   data: NavigationNode;
 }
@@ -165,7 +101,6 @@ interface NavigationTreeProps {
 export function NavigationTree({ data }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">
-      <RouteSelector />
       <NavigationItem node={data} />
     </div>
   );
