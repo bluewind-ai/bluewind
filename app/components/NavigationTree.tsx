@@ -30,13 +30,19 @@ export function NavigationTree({ data }: NavigationTreeProps) {
 
     return (
       <div key={node.id} style={{ marginLeft: `${level * 20}px` }}>
-        <div
-          className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
+        <button
+          className="flex items-center w-full p-2 hover:bg-gray-100 text-left"
           onClick={() => toggleNode(node.id)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggleNode(node.id);
+            }
+          }}
         >
           {node.children.length > 0 && <span className="mr-2">{isExpanded ? "▼" : "▶"}</span>}
           <span>{node.name}</span>
-        </div>
+        </button>
         {isExpanded && node.children.map((child) => renderNode(child, level + 1))}
       </div>
     );
