@@ -58,7 +58,7 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
     "flex items-center gap-2 p-2 rounded-md w-full",
     "hover:bg-accent hover:text-accent-foreground transition-colors",
     isRoot && "h-12",
-    !isRoot && "pl-4", // Only add padding-left if not root
+    isApp && "pl-4", // Only indent apps
   );
 
   if (!hasChildren) {
@@ -73,7 +73,12 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className={itemClasses}>{content}</CollapsibleTrigger>
       <CollapsibleContent>
-        <div className="flex flex-col gap-1 mt-1">
+        <div
+          className={cn(
+            "flex flex-col gap-1 mt-1",
+            isApp && "pl-2", // Slight indent for file items under apps
+          )}
+        >
           {node.children.map((child) => (
             <NavigationItem key={child.id} node={child} level={level + 1} />
           ))}
