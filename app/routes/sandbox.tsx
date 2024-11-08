@@ -2,31 +2,40 @@
 
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { NewMain } from "~/components/NewMain";
-import { db } from "~/db";
-import { enrichAction } from "~/db/schema";
+import { FileExplorer } from "~/components/ui/FileExplorer";
+import * as schema from "~/db/schema";
 
 export async function loader() {
-  const actions = await db.query.actions.findMany({
-    with: {
-      calls: {
-        orderBy: (calls, { desc }) => [desc(calls.createdAt)],
-        limit: 1,
-      },
-    },
-  });
+  // Get all table names from schema
+  const tables = Object.entries(schema)
+    .filter(([_, value]) => value?.name === "pgTable")
+    .map(([key]) => key);
 
-  const enrichedActions = actions.map((action) => ({
-    ...enrichAction(action),
-    lastCallStatus: action.calls[0]?.status || "never_run",
-    lastRunAt: action.calls[0]?.createdAt || null,
-    totalCalls: action.calls.length,
+  // Create root nodes for each table
+  const fileStructure = tables.map((tableName, index) => ({
+    id: index + 1,
+    name: tableName,
+    type: "file" as const,
+    children: [],
   }));
 
-  return json({ data: enrichedActions });
+  // Wrap in a root container
+  const data = {
+    id: 0,
+    name: "Tables",
+    type: "folder" as const,
+    children: fileStructure,
+  };
+
+  return json({ data });
 }
 
 export default function SandboxRoute() {
   const { data } = useLoaderData<typeof loader>();
-  return <NewMain data={data} />;
+
+  return (
+    <div className="h-screen w-full">
+      <FileExplorer data={data} type="file" />
+    </div>
+  );
 }
