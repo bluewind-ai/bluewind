@@ -6,6 +6,18 @@ import { db } from "~/db";
 import { enrichAction } from "~/db/schema";
 import { NewMain } from "~/components/NewMain";
 
+interface LoaderData {
+  mainData: Array<{
+    id: number;
+    name: string;
+    displayName: string;
+    type: string;
+    lastCallStatus: string;
+    lastRunAt: string | null;
+    totalCalls: number;
+  }>;
+}
+
 export async function loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
 
@@ -27,13 +39,13 @@ export async function loader({ params }: LoaderFunctionArgs) {
         totalCalls: action.calls.length,
       }));
 
-      return json({ mainData: enrichedActions });
+      return json<LoaderData>({ mainData: enrichedActions });
     }
     case "entities": {
-      return json({ mainData: [] });
+      return json<LoaderData>({ mainData: [] });
     }
     default:
-      return json({ error: "Not found" }, { status: 404 });
+      throw new Response("Not Found", { status: 404 });
   }
 }
 
