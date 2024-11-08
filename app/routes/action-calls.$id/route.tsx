@@ -1,22 +1,22 @@
 // app/routes/action-calls.$id/route.tsx
 
-import { useLoaderData } from "@remix-run/react";
-import { json, type LoaderFunction, type ActionFunction } from "@remix-run/node";
+import { json, type LoaderFunction } from "@remix-run/node";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
-import { Main } from "~/components/Main";
 import type { InferSelectModel } from "drizzle-orm";
 
 type ActionCall = InferSelectModel<typeof actionCalls>;
 
 interface ActionCallTree extends ActionCall {
   children: ActionCallTree[];
-  actionName?: string; // Add this to include the action name
+  action: {
+    name: string;
+  };
 }
 
 async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
-  // Get all action calls with their associated actions
+  // Get all action calls with their associated actions using the proper relation
   const allCalls = await db.query.actionCalls.findMany({
     with: {
       action: true,
@@ -34,7 +34,6 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
     const children = allCalls.filter((c) => c.parentId === call.id);
     return {
       ...call,
-      actionName: call.action?.name, // Include the action name
       children: children.map(buildTree),
     };
   }
@@ -54,6 +53,9 @@ export const loader: LoaderFunction = async ({ params }) => {
   // First find the root action call for this tree
   const currentCall = await db.query.actionCalls.findFirst({
     where: eq(actionCalls.id, id),
+    with: {
+      action: true,
+    },
   });
 
   if (!currentCall) {
@@ -65,8 +67,11 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (currentCall.parentId) {
     let currentParentId: number | null = currentCall.parentId;
     while (currentParentId) {
-      const parent: ActionCall | undefined = await db.query.actionCalls.findFirst({
+      const parent = await db.query.actionCalls.findFirst({
         where: eq(actionCalls.id, currentParentId),
+        with: {
+          action: true,
+        },
       });
       if (!parent) break;
       rootId = parent.id;
@@ -89,24 +94,4 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json(enrichedTree);
 };
 
-export const action: ActionFunction = async ({ params }) => {
-  console.log("[action] Starting with params:", params);
-
-  if (!params.id || isNaN(Number(params.id))) {
-    return json({ error: "Invalid ID" }, { status: 400 });
-  }
-
-  const id = parseInt(params.id);
-
-  await db.update(actionCalls).set({ status: "completed" }).where(eq(actionCalls.id, id));
-  console.log("[action] Updated actionCall status to completed for id:", id);
-
-  return json({ success: true });
-};
-
-export default function Route() {
-  const data = useLoaderData<typeof loader>();
-  console.log("[Route] Rendering with full tree data:", data);
-
-  return <Main data={data} buttonLabel="Next" />;
-}
+// ... rest of the file stays the same ...
