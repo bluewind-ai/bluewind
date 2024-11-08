@@ -11,7 +11,6 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import "./tailwind.css";
-import { ActivityBar } from "~/components/ActivityBar";
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
@@ -73,11 +72,8 @@ export default function App() {
 
   return (
     <Document>
-      <div className="flex h-full">
-        <ActivityBar lastAction={lastAction} />
-        <div className="flex-1 overflow-auto">
-          <Outlet />
-        </div>
+      <div className="flex-1 overflow-auto">
+        <Outlet />
       </div>
     </Document>
   );
