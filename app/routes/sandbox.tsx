@@ -1,5 +1,5 @@
 // app/routes/sandbox.tsx
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { FileExplorer } from "~/components/ui/FileExplorer";
