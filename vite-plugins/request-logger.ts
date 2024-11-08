@@ -20,7 +20,7 @@ export function requestLoggerPlugin(): Plugin {
           const cleanUrl = url.split("?")[0];
 
           const originalEnd = res.end;
-          res.end = function (...args) {
+          res.end = function (chunk?: any, encoding?: BufferEncoding, cb?: () => void) {
             const duration = Date.now() - start;
             const status = res.statusCode;
 
@@ -43,7 +43,7 @@ export function requestLoggerPlugin(): Plugin {
                 `${chalk.dim(`${duration}ms`)}`,
             );
 
-            return originalEnd.apply(res, args);
+            return originalEnd.call(res, chunk, encoding, cb);
           };
         }
         next();
