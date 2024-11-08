@@ -1,51 +1,57 @@
 // app/routes/objects+/_root.tsx
 
+import * as React from 'react';
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getTables } from "~/actions/get-tables.server";
-import { FileExplorer } from "~/components/ui/FileExplorer";
-import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
+import { NavigationTree } from "~/components/NavigationTree"; // We'll create this
 
-type FileNode = {
+type NavigationNode = {
   id: number;
   name: string;
-  type: "file" | "folder";
-  children: FileNode[];
+  icon?: React.ReactNode;
+  type: "root" | "app" | "file";
+  children: NavigationNode[];
 };
 
 export async function loader() {
   const tables = getTables();
 
-  const fileData: FileNode = {
+  const navigationData: NavigationNode = {
     id: 0,
-    name: "Database",
-    type: "folder",
-    children: tables.map((tableName, index) => ({
-      id: index + 1,
-      name: tableName,
-      type: "file",
-      children: [] as FileNode[],
-    })),
+    name: "BlueWind",
+    type: "root",
+    icon: "/favicon.ico",
+    children: [
+      {
+        id: 1,
+        name: "Database",
+        type: "app",
+        icon: /* Network icon */,
+        children: tables.map((tableName, index) => ({
+          id: index + 2,
+          name: tableName,
+          type: "file",
+          children: [],
+        })),
+      },
+      // Here we can add other apps like Actions, Selectors etc
+    ],
   };
 
-  return json({ fileData });
+  return json({ navigationData });
 }
 
 export default function ObjectsRoot() {
-  const { fileData } = useLoaderData<typeof loader>();
+  const { navigationData } = useLoaderData<typeof loader>();
 
   return (
-    <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel defaultSize={20}>
-        <FileExplorer data={fileData} type="file" />
-      </ResizablePanel>
-      <ResizableHandle />
-      <ResizablePanel defaultSize={80}>
-        <div className="p-4">
-          <h2 className="text-2xl font-bold mb-4">Database Explorer</h2>
-          <p>Select a table from the explorer to view its contents.</p>
-        </div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+    <div className="flex h-full">
+      <NavigationTree data={navigationData} />
+      <div className="flex-1 p-4">
+        <h2 className="text-2xl font-bold mb-4">Database Explorer</h2>
+        <p>Select a table from the explorer to view its contents.</p>
+      </div>
+    </div>
   );
 }
