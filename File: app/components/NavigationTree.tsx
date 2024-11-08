@@ -1,10 +1,20 @@
 // File: app/components/NavigationTree.tsx
 
 import { useState } from "react";
-import { Link, useLocation } from "@remix-run/react";
+import { Link, useNavigate, useLocation } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { Network, Play, Filter, Table } from "lucide-react";
+import { Network, Play, Filter, Table, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "~/lib/utils";
+import { Button } from "~/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "~/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 
 export type NavigationNode = {
   id: number;
@@ -14,6 +24,68 @@ export type NavigationNode = {
   type: "root" | "app" | "file";
   children: NavigationNode[];
 };
+
+const views = [
+  {
+    value: "objects",
+    label: "Objects",
+  },
+  {
+    value: "back-office",
+    label: "Back Office",
+  },
+] as const;
+
+function ViewSelector() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("objects");
+  const navigate = useNavigate();
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between mb-2"
+        >
+          {value ? views.find((view) => view.value === value)?.label : "Select view..."}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0">
+        <Command>
+          <CommandInput placeholder="Search view..." />
+          <CommandList>
+            <CommandEmpty>No view found.</CommandEmpty>
+            <CommandGroup>
+              {views.map((view) => (
+                <CommandItem
+                  key={view.value}
+                  value={view.value}
+                  onSelect={(currentValue) => {
+                    setValue(currentValue);
+                    navigate(`/${currentValue}`);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === view.value ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                  {view.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 function getIcon(node: NavigationNode) {
   if (!node.iconKey) return null;
@@ -101,6 +173,7 @@ interface NavigationTreeProps {
 export function NavigationTree({ data }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">
+      <ViewSelector />
       <NavigationItem node={data} />
     </div>
   );
