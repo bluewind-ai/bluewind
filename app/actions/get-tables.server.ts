@@ -1,18 +1,27 @@
 // app/actions/get-tables.server.ts
 
 import * as schema from "~/db/schema";
-import { type PgTableWithColumns } from "drizzle-orm/pg-core";
 
 export function getTables() {
+  const entries = Object.entries(schema);
+  console.log(
+    "Schema entries:",
+    entries.map(([key, value]) => ({
+      key,
+      type: typeof value,
+      isPgTable: value instanceof Object && "$type" in value,
+    })),
+  );
+
   const tables = Object.entries(schema)
     .filter(
-      ([_, value]): value is PgTableWithColumns<any> =>
-        typeof value === "object" &&
+      ([_, value]) =>
+        value instanceof Object &&
         value !== null &&
-        "name" in value &&
-        typeof value.name === "string",
+        "columns" in value && // pgTable objects have a columns property
+        typeof value === "object",
     )
-    .map(([_, table]) => table.name);
+    .map(([key]) => key);
 
   console.log("Tables found:", tables);
   return tables;
