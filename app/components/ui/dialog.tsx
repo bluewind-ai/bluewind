@@ -1,5 +1,6 @@
 // app/components/ui/dialog.tsx
-
+/* eslint-disable react/prop-types */
+/* eslint-disable react/no-unknown-property */
 "use client";
 
 import * as React from "react";

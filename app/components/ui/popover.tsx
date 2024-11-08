@@ -1,5 +1,6 @@
 // app/components/ui/popover.tsx
-
+/* eslint-disable react/prop-types */
+/* eslint-disable react/no-unknown-property */
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
