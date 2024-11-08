@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { Network, Play, Filter, Table, Check, ChevronsUpDown } from "lucide-react";
+import { Network, Play, Filter, Table, Check } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { Button } from "~/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -28,11 +27,13 @@ export type NavigationNode = {
 const views = [
   {
     value: "objects",
-    label: "Objects",
+    label: "Database",
+    icon: <Network className="h-5 w-5" />,
   },
   {
     value: "back-office",
     label: "Back Office",
+    icon: <Table className="h-5 w-5" />,
   },
 ] as const;
 
@@ -40,21 +41,24 @@ function ViewSelector() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("objects");
   const navigate = useNavigate();
+  const selectedView = views.find((view) => view.value === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between mb-2"
+        <button
+          type="button"
+          className="flex items-center gap-2 p-2 rounded-md w-full hover:bg-accent hover:text-accent-foreground transition-colors h-12"
         >
-          {value ? views.find((view) => view.value === value)?.label : "Select view..."}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+          <div className="flex items-center gap-2">
+            {selectedView?.icon}
+            <span className="text-base font-semibold">
+              {selectedView?.label || "Select view..."}
+            </span>
+          </div>
+        </button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandInput placeholder="Search view..." />
           <CommandList>
@@ -70,13 +74,16 @@ function ViewSelector() {
                     setOpen(false);
                   }}
                 >
+                  <div className="flex items-center gap-2">
+                    {view.icon}
+                    {view.label}
+                  </div>
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "ml-auto h-4 w-4",
                       value === view.value ? "opacity-100" : "opacity-0",
                     )}
                   />
-                  {view.label}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -113,6 +120,11 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   const location = useLocation();
   const isBackOffice = location.pathname.startsWith("/back-office");
   const baseRoute = isBackOffice ? "/back-office" : "/objects";
+
+  // If it's root, don't render anything as we'll use ViewSelector instead
+  if (isRoot) {
+    return null;
+  }
 
   const content = (
     <div className="flex items-center gap-2">
@@ -174,7 +186,9 @@ export function NavigationTree({ data }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">
       <ViewSelector />
-      <NavigationItem node={data} />
+      {data.children.map((child) => (
+        <NavigationItem key={child.id} node={child} />
+      ))}
     </div>
   );
 }
