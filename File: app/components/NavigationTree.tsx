@@ -123,12 +123,14 @@ function RouteSelector() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("objects");
   const navigate = useNavigate();
+  const listId = "route-selector-list";
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
           role="combobox"
+          aria-controls={listId}
           aria-expanded={open}
           className="flex items-center justify-between w-full h-12 p-2 text-base font-semibold rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
         >
@@ -139,11 +141,11 @@ function RouteSelector() {
         <Command>
           <CommandInput placeholder="Search view..." className="h-9" />
           <CommandEmpty>No view found.</CommandEmpty>
-          <CommandGroup>
+          <CommandGroup id={listId}>
             {routes.map((route) => (
               <CommandItem
                 key={route.value}
-                onSelect={(currentValue) => {
+                onSelect={() => {
                   setValue(route.value);
                   navigate(`/${route.value}`);
                   setOpen(false);
