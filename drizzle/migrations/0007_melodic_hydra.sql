@@ -1,0 +1,1 @@
+ALTER TABLE "actions" ALTER COLUMN "type" SET DATA TYPE varchar(50);
