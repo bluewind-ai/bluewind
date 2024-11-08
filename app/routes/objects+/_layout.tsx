@@ -1,4 +1,6 @@
-// app/routes/objects/route.tsx
+
+
+// app/routes/objects+/_layout.tsx
 
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
