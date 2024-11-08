@@ -5,8 +5,6 @@ import { actionCalls, actions } from "~/db/schema";
 import { and, inArray, isNull, eq, desc } from "drizzle-orm";
 
 export async function findNextOrCreateMaster() {
-  void 0; // this should be removed by YOU when you rewrite the file
-
   // First check for any existing action calls that need approval
   const existingActionCall = await db.query.actionCalls.findFirst({
     where: and(
@@ -17,10 +15,8 @@ export async function findNextOrCreateMaster() {
       action: true,
     },
   });
-  void 0; // this should be removed by YOU when you rewrite the file
 
   if (existingActionCall) {
-    void 0; // this should be removed by YOU when you rewrite the file
     return existingActionCall;
   }
 
@@ -28,10 +24,8 @@ export async function findNextOrCreateMaster() {
   const lastActionCall = await db.query.actionCalls.findFirst({
     orderBy: [desc(actionCalls.id)],
   });
-  void 0; // this should be removed by YOU when you rewrite the file
 
   if (lastActionCall) {
-    void 0; // this should be removed by YOU when you rewrite the file
     return lastActionCall;
   }
 
@@ -39,17 +33,15 @@ export async function findNextOrCreateMaster() {
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });
-  void 0; // this should be removed by YOU when you rewrite the file
 
   const action =
-    masterAction || (await db.insert(actions).values({ name: "master" }).returning())[0];
-  void 0; // this should be removed by YOU when you rewrite the file
+    masterAction ||
+    (await db.insert(actions).values({ name: "master", type: "action" }).returning())[0];
 
   const [newActionCall] = await db
     .insert(actionCalls)
     .values({ actionId: action.id, status: "ready_for_approval" })
     .returning();
 
-  void 0; // this should be removed by YOU when you rewrite the file
   return newActionCall;
 }
