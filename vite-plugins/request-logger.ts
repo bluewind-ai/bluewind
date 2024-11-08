@@ -2,6 +2,7 @@
 
 import type { Plugin } from "vite";
 import chalk from "chalk";
+import type { ServerResponse, IncomingMessage } from "http";
 
 export function requestLoggerPlugin(): Plugin {
   return {
@@ -20,7 +21,12 @@ export function requestLoggerPlugin(): Plugin {
           const cleanUrl = url.split("?")[0];
 
           const originalEnd = res.end;
-          res.end = function (chunk?: any, encoding?: BufferEncoding, cb?: () => void) {
+          const newEnd = function (
+            this: ServerResponse<IncomingMessage>,
+            chunk: unknown,
+            encoding: BufferEncoding,
+            callback?: () => void,
+          ) {
             const duration = Date.now() - start;
             const status = res.statusCode;
 
@@ -43,8 +49,10 @@ export function requestLoggerPlugin(): Plugin {
                 `${chalk.dim(`${duration}ms`)}`,
             );
 
-            return originalEnd.call(res, chunk, encoding, cb);
+            return originalEnd.call(this, chunk, encoding, callback);
           };
+
+          res.end = newEnd as typeof res.end;
         }
         next();
       });
