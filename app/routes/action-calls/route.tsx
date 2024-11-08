@@ -25,7 +25,7 @@ async function buildRootActionCallsTree(): Promise<ActionCallNode[]> {
     },
   });
 
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   // First get root level calls (no parent)
   const rootCalls = allCalls.filter((call) => !call.parentId);
@@ -45,17 +45,17 @@ async function buildRootActionCallsTree(): Promise<ActionCallNode[]> {
 }
 
 export const loader: LoaderFunction = async () => {
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const rootActionCalls = await buildRootActionCallsTree();
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   return json({ rootActionCalls });
 };
 
 export default function ActionCallsLayout() {
   const { rootActionCalls } = useLoaderData<typeof loader>();
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   return (
     <ResizablePanelGroup direction="horizontal">

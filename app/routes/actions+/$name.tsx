@@ -11,7 +11,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     where: (fields, { eq }) => eq(fields.name, params.name as string),
   });
 
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   if (!existingAction) {
     throw new Response(`Action ${params.name} not found in database`, { status: 404 });
