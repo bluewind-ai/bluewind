@@ -5,6 +5,7 @@ import { master } from "~/actions/master.server";
 import { loadSelectors } from "~/actions/load-selectors.server";
 import { loadCsvData } from "~/actions/load-csv-data.server";
 import { loadActions } from "~/actions/load-actions.server";
+import { getTables } from "~/actions/get-tables.server";
 import { getActionCallTree } from "~/actions/get-action-call-tree.server";
 
 export const actions = {
@@ -12,5 +13,6 @@ export const actions = {
   "load-selectors": loadSelectors,
   "load-csv-data": loadCsvData,
   "load-actions": loadActions,
+  "get-tables": getTables,
   "get-action-call-tree": getActionCallTree,
 } as const;
