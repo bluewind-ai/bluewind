@@ -1,6 +1,5 @@
 // app/components/NavigationTree.tsx
 
-import * as React from "react";
 import { useState } from "react";
 import { Link } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
@@ -9,35 +8,25 @@ import { Network, Play, Filter, Table } from "lucide-react";
 type NavigationNode = {
   id: number;
   name: string;
-  icon?: React.ReactNode | string;
+  iconKey?: string;
   type: "root" | "app" | "file";
   children: NavigationNode[];
 };
 
 function getIcon(node: NavigationNode) {
-  if (typeof node.icon === "string") {
-    return <img src={node.icon} alt={`${node.name} icon`} className="h-5 w-5" />;
-  }
+  if (!node.iconKey) return null;
 
-  if (node.icon) {
-    return node.icon;
-  }
-
-  // Default icons based on type
-  switch (node.type) {
-    case "app":
-      switch (node.name.toLowerCase()) {
-        case "database":
-          return <Network className="h-5 w-5" />;
-        case "actions":
-          return <Play className="h-5 w-5" />;
-        case "selectors":
-          return <Filter className="h-5 w-5" />;
-        default:
-          return <Table className="h-5 w-5" />;
-      }
+  switch (node.iconKey) {
+    case "favicon":
+      return <img src="/favicon.ico" alt={`${node.name} icon`} className="h-5 w-5" />;
+    case "database":
+      return <Network className="h-5 w-5" />;
+    case "actions":
+      return <Play className="h-5 w-5" />;
+    case "selectors":
+      return <Filter className="h-5 w-5" />;
     default:
-      return null;
+      return <Table className="h-5 w-5" />;
   }
 }
 
