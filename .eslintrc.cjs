@@ -93,5 +93,6 @@ module.exports = {
   ],
   rules: {
     "local/file-header": "error",
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
   },
 };

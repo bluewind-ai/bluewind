@@ -51,7 +51,7 @@ export function ActivityBar({ className }: { className?: string; lastAction?: Ac
         variant="ghost"
         size="icon"
         className="h-10 w-10"
-        onClick={() => navigate("/sandbox")}
+        onClick={() => navigate("/objects/entities")}
       >
         <Table className="h-5 w-5" />
       </Button>

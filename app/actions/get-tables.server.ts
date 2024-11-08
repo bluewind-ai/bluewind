@@ -14,13 +14,7 @@ export function getTables() {
   );
 
   const tables = Object.entries(schema)
-    .filter(
-      ([_, value]) =>
-        value instanceof Object &&
-        value !== null &&
-        "columns" in value && // pgTable objects have a columns property
-        typeof value === "object",
-    )
+    .filter(([_, value]) => value?.constructor?.name === "PgTable")
     .map(([key]) => key);
 
   console.log("Tables found:", tables);
