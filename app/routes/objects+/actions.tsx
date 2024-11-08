@@ -4,29 +4,24 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { NewMain } from "~/components/NewMain";
 import { db } from "~/db";
-import { enrichAction } from "~/db/schema";
 
 export async function loader() {
-  const actions = await db.query.actions.findMany({
-    with: {
-      calls: {
-        orderBy: (calls, { desc }) => [desc(calls.createdAt)],
-        limit: 1,
-      },
-    },
-  });
+  const actions = await db.query.actions.findMany();
 
-  const enrichedActions = actions.map((action) => ({
-    ...enrichAction(action),
-    lastCallStatus: action.calls[0]?.status || "never_run",
-    lastRunAt: action.calls[0]?.createdAt || null,
-    totalCalls: action.calls.length,
+  // Transform the data to match ActionRecord type expected by NewMain
+  const tableData = actions.map((action) => ({
+    id: action.id,
+    name: action.name,
+    displayName: action.name.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+    lastCallStatus: "never_run", // We can enhance this later
+    lastRunAt: null,
+    totalCalls: 0,
   }));
 
-  return json({ data: enrichedActions });
+  return json({ data: tableData });
 }
 
-export default function ActionsObjectRoute() {
+export default function ActionsTableRoute() {
   const { data } = useLoaderData<typeof loader>();
   return <NewMain data={data} />;
 }
