@@ -15,6 +15,13 @@ interface ActionCallTree extends Omit<ActionCall, "actionId"> {
   actionName: string;
 }
 
+type ActionCallWithAction = ActionCall & {
+  action: {
+    id: number;
+    name: string;
+  };
+};
+
 async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
   // Get all action calls with their associated actions
   const allCalls = await db.query.actionCalls.findMany({
@@ -24,7 +31,7 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
     orderBy: (actionCalls, { asc }) => [asc(actionCalls.id)],
   });
 
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  console.log("[buildActionCallTree] Raw calls:", allCalls);
 
   const rootCall = allCalls.find((call) => call.id === rootId);
   if (!rootCall) return null;
@@ -47,7 +54,7 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  console.log("[loader] Starting with params:", params);
 
   if (!params.id || isNaN(Number(params.id))) {
     throw new Response("Invalid ID", { status: 400 });
@@ -70,7 +77,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (currentCall.parentId) {
     let currentParentId: number | null = currentCall.parentId;
     while (currentParentId) {
-      const parent = await db.query.actionCalls.findFirst({
+      const parent: ActionCallWithAction | undefined = await db.query.actionCalls.findFirst({
         where: eq(actionCalls.id, currentParentId),
         with: {
           action: true,
@@ -82,10 +89,10 @@ export const loader: LoaderFunction = async ({ params }) => {
     }
   }
 
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  console.log("[loader] Found root ID:", rootId);
 
   const actionCallTree = await buildActionCallTree(rootId);
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  console.log("[loader] Built action call tree:", actionCallTree);
 
   const enrichedTree = {
     tree: actionCallTree,
@@ -96,7 +103,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 };
 
 export const action: ActionFunction = async ({ params }) => {
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  console.log("[action] Starting with params:", params);
 
   if (!params.id || isNaN(Number(params.id))) {
     return json({ error: "Invalid ID" }, { status: 400 });
@@ -105,14 +112,14 @@ export const action: ActionFunction = async ({ params }) => {
   const id = parseInt(params.id);
 
   await db.update(actionCalls).set({ status: "completed" }).where(eq(actionCalls.id, id));
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  console.log("[action] Updated actionCall status to completed for id:", id);
 
   return json({ success: true });
 };
 
 export default function Route() {
   const data = useLoaderData<typeof loader>();
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  console.log("[Route] Rendering with full tree data:", data);
 
   return <Main data={data} buttonLabel="Next" />;
 }
