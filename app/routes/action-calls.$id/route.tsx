@@ -12,12 +12,15 @@ type ActionCall = InferSelectModel<typeof actionCalls>;
 
 interface ActionCallTree extends ActionCall {
   children: ActionCallTree[];
+  actionName?: string; // Add this to include the action name
 }
 
 async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
-  // First get all action calls that could be part of this tree
+  // Get all action calls with their associated actions
   const allCalls = await db.query.actionCalls.findMany({
-    with: { action: true },
+    with: {
+      action: true,
+    },
   });
 
   console.log("[buildActionCallTree] Found all calls:", allCalls);
@@ -27,10 +30,11 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
   if (!rootCall) return null;
 
   // Recursive function to build tree
-  function buildTree(call: ActionCall): ActionCallTree {
+  function buildTree(call: (typeof allCalls)[number]): ActionCallTree {
     const children = allCalls.filter((c) => c.parentId === call.id);
     return {
       ...call,
+      actionName: call.action?.name, // Include the action name
       children: children.map(buildTree),
     };
   }
