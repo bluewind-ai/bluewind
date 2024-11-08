@@ -6,12 +6,6 @@ import { db } from "~/db";
 import { enrichAction } from "~/db/schema";
 import { NewMain } from "~/components/NewMain";
 
-type EnrichedAction = ReturnType<typeof enrichAction> & {
-  lastCallStatus: string;
-  lastRunAt: string | null;
-  totalCalls: number;
-};
-
 export async function loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
 
