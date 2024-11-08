@@ -4,6 +4,23 @@ import { pgTable, serial, integer, varchar, text, timestamp, jsonb } from "drizz
 import { type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+});
+
+export const sessions = pgTable("sessions", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull().unique(), // for authentication
+  csrfToken: text("csrf_token").notNull(), // for CSRF protection
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
+  messages: jsonb("messages").$type<string[]>().default([]),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+});
+
 export const actions = pgTable("actions", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull().unique(),
@@ -36,6 +53,17 @@ export const actionCalls = pgTable("action_calls", {
   result: jsonb("result"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const usersRelations = relations(users, ({ many }) => ({
+  sessions: many(sessions),
+}));
 
 export const actionCallsRelations = relations(actionCalls, ({ one }) => ({
   action: one(actions, {
