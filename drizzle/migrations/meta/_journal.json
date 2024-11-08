@@ -57,6 +57,13 @@
       "when": 1731038864302,
       "tag": "0007_melodic_hydra",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1731094215688,
+      "tag": "0008_hard_selene",
+      "breakpoints": true
     }
   ]
 }
