@@ -23,7 +23,6 @@ type ActionCallWithAction = ActionCall & {
 };
 
 async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
-  // Get all action calls with their associated actions
   const allCalls = await db.query.actionCalls.findMany({
     with: {
       action: true,
@@ -45,7 +44,7 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
       args: call.args,
       result: call.result,
       createdAt: call.createdAt,
-      actionName: call.action.name, // Store the name directly
+      actionName: call.action.name, // Here's the important part
       children: children.map(buildTree),
     };
   }
