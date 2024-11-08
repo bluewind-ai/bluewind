@@ -26,7 +26,7 @@ function TreeNode({
     <div style={{ marginLeft: `${depth * 20}px` }}>
       <div className={`p-2 ${isCurrentNode ? "bg-blue-100" : ""} rounded`}>
         <div className="font-semibold">
-          {node.action?.name}({node.status})
+          {node.action.name}({node.status})
         </div>
       </div>
       {node.children?.map((child: any) => (
