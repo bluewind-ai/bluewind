@@ -7,6 +7,7 @@ import { NewMain } from "~/components/NewMain";
 import * as schema from "~/db/schema";
 import { db } from "~/db";
 import { enrichAction } from "~/db/schema";
+import { type PgTableWithColumns } from "drizzle-orm/pg-core";
 
 export async function loader() {
   // Get actions data for NewMain component
@@ -28,8 +29,14 @@ export async function loader() {
 
   // Get all table names for FileExplorer
   const tables = Object.entries(schema)
-    .filter(([_, value]) => typeof value === "object" && value !== null && "$type" in value)
-    .map(([key]) => key);
+    .filter(
+      ([_, value]): value is PgTableWithColumns<any> =>
+        typeof value === "object" &&
+        value !== null &&
+        "name" in value &&
+        typeof value.name === "string",
+    )
+    .map(([_, table]) => table.name);
 
   const fileStructure: Array<{
     id: number;
