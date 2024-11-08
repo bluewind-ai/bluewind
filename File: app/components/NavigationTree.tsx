@@ -58,11 +58,6 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   const isRoot = node.type === "root";
   const isApp = node.type === "app";
 
-  // If it's root level, render the combobox instead
-  if (isRoot) {
-    return <RouteSelector />;
-  }
-
   const content = (
     <div className="flex items-center gap-2">
       {icon}
@@ -123,47 +118,43 @@ function RouteSelector() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("objects");
   const navigate = useNavigate();
-  const listId = "route-selector-list";
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          role="combobox"
-          aria-controls={listId}
-          aria-expanded={open}
-          className="flex items-center justify-between w-full h-12 p-2 text-base font-semibold rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-        >
-          {routes.find((route) => route.value === value)?.label ?? "Select view..."}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Search view..." className="h-9" />
-          <CommandEmpty>No view found.</CommandEmpty>
-          <CommandGroup id={listId}>
-            {routes.map((route) => (
-              <CommandItem
-                key={route.value}
-                onSelect={() => {
-                  setValue(route.value);
-                  navigate(`/${route.value}`);
-                  setOpen(false);
-                }}
-              >
-                {route.label}
-                <Check
-                  className={cn(
-                    "ml-auto h-4 w-4",
-                    value === route.value ? "opacity-100" : "opacity-0",
-                  )}
-                />
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <div className="mb-2">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button className="flex items-center justify-between w-full px-2 py-1 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground transition-colors">
+            {routes.find((route) => route.value === value)?.label ?? "Select view..."}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0">
+          <Command>
+            <CommandInput placeholder="Search view..." />
+            <CommandEmpty>No view found.</CommandEmpty>
+            <CommandGroup>
+              {routes.map((route) => (
+                <CommandItem
+                  key={route.value}
+                  onSelect={() => {
+                    setValue(route.value);
+                    navigate(`/${route.value}`);
+                    setOpen(false);
+                  }}
+                >
+                  {route.label}
+                  <Check
+                    className={cn(
+                      "ml-auto h-4 w-4",
+                      value === route.value ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
 
@@ -174,6 +165,7 @@ interface NavigationTreeProps {
 export function NavigationTree({ data }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">
+      <RouteSelector />
       <NavigationItem node={data} />
     </div>
   );
