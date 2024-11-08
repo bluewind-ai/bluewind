@@ -39,7 +39,10 @@ const views = [
 
 function ViewSelector() {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("objects");
+  const location = useLocation();
+  const [value, setValue] = useState(
+    location.pathname.startsWith("/back-office") ? "back-office" : "objects",
+  );
   const navigate = useNavigate();
   const selectedView = views.find((view) => view.value === value);
 
@@ -119,7 +122,6 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   const isApp = node.type === "app";
   const location = useLocation();
   const isBackOffice = location.pathname.startsWith("/back-office");
-  const baseRoute = isBackOffice ? "/back-office" : "/objects";
 
   // If it's root, don't render anything as we'll use ViewSelector instead
   if (isRoot) {
@@ -150,7 +152,10 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   );
 
   if (!hasChildren) {
-    const to = `${baseRoute}/${node.urlName || node.name.toLowerCase()}`;
+    const to =
+      node.type === "file"
+        ? `/${isBackOffice ? "back-office" : "objects"}/${node.name.toLowerCase()}`
+        : node.name.toLowerCase();
 
     return (
       <Link to={to} className={itemClasses} data-discover="true">
