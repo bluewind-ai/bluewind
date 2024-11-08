@@ -26,9 +26,8 @@ function TreeNode({
     <div style={{ marginLeft: `${depth * 20}px` }}>
       <div className={`p-2 ${isCurrentNode ? "bg-blue-100" : ""} rounded`}>
         <div className="font-semibold">
-          ID: {node.id} - Status: {node.status}
+          {node.action?.name}({node.status})
         </div>
-        <div className="text-sm text-gray-600">Action: {node.action?.name}</div>
       </div>
       {node.children?.map((child: any) => (
         <TreeNode key={child.id} node={child} currentId={currentId} depth={depth + 1} />
@@ -72,7 +71,7 @@ export function Main({ data, buttonLabel, vscodeUrl }: MainProps) {
         </div>
 
         <div className="bg-slate-100 p-4 rounded">
-          <h2 className="text-lg font-semibold mb-2">Details</h2>
+          <h2 className="text-lg font-semibold mb-2">Workflows</h2>
           {isTree ? (
             <TreeNode node={data.tree} currentId={data.currentId} />
           ) : (
