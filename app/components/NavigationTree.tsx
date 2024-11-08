@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Network, Play, Filter, Table } from "lucide-react";
+import { cn } from "~/lib/utils";
 
 type NavigationNode = {
   id: number;
@@ -40,17 +41,25 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   const content = (
     <div className="flex items-center gap-2">
       {icon}
-      {level > 0 && <span className="text-sm">{node.name}</span>}
+      <span
+        className={cn(
+          "text-sm",
+          isRoot && "text-base font-semibold",
+          isApp && "text-sm font-medium",
+          !isRoot && !isApp && "text-xs font-normal",
+        )}
+      >
+        {node.name}
+      </span>
     </div>
   );
 
-  const itemClasses = `
-    flex items-center gap-2 p-2 rounded-md
-    ${isRoot ? "w-12 h-12 justify-center" : "w-full"}
-    ${isApp ? "font-medium" : ""}
-    hover:bg-accent hover:text-accent-foreground
-    transition-colors
-  `;
+  const itemClasses = cn(
+    "flex items-center gap-2 p-2 rounded-md w-full",
+    "hover:bg-accent hover:text-accent-foreground transition-colors",
+    isRoot && "h-12",
+    level > 0 && "pl-4",
+  );
 
   if (!hasChildren) {
     return (
@@ -64,7 +73,7 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className={itemClasses}>{content}</CollapsibleTrigger>
       <CollapsibleContent>
-        <div className={`flex flex-col gap-1 ${level === 0 ? "" : "ml-4"}`}>
+        <div className={cn("flex flex-col gap-1", level === 0 ? "mt-1" : "ml-2 mt-1")}>
           {node.children.map((child) => (
             <NavigationItem key={child.id} node={child} level={level + 1} />
           ))}
@@ -80,7 +89,7 @@ interface NavigationTreeProps {
 
 export function NavigationTree({ data }: NavigationTreeProps) {
   return (
-    <div className="flex flex-col gap-1 p-2 bg-muted border-r border-border">
+    <div className="flex flex-col gap-1 p-2 bg-background border-r">
       <NavigationItem node={data} />
     </div>
   );
