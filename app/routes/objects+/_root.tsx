@@ -1,32 +1,41 @@
 // app/routes/objects+/_root.tsx
 
-import { useLoaderData } from "@remix-run/react";
-import { NewMain } from "~/components/NewMain";
-import { db } from "~/db";
-import { enrichAction } from "~/db/schema";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
+import { getTables } from "~/actions/get-tables.server";
+import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable";
+import { FileExplorer } from "~/components/ui/FileExplorer";
 
 export async function loader() {
-  const actions = await db.query.actions.findMany({
-    with: {
-      calls: {
-        orderBy: (calls, { desc }) => [desc(calls.createdAt)],
-        limit: 1,
-      },
-    },
-  });
+  const tables = getTables();
 
-  const enrichedActions = actions.map((action) => ({
-    ...enrichAction(action),
-    lastCallStatus: action.calls[0]?.status || "never_run",
-    lastRunAt: action.calls[0]?.createdAt || null,
-    totalCalls: action.calls.length,
-  }));
+  const fileData = {
+    id: 0,
+    name: "Objects",
+    type: "folder" as const,
+    children: tables.map((tableName, index) => ({
+      id: index + 1,
+      name: tableName,
+      type: "file" as const,
+      children: [],
+    })),
+  };
 
-  return json({ mainData: enrichedActions });
+  return json({ fileData });
 }
 
-export default function ObjectsRoot() {
-  const { mainData } = useLoaderData<typeof loader>();
-  return <NewMain data={mainData} />;
+export default function ObjectsLayout() {
+  const { fileData } = useLoaderData<typeof loader>();
+
+  return (
+    <ResizablePanelGroup direction="horizontal">
+      <ResizablePanel defaultSize={20}>
+        <FileExplorer data={fileData} type="file" />
+      </ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel defaultSize={80}>
+        <Outlet />
+      </ResizablePanel>
+    </ResizablePanelGroup>
+  );
 }
