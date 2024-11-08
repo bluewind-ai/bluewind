@@ -18,10 +18,7 @@ type NavigationTreeProps = {
 
 export function NavigationTree({ data }: NavigationTreeProps) {
   const renderNode = (node: NavigationNode) => {
-    const linkTo =
-      node.type === "file"
-        ? `/objects/${node.urlName}` // use the urlName which should already be kebab-case
-        : "";
+    const linkTo = node.type === "file" ? `/objects/${node.urlName}` : "";
 
     return (
       <div key={node.id}>

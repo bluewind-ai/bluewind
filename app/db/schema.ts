@@ -138,14 +138,3 @@ export function getTableMetadata() {
     ...config,
   }));
 }
-
-export function toDisplayName(urlName: string): string {
-  return urlName
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-export function toUrlName(displayName: string): string {
-  return displayName.toLowerCase().replace(/\s+/g, "-");
-}
