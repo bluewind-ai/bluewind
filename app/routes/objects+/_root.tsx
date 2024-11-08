@@ -1,15 +1,16 @@
 // app/routes/objects+/_root.tsx
 
-import * as React from 'react';
+import * as React from "react";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getTables } from "~/actions/get-tables.server";
-import { NavigationTree } from "~/components/NavigationTree"; // We'll create this
+import { NavigationTree } from "~/components/NavigationTree";
+import { Network } from "lucide-react";
 
 type NavigationNode = {
   id: number;
   name: string;
-  icon?: React.ReactNode;
+  icon?: React.ReactNode | string;
   type: "root" | "app" | "file";
   children: NavigationNode[];
 };
@@ -27,7 +28,7 @@ export async function loader() {
         id: 1,
         name: "Database",
         type: "app",
-        icon: /* Network icon */,
+        icon: <Network className="h-5 w-5" />,
         children: tables.map((tableName, index) => ({
           id: index + 2,
           name: tableName,
