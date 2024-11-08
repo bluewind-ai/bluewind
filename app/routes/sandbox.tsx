@@ -3,13 +3,13 @@
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { FileExplorer } from "~/components/ui/FileExplorer";
-import { Main } from "~/components/Main";
+import { NewMain } from "~/components/NewMain";
 import * as schema from "~/db/schema";
 import { db } from "~/db";
 import { enrichAction } from "~/db/schema";
 
 export async function loader() {
-  // Get actions data for Main component
+  // Get actions data for NewMain component
   const actions = await db.query.actions.findMany({
     with: {
       calls: {
@@ -75,7 +75,7 @@ export default function SandboxRoute() {
         <FileExplorer data={explorerData} type="file" />
       </div>
       <div className="flex-1">
-        <Main data={mainData} buttonLabel="Run Action" />
+        <NewMain data={mainData} />
       </div>
     </div>
   );
