@@ -10,19 +10,13 @@ import type { InferSelectModel } from "drizzle-orm";
 
 type ActionCall = InferSelectModel<typeof actionCalls>;
 
-interface ActionCallTree extends ActionCall {
+interface ActionCallTree extends Omit<ActionCall, "actionId"> {
   children: ActionCallTree[];
-  action: {
-    name: string;
-  };
-}
-
-type ActionCallWithAction = ActionCall & {
   action: {
     id: number;
     name: string;
   };
-};
+}
 
 async function buildActionCallTree(rootId: number): Promise<ActionCallTree | null> {
   // Get all action calls with their associated actions
@@ -41,8 +35,13 @@ async function buildActionCallTree(rootId: number): Promise<ActionCallTree | nul
   function buildTree(call: (typeof allCalls)[number]): ActionCallTree {
     const children = allCalls.filter((c) => c.parentId === call.id);
     return {
-      ...call,
-      actionName: call.action?.name,
+      id: call.id,
+      parentId: call.parentId,
+      status: call.status,
+      args: call.args,
+      result: call.result,
+      createdAt: call.createdAt,
+      action: call.action,
       children: children.map(buildTree),
     };
   }
@@ -74,7 +73,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (currentCall.parentId) {
     let currentParentId: number | null = currentCall.parentId;
     while (currentParentId) {
-      const parent: ActionCallWithAction | undefined = await db.query.actionCalls.findFirst({
+      const parent = await db.query.actionCalls.findFirst({
         where: eq(actionCalls.id, currentParentId),
         with: {
           action: true,
