@@ -2,10 +2,15 @@
 
 import { useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import type { NavigationNode } from "~/components/NavigationTree";
+import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
 import { Main } from "~/components/Main";
-import { ViewData } from "~/types";
 import { GenericTableView } from "~/components/GenericTableView";
+
+export type ViewData = {
+  value: string;
+  label: string;
+  iconKey: string;
+};
 
 export const views: ViewData[] = [
   {
@@ -45,11 +50,6 @@ export async function loader() {
     navigationData,
     views,
   });
-}
-
-interface RouteData {
-  data: NavigationNode;
-  views: ViewData[];
 }
 
 export default function Index() {

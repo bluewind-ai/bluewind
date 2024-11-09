@@ -2,23 +2,8 @@
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
-import { NavigationTree } from "~/components/NavigationTree";
+import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
 import { getTableMetadata } from "~/db/schema";
-import type { ViewData } from "~/routes/_app";
-import type { NavigationNode } from "~/components/NavigationTree";
-
-const views: ViewData[] = [
-  {
-    value: "objects",
-    label: "Database",
-    iconKey: "database",
-  },
-  {
-    value: "back-office",
-    label: "Back Office",
-    iconKey: "table",
-  },
-];
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {
@@ -37,12 +22,11 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 
   return json({
     navigationData,
-    views,
   });
 }
 
 export default function ObjectsRoot() {
-  const { navigationData, views } = useLoaderData<typeof loader>();
+  const { navigationData } = useLoaderData<typeof loader>();
 
   return (
     <div className="flex h-full">
