@@ -9,29 +9,29 @@ import { flatRoutes } from "remix-flat-routes";
 import { actionsPlugin } from "./vite-plugins/generate-actions";
 import { requestLoggerPlugin } from "./vite-plugins/request-logger";
 import { appsPlugin } from "./vite-plugins/generate-apps";
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { exec } from "child_process";
+import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
 function autoCommitPlugin() {
   return {
-    name: 'vite:auto-commit',
+    name: "vite:auto-commit",
     async handleHotUpdate() {
       try {
         // Check if there are changes
         const { stdout: diffOutput } = await execAsync('git diff --quiet || echo "has-changes"');
 
-        if (diffOutput.includes('has-changes')) {
-          console.log('🔄 Changes detected, committing...');
-          await execAsync('git add .');
+        if (diffOutput.includes("has-changes")) {
+          console.log("🔄 Changes detected, committing...");
+          await execAsync("git add .");
           await execAsync('git commit -m "vite"');
-          console.log('✅ Changes committed');
+          console.log("✅ Changes committed");
         }
       } catch (error) {
-        console.error('❌ Auto-commit error:', error);
+        console.error("❌ Auto-commit error:", error);
       }
-    }
+    },
   };
 }
 
