@@ -5,7 +5,7 @@ import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
 import { apps, actionCalls, actions } from "~/db/schema";
 import { db } from "~/db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   // First get the master action ID
@@ -21,7 +21,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
   const actionCallsData = await db.query.actionCalls.findMany({
     where: and(
       eq(actionCalls.actionId, masterAction.id),
-      eq(actionCalls.parentId, null), // root level calls only
+      isNull(actionCalls.parentId) // This is the fix - using isNull instead of eq(field, null)
     ),
     with: {
       action: true,
@@ -36,7 +36,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     iconKey: "database",
     children: actionCallsData.map((actionCall, index) => ({
       id: index + 1,
-      name: `Master ${actionCall.id}`, // or however you want to name these
+      name: `Master ${actionCall.id}`,
       urlName: `action-calls/${actionCall.id}`,
       type: "file" as const,
       children: [] as NavigationNode[],
