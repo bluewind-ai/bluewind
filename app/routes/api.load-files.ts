@@ -17,7 +17,7 @@ const APPS_DATA = [
 ];
 
 async function generateAppsFile() {
-  console.log("\n=== 📝 Generating Apps File ===");
+  void 0 // this should be removed by YOU when you rewrite the filed;
   const fileContent = `
 // THIS FILE IS AUTO-GENERATED - DO NOT EDIT
 export const apps = ${JSON.stringify(APPS_DATA, null, 2)} as const;
@@ -28,11 +28,11 @@ export const apps = ${JSON.stringify(APPS_DATA, null, 2)} as const;
 
   const filePath = path.join(generatedDir, "apps.ts");
   await fs.writeFile(filePath, fileContent, "utf-8");
-  console.log("✨ Apps file generated");
+  void 0 // this should be removed by YOU when you rewrite the filed;
 }
 
 async function generateActionsFile() {
-  console.log("\n=== 📝 Generating Actions File ===");
+  void 0 // this should be removed by YOU when you rewrite the filed;
   const actionsDir = path.join(process.cwd(), "app", "actions");
   const files = await fs.readdir(actionsDir);
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
@@ -60,7 +60,7 @@ export const actions = {
 
   await fs.mkdir("app/lib/generated", { recursive: true });
   await fs.writeFile("app/lib/generated/actions.ts", content);
-  console.log("✨ Actions file generated");
+  void 0 // this should be removed by YOU when you rewrite the filed;
 }
 
 function kebabToCamel(str: string): string {
@@ -68,13 +68,13 @@ function kebabToCamel(str: string): string {
 }
 
 async function syncApps() {
-  console.log("\n=== 📥 Load Apps to DB Started ===");
-  console.log(`Found ${APPS_DATA.length} apps to process`);
+  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   try {
-    console.log("💾 Upserting apps to database...");
+    void 0 // this should be removed by YOU when you rewrite the filed;
     for (const app of APPS_DATA) {
-      console.log(`  • Processing ${app.name}`);
+      void 0 // this should be removed by YOU when you rewrite the filed;
       await db
         .insert(apps)
         .values({
@@ -100,7 +100,7 @@ async function syncApps() {
 
     // If not found, create it
     if (!thisAction) {
-      console.log("Creating load-apps-to-db action...");
+      void 0 // this should be removed by YOU when you rewrite the filed;
       const [newAction] = await db
         .insert(actions)
         .values({
@@ -123,28 +123,28 @@ async function syncApps() {
       })
       .returning();
 
-    console.log("✅ All apps successfully loaded to database");
-    console.log("=== 💫 Load Apps to DB Complete ===\n");
+    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0 // this should be removed by YOU when you rewrite the filed;
     return actionCall;
   } catch (error) {
-    console.error("❌ Failed to load apps:", error);
-    console.log("=== 💥 Load Apps to DB Failed ===\n");
+    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0 // this should be removed by YOU when you rewrite the filed;
     throw error;
   }
 }
 
 async function syncActions() {
   const actionsDir = path.join(process.cwd(), "app", "actions");
-  console.log("Looking for actions in:", actionsDir);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   const files = await fs.readdir(actionsDir);
-  console.log("Found files:", files);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
-  console.log("Filtered server files:", actionFiles);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   const actionNames = actionFiles.map((file) => path.basename(file, ".server.ts"));
-  console.log("Action names:", actionNames);
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   const results = [];
 
@@ -174,7 +174,7 @@ async function syncActions() {
 
   // If not found, create it
   if (!thisAction) {
-    console.log("Creating load-actions action...");
+    void 0 // this should be removed by YOU when you rewrite the filed;
     const [newAction] = await db
       .insert(actions)
       .values({
@@ -205,24 +205,24 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function loader() {
   try {
-    console.log("\n=== 🔄 Starting System Sync ===");
+    void 0 // this should be removed by YOU when you rewrite the filed;
 
-    console.log("\n--- 📝 Generating Files ---");
+    void 0 // this should be removed by YOU when you rewrite the filed;
     await Promise.all([generateAppsFile(), generateActionsFile()]);
-    console.log("✅ Files generated");
+    void 0 // this should be removed by YOU when you rewrite the filed;
 
-    console.log("\n⏳ Waiting 1 second for filesystem...");
+    void 0 // this should be removed by YOU when you rewrite the filed;
     await sleep(1000);
 
-    console.log("\n--- 📱 Syncing Apps ---");
+    void 0 // this should be removed by YOU when you rewrite the filed;
     const appsResult = await syncApps();
-    console.log("✅ Apps sync completed");
+    void 0 // this should be removed by YOU when you rewrite the filed;
 
-    console.log("\n--- 🔧 Syncing Actions ---");
+    void 0 // this should be removed by YOU when you rewrite the filed;
     const actionsResult = await syncActions();
-    console.log("✅ Actions sync completed");
+    void 0 // this should be removed by YOU when you rewrite the filed;
 
-    console.log("\n=== ✨ System Sync Complete ===\n");
+    void 0 // this should be removed by YOU when you rewrite the filed;
 
     return json({
       success: true,
@@ -230,7 +230,7 @@ export async function loader() {
       actions: actionsResult,
     });
   } catch (error) {
-    console.error("\n❌ Sync failed:", error);
+    void 0 // this should be removed by YOU when you rewrite the filed;
     return json(
       {
         success: false,

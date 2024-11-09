@@ -5,13 +5,13 @@ import { actionCalls, apps } from "~/db/schema";
 import { apps as generatedApps } from "~/lib/generated/apps";
 
 export async function loadAppsToDB() {
-  console.log("\n=== 📥 Load Apps to DB Started ===");
-  console.log(`Found ${generatedApps.length} apps to process`);
+  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0 // this should be removed by YOU when you rewrite the filed;
 
   try {
-    console.log("💾 Upserting apps to database...");
+    void 0 // this should be removed by YOU when you rewrite the filed;
     for (const app of generatedApps) {
-      console.log(`  • Processing ${app.name}`);
+      void 0 // this should be removed by YOU when you rewrite the filed;
       await db
         .insert(apps)
         .values({
@@ -48,12 +48,12 @@ export async function loadAppsToDB() {
       })
       .returning();
 
-    console.log("✅ All apps successfully loaded to database");
-    console.log("=== 💫 Load Apps to DB Complete ===\n");
+    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0 // this should be removed by YOU when you rewrite the filed;
     return actionCall;
   } catch (error) {
-    console.error("❌ Failed to load apps:", error);
-    console.log("=== 💥 Load Apps to DB Failed ===\n");
+    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0 // this should be removed by YOU when you rewrite the filed;
     throw error;
   }
 }

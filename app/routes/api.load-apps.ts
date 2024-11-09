@@ -5,12 +5,12 @@ import { loadAppsToDB } from "~/actions/loadAppsToDB.server";
 
 export async function action() {
   try {
-    console.log("\n=== 🎯 API Load Apps Endpoint Called ===");
+    void 0 // this should be removed by YOU when you rewrite the filed;
     const result = await loadAppsToDB();
-    console.log("=== ✅ API Load Apps Complete ===\n");
+    void 0 // this should be removed by YOU when you rewrite the filed;
     return json({ success: true, result });
   } catch (error) {
-    console.error("=== ❌ API Load Apps Failed ===\n", error);
+    void 0 // this should be removed by YOU when you rewrite the filed;
     throw error;
   }
 }
