@@ -2,7 +2,6 @@
 
 import { db } from "~/db";
 import { functionCalls, apps, FunctionCallStatus } from "~/db/schema";
-import { apps as generatedApps } from "~/lib/generated/apps";
 
 export async function loadAppsToDB() {
   void 0; // this should be removed by YOU when you rewrite the filed;
