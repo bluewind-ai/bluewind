@@ -6,7 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 import { flatRoutes } from "remix-flat-routes";
-import { actionsPlugin } from "./vite-plugins/generate-actions";
+// import { actionsPlugin } from "./vite-plugins/generate-actions";
 import { requestLoggerPlugin } from "./vite-plugins/request-logger";
 import { appsPlugin } from "./vite-plugins/generate-apps";
 
@@ -32,7 +32,7 @@ export default defineConfig({
       },
     }),
     tsconfigPaths(),
-    actionsPlugin(),
+    // actionsPlugin(),
     appsPlugin(),
     requestLoggerPlugin(),
   ],

@@ -19,10 +19,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 
   // Get master action calls and their children
   const actionCallsData = await db.query.actionCalls.findMany({
-    where: and(
-      eq(actionCalls.actionId, masterAction.id),
-      isNull(actionCalls.parentId)
-    ),
+    where: and(eq(actionCalls.actionId, masterAction.id), isNull(actionCalls.parentId)),
     with: {
       action: true,
     },
