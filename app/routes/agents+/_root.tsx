@@ -19,7 +19,10 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 
   // Get master action calls and their children
   const actionCallsData = await db.query.actionCalls.findMany({
-    where: and(eq(actionCalls.actionId, masterAction.id), isNull(actionCalls.parentId)),
+    where: and(
+      eq(actionCalls.actionId, masterAction.id),
+      isNull(actionCalls.parentId)
+    ),
     with: {
       action: true,
     },
@@ -34,7 +37,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     children: actionCallsData.map((actionCall, index) => ({
       id: index + 1,
       name: `Master ${actionCall.id}`,
-      urlName: actionCall.id.toString(), // Just the ID, NavigationTree will construct the full path
+      urlName: `function-calls/${actionCall.id}`,
       type: "file" as const,
       children: [] as NavigationNode[],
     })),
