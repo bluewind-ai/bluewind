@@ -1,7 +1,7 @@
 // vite-plugins/generate-apps.ts
 
 import { Plugin } from "vite";
-import { executeGenerateApps } from "~/actions/execute-apps.server";
+import { executeGenerateApps } from "~/actions/executeGenerateApps.server";
 
 export function appsPlugin(): Plugin {
   return {
