@@ -54,7 +54,7 @@ export function ViewSelector() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
-        <Command className="bg-white opacity-50">
+        <Command className="bg-white opacity-100">
           <CommandInput placeholder="Search view..." />
           <CommandList>
             <CommandEmpty>No view found.</CommandEmpty>
