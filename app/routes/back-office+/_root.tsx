@@ -46,7 +46,7 @@ export default function ObjectsRoot() {
 
   return (
     <div className="flex h-full">
-      <NavigationTree data={navigationData as NavigationNode} views={views} />
+      <NavigationTree data={navigationData as NavigationNode} />
       <div className="flex-1">
         <Outlet />
       </div>
