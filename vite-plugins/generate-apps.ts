@@ -6,7 +6,7 @@ import fs from "fs/promises";
 import { existsSync } from "fs";
 
 async function generateAppsFile() {
-  console.log("🎯 Starting apps file generation");
+  // Don't even log start - who cares how many times we start
 
   const appsData = [
     {
@@ -15,7 +15,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    },
+    }
   ];
 
   const fileContent = `
@@ -28,41 +28,21 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
     await fs.mkdir(generatedDir, { recursive: true });
   }
 
-  await fs.writeFile(path.join(generatedDir, "apps.ts"), fileContent, "utf-8");
-  console.log("✨ Apps file generated successfully");
-}
+  const filePath = path.join(generatedDir, "apps.ts");
 
-let isGenerating = false;
-let queuedGeneration = false;
-let timeoutId: NodeJS.Timeout | null = null;
-
-async function queueGeneration(filePath: string) {
-  if (timeoutId) {
-    clearTimeout(timeoutId);
+  // Check if content would be different
+  try {
+    const existingContent = await fs.readFile(filePath, 'utf-8');
+    if (existingContent.trim() === fileContent.trim()) {
+      return; // File is identical, do nothing
+    }
+  } catch {
+    // File doesn't exist, continue
   }
 
-  return new Promise<void>((resolve) => {
-    timeoutId = setTimeout(async () => {
-      if (isGenerating) {
-        queuedGeneration = true;
-        return resolve();
-      }
-
-      isGenerating = true;
-      console.log("📁 Processing change:", filePath);
-
-      try {
-        await generateAppsFile();
-      } finally {
-        isGenerating = false;
-        if (queuedGeneration) {
-          queuedGeneration = false;
-          await queueGeneration(filePath);
-        }
-      }
-      resolve();
-    }, 300); // Increased delay
-  });
+  // Only write and log if we're actually changing something
+  await fs.writeFile(filePath, fileContent, "utf-8");
+  console.log("✨ Apps file updated");
 }
 
 export function appsPlugin(): Plugin {
@@ -73,15 +53,18 @@ export function appsPlugin(): Plugin {
 
       server.watcher.on("change", async (filePath) => {
         if (filePath.includes("generated/apps.ts")) {
-          console.log("⏭️ Ignoring generated file change");
-          return;
+          return; // Silently ignore
         }
 
         if (!filePath.includes(path.join("app", "routes"))) {
           return;
         }
 
-        await queueGeneration(filePath);
+        try {
+          await generateAppsFile();
+        } catch (err) {
+          console.error("❌ Apps generation error:", err);
+        }
       });
 
       // Initial generation
@@ -90,6 +73,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    },
+    }
   };
 }
