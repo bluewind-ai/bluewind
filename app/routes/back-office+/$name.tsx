@@ -50,8 +50,8 @@ export default function TableRoute() {
 
   const extraColumns = [
     {
-      id: "actions",
-      header: "Actions",
+      id: 'actions',
+      header: 'Actions',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cell: (row: any) => (
         <Button
@@ -62,9 +62,9 @@ export default function TableRoute() {
               {},
               {
                 method: "get",
-                action: `/functions/${row.name}`,
+                action: `/run-function/${row.name}`,
                 preventScrollReset: true,
-              },
+              }
             );
           }}
         >
