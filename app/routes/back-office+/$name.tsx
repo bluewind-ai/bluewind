@@ -1,7 +1,7 @@
 // app/routes/back-office+/$name.tsx
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
+import { useLoaderData, useFetcher } from "@remix-run/react";
 import { GenericTableView } from "~/components/GenericTableView";
 import { db } from "~/db";
 import { TABLES } from "~/db/schema";
@@ -46,18 +46,29 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function TableRoute() {
   const { data } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
 
   const extraColumns = [
     {
-      id: "actions",
-      header: "Actions",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      id: 'actions',
+      header: 'Actions',
       cell: (row: any) => (
-        <Link to={`/functions/${row.name}`} className="no-underline">
-          <Button size="sm" variant="outline">
-            Run
-          </Button>
-        </Link>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            fetcher.submit(
+              {},
+              {
+                method: "get",
+                action: `/functions/${row.name}`,
+                preventScrollReset: true,
+              }
+            );
+          }}
+        >
+          Run
+        </Button>
       ),
     },
   ];
