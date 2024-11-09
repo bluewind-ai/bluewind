@@ -76,7 +76,7 @@ export function ViewSelector() {
                       <Check
                         className={cn(
                           "ml-auto h-4 w-4",
-                          value === view.value ? "opacity-100" : "opacity-0"
+                          value === view.value ? "opacity-100" : "opacity-0",
                         )}
                       />
                     </CommandItem>
