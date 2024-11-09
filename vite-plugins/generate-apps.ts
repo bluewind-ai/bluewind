@@ -13,7 +13,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    },
+    }
   ];
 
   const fileContent = `
@@ -29,7 +29,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
   const filePath = path.join(generatedDir, "apps.ts");
 
   try {
-    const existingContent = await fs.readFile(filePath, "utf-8");
+    const existingContent = await fs.readFile(filePath, 'utf-8');
     if (existingContent.trim() === fileContent.trim()) {
       return; // File is identical, do nothing
     }
@@ -44,8 +44,8 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 async function loadAppsToDb() {
   try {
     console.log("📡 Calling load-apps endpoint...");
-    const response = await fetch("http://localhost:3000/api/load-apps", {
-      method: "POST",
+    const response = await fetch('http://localhost:3000/api/load-apps', {
+      method: 'POST',
     });
     if (!response.ok) {
       throw new Error(`Failed to load apps: ${response.statusText}`);
@@ -57,8 +57,6 @@ async function loadAppsToDb() {
 }
 
 export function appsPlugin(): Plugin {
-  const pending = false;
-
   return {
     name: "apps",
     async configureServer(server) {
@@ -109,6 +107,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    },
+    }
   };
 }
