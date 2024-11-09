@@ -16,8 +16,8 @@ const APPS_DATA = [
   },
   {
     id: 2,
-    value: "workflows",
-    name: "Workflows",
+    value: "agents",
+    name: "Agents",
     iconKey: "workflow",
     order: 2,
   },

@@ -1,4 +1,4 @@
-// app/routes/workflows+/_root.tsx
+// app/routes/agents+/_root.tsx
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
@@ -8,7 +8,6 @@ import { db } from "~/db";
 import { eq, and, isNull } from "drizzle-orm";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
-  // First get the master action ID
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });
@@ -17,7 +16,6 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     throw new Error("Master action not found");
   }
 
-  // Get master action calls and their children
   const actionCallsData = await db.query.actionCalls.findMany({
     where: and(eq(actionCalls.actionId, masterAction.id), isNull(actionCalls.parentId)),
     with: {
@@ -28,7 +26,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 
   const navigationData: NavigationNode = {
     id: 0,
-    name: "Workflows",
+    name: "Agents",
     type: "root",
     iconKey: "database",
     children: actionCallsData.map((actionCall, index) => ({
@@ -48,7 +46,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
   });
 }
 
-export default function WorkflowsRoot() {
+export default function AgentsRoot() {
   const { navigationData, apps } = useLoaderData<typeof loader>();
 
   return (

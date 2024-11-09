@@ -71,7 +71,7 @@ export function Main({ data, buttonLabel, vscodeUrl }: MainProps) {
         </div>
 
         <div className="bg-slate-100 p-4 rounded">
-          <h2 className="text-lg font-semibold mb-2">Workflows</h2>
+          <h2 className="text-lg font-semibold mb-2">Agents</h2>
           {isTree ? (
             <TreeNode node={data.tree} currentId={data.currentId} />
           ) : (
