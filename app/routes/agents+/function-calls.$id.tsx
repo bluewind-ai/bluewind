@@ -3,7 +3,7 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { db } from "~/db";
-import { functionCalls, type FunctionCallStatus } from "~/db/schema";
+import { functionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
 type LoaderData = {
