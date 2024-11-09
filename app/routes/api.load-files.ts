@@ -118,7 +118,7 @@ async function syncApps() {
       thisAction = newAction;
     }
 
-    const [actionCall] = await db
+    const [functionCall] = await db
       .insert(functionCalls)
       .values({
         actionId: thisAction.id,
@@ -132,7 +132,7 @@ async function syncApps() {
 
     void 0; // this should be removed by YOU when you rewrite the filed;
     void 0; // this should be removed by YOU when you rewrite the filed;
-    return actionCall;
+    return functionCall;
   } catch (error) {
     void 0; // this should be removed by YOU when you rewrite the filed;
     void 0; // this should be removed by YOU when you rewrite the filed;
@@ -192,7 +192,7 @@ async function syncActions() {
     thisAction = newAction;
   }
 
-  const [actionCall] = await db
+  const [functionCall] = await db
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
@@ -205,7 +205,7 @@ async function syncActions() {
     })
     .returning();
 
-  return actionCall;
+  return functionCall;
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

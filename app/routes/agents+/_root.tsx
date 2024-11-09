@@ -31,10 +31,10 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     name: "Agents",
     type: "root",
     iconKey: "database",
-    children: functionCallsData.map((actionCall, index) => ({
+    children: functionCallsData.map((functionCall, index) => ({
       id: index + 1,
-      name: `Master ${actionCall.id}`,
-      urlName: `function-calls/${actionCall.id}`,
+      name: `Master ${functionCall.id}`,
+      urlName: `function-calls/${functionCall.id}`,
       type: "file" as const,
       children: [] as NavigationNode[],
     })),

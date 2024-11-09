@@ -1,5 +1,3 @@
-
-
 // app/components/ui/ActionCallTree.tsx
 
 import { useState } from "react";

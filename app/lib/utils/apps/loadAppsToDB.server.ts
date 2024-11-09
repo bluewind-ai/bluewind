@@ -41,7 +41,7 @@ export async function loadAppsToDB() {
 
   if (!thisAction) throw new Error("load-apps-to-db not found in database");
 
-  const [actionCall] = await db
+  const [functionCall] = await db
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
@@ -54,5 +54,5 @@ export async function loadAppsToDB() {
     .returning();
 
   console.log("✅ Apps loaded to database successfully");
-  return actionCall;
+  return functionCall;
 }

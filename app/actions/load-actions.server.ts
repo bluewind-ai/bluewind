@@ -47,7 +47,7 @@ export const loadActions = async () => {
 
   if (!thisAction) throw new Error("load-actions not found in database");
 
-  const [actionCall] = await db
+  const [functionCall] = await db
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
@@ -60,5 +60,5 @@ export const loadActions = async () => {
     })
     .returning();
 
-  return actionCall;
+  return functionCall;
 };

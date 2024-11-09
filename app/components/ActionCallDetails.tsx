@@ -4,16 +4,16 @@ import type { functionCalls, actions } from "~/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 
 type ActionCallDetailsProps = {
-  actionCall: InferSelectModel<typeof functionCalls>;
+  functionCall: InferSelectModel<typeof functionCalls>;
   action: InferSelectModel<typeof actions>;
 };
 
-export function ActionCallDetails({ actionCall, action }: ActionCallDetailsProps) {
+export function ActionCallDetails({ functionCall, action }: ActionCallDetailsProps) {
   return (
     <div className="mb-4">
-      <h1>Action Call {actionCall.id}</h1>
+      <h1>Action Call {functionCall.id}</h1>
       <p>Action: {action.name}</p>
-      <p>Status: {actionCall.status}</p>
+      <p>Status: {functionCall.status}</p>
     </div>
   );
 }

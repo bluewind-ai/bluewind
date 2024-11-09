@@ -30,7 +30,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 
   if (!thisAction) throw new Error("generate-apps not found in database");
 
-  const [actionCall] = await db
+  const [functionCall] = await db
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
@@ -43,5 +43,5 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
     .returning();
 
   console.log("✨ Apps file generated successfully");
-  return actionCall;
+  return functionCall;
 }

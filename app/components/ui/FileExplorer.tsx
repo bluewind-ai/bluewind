@@ -23,7 +23,7 @@ type ActionCallNode = BaseNode & {
 type NodeProps = {
   node: FileNode | ActionCallNode;
   level?: number;
-  type: "file" | "actionCall";
+  type: "file" | "functionCall";
 };
 
 function formatName(name: string): string {
@@ -102,7 +102,7 @@ function ExplorerNode({ node, level = 0, type }: NodeProps) {
 
 type FileExplorerProps = {
   data: FileNode | ActionCallNode;
-  type: "file" | "actionCall";
+  type: "file" | "functionCall";
 };
 
 export function FileExplorer({ data, type }: FileExplorerProps) {

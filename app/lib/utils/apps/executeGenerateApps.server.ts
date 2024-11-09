@@ -20,7 +20,7 @@ export async function executeGenerateApps() {
 
   if (!thisAction) throw new Error("execute-generate-apps not found in database");
 
-  const [actionCall] = await db
+  const [functionCall] = await db
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
@@ -34,5 +34,5 @@ export async function executeGenerateApps() {
     .returning();
 
   console.log("✨ Complete apps generation process finished");
-  return actionCall;
+  return functionCall;
 }
