@@ -1,10 +1,11 @@
 // app/components/NavigationTree.tsx
 
 import { useState } from "react";
-import { Link } from "@remix-run/react";
+import { Link, useLocation } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Network, Play, Filter, Table } from "lucide-react";
 import { cn } from "~/lib/utils";
+import { ViewSelector } from "~/components/ViewSelector";
 
 export type NavigationNode = {
   id: number;
@@ -38,6 +39,8 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   const hasChildren = node.children.length > 0;
   const isRoot = node.type === "root";
   const isApp = node.type === "app";
+  const location = useLocation();
+  const isBackOffice = location.pathname.startsWith("/back-office");
 
   const content = (
     <div className="flex items-center gap-2">
@@ -66,11 +69,11 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
     // Use urlName for the link if available, otherwise fallback to lowercase name
     const to =
       node.type === "file"
-        ? `/objects/${node.urlName || node.name.toLowerCase()}`
+        ? `/${isBackOffice ? "back-office" : "objects"}/${node.urlName || node.name.toLowerCase()}`
         : node.name.toLowerCase();
 
     return (
-      <Link to={to} className={itemClasses}>
+      <Link to={to} className={itemClasses} data-discover="true">
         {content}
       </Link>
     );
@@ -102,6 +105,7 @@ interface NavigationTreeProps {
 export function NavigationTree({ data }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">
+      <ViewSelector />
       <NavigationItem node={data} />
     </div>
   );
