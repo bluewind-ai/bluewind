@@ -5,6 +5,7 @@ import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree } from "~/components/NavigationTree";
 import { getTableMetadata } from "~/db/schema";
 import type { ViewData } from "~/routes/_app";
+import type { NavigationNode } from "~/components/NavigationTree";
 
 const views: ViewData[] = [
   {
@@ -19,21 +20,21 @@ const views: ViewData[] = [
   },
 ];
 
-const navigationData = {
-  id: 0,
-  name: "Database",
-  type: "root" as const,
-  iconKey: "database",
-  children: getTableMetadata().map((table, index) => ({
-    id: index + 1,
-    name: table.displayName,
-    urlName: table.urlName,
-    type: "file" as const,
-    children: [],
-  })),
-};
-
 export async function loader({ request: _request }: LoaderFunctionArgs) {
+  const navigationData: NavigationNode = {
+    id: 0,
+    name: "Database",
+    type: "root",
+    iconKey: "database",
+    children: getTableMetadata().map((table, index) => ({
+      id: index + 1,
+      name: table.displayName,
+      urlName: table.urlName,
+      type: "file" as const,
+      children: [] as NavigationNode[],
+    })),
+  };
+
   return json({
     navigationData,
     views,
@@ -45,7 +46,7 @@ export default function ObjectsRoot() {
 
   return (
     <div className="flex h-full">
-      <NavigationTree data={navigationData} views={views} />
+      <NavigationTree data={navigationData as NavigationNode} views={views} />
       <div className="flex-1">
         <Outlet />
       </div>
