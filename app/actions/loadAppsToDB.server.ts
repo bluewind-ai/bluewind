@@ -1,5 +1,3 @@
-
-
 // app/actions/loadAppsToDB.server.ts
 
 import { db } from "~/db";
@@ -29,7 +27,6 @@ export async function loadAppsToDB() {
       });
   }
 
-  
   const thisAction = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });

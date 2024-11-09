@@ -11,12 +11,12 @@ import { getActionCallTree } from "~/actions/get-action-call-tree.server";
 import { executeGenerateApps } from "~/actions/executeGenerateApps.server";
 
 export const actions = {
-  "master": master,
-  "loadAppsToDB": loadAppsToDB,
+  master: master,
+  loadAppsToDB: loadAppsToDB,
   "load-selectors": loadSelectors,
   "load-csv-data": loadCsvData,
   "load-actions": loadActions,
   "get-tables": getTables,
   "get-action-call-tree": getActionCallTree,
-  "executeGenerateApps": executeGenerateApps
+  executeGenerateApps: executeGenerateApps,
 } as const;
