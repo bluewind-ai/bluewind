@@ -14,15 +14,17 @@ export const loader: LoaderFunction = async () => {
 
   if (!masterAction) {
     // Create master action if it doesn't exist
-    const [newMasterAction] = await db.insert(actions)
+    const [newMasterAction] = await db
+      .insert(actions)
       .values({
         name: "master",
-        type: "system"
+        type: "system",
       })
       .returning();
 
     // Create its function call
-    const [newFunctionCall] = await db.insert(functionCalls)
+    const [newFunctionCall] = await db
+      .insert(functionCalls)
       .values({
         actionId: newMasterAction.id,
         status: "ready_for_approval",
@@ -34,15 +36,13 @@ export const loader: LoaderFunction = async () => {
 
   // Get the root master function call
   const masterFunctionCall = await db.query.functionCalls.findFirst({
-    where: and(
-      eq(functionCalls.actionId, masterAction.id),
-      isNull(functionCalls.parentId)
-    ),
+    where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
   });
 
   if (!masterFunctionCall) {
     // Create master function call if it doesn't exist
-    const [newFunctionCall] = await db.insert(functionCalls)
+    const [newFunctionCall] = await db
+      .insert(functionCalls)
       .values({
         actionId: masterAction.id,
         status: "ready_for_approval",
