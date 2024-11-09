@@ -100,7 +100,7 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
 
 interface NavigationTreeProps {
   data: NavigationNode;
-  apps: typeof apps.$inferSelect[];
+  apps: (typeof apps.$inferSelect)[];
 }
 
 export function NavigationTree({ data, apps }: NavigationTreeProps) {
