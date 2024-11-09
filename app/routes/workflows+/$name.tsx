@@ -9,11 +9,11 @@ import { TABLES } from "~/db/schema";
 export async function loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
 
-  if (name === 'action-calls') {
+  if (name === "action-calls") {
     const data = await db.query.actionCalls.findMany({
       with: {
         action: true,
-        parent: true
+        parent: true,
       },
       orderBy: (actionCalls) => [actionCalls.createdAt],
     });
