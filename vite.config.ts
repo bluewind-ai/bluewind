@@ -47,16 +47,13 @@ export default defineConfig({
     },
   },
   publicDir: "public",
-  // Add these logging options:
   logLevel: "info",
   clearScreen: false,
   server: {
     hmr: {
-      logger: {
-        info: (...args) => console.log("🔄 [HMR]", ...args),
-        warn: (...args) => console.warn("⚠️ [HMR]", ...args),
-        error: (...args) => console.error("❌ [HMR]", ...args),
-      },
+      overlay: true,
+      // Log all HMR updates
+      log: "info",
     },
   },
 });
