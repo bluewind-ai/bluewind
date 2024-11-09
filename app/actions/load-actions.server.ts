@@ -1,7 +1,7 @@
 // app/actions/load-actions.server.ts
 
 import { db } from "~/db";
-import { actions, actionCalls } from "~/db/schema";
+import { actions, functionCalls } from "~/db/schema";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -48,7 +48,7 @@ export const loadActions = async () => {
   if (!thisAction) throw new Error("load-actions not found in database");
 
   const [actionCall] = await db
-    .insert(actionCalls)
+    .insert(functionCalls)
     .values({
       actionId: thisAction.id,
       status: "completed",

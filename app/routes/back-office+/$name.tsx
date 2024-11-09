@@ -27,8 +27,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
     case "actions":
       data = await db.query.actions.findMany();
       break;
-    case "actionCalls":
-      data = await db.query.actionCalls.findMany();
+    case "functionCalls":
+      data = await db.query.functionCalls.findMany();
       break;
     case "requestErrors":
       data = await db.query.requestErrors.findMany();

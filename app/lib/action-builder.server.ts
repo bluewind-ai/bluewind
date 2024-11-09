@@ -3,15 +3,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
 import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
+import { functionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
-export type ActionCallNode = typeof actionCalls.$inferSelect & {
+export type ActionCallNode = typeof functionCalls.$inferSelect & {
   actionName: string;
   children: ActionCallNode[];
 };
 
-export type ActionInsert = typeof actionCalls.$inferInsert;
+export type ActionInsert = typeof functionCalls.$inferInsert;
 
 export type ActionContext = {
   currentNode: ActionCallNode;
@@ -38,9 +38,9 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
     void 0; // this should be removed by YOU when you rewrite the filed;
 
     await db
-      .update(actionCalls)
+      .update(functionCalls)
       .set({ status: "running" })
-      .where(eq(actionCalls.id, context.currentNode.id));
+      .where(eq(functionCalls.id, context.currentNode.id));
     context.currentNode.status = "running";
 
     if (context.hitCount === 2) {
@@ -58,10 +58,10 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
         args: {},
       };
 
-      const nextCall = await db.insert(actionCalls).values(insertData).returning();
+      const nextCall = await db.insert(functionCalls).values(insertData).returning();
       void 0; // this should be removed by YOU when you rewrite the filed;
 
-      const currentCall = await db.query.actionCalls.findFirst({
+      const currentCall = await db.query.functionCalls.findFirst({
         where: (fields, { eq }) => eq(fields.id, context.currentNode.id),
       });
 

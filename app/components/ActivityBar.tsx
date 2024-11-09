@@ -6,9 +6,9 @@
 // import { Logo } from "~/components/icons/logo";
 // import { cn } from "~/lib/utils";
 // import type { InferSelectModel } from "drizzle-orm";
-// import { actionCalls } from "~/db/schema";
+// import { functionCalls } from "~/db/schema";
 
-// type ActionCall = InferSelectModel<typeof actionCalls>;
+// type ActionCall = InferSelectModel<typeof functionCalls>;
 
 // export function ActivityBar({ className }: { className?: string; lastAction?: ActionCall }) {
 //   const navigate = useNavigate();
@@ -43,7 +43,7 @@
 //         variant="ghost"
 //         size="icon"
 //         className="h-10 w-10"
-//         onClick={() => navigate("/selectors/get-action-call-tree")}
+//         onClick={() => navigate("/selectors/get-function-call-tree")}
 //       >
 //         <Filter className="h-5 w-5" />
 //       </Button>

@@ -49,12 +49,12 @@ export function enrichAction(action: typeof actions.$inferSelect): Action {
   };
 }
 
-export const actionCalls = pgTable("action_calls", {
+export const functionCalls = pgTable("function_calls", {
   id: serial("id").primaryKey(),
   actionId: integer("action_id")
     .references(() => actions.id, { onDelete: "cascade" })
     .notNull(),
-  parentId: integer("parent_id").references((): AnyPgColumn => actionCalls.id, {
+  parentId: integer("parent_id").references((): AnyPgColumn => functionCalls.id, {
     onDelete: "cascade",
   }),
   status: varchar("status", { length: 256 }).notNull().default("ready_for_approval"),
@@ -74,19 +74,19 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
 }));
 
-export const actionCallsRelations = relations(actionCalls, ({ one }) => ({
+export const functionCallsRelations = relations(functionCalls, ({ one }) => ({
   action: one(actions, {
-    fields: [actionCalls.actionId],
+    fields: [functionCalls.actionId],
     references: [actions.id],
   }),
-  parent: one(actionCalls, {
-    fields: [actionCalls.parentId],
-    references: [actionCalls.id],
+  parent: one(functionCalls, {
+    fields: [functionCalls.parentId],
+    references: [functionCalls.id],
   }),
 }));
 
 export const actionsRelations = relations(actions, ({ many }) => ({
-  calls: many(actionCalls),
+  calls: many(functionCalls),
 }));
 
 export const requestErrors = pgTable("request_errors", {
@@ -126,7 +126,7 @@ export const TABLES: Record<string, TableConfig> = {
     displayName: "Actions",
     urlName: "actions",
   },
-  actionCalls: {
+  functionCalls: {
     displayName: "Action Calls",
     urlName: "function-calls",
   },

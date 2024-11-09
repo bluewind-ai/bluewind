@@ -2,7 +2,7 @@
 
 import { json } from "@remix-run/node";
 import { db } from "~/db";
-import { apps, actions, actionCalls } from "~/db/schema";
+import { apps, actions, functionCalls } from "~/db/schema";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -119,7 +119,7 @@ async function syncApps() {
     }
 
     const [actionCall] = await db
-      .insert(actionCalls)
+      .insert(functionCalls)
       .values({
         actionId: thisAction.id,
         status: "completed",
@@ -193,7 +193,7 @@ async function syncActions() {
   }
 
   const [actionCall] = await db
-    .insert(actionCalls)
+    .insert(functionCalls)
     .values({
       actionId: thisAction.id,
       status: "completed",

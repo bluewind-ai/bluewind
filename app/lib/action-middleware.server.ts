@@ -3,16 +3,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
 import { db } from "~/db";
-import { actions, actionCalls } from "~/db/schema";
+import { actions, functionCalls } from "~/db/schema";
 import { actions as actionMap } from "./generated/actions";
 
-export type ActionCallNode = typeof actionCalls.$inferSelect & {
+export type ActionCallNode = typeof functionCalls.$inferSelect & {
   actionName: string;
   children: ActionCallNode[];
 };
 
 export type Action = typeof actions.$inferSelect;
-export type ActionInsert = typeof actionCalls.$inferInsert;
+export type ActionInsert = typeof functionCalls.$inferInsert;
 
 export type ActionContext = {
   currentNode: ActionCallNode;
@@ -53,10 +53,10 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
         args: {},
       };
 
-      const nextCall = await db.insert(actionCalls).values(insertData).returning();
+      const nextCall = await db.insert(functionCalls).values(insertData).returning();
       void 0; // this should be removed by YOU when you rewrite the filed;
 
-      const currentCall = await db.query.actionCalls.findFirst({
+      const currentCall = await db.query.functionCalls.findFirst({
         where: (fields, { eq }) => eq(fields.id, context.currentNode.id),
       });
 
@@ -102,7 +102,7 @@ export async function executeAction(name: keyof typeof actionMap) {
   }
 
   const rootCall = await db
-    .insert(actionCalls)
+    .insert(functionCalls)
     .values({
       actionId: action.id,
       status: "ready_for_approval",

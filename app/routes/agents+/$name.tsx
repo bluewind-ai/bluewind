@@ -10,12 +10,12 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
 
   if (name === "function-calls") {
-    const data = await db.query.actionCalls.findMany({
+    const data = await db.query.functionCalls.findMany({
       with: {
         action: true,
         parent: true,
       },
-      orderBy: (actionCalls) => [actionCalls.createdAt],
+      orderBy: (functionCalls) => [functionCalls.createdAt],
     });
 
     return json({ data });

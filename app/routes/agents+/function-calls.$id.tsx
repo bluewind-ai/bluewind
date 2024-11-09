@@ -3,14 +3,14 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
+import { functionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const { id } = params;
 
-  const actionCall = await db.query.actionCalls.findFirst({
-    where: eq(actionCalls.id, parseInt(id!)),
+  const actionCall = await db.query.functionCalls.findFirst({
+    where: eq(functionCalls.id, parseInt(id!)),
     with: {
       action: true,
       parent: true,

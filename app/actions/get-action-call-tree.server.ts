@@ -2,7 +2,7 @@
 
 import { createAction } from "~/lib/action-builder.server";
 import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
+import { functionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
 interface ActionCallTree {
@@ -13,27 +13,25 @@ interface ActionCallTree {
   children: ActionCallTree[];
 }
 
-export const getActionCallTree = createAction("get-action-call-tree", async () => {
-  const allCalls = await db.query.actionCalls.findMany({
+export const getActionCallTree = createAction("get-function-call-tree", async () => {
+  const allCalls = await db.query.functionCalls.findMany({
     with: {
       action: true,
     },
-    orderBy: (actionCalls, { asc }) => [asc(actionCalls.id)],
+    orderBy: (functionCalls, { asc }) => [asc(functionCalls.id)],
   });
 
-  // Get last action call as entry point
   const lastCall = allCalls[allCalls.length - 1];
   if (!lastCall) {
     throw new Error("No action calls found");
   }
 
-  // Find root
   let rootId = lastCall.id;
   let currentParentId: number | null = lastCall.parentId;
 
   while (currentParentId) {
-    const parent = await db.query.actionCalls.findFirst({
-      where: eq(actionCalls.id, currentParentId),
+    const parent = await db.query.functionCalls.findFirst({
+      where: eq(functionCalls.id, currentParentId),
       with: {
         action: true,
       },

@@ -1,15 +1,15 @@
 // app/lib/actions.server.ts
 
 import { db } from "~/db";
-import { actionCalls, actions } from "~/db/schema";
+import { functionCalls, actions } from "~/db/schema";
 import { and, inArray, isNull, eq, desc } from "drizzle-orm";
 
 export async function findNextOrCreateMaster() {
   // First check for any existing action calls that need approval
-  const existingActionCall = await db.query.actionCalls.findFirst({
+  const existingActionCall = await db.query.functionCalls.findFirst({
     where: and(
-      isNull(actionCalls.parentId),
-      inArray(actionCalls.status, ["ready_for_approval"] as const),
+      isNull(functionCalls.parentId),
+      inArray(functionCalls.status, ["ready_for_approval"] as const),
     ),
     with: {
       action: true,
@@ -21,8 +21,8 @@ export async function findNextOrCreateMaster() {
   }
 
   // If no action calls need approval, get the last action call
-  const lastActionCall = await db.query.actionCalls.findFirst({
-    orderBy: [desc(actionCalls.id)],
+  const lastActionCall = await db.query.functionCalls.findFirst({
+    orderBy: [desc(functionCalls.id)],
   });
 
   if (lastActionCall) {
@@ -39,7 +39,7 @@ export async function findNextOrCreateMaster() {
     (await db.insert(actions).values({ name: "master", type: "action" }).returning())[0];
 
   const [newActionCall] = await db
-    .insert(actionCalls)
+    .insert(functionCalls)
     .values({ actionId: action.id, status: "ready_for_approval" })
     .returning();
 

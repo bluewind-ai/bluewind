@@ -1,7 +1,7 @@
 // ... (previous code stays the same until the .values part)
 
 await tx
-              .insert(actionCalls)
+              .insert(functionCalls)
               .values({
                 actionId: existingAction.id,
                 status: "running"

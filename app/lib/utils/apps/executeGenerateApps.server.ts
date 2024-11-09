@@ -1,7 +1,7 @@
 // app/lib/utils/apps/executeGenerateApps.server.ts
 
 import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
+import { functionCalls } from "~/db/schema";
 import { generateApps } from "./generateApps.server";
 import { loadAppsToDB } from "./loadAppsToDB.server";
 
@@ -21,7 +21,7 @@ export async function executeGenerateApps() {
   if (!thisAction) throw new Error("execute-generate-apps not found in database");
 
   const [actionCall] = await db
-    .insert(actionCalls)
+    .insert(functionCalls)
     .values({
       actionId: thisAction.id,
       status: "completed",

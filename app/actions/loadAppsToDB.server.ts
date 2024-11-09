@@ -1,7 +1,7 @@
 // app/actions/loadAppsToDB.server.ts
 
 import { db } from "~/db";
-import { actionCalls, apps } from "~/db/schema";
+import { functionCalls, apps } from "~/db/schema";
 import { apps as generatedApps } from "~/lib/generated/apps";
 
 export async function loadAppsToDB() {
@@ -37,7 +37,7 @@ export async function loadAppsToDB() {
     if (!thisAction) throw new Error("load-apps-to-db not found in database");
 
     const [actionCall] = await db
-      .insert(actionCalls)
+      .insert(functionCalls)
       .values({
         actionId: thisAction.id,
         status: "completed",

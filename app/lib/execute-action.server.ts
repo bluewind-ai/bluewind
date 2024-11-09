@@ -2,7 +2,7 @@
 
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
+import { functionCalls } from "~/db/schema";
 import { actions as actionMap } from "./generated/actions";
 import { contextStore } from "./action-builder.server";
 import type { ActionInsert } from "./action-builder.server";
@@ -23,7 +23,7 @@ export async function executeAction({ params }: ActionFunctionArgs) {
   }
 
   const rootCall = await db
-    .insert(actionCalls)
+    .insert(functionCalls)
     .values({
       actionId: action.id,
       status: "ready_for_approval",

@@ -1,7 +1,7 @@
 // app/lib/utils/apps/generateApps.server.ts
 
 import { db } from "~/db";
-import { actionCalls } from "~/db/schema";
+import { functionCalls } from "~/db/schema";
 import fs from "fs";
 import path from "path";
 
@@ -31,7 +31,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
   if (!thisAction) throw new Error("generate-apps not found in database");
 
   const [actionCall] = await db
-    .insert(actionCalls)
+    .insert(functionCalls)
     .values({
       actionId: thisAction.id,
       status: "completed",
