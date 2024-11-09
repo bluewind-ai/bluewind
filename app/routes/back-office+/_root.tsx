@@ -15,7 +15,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     children: getTableMetadata().map((table, index) => ({
       id: index + 1,
       name: table.displayName,
-      urlName: table.urlName,
+      to: `/back-office/${table.urlName}`,
       type: "file" as const,
       children: [] as NavigationNode[],
     })),
