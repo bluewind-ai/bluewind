@@ -1,17 +1,13 @@
 // app/actions/load-apps-to-db.server.ts
 
 import { db } from "~/db";
-import { functionCalls, apps, FunctionCallStatus } from "~/db/schema";
-import { apps as generatedApps } from "~/lib/generated/apps";
+import { apps } from "~/lib/generated/apps";
+import { functionCalls, FunctionCallStatus } from "~/db/schema";
 
-export async function loadAppsToDB() {
-  void 0;
-  void 0;
-
+export async function loadAppsToDb() {
+  // Changed from loadAppsToDB
   try {
-    void 0;
-    for (const app of generatedApps) {
-      void 0;
+    for (const app of apps) {
       await db
         .insert(apps)
         .values({
@@ -30,11 +26,20 @@ export async function loadAppsToDB() {
         });
     }
 
-    const thisAction = await db.query.actions.findFirst({
+    let thisAction = await db.query.actions.findFirst({
       where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
     });
 
-    if (!thisAction) throw new Error("load-apps-to-db not found in database");
+    if (!thisAction) {
+      const [newAction] = await db
+        .insert(actions)
+        .values({
+          name: "load-apps-to-db",
+          type: ActionType.SYSTEM,
+        })
+        .returning();
+      thisAction = newAction;
+    }
 
     const [functionCall] = await db
       .insert(functionCalls)
@@ -43,17 +48,14 @@ export async function loadAppsToDB() {
         status: FunctionCallStatus.COMPLETED,
         result: {
           success: true,
-          appsCount: generatedApps.length,
+          appsCount: apps.length,
         },
       })
       .returning();
 
-    void 0;
-    void 0;
     return functionCall;
   } catch (error) {
-    void 0;
-    void 0;
+    console.error("Error in loadAppsToDb:", error);
     throw error;
   }
 }
