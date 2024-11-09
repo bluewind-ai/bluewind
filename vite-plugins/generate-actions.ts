@@ -21,7 +21,7 @@ ${actionFiles
   .map((file) => {
     const basename = path.basename(file, ".server.ts");
     const camelName = kebabToCamel(basename);
-    return `import { ${camelName} } from "../actions/${basename}.server";`;
+    return `import { ${camelName} } from "~/actions/${basename}.server";`;
   })
   .join("\n")}
 
