@@ -21,7 +21,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
   const actionCallsData = await db.query.actionCalls.findMany({
     where: and(
       eq(actionCalls.actionId, masterAction.id),
-      isNull(actionCalls.parentId) // This is the fix - using isNull instead of eq(field, null)
+      isNull(actionCalls.parentId), // This is the fix - using isNull instead of eq(field, null)
     ),
     with: {
       action: true,
