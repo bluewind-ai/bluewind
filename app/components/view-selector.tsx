@@ -1,4 +1,4 @@
-// app/components/ViewSelector.tsx
+// app/components/view-selector.tsx
 
 import * as React from "react";
 import { useNavigate, useLocation } from "@remix-run/react";

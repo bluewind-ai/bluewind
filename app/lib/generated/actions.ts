@@ -7,7 +7,7 @@ import { loadActions } from "~/actions/load-actions.server";
 import { loadCsvData } from "~/actions/load-csv-data.server";
 import { loadFiles } from "~/actions/load-files.server";
 import { loadSelectors } from "~/actions/load-selectors.server";
-import { loadAppsToDB } from "~/actions/loadAppsToDB.server";
+import { loadAppsToDB } from "~/actions/load-apps-to-db.server";
 import { master } from "~/actions/master.server";
 
 export const actions = {
@@ -17,6 +17,6 @@ export const actions = {
   "load-csv-data": loadCsvData,
   "load-files": loadFiles,
   "load-selectors": loadSelectors,
-  "loadAppsToDB": loadAppsToDB,
-  "master": master
+  loadAppsToDB: loadAppsToDB,
+  master: master,
 } as const;

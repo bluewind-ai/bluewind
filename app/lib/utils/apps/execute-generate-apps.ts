@@ -1,9 +1,9 @@
-// app/lib/utils/apps/executeGenerateApps.server.ts
+// app/lib/utils/apps/execute-generate-apps.ts
 
 import { db } from "~/db";
 import { functionCalls, FunctionCallStatus } from "~/db/schema";
-import { generateApps } from "./generateApps.server";
-import { loadAppsToDB } from "./loadAppsToDB.server";
+import { loadAppsToDB } from "./load-apps-to-db-server";
+import { generateApps } from "./generate-apps";
 
 export async function executeGenerateApps() {
   console.log("🚀 Starting complete apps generation process");

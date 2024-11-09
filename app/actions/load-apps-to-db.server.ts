@@ -1,17 +1,17 @@
-// app/actions/loadAppsToDB.server.ts
+// app/actions/load-apps-to-db.server.ts
 
 import { db } from "~/db";
 import { functionCalls, apps, FunctionCallStatus } from "~/db/schema";
 import { apps as generatedApps } from "~/lib/generated/apps";
 
 export async function loadAppsToDB() {
-  void 0; // this should be removed by YOU when you rewrite the filed;
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  void 0;
+  void 0;
 
   try {
-    void 0; // this should be removed by YOU when you rewrite the filed;
+    void 0;
     for (const app of generatedApps) {
-      void 0; // this should be removed by YOU when you rewrite the filed;
+      void 0;
       await db
         .insert(apps)
         .values({
@@ -48,12 +48,12 @@ export async function loadAppsToDB() {
       })
       .returning();
 
-    void 0; // this should be removed by YOU when you rewrite the filed;
-    void 0; // this should be removed by YOU when you rewrite the filed;
+    void 0;
+    void 0;
     return functionCall;
   } catch (error) {
-    void 0; // this should be removed by YOU when you rewrite the filed;
-    void 0; // this should be removed by YOU when you rewrite the filed;
+    void 0;
+    void 0;
     throw error;
   }
 }

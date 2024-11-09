@@ -1,12 +1,12 @@
-// app/components/NavigationTree.tsx
+// app/components/navigation-tree.tsx
 
 import { useState } from "react";
 import { Link } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Network, Play, Filter, Table } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { ViewSelector } from "./ViewSelector";
 import { type apps } from "~/db/schema";
+import { ViewSelector } from "./view-selector";
 
 export type NavigationNode = {
   id: number;
@@ -61,7 +61,7 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
     "flex items-center gap-2 p-2 rounded-md w-full",
     "hover:bg-accent hover:text-accent-foreground transition-colors",
     isRoot && "h-12",
-    isApp && "pl-4", // Only indent apps
+    isApp && "pl-4",
   );
 
   if (!hasChildren && node.to) {
@@ -76,12 +76,7 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className={itemClasses}>{content}</CollapsibleTrigger>
       <CollapsibleContent>
-        <div
-          className={cn(
-            "flex flex-col gap-1 mt-1",
-            isApp && "pl-2", // Slight indent for file items under apps
-          )}
-        >
+        <div className={cn("flex flex-col gap-1 mt-1", isApp && "pl-2")}>
           {node.children.map((child) => (
             <NavigationItem key={child.id} node={child} level={level + 1} />
           ))}

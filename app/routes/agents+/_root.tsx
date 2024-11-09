@@ -2,7 +2,7 @@
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData, useFetcher } from "@remix-run/react";
-import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
+import { NavigationTree, type NavigationNode } from "~/components/navigation-tree";
 import { apps, functionCalls, actions } from "~/db/schema";
 import { db } from "~/db";
 import { eq, and, isNull } from "drizzle-orm";

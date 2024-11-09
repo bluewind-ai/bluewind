@@ -1,6 +1,5 @@
-// app/components/GenericTableView.tsx
+// app/components/generic-table-view.tsx
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,6 +11,7 @@ import {
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GenericRecord = Record<string, any>;
 
 interface GenericTableViewProps {
@@ -31,7 +31,6 @@ function createColumnsFromData(
 ) {
   if (data.length === 0) return [];
 
-  // Get all unique keys from the data
   const keys = [...new Set(data.flatMap(Object.keys))];
 
   const dataColumns = keys.map((key) =>
@@ -47,7 +46,6 @@ function createColumnsFromData(
     }),
   );
 
-  // Add extra columns
   const extraColumnsConfig = extraColumns.map((col) =>
     columnHelper.display({
       id: col.id,

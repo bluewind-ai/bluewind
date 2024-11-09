@@ -1,4 +1,4 @@
-// app/lib/utils/apps/loadAppsToDB.server.ts
+// app/lib/utils/apps/load-apps-to-db-server.ts
 
 import { db } from "~/db";
 import { functionCalls, apps, FunctionCallStatus } from "~/db/schema";

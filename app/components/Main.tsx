@@ -1,11 +1,10 @@
-// app/components/Main.tsx
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// app/components/main.tsx
 
 import { Form, useNavigation } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 
 interface MainProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   buttonLabel: string;
   vscodeUrl?: string;
@@ -16,6 +15,7 @@ function TreeNode({
   currentId,
   depth = 0,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   node: any;
   currentId?: number;
   depth?: number;
@@ -29,6 +29,7 @@ function TreeNode({
           {node.actionName}({node.status})
         </div>
       </div>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {node.children?.map((child: any) => (
         <TreeNode key={child.id} node={child} currentId={currentId} depth={depth + 1} />
       ))}
@@ -40,8 +41,8 @@ export function Main({ data, buttonLabel, vscodeUrl }: MainProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
-  void 0; // this should be removed by YOU when you rewrite the filed;
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  void 0;
+  void 0;
 
   const isTree = data.tree && data.currentId;
 

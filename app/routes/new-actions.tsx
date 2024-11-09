@@ -2,7 +2,7 @@
 
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { NewMain } from "~/components/NewMain";
+import { NewMain } from "~/components/new-main";
 import { db } from "~/db";
 import { enrichAction } from "~/db/schema";
 

@@ -1,4 +1,4 @@
-// app/lib/utils/apps/generateApps.server.ts
+// app/lib/utils/apps/generate-apps.ts
 
 import { db } from "~/db";
 import { functionCalls, FunctionCallStatus } from "~/db/schema";

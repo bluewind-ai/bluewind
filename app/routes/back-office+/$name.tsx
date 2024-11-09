@@ -2,7 +2,7 @@
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, useFetcher } from "@remix-run/react";
-import { GenericTableView } from "~/components/GenericTableView";
+import { GenericTableView } from "~/components/generic-table-view";
 import { db } from "~/db";
 import { TABLES } from "~/db/schema";
 import { Button } from "~/components/ui/button";

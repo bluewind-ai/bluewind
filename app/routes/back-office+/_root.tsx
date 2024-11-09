@@ -2,7 +2,7 @@
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
-import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
+import { NavigationTree, type NavigationNode } from "~/components/navigation-tree";
 import { getTableMetadata, apps } from "~/db/schema";
 import { db } from "~/db";
 

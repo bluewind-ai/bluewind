@@ -1,7 +1,7 @@
 // app/routes/api.load-apps.ts
 
 import { json } from "@remix-run/node";
-import { loadAppsToDB } from "~/actions/loadAppsToDB.server";
+import { loadAppsToDB } from "~/actions/load-apps-to-db.server";
 
 export async function action() {
   try {

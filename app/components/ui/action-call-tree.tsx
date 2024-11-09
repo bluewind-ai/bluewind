@@ -1,4 +1,4 @@
-// app/components/ui/ActionCallTree.tsx
+// app/components/ui/action-call-tree.tsx
 
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";

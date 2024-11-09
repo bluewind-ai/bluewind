@@ -14,7 +14,13 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client", "website/**"],
+  ignorePatterns: [
+    "!**/.server",
+    "!**/.client",
+    "website/**",
+    "eslint-plugin-local/**",
+    ".eslintrc.cjs",
+  ],
 
   extends: ["eslint:recommended"],
   plugins: ["local", "unused-imports"],
@@ -24,6 +30,7 @@ module.exports = {
       files: ["*.js", "*.mjs", "*.ts", "*.tsx"],
       rules: {
         "local/file-header": "error",
+        "local/file-naming": "error",
         "unused-imports/no-unused-imports": "error",
         "unused-imports/no-unused-vars": [
           "warn",
@@ -35,6 +42,8 @@ module.exports = {
       files: ["eslint-plugin-local/**/*.js", "tailwind.config.ts"],
       rules: {
         "@typescript-eslint/no-require-imports": "off",
+        "local/file-header": "off",
+        "local/file-naming": "off",
       },
     },
 
@@ -93,6 +102,7 @@ module.exports = {
   ],
   rules: {
     "local/file-header": "error",
+    "local/file-naming": "error",
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
   },
 };

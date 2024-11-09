@@ -1,4 +1,4 @@
-// app/components/NewMain.tsx
+// app/components/new-main.tsx
 
 import {
   useReactTable,
