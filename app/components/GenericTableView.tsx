@@ -16,17 +16,22 @@ type GenericRecord = Record<string, any>;
 
 interface GenericTableViewProps {
   data: GenericRecord[];
+  extraColumns?: Array<{
+    id: string;
+    header: string;
+    cell: (row: GenericRecord) => React.ReactNode;
+  }>;
 }
 
 const columnHelper = createColumnHelper<GenericRecord>();
 
-function createColumnsFromData(data: GenericRecord[]) {
+function createColumnsFromData(data: GenericRecord[], extraColumns: GenericTableViewProps['extraColumns'] = []) {
   if (data.length === 0) return [];
 
   // Get all unique keys from the data
   const keys = [...new Set(data.flatMap(Object.keys))];
 
-  return keys.map((key) =>
+  const dataColumns = keys.map((key) =>
     columnHelper.accessor(key, {
       header: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
       cell: (info) => {
@@ -38,11 +43,22 @@ function createColumnsFromData(data: GenericRecord[]) {
       },
     }),
   );
+
+  // Add extra columns
+  const extraColumnsConfig = extraColumns.map(col =>
+    columnHelper.display({
+      id: col.id,
+      header: col.header,
+      cell: (info) => col.cell(info.row.original)
+    })
+  );
+
+  return [...dataColumns, ...extraColumnsConfig];
 }
 
-export function GenericTableView({ data }: GenericTableViewProps) {
+export function GenericTableView({ data, extraColumns }: GenericTableViewProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const columns = createColumnsFromData(data);
+  const columns = createColumnsFromData(data, extraColumns);
 
   const table = useReactTable({
     data,

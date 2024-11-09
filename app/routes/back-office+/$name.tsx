@@ -5,6 +5,7 @@ import { useLoaderData } from "@remix-run/react";
 import { GenericTableView } from "~/components/GenericTableView";
 import { db } from "~/db";
 import { TABLES } from "~/db/schema";
+import { Button } from "~/components/ui/button";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
@@ -45,5 +46,24 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function TableRoute() {
   const { data } = useLoaderData<typeof loader>();
-  return <GenericTableView data={data} />;
+
+  const extraColumns = [
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: (row: any) => (
+        <Button
+          onClick={() => {
+            console.log('Clicked action for row:', row);
+          }}
+          size="sm"
+          variant="outline"
+        >
+          Action
+        </Button>
+      ),
+    },
+  ];
+
+  return <GenericTableView data={data} extraColumns={extraColumns} />;
 }
