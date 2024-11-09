@@ -1,4 +1,4 @@
-// File: app/components/ViewSelector.tsx
+// app/components/ViewSelector.tsx
 
 import * as React from "react";
 import { useNavigate, useLocation } from "@remix-run/react";
@@ -44,7 +44,7 @@ export function ViewSelector() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between opacity-50 hover:opacity-100 transition-opacity"
         >
           <div className="flex items-center">
             {selectedView?.icon}
@@ -74,7 +74,7 @@ export function ViewSelector() {
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      value === view.value ? "opacity-100" : "opacity-0",
+                      value === view.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
