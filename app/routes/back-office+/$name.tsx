@@ -50,8 +50,8 @@ export default function TableRoute() {
 
   const extraColumns = [
     {
-      id: 'actions',
-      header: 'Actions',
+      id: "actions",
+      header: "Actions",
       cell: (row: any) => (
         <Button
           size="sm"
@@ -63,7 +63,7 @@ export default function TableRoute() {
                 method: "get",
                 action: `/functions/${row.name}`,
                 preventScrollReset: true,
-              }
+              },
             );
           }}
         >
