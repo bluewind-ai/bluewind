@@ -14,7 +14,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     with: {
       action: true,
       parent: true,
-    }
+    },
   });
 
   if (!actionCall) {
