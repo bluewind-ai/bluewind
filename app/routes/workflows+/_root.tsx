@@ -3,9 +3,8 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
-import { getTableMetadata } from "~/db/schema";
+import { getTableMetadata , apps } from "~/db/schema";
 import { db } from "~/db";
-import { apps } from "~/db/schema";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {
