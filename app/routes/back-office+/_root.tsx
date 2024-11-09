@@ -1,8 +1,23 @@
 // app/routes/back-office+/_root.tsx
 
-import { Outlet } from "@remix-run/react";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree } from "~/components/NavigationTree";
 import { getTableMetadata } from "~/db/schema";
+import type { ViewData } from "~/routes/_app";
+
+const views: ViewData[] = [
+  {
+    value: "objects",
+    label: "Database",
+    iconKey: "database",
+  },
+  {
+    value: "back-office",
+    label: "Back Office",
+    iconKey: "table",
+  },
+];
 
 const navigationData = {
   id: 0,
@@ -18,10 +33,19 @@ const navigationData = {
   })),
 };
 
+export async function loader({ request: _request }: LoaderFunctionArgs) {
+  return json({
+    navigationData,
+    views,
+  });
+}
+
 export default function ObjectsRoot() {
+  const { navigationData, views } = useLoaderData<typeof loader>();
+
   return (
     <div className="flex h-full">
-      <NavigationTree data={navigationData} />
+      <NavigationTree data={navigationData} views={views} />
       <div className="flex-1">
         <Outlet />
       </div>
