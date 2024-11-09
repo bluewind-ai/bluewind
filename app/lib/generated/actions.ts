@@ -9,6 +9,7 @@ import { loadActions } from "~/actions/load-actions.server";
 import { getTables } from "~/actions/get-tables.server";
 import { getActionCallTree } from "~/actions/get-action-call-tree.server";
 import { generateApps } from "~/actions/generate-apps.server";
+import { executeGenerateApps } from "~/actions/executeGenerateApps.server";
 
 export const actions = {
   master: master,
@@ -19,4 +20,5 @@ export const actions = {
   "get-tables": getTables,
   "get-action-call-tree": getActionCallTree,
   "generate-apps": generateApps,
+  executeGenerateApps: executeGenerateApps,
 } as const;
