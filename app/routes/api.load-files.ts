@@ -14,6 +14,13 @@ const APPS_DATA = [
     iconKey: "settings",
     order: 1,
   },
+  {
+    id: 2,
+    value: "workflows",
+    name: "Workflows",
+    iconKey: "workflow",
+    order: 2,
+  },
 ];
 
 async function generateAppsFile() {
