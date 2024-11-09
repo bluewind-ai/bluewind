@@ -3,7 +3,7 @@
 import { useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
-import { Main } from "~/components/Main";
+import { NewMain } from "~/components/NewMain";
 import { GenericTableView } from "~/components/GenericTableView";
 
 export type ViewData = {
@@ -56,13 +56,11 @@ export default function Index() {
   const { navigationData } = useLoaderData<typeof loader>();
 
   return (
-    <Main data={[]} buttonLabel="Create">
-      <div className="flex h-full">
-        <NavigationTree data={navigationData} />
-        <div className="flex-1">
-          <GenericTableView data={[]} />
-        </div>
+    <div className="flex h-full">
+      <NavigationTree data={navigationData} />
+      <div className="flex-1">
+        <NewMain data={[]} />
       </div>
-    </Main>
+    </div>
   );
 }
