@@ -34,13 +34,13 @@ export async function loader() {
       {
         id: 1,
         name: "Database Objects",
-        type: "folder" as const,
+        type: "app" as const,
         children: [],
       },
       {
         id: 2,
         name: "Actions",
-        type: "folder" as const,
+        type: "app" as const,
         children: [],
       },
     ],
@@ -56,7 +56,10 @@ export default function Index() {
   const { navigationData } = useLoaderData<typeof loader>();
 
   return (
-    <Main>
+    <Main
+      data={[]}
+      buttonLabel="Create"
+    >
       <div className="flex h-full">
         <NavigationTree data={navigationData} />
         <div className="flex-1">
