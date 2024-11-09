@@ -8,6 +8,7 @@ import autoprefixer from "autoprefixer";
 import { flatRoutes } from "remix-flat-routes";
 import { actionsPlugin } from "./vite-plugins/generate-actions";
 import { requestLoggerPlugin } from "./vite-plugins/request-logger";
+import { appsPlugin } from "./vite-plugins/generate-apps";
 
 declare module "@remix-run/node" {
   interface Future {
@@ -32,6 +33,7 @@ export default defineConfig({
     }),
     tsconfigPaths(),
     actionsPlugin(),
+    appsPlugin(),
     requestLoggerPlugin(),
   ],
   css: {
