@@ -3,15 +3,30 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
-import { apps, actionCalls } from "~/db/schema";
+import { apps, actionCalls, actions } from "~/db/schema";
 import { db } from "~/db";
+import { eq, and } from "drizzle-orm";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
+  // First get the master action ID
+  const masterAction = await db.query.actions.findFirst({
+    where: eq(actions.name, "master")
+  });
+
+  if (!masterAction) {
+    throw new Error("Master action not found");
+  }
+
+  // Get master action calls and their children
   const actionCallsData = await db.query.actionCalls.findMany({
-    orderBy: actionCalls.createdAt,
+    where: and(
+      eq(actionCalls.actionId, masterAction.id),
+      eq(actionCalls.parentId, null)  // root level calls only
+    ),
     with: {
       action: true,
     },
+    orderBy: actionCalls.createdAt,
   });
 
   const navigationData: NavigationNode = {
@@ -21,7 +36,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     iconKey: "database",
     children: actionCallsData.map((actionCall, index) => ({
       id: index + 1,
-      name: actionCall.action.name,
+      name: `Master ${actionCall.id}`,  // or however you want to name these
       urlName: `action-calls/${actionCall.id}`,
       type: "file" as const,
       children: [] as NavigationNode[],
