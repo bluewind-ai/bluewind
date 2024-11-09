@@ -81,9 +81,9 @@ async function main(): Promise<void> {
         console.log("Fix command completed with warnings - continuing");
       }
 
-      // Force add and commit the files
+      // Force add and commit only the updated files
       try {
-        await git.add([...updatedFiles, "claude-answer.txt"]);
+        await git.add(updatedFiles);
         await git.commit("checkpoint");
         console.log("Files updated and changes committed successfully");
       } catch (commitError) {
