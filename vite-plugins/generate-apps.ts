@@ -13,7 +13,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    },
+    }
   ];
 
   const fileContent = `
@@ -29,7 +29,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
   const filePath = path.join(generatedDir, "apps.ts");
 
   try {
-    const existingContent = await fs.readFile(filePath, "utf-8");
+    const existingContent = await fs.readFile(filePath, 'utf-8');
     if (existingContent.trim() === fileContent.trim()) {
       return; // File is identical, do nothing
     }
@@ -43,8 +43,9 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 
 async function loadAppsToDb() {
   try {
-    const response = await fetch("http://localhost:3000/api/load-apps", {
-      method: "POST",
+    console.log("📡 Calling load-apps endpoint...");
+    const response = await fetch('http://localhost:3000/api/load-apps', {
+      method: 'POST',
     });
     if (!response.ok) {
       throw new Error(`Failed to load apps: ${response.statusText}`);
@@ -62,9 +63,14 @@ export function appsPlugin(): Plugin {
       console.log("🔌 Apps plugin initialized");
 
       // Listen for HMR completion
-      server.ws.on("hmr:completion", () => {
-        console.log("🔄 HMR completed, loading apps to DB");
-        loadAppsToDb();
+      server.ws.on("hmr:completion", async () => {
+        console.log("\n=== 🔄 HMR Cycle Complete ===");
+        try {
+          await loadAppsToDb();
+          console.log("=== ✨ App Sync Complete ===\n");
+        } catch (error) {
+          console.log("=== ❌ App Sync Failed ===\n");
+        }
       });
 
       server.watcher.on("change", async (filePath) => {
@@ -89,6 +95,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    },
+    }
   };
 }
