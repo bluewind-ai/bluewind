@@ -1,11 +1,12 @@
 // vite-plugins/generate-apps.ts
 
 import { Plugin } from "vite";
-import { executeGenerateApps } from "../app/actions/executeGenerateApps.server";
 import path from "path";
+import { executeGenerateApps } from "../app/actions/executeGenerateApps.server";
+// Change any other ~ imports to relative paths
 
 export function appsPlugin(): Plugin {
-  console.log("🎯 Apps plugin being registered"); // This should show up when Vite loads plugins
+  console.log("🎯 Apps plugin being registered");
 
   return {
     name: "apps",
@@ -16,18 +17,19 @@ export function appsPlugin(): Plugin {
       console.log("🚀 Apps plugin server configuration starting");
       console.log("🔌 Server instance received:", !!server);
 
-      // Watch for route changes
       server.watcher.on("change", async (filePath) => {
         console.log("👀 Watcher detected change:", filePath);
         if (filePath.includes(path.join("app", "routes"))) {
           console.log("📁 Route change detected:", filePath);
-          await executeGenerateApps().catch((err) => {
+          try {
+            await executeGenerateApps();
+            console.log("✅ Apps generation complete after route change");
+          } catch (err) {
             console.error("❌ Execute apps error:", err);
-          });
+          }
         }
       });
 
-      // Initial generation
       try {
         await executeGenerateApps();
         console.log("✅ Initial apps generation complete");
