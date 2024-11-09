@@ -1,4 +1,4 @@
-// app/components/ui/ActionCallTree.tsx
+// app/components/ui/FunctionCallTree.tsx
 
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
@@ -58,7 +58,7 @@ function ActionCallNode({ node, level = 0 }: { node: TreeNode; level?: number })
   );
 }
 
-export function ActionCallTree({ initialTreeData }: { initialTreeData: TreeNode }) {
+export function FunctionCallTree({ initialTreeData }: { initialTreeData: TreeNode }) {
   return (
     <div className="w-64 border-r h-[calc(100vh-64px)] overflow-y-auto bg-white">
       <div className="p-4">

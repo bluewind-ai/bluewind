@@ -5,15 +5,15 @@ import { db } from "~/db";
 import { functionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
-interface ActionCallTree {
+interface FunctionCallTree {
   id: number;
   parentId: number | null;
   status: string;
   actionName: string;
-  children: ActionCallTree[];
+  children: FunctionCallTree[];
 }
 
-export const getActionCallTree = createAction("get-function-call-tree", async () => {
+export const getFunctionCallTree = createAction("get-function-call-tree", async () => {
   const allCalls = await db.query.functionCalls.findMany({
     with: {
       action: true,
@@ -41,14 +41,14 @@ export const getActionCallTree = createAction("get-function-call-tree", async ()
     currentParentId = parent.parentId;
   }
 
-  function buildTree(rootId: number): ActionCallTree | null {
+  function buildTree(rootId: number): FunctionCallTree | null {
     const call = allCalls.find((c) => c.id === rootId);
     if (!call) return null;
 
     const children = allCalls
       .filter((c) => c.parentId === call.id)
       .map((child) => buildTree(child.id))
-      .filter((child): child is ActionCallTree => child !== null);
+      .filter((child): child is FunctionCallTree => child !== null);
 
     return {
       id: call.id,

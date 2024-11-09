@@ -14,7 +14,7 @@ export default function ActionCallsLayout() {
           collapsed={isCollapsed}
           onCollapse={setIsCollapsed}
         >
-          <ActionCallTree initialTreeData={mockTreeData} />
+          <FunctionCallTree initialTreeData={mockTreeData} />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={80}>
