@@ -12,13 +12,13 @@ import { generateApps } from "~/actions/generateApps.server";
 import { executeGenerateApps } from "~/actions/executeGenerateApps.server";
 
 export const actions = {
-  "master": master,
-  "loadAppsToDB": loadAppsToDB,
+  master: master,
+  loadAppsToDB: loadAppsToDB,
   "load-selectors": loadSelectors,
   "load-csv-data": loadCsvData,
   "load-actions": loadActions,
   "get-tables": getTables,
   "get-action-call-tree": getActionCallTree,
-  "generateApps": generateApps,
-  "executeGenerateApps": executeGenerateApps
+  generateApps: generateApps,
+  executeGenerateApps: executeGenerateApps,
 } as const;
