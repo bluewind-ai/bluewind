@@ -15,6 +15,6 @@ export const actions = {
   "load-actions": loadActions,
   "load-csv-data": loadCsvData,
   "load-selectors": loadSelectors,
-  loadAppsToDB: loadAppsToDB,
-  master: master,
+  "loadAppsToDB": loadAppsToDB,
+  "master": master
 } as const;
