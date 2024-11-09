@@ -16,7 +16,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    }
+    },
   ];
 
   // Generate the apps file content
@@ -82,6 +82,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    }
+    },
   };
 }

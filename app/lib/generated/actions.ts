@@ -9,10 +9,10 @@ import { getTables } from "~/actions/get-tables.server";
 import { getActionCallTree } from "~/actions/get-action-call-tree.server";
 
 export const actions = {
-  master: master,
+  "master": master,
   "load-selectors": loadSelectors,
   "load-csv-data": loadCsvData,
   "load-actions": loadActions,
   "get-tables": getTables,
-  "get-action-call-tree": getActionCallTree,
+  "get-action-call-tree": getActionCallTree
 } as const;
