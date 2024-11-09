@@ -2,8 +2,8 @@
 
 import { db } from "~/db";
 import { actionCalls } from "~/db/schema";
-import { generateApps } from "./generateApps.server";
-import { loadAppsToDB } from "./loadAppsToDB.server";
+import { generateApps } from "./generateApps.server.ts";
+import { loadAppsToDB } from "./loadAppsToDB.server.ts";
 
 export async function executeGenerateApps() {
   console.log("🚀 Starting complete apps generation process");
