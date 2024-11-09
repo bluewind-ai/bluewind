@@ -1,7 +1,5 @@
 
-
-// app/lib/generated/apps.ts
-
+// THIS FILE IS AUTO-GENERATED - DO NOT EDIT
 export const apps = [
   {
     "id": 1,
