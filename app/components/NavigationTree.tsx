@@ -11,7 +11,7 @@ import { type apps } from "~/db/schema";
 export type NavigationNode = {
   id: number;
   name: string;
-  urlName?: string;
+  to?: string;
   iconKey?: string;
   type: "root" | "app" | "file";
   children: NavigationNode[];
@@ -40,8 +40,6 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   const hasChildren = node.children.length > 0;
   const isRoot = node.type === "root";
   const isApp = node.type === "app";
-  const location = useLocation();
-  const isBackOffice = location.pathname.startsWith("/back-office");
 
   const content = (
     <div className="flex items-center gap-2">
@@ -66,16 +64,9 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
     isApp && "pl-4", // Only indent apps
   );
 
-  if (!hasChildren) {
-    console.log("Creating link for node:", node);
-    const to =
-      node.type === "file"
-        ? `/${isBackOffice ? "back-office" : "objects"}/${node.urlName}`
-        : node.name.toLowerCase();
-    console.log("Generated URL:", to);
-
+  if (!hasChildren && node.to) {
     return (
-      <Link to={to} className={itemClasses} data-discover="true">
+      <Link to={node.to} className={itemClasses} data-discover="true">
         {content}
       </Link>
     );
