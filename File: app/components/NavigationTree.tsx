@@ -1,7 +1,6 @@
 // File: app/components/NavigationTree.tsx
 
 import { Link } from "@remix-run/react";
-import type { ViewData } from "~/routes/_app";
 
 export interface NavigationNode {
   id: number;
@@ -14,10 +13,9 @@ export interface NavigationNode {
 
 export interface NavigationTreeProps {
   data: NavigationNode;
-  views: ViewData[];
 }
 
-export function NavigationTree({ data, views }: NavigationTreeProps) {
+export function NavigationTree({ data }: NavigationTreeProps) {
   const renderNode = (node: NavigationNode) => {
     if (node.type === "file") {
       return (
