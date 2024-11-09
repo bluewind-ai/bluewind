@@ -16,7 +16,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    },
+    }
   ];
 
   // Generate the apps file content
@@ -36,9 +36,10 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
   console.log("✨ Apps file generated successfully");
 }
 
-export function appsPlugin(): Plugin {
-  let lock = false;
+// Global lock
+let globalLock = false;
 
+export function appsPlugin(): Plugin {
   return {
     name: "apps",
     async configureServer(server) {
@@ -46,7 +47,7 @@ export function appsPlugin(): Plugin {
 
       server.watcher.on("change", async (filePath) => {
         // Early return conditions
-        if (lock) {
+        if (globalLock) {
           console.log("🔒 Generation locked - skipping", filePath);
           return;
         }
@@ -61,7 +62,7 @@ export function appsPlugin(): Plugin {
         }
 
         // Set lock before starting
-        lock = true;
+        globalLock = true;
         console.log("🔐 Lock acquired");
 
         try {
@@ -70,7 +71,7 @@ export function appsPlugin(): Plugin {
         } catch (err) {
           console.error("❌ Apps generation error:", err);
         } finally {
-          lock = false;
+          globalLock = false;
           console.log("🔓 Lock released");
         }
       });
@@ -81,6 +82,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    },
+    }
   };
 }
