@@ -49,10 +49,10 @@ export function ViewSelector() {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Search view..." />
-          <CommandList>
+      <PopoverContent className="w-[200px] p-0 bg-popover shadow-md">
+        <Command className="bg-popover">
+          <CommandInput placeholder="Search view..." className="bg-transparent" />
+          <CommandList className="bg-popover">
             <CommandEmpty>No view found.</CommandEmpty>
             <CommandGroup>
               {views.map((view) => (
