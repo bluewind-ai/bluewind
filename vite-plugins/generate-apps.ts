@@ -6,6 +6,7 @@ import { executeGenerateApps } from "~/actions/executeGenerateApps.server";
 export function appsPlugin(): Plugin {
   return {
     name: "apps",
+
     async configureServer() {
       console.log("🔌 Apps plugin initialized");
       try {
