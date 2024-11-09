@@ -67,10 +67,11 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   );
 
   if (!hasChildren) {
-    const to =
-      node.type === "file"
-        ? `/${isBackOffice ? "back-office" : "objects"}/${node.name.toLowerCase()}`
-        : node.name.toLowerCase();
+    console.log('Creating link for node:', node);
+    const to = node.type === "file"
+      ? `/${isBackOffice ? "back-office" : "objects"}/${node.name.toLowerCase()}`
+      : node.name.toLowerCase();
+    console.log('Generated URL:', to);
 
     return (
       <Link to={to} className={itemClasses} data-discover="true">
@@ -100,7 +101,7 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
 
 interface NavigationTreeProps {
   data: NavigationNode;
-  apps: (typeof apps.$inferSelect)[];
+  apps: typeof apps.$inferSelect[];
 }
 
 export function NavigationTree({ data, apps }: NavigationTreeProps) {
