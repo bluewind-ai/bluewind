@@ -37,7 +37,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 }
 
 export function appsPlugin(): Plugin {
-  let debounceTimeout: NodeJS.Timeout | null = null;
+  let lock = false;
 
   return {
     name: "apps",
@@ -45,25 +45,34 @@ export function appsPlugin(): Plugin {
       console.log("🔌 Apps plugin initialized");
 
       server.watcher.on("change", async (filePath) => {
-        if (filePath.includes(path.join("app", "routes"))) {
-          if (debounceTimeout) {
-            clearTimeout(debounceTimeout);
-          }
-
-          debounceTimeout = setTimeout(async () => {
-            console.log("📁 Route change detected:", filePath);
-            try {
-              await generateAppsFile();
-            } catch (err) {
-              console.error("❌ Apps generation error:", err);
-            }
-          }, 100); // 100ms debounce
+        // Early return conditions
+        if (lock) {
+          console.log("🔒 Generation locked - skipping", filePath);
+          return;
         }
-      });
 
-      // Listen for HMR completion
-      server.ws.on("confirmation", () => {
-        console.log("🔄 HMR update completed");
+        if (filePath.includes("generated/apps.ts")) {
+          console.log("⏭️ Ignoring generated file change");
+          return;
+        }
+
+        if (!filePath.includes(path.join("app", "routes"))) {
+          return;
+        }
+
+        // Set lock before starting
+        lock = true;
+        console.log("🔐 Lock acquired");
+
+        try {
+          console.log("📁 Processing change:", filePath);
+          await generateAppsFile();
+        } catch (err) {
+          console.error("❌ Apps generation error:", err);
+        } finally {
+          lock = false;
+          console.log("🔓 Lock released");
+        }
       });
 
       // Initial generation
