@@ -2,25 +2,32 @@
 
 import { Plugin } from "vite";
 import { executeGenerateApps } from "../app/actions/executeGenerateApps.server";
+import type { HmrContext } from "vite";
+import path from "path";
 
 export function appsPlugin(): Plugin {
   return {
     name: "apps",
-    async configureServer() {
-      console.log("==========================================");
+    async configureServer(server) {
       console.log("🔌 Apps plugin initialized");
-      try {
-        console.log("🏃 Starting apps generation process via plugin");
-        const result = await executeGenerateApps();
-        console.log("✅ Apps generation complete - result:", result);
-      } catch (error) {
-        console.error("❌ Error in apps plugin:", error);
-        // Log the full error stack for debugging
-        if (error instanceof Error) {
-          console.error("Stack trace:", error.stack);
+      // Initial generation
+      await executeGenerateApps().catch(console.error);
+
+      // Watch for route changes
+      server.watcher.on("change", async (filePath) => {
+        if (filePath.includes(path.join("app", "routes"))) {
+          console.log("📁 Detected route change:", filePath);
+          await executeGenerateApps().catch(console.error);
         }
+      });
+    },
+
+    async handleHotUpdate(ctx: HmrContext) {
+      if (ctx.file.includes(path.join("app", "routes"))) {
+        console.log("🔥 Hot update in routes:", ctx.file);
+        await executeGenerateApps().catch(console.error);
       }
-      console.log("==========================================");
+      return ctx.modules;
     },
   };
 }
