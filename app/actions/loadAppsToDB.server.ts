@@ -1,3 +1,5 @@
+
+
 // app/actions/loadAppsToDB.server.ts
 
 import { db } from "~/db";
@@ -5,7 +7,7 @@ import { actionCalls, apps } from "~/db/schema";
 
 export async function loadAppsToDB() {
   console.log("📥 Starting to load apps to database");
-  const { apps: generatedApps } = await import("~/lib/generated/apps.ts");
+  const { apps: generatedApps } = await import("~/lib/generated/apps");
 
   console.log(`💾 Upserting ${generatedApps.length} apps to database`);
   for (const app of generatedApps) {
@@ -27,7 +29,7 @@ export async function loadAppsToDB() {
       });
   }
 
-  // Create an action call record
+  
   const thisAction = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });
