@@ -70,7 +70,7 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
     console.log("Creating link for node:", node);
     const to =
       node.type === "file"
-        ? `/${isBackOffice ? "back-office" : "objects"}/${node.urlName}`
+        ? `/${isBackOffice ? "back-office" : `/${node.urlName}`
         : node.name.toLowerCase();
     console.log("Generated URL:", to);
 
