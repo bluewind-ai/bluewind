@@ -201,17 +201,14 @@ async function syncActions() {
   return actionCall;
 }
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function loader() {
   try {
     console.log("\n=== 🔄 Starting System Sync ===");
 
     console.log("\n--- 📝 Generating Files ---");
-    await Promise.all([
-      generateAppsFile(),
-      generateActionsFile()
-    ]);
+    await Promise.all([generateAppsFile(), generateActionsFile()]);
     console.log("✅ Files generated");
 
     console.log("\n⏳ Waiting 1 second for filesystem...");
@@ -230,13 +227,16 @@ export async function loader() {
     return json({
       success: true,
       apps: appsResult,
-      actions: actionsResult
+      actions: actionsResult,
     });
   } catch (error) {
     console.error("\n❌ Sync failed:", error);
-    return json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
-    }, { status: 500 });
+    return json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    );
   }
 }
