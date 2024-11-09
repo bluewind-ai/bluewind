@@ -5,7 +5,7 @@ import { functionCalls, actions } from "~/db/schema";
 import { and, inArray, isNull, eq, desc } from "drizzle-orm";
 
 export async function findNextOrCreateMaster() {
-  // First check for any existing action calls that need approval
+  // First check for any existing function calls that need approval
   const existingActionCall = await db.query.functionCalls.findFirst({
     where: and(
       isNull(functionCalls.parentId),
@@ -20,7 +20,7 @@ export async function findNextOrCreateMaster() {
     return existingActionCall;
   }
 
-  // If no action calls need approval, get the last action call
+  // If no function calls need approval, get the last function call
   const lastActionCall = await db.query.functionCalls.findFirst({
     orderBy: [desc(functionCalls.id)],
   });
@@ -29,7 +29,7 @@ export async function findNextOrCreateMaster() {
     return lastActionCall;
   }
 
-  // If no action calls exist at all, create the first master action
+  // If no function calls exist at all, create the first master action
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });

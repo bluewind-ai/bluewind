@@ -17,7 +17,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     throw new Error("Master action not found");
   }
 
-  // Get master action calls and their children
+  // Get master function calls and their children
   const functionCallsData = await db.query.functionCalls.findMany({
     where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
     with: {

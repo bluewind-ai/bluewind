@@ -40,7 +40,7 @@ export const loadActions = async () => {
     }
   }
 
-  // Create an action call record
+  // Create an function call record
   const thisAction = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-actions"),
   });

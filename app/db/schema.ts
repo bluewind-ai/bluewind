@@ -106,7 +106,7 @@ export const debugLogs = pgTable("debug_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export type ActionCallStatus = "ready_for_approval" | "running" | "completed";
+export type FunctionCallStatus = "ready_for_approval" | "running" | "completed";
 
 type TableConfig = {
   displayName: string;
@@ -127,7 +127,7 @@ export const TABLES: Record<string, TableConfig> = {
     urlName: "actions",
   },
   functionCalls: {
-    displayName: "Action Calls",
+    displayName: "Function Calls",
     urlName: "function-calls",
   },
   requestErrors: {
