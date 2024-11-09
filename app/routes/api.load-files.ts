@@ -93,11 +93,23 @@ async function syncApps() {
         });
     }
 
-    const thisAction = await db.query.actions.findFirst({
+    // First try to find the action
+    let thisAction = await db.query.actions.findFirst({
       where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
     });
 
-    if (!thisAction) throw new Error("load-apps-to-db not found in database");
+    // If not found, create it
+    if (!thisAction) {
+      console.log("Creating load-apps-to-db action...");
+      const [newAction] = await db
+        .insert(actions)
+        .values({
+          name: "load-apps-to-db",
+          type: "action",
+        })
+        .returning();
+      thisAction = newAction;
+    }
 
     const [actionCall] = await db
       .insert(actionCalls)
@@ -155,11 +167,23 @@ async function syncActions() {
     }
   }
 
-  const thisAction = await db.query.actions.findFirst({
+  // First try to find the action
+  let thisAction = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-actions"),
   });
 
-  if (!thisAction) throw new Error("load-actions not found in database");
+  // If not found, create it
+  if (!thisAction) {
+    console.log("Creating load-actions action...");
+    const [newAction] = await db
+      .insert(actions)
+      .values({
+        name: "load-actions",
+        type: "action",
+      })
+      .returning();
+    thisAction = newAction;
+  }
 
   const [actionCall] = await db
     .insert(actionCalls)
@@ -177,14 +201,17 @@ async function syncActions() {
   return actionCall;
 }
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function loader() {
   try {
     console.log("\n=== 🔄 Starting System Sync ===");
 
     console.log("\n--- 📝 Generating Files ---");
-    await Promise.all([generateAppsFile(), generateActionsFile()]);
+    await Promise.all([
+      generateAppsFile(),
+      generateActionsFile()
+    ]);
     console.log("✅ Files generated");
 
     console.log("\n⏳ Waiting 1 second for filesystem...");
@@ -203,16 +230,13 @@ export async function loader() {
     return json({
       success: true,
       apps: appsResult,
-      actions: actionsResult,
+      actions: actionsResult
     });
   } catch (error) {
     console.error("\n❌ Sync failed:", error);
-    return json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    );
+    return json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error"
+    }, { status: 500 });
   }
 }
