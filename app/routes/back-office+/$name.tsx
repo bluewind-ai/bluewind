@@ -49,14 +49,12 @@ export default function TableRoute() {
 
   const extraColumns = [
     {
-      id: 'actions',
-      header: 'Actions',
+      id: "actions",
+      header: "Actions",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cell: (row: any) => (
         <Link to={`/functions/${row.name}`} className="no-underline">
-          <Button
-            size="sm"
-            variant="outline"
-          >
+          <Button size="sm" variant="outline">
             Run
           </Button>
         </Link>
