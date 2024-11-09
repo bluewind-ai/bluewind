@@ -1,7 +1,7 @@
 // app/components/NavigationTree.tsx
 
 import { useState } from "react";
-import { Link, useLocation } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Network, Play, Filter, Table } from "lucide-react";
 import { cn } from "~/lib/utils";
