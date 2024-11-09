@@ -49,17 +49,17 @@ export function ViewSelector() {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 bg-background opacity-100 border shadow-md">
-        <Command className="bg-background opacity-100">
-          <CommandInput placeholder="Search view..." className="bg-background opacity-100" />
-          <CommandList className="bg-background opacity-100">
-            <CommandEmpty className="bg-background opacity-100">No view found.</CommandEmpty>
-            <CommandGroup className="bg-background opacity-100">
+      <PopoverContent className="w-[200px] p-0 bg-white border-2 shadow-lg">
+        <Command className="bg-white">
+          <CommandInput placeholder="Search view..." className="bg-white" />
+          <CommandList className="bg-white">
+            <CommandEmpty className="bg-white">No view found.</CommandEmpty>
+            <CommandGroup className="bg-white">
               {views.map((view) => (
                 <CommandItem
                   key={view.value}
                   value={view.value}
-                  className="bg-background opacity-100"
+                  className="bg-white"
                   onSelect={(currentValue) => {
                     setValue(currentValue);
                     navigate(`/${currentValue}`);
