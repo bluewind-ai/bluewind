@@ -21,7 +21,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
   const actionCallsData = await db.query.actionCalls.findMany({
     where: and(
       eq(actionCalls.actionId, masterAction.id),
-      isNull(actionCalls.parentId), // This is the fix - using isNull instead of eq(field, null)
+      isNull(actionCalls.parentId)
     ),
     with: {
       action: true,
@@ -37,7 +37,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     children: actionCallsData.map((actionCall, index) => ({
       id: index + 1,
       name: `Master ${actionCall.id}`,
-      urlName: `action-calls/${actionCall.id}`,
+      urlName: `/objects/action-calls/${actionCall.id}`,
       type: "file" as const,
       children: [] as NavigationNode[],
     })),
