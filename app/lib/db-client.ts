@@ -1,13 +1,12 @@
 // app/lib/db-client.ts
 
-import { drizzle } from "drizzle-orm/postgres-js";
 import { db } from "~/db";
-import { objects, ObjectType } from "~/db/schema";
+import { objects } from "~/db/schema";
 
 const createDbProxy = () => {
   return new Proxy(db, {
     get(target, prop) {
-      if (prop === 'insert') {
+      if (prop === "insert") {
         return new Proxy(target.insert, {
           apply: async (insertFn, thisArg, [table, ...args]) => {
             // Do the original insert
@@ -23,21 +22,21 @@ const createDbProxy = () => {
 
               if (objectType) {
                 await db.insert(objects).values(
-                  inserted.map(record => ({
+                  inserted.map((record) => ({
                     objectId: record.id,
                     objectType,
                     data: record,
-                  }))
+                  })),
                 );
               }
             }
 
             return result;
-          }
+          },
         });
       }
       return target[prop];
-    }
+    },
   });
 };
 
