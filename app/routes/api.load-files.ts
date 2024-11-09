@@ -2,7 +2,7 @@
 
 import { json } from "@remix-run/node";
 import { db } from "~/db";
-import { apps, actions, functionCalls, ActionType } from "~/db/schema";
+import { apps, actions, functionCalls, ActionType, FunctionCallStatus } from "~/db/schema";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -122,7 +122,7 @@ async function syncApps() {
       .insert(functionCalls)
       .values({
         actionId: thisAction.id,
-        status: "completed",
+        status: FunctionCallStatus.COMPLETED,
         result: {
           success: true,
           appsCount: APPS_DATA.length,
@@ -196,7 +196,7 @@ async function syncActions() {
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
-      status: "completed",
+      status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
         actionsFound: actionNames,

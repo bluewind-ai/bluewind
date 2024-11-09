@@ -3,7 +3,7 @@
 import { type LoaderFunction, redirect } from "@remix-run/node";
 import { path } from "~/utils/path";
 import { db } from "~/db";
-import { actions, ActionType, functionCalls } from "~/db/schema";
+import { actions, ActionType, functionCalls, FunctionCallStatus } from "~/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 
 export const loader: LoaderFunction = async () => {
@@ -27,7 +27,7 @@ export const loader: LoaderFunction = async () => {
       .insert(functionCalls)
       .values({
         actionId: newMasterAction.id,
-        status: "ready_for_approval",
+        status: FunctionCallStatus.READY_FOR_APPROVAL,
       })
       .returning();
 
@@ -45,7 +45,7 @@ export const loader: LoaderFunction = async () => {
       .insert(functionCalls)
       .values({
         actionId: masterAction.id,
-        status: "ready_for_approval",
+        status: FunctionCallStatus.READY_FOR_APPROVAL,
       })
       .returning();
 

@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
 import { db } from "~/db";
-import { actions, functionCalls } from "~/db/schema";
+import { actions, functionCalls, FunctionCallStatus } from "~/db/schema";
 import { actions as actionMap } from "./generated/actions";
 
 export type ActionCallNode = typeof functionCalls.$inferSelect & {
@@ -49,7 +49,7 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
       const insertData: ActionInsert = {
         actionId: nextAction.id,
         parentId: context.currentNode.id,
-        status: "ready_for_approval",
+        status: FunctionCallStatus.READY_FOR_APPROVAL,
         args: {},
       };
 
@@ -105,7 +105,7 @@ export async function executeAction(name: keyof typeof actionMap) {
     .insert(functionCalls)
     .values({
       actionId: action.id,
-      status: "ready_for_approval",
+      status: FunctionCallStatus.READY_FOR_APPROVAL,
       args: {},
     } satisfies ActionInsert)
     .returning();

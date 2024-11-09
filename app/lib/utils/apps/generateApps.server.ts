@@ -1,7 +1,7 @@
 // app/lib/utils/apps/generateApps.server.ts
 
 import { db } from "~/db";
-import { functionCalls } from "~/db/schema";
+import { functionCalls, FunctionCallStatus } from "~/db/schema";
 import fs from "fs";
 import path from "path";
 
@@ -34,7 +34,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
-      status: "completed",
+      status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
         appsCount: appsData.length,

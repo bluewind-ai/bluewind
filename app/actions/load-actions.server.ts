@@ -1,7 +1,7 @@
 // app/actions/load-actions.server.ts
 
 import { db } from "~/db";
-import { actions, functionCalls, ActionType } from "~/db/schema";
+import { actions, functionCalls, ActionType, FunctionCallStatus } from "~/db/schema";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -51,7 +51,7 @@ export const loadActions = async () => {
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
-      status: "completed",
+      status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
         actionsFound: actionNames,

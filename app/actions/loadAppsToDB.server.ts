@@ -1,7 +1,7 @@
 // app/actions/loadAppsToDB.server.ts
 
 import { db } from "~/db";
-import { functionCalls, apps } from "~/db/schema";
+import { functionCalls, apps, FunctionCallStatus } from "~/db/schema";
 import { apps as generatedApps } from "~/lib/generated/apps";
 
 export async function loadAppsToDB() {
@@ -40,7 +40,7 @@ export async function loadAppsToDB() {
       .insert(functionCalls)
       .values({
         actionId: thisAction.id,
-        status: "completed",
+        status: FunctionCallStatus.COMPLETED,
         result: {
           success: true,
           appsCount: generatedApps.length,

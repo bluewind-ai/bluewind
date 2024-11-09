@@ -1,7 +1,7 @@
 // app/lib/utils/apps/executeGenerateApps.server.ts
 
 import { db } from "~/db";
-import { functionCalls } from "~/db/schema";
+import { functionCalls, FunctionCallStatus } from "~/db/schema";
 import { generateApps } from "./generateApps.server";
 import { loadAppsToDB } from "./loadAppsToDB.server";
 
@@ -24,7 +24,7 @@ export async function executeGenerateApps() {
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
-      status: "completed",
+      status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
         generateResult,

@@ -34,7 +34,10 @@ export function enumToPgEnum<T extends Record<string, any>>(
 }
 
 export const actionTypeEnum = pgEnum("action_type", enumToPgEnum(ActionType));
-export const functionCallStatusEnum = pgEnum("function_call_status", enumToPgEnum(FunctionCallStatus));
+export const functionCallStatusEnum = pgEnum(
+  "function_call_status",
+  enumToPgEnum(FunctionCallStatus),
+);
 
 export const apps = pgTable("apps", {
   id: serial("id").primaryKey(),
@@ -89,9 +92,7 @@ export const functionCalls = pgTable("function_calls", {
   parentId: integer("parent_id").references((): AnyPgColumn => functionCalls.id, {
     onDelete: "cascade",
   }),
-  status: functionCallStatusEnum("status")
-    .notNull()
-    .default(FunctionCallStatus.READY_FOR_APPROVAL),
+  status: functionCallStatusEnum("status").notNull().default(FunctionCallStatus.READY_FOR_APPROVAL),
   args: jsonb("args"),
   result: jsonb("result"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncLocalStorage } from "async_hooks";
 import { db } from "~/db";
-import { functionCalls } from "~/db/schema";
+import { functionCalls, FunctionCallStatus } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
 export type ActionCallNode = typeof functionCalls.$inferSelect & {
@@ -39,9 +39,9 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
 
     await db
       .update(functionCalls)
-      .set({ status: "running" })
+      .set({ status: FunctionCallStatus.RUNNING })
       .where(eq(functionCalls.id, context.currentNode.id));
-    context.currentNode.status = "running";
+    context.currentNode.status = FunctionCallStatus.RUNNING;
 
     if (context.hitCount === 2) {
       const nextAction = await db.query.actions.findFirst({
@@ -54,7 +54,7 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
       const insertData: ActionInsert = {
         actionId: nextAction.id,
         parentId: context.currentNode.id,
-        status: "ready_for_approval",
+        status: FunctionCallStatus.READY_FOR_APPROVAL,
         args: {},
       };
 

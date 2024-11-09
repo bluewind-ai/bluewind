@@ -1,7 +1,7 @@
 // app/lib/actions.server.ts
 
 import { db } from "~/db";
-import { functionCalls, actions, ActionType } from "~/db/schema";
+import { functionCalls, actions, ActionType, FunctionCallStatus } from "~/db/schema";
 import { and, inArray, isNull, eq, desc } from "drizzle-orm";
 
 export async function findNextOrCreateMaster() {
@@ -9,7 +9,7 @@ export async function findNextOrCreateMaster() {
   const existingActionCall = await db.query.functionCalls.findFirst({
     where: and(
       isNull(functionCalls.parentId),
-      inArray(functionCalls.status, ["ready_for_approval"] as const),
+      inArray(functionCalls.status, [FunctionCallStatus.READY_FOR_APPROVAL] as const),
     ),
     with: {
       action: true,
@@ -40,7 +40,7 @@ export async function findNextOrCreateMaster() {
 
   const [newActionCall] = await db
     .insert(functionCalls)
-    .values({ actionId: action.id, status: "ready_for_approval" })
+    .values({ actionId: action.id, status: FunctionCallStatus.READY_FOR_APPROVAL })
     .returning();
 
   return newActionCall;

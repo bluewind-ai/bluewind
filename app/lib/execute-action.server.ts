@@ -2,7 +2,7 @@
 
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/db";
-import { functionCalls } from "~/db/schema";
+import { functionCalls, FunctionCallStatus } from "~/db/schema";
 import { actions as actionMap } from "./generated/actions";
 import { contextStore } from "./action-builder.server";
 import type { ActionInsert } from "./action-builder.server";
@@ -26,7 +26,7 @@ export async function executeAction({ params }: ActionFunctionArgs) {
     .insert(functionCalls)
     .values({
       actionId: action.id,
-      status: "ready_for_approval",
+      status: FunctionCallStatus.READY_FOR_APPROVAL,
       args: {},
     } satisfies ActionInsert)
     .returning();
