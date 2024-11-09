@@ -1,8 +1,8 @@
 // app/components/ViewSelector.tsx
 
 import * as React from "react";
-import { useNavigate, useLocation } from "@remix-run/react";
-import { Network, Table, Check, ChevronsUpDown } from "lucide-react";
+import { useNavigate, useLocation, useLoaderData } from "@remix-run/react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "~/lib/utils";
 import {
   Command,
@@ -14,28 +14,20 @@ import {
 } from "~/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Button } from "~/components/ui/button";
+import type { App } from "~/db/schema";
 
-const views = [
-  {
-    value: "objects",
-    label: "Database",
-    icon: <Network className="mr-2 h-4 w-4" />,
-  },
-  {
-    value: "back-office",
-    label: "Back Office",
-    icon: <Table className="mr-2 h-4 w-4" />,
-  },
-] as const;
+type ViewSelectorProps = {
+  apps: App[];
+};
 
-export function ViewSelector() {
+export function ViewSelector({ apps }: ViewSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
   const [value, setValue] = React.useState(
     location.pathname.startsWith("/back-office") ? "back-office" : "objects",
   );
   const navigate = useNavigate();
-  const selectedView = views.find((view) => view.value === value);
+  const selectedView = apps.find((view) => view.value === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -47,7 +39,6 @@ export function ViewSelector() {
           className="w-full justify-between"
         >
           <div className="flex items-center">
-            {selectedView?.icon}
             {selectedView?.label || "Select view..."}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -59,22 +50,21 @@ export function ViewSelector() {
           <CommandList>
             <CommandEmpty>No view found.</CommandEmpty>
             <CommandGroup>
-              {views.map((view) => (
+              {apps.map((app) => (
                 <CommandItem
-                  key={view.value}
-                  value={view.value}
+                  key={app.value}
+                  value={app.value}
                   onSelect={(currentValue) => {
                     setValue(currentValue);
                     navigate(`/${currentValue}`);
                     setOpen(false);
                   }}
                 >
-                  {view.icon}
-                  {view.label}
+                  {app.label}
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      value === view.value ? "opacity-100" : "opacity-0",
+                      value === app.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                 </CommandItem>
