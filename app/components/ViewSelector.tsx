@@ -38,7 +38,7 @@ export function ViewSelector() {
   const selectedView = views.find((view) => view.value === value);
 
   return (
-    <div className="opacity-50 hover:opacity-100 transition-opacity">
+    <div className="group">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -54,36 +54,38 @@ export function ViewSelector() {
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
-          <Command>
-            <CommandInput placeholder="Search view..." />
-            <CommandList>
-              <CommandEmpty>No view found.</CommandEmpty>
-              <CommandGroup>
-                {views.map((view) => (
-                  <CommandItem
-                    key={view.value}
-                    value={view.value}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue);
-                      navigate(`/${currentValue}`);
-                      setOpen(false);
-                    }}
-                  >
-                    {view.icon}
-                    {view.label}
-                    <Check
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        value === view.value ? "opacity-100" : "opacity-0",
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
+        <div className="opacity-50 group-hover:opacity-100 transition-opacity">
+          <PopoverContent className="w-full p-0">
+            <Command>
+              <CommandInput placeholder="Search view..." />
+              <CommandList>
+                <CommandEmpty>No view found.</CommandEmpty>
+                <CommandGroup>
+                  {views.map((view) => (
+                    <CommandItem
+                      key={view.value}
+                      value={view.value}
+                      onSelect={(currentValue) => {
+                        setValue(currentValue);
+                        navigate(`/${currentValue}`);
+                        setOpen(false);
+                      }}
+                    >
+                      {view.icon}
+                      {view.label}
+                      <Check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          value === view.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </div>
       </Popover>
     </div>
   );
