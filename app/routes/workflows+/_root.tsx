@@ -3,9 +3,8 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
-import { apps, actionCalls, actions } from "~/db/schema";
+import { apps, actionCalls } from "~/db/schema";
 import { db } from "~/db";
-import { eq } from "drizzle-orm";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   const actionCallsData = await db.query.actionCalls.findMany({
