@@ -49,10 +49,23 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 export default function AgentsRoot() {
   const { navigationData, apps } = useLoaderData<typeof loader>();
 
+  const buttons = Array.from({ length: 8 }, (_, i) => (
+    <button
+      key={i}
+      className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+      onClick={() => window.open('https://www.google.com', '_blank')}
+    >
+      Random Button {i + 1}
+    </button>
+  ));
+
   return (
     <div className="flex h-full">
       <NavigationTree data={navigationData} apps={apps} />
       <div className="flex-1">
+        <div className="flex gap-2 p-4 flex-wrap">
+          {buttons}
+        </div>
         <Outlet />
       </div>
     </div>
