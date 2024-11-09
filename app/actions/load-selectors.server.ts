@@ -2,7 +2,7 @@
 
 import { json } from "@remix-run/node";
 import { db } from "~/db";
-import { actions } from "~/db/schema";
+import { actions, ActionType } from "~/db/schema";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -27,7 +27,7 @@ export const loadSelectors = async () => {
         .insert(actions)
         .values({
           name,
-          type: "selector", // This is the key addition
+          type: ActionType.WORKFLOW, // This is the key addition
         })
         .returning();
       results.push({ name, status: "created" });

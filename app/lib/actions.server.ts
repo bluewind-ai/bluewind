@@ -1,7 +1,7 @@
 // app/lib/actions.server.ts
 
 import { db } from "~/db";
-import { functionCalls, actions } from "~/db/schema";
+import { functionCalls, actions, ActionType } from "~/db/schema";
 import { and, inArray, isNull, eq, desc } from "drizzle-orm";
 
 export async function findNextOrCreateMaster() {
@@ -36,7 +36,7 @@ export async function findNextOrCreateMaster() {
 
   const action =
     masterAction ||
-    (await db.insert(actions).values({ name: "master", type: "action" }).returning())[0];
+    (await db.insert(actions).values({ name: "master", type: ActionType.SYSTEM }).returning())[0];
 
   const [newActionCall] = await db
     .insert(functionCalls)
