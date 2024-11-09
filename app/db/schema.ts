@@ -1,8 +1,43 @@
 // app/db/schema.ts
 
-import { pgTable, serial, integer, varchar, text, timestamp, jsonb } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  serial,
+  integer,
+  varchar,
+  text,
+  timestamp,
+  jsonb,
+  pgEnum,
+} from "drizzle-orm/pg-core";
 import { type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+
+export enum ActionType {
+  SYSTEM = "system",
+  USER = "user",
+  WORKFLOW = "workflow",
+}
+
+export enum FunctionCallStatus {
+  READY_FOR_APPROVAL = "ready_for_approval",
+  RUNNING = "running",
+  COMPLETED = "completed",
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function enumToPgEnum<T extends Record<string, any>>(
+  myEnum: T,
+): [T[keyof T], ...T[keyof T][]] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return Object.values(myEnum).map((value: any) => `${value}`) as any;
+}
+
+export const actionTypeEnum = pgEnum("action_type", enumToPgEnum(ActionType));
+export const functionCallStatusEnum = pgEnum(
+  "function_call_status",
+  enumToPgEnum(FunctionCallStatus),
+);
 
 export const apps = pgTable("apps", {
   id: serial("id").primaryKey(),
@@ -32,7 +67,7 @@ export const sessions = pgTable("sessions", {
 export const actions = pgTable("actions", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull().unique(),
-  type: varchar("type", { length: 50 }).notNull(),
+  type: actionTypeEnum("type").notNull(),
 });
 
 export type Action = typeof actions.$inferSelect & {
@@ -57,7 +92,7 @@ export const functionCalls = pgTable("function_calls", {
   parentId: integer("parent_id").references((): AnyPgColumn => functionCalls.id, {
     onDelete: "cascade",
   }),
-  status: varchar("status", { length: 256 }).notNull().default("ready_for_approval"),
+  status: functionCallStatusEnum("status").notNull().default(FunctionCallStatus.READY_FOR_APPROVAL),
   args: jsonb("args"),
   result: jsonb("result"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -105,8 +140,6 @@ export const debugLogs = pgTable("debug_logs", {
   message: text("message").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-
-export type FunctionCallStatus = "ready_for_approval" | "running" | "completed";
 
 type TableConfig = {
   displayName: string;
