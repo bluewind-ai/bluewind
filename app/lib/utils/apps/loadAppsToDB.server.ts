@@ -1,4 +1,6 @@
-// app/actions/loadAppsToDB.server.ts
+
+
+// app/lib/utils/apps/loadAppsToDB.server.ts
 
 import { db } from "~/db";
 import { actionCalls, apps } from "~/db/schema";
@@ -8,13 +10,13 @@ import fs from "fs";
 export async function loadAppsToDB() {
   console.log("📥 Starting to load apps to database");
 
-  // Check if the generated file exists
+  
   const generatedAppsPath = path.join(process.cwd(), "app", "lib", "generated", "apps.ts");
   if (!fs.existsSync(generatedAppsPath)) {
     throw new Error("Generated apps file not found. Please run generate-apps first.");
   }
 
-  // Use dynamic import with the full path
+  
   const { apps: generatedApps } = await import(generatedAppsPath);
 
   console.log(`💾 Upserting ${generatedApps.length} apps to database`);
