@@ -49,11 +49,4 @@ export default defineConfig({
   publicDir: "public",
   logLevel: "info",
   clearScreen: false,
-  server: {
-    hmr: {
-      overlay: true,
-      // Log all HMR updates
-      log: "info",
-    },
-  },
 });
