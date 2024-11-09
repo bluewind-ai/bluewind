@@ -3,8 +3,14 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { db } from "~/db";
-import { functionCalls } from "~/db/schema";
+import { functionCalls, type FunctionCallStatus } from "~/db/schema";
 import { eq } from "drizzle-orm";
+
+type LoaderData = {
+  functionCall: NonNullable<Awaited<ReturnType<typeof db.query.functionCalls.findFirst>>> & {
+    action: { name: string };
+  };
+};
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const { id } = params;
@@ -18,14 +24,14 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 
   if (!functionCall) {
-    throw new Error(`Action call ${id} not found`);
+    throw new Error(`Function call ${id} not found`);
   }
 
   return json({ functionCall });
 }
 
 export default function FunctionCallRoute() {
-  const { functionCall } = useLoaderData<typeof loader>();
+  const { functionCall } = useLoaderData<typeof loader>() as LoaderData;
 
   return (
     <div className="p-4">
