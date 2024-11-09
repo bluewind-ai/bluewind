@@ -25,7 +25,10 @@ interface GenericTableViewProps {
 
 const columnHelper = createColumnHelper<GenericRecord>();
 
-function createColumnsFromData(data: GenericRecord[], extraColumns: GenericTableViewProps['extraColumns'] = []) {
+function createColumnsFromData(
+  data: GenericRecord[],
+  extraColumns: GenericTableViewProps["extraColumns"] = [],
+) {
   if (data.length === 0) return [];
 
   // Get all unique keys from the data
@@ -45,12 +48,12 @@ function createColumnsFromData(data: GenericRecord[], extraColumns: GenericTable
   );
 
   // Add extra columns
-  const extraColumnsConfig = extraColumns.map(col =>
+  const extraColumnsConfig = extraColumns.map((col) =>
     columnHelper.display({
       id: col.id,
       header: col.header,
-      cell: (info) => col.cell(info.row.original)
-    })
+      cell: (info) => col.cell(info.row.original),
+    }),
   );
 
   return [...dataColumns, ...extraColumnsConfig];

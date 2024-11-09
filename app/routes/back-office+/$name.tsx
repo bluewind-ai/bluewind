@@ -49,12 +49,13 @@ export default function TableRoute() {
 
   const extraColumns = [
     {
-      id: 'actions',
-      header: 'Actions',
+      id: "actions",
+      header: "Actions",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cell: (row: any) => (
         <Button
           onClick={() => {
-            console.log('Clicked action for row:', row);
+            console.log("Clicked action for row:", row);
           }}
           size="sm"
           variant="outline"
