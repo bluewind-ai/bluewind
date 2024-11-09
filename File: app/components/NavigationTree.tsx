@@ -34,16 +34,12 @@ export function NavigationTree({ data, views }: NavigationTreeProps) {
     return (
       <div key={node.id} className="space-y-1">
         <div className="px-4 py-2 font-medium">{node.name}</div>
-        <div className="space-y-1 pl-4">
-          {node.children.map((child) => renderNode(child))}
-        </div>
+        <div className="space-y-1 pl-4">{node.children.map((child) => renderNode(child))}</div>
       </div>
     );
   };
 
   return (
-    <div className="w-64 border-r border-gray-200 dark:border-gray-800">
-      {renderNode(data)}
-    </div>
+    <div className="w-64 border-r border-gray-200 dark:border-gray-800">{renderNode(data)}</div>
   );
 }
