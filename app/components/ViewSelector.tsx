@@ -44,7 +44,7 @@ export function ViewSelector() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between opacity-50 hover:opacity-100 transition-opacity"
+          className="w-full justify-between"
         >
           <div className="flex items-center">
             {selectedView?.icon}
@@ -54,7 +54,7 @@ export function ViewSelector() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
-        <Command className="bg-pink-500">
+        <Command className="bg-white opacity-50">
           <CommandInput placeholder="Search view..." />
           <CommandList>
             <CommandEmpty>No view found.</CommandEmpty>
