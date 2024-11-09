@@ -1,5 +1,3 @@
-
-
 // app/lib/utils/apps/executeGenerateApps.server.ts
 
 import { db } from "~/db";
@@ -16,7 +14,6 @@ export async function executeGenerateApps() {
   const loadResult = await loadAppsToDB();
   console.log("✓ Apps loaded to database");
 
-  
   const thisAction = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "execute-generate-apps"),
   });

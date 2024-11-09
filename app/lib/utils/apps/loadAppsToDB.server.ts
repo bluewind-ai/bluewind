@@ -1,5 +1,3 @@
-
-
 // app/lib/utils/apps/loadAppsToDB.server.ts
 
 import { db } from "~/db";
@@ -10,13 +8,11 @@ import fs from "fs";
 export async function loadAppsToDB() {
   console.log("📥 Starting to load apps to database");
 
-  
   const generatedAppsPath = path.join(process.cwd(), "app", "lib", "generated", "apps.ts");
   if (!fs.existsSync(generatedAppsPath)) {
     throw new Error("Generated apps file not found. Please run generate-apps first.");
   }
 
-  
   const { apps: generatedApps } = await import(generatedAppsPath);
 
   console.log(`💾 Upserting ${generatedApps.length} apps to database`);
