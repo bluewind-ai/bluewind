@@ -2,32 +2,38 @@
 
 import { Plugin } from "vite";
 import { executeGenerateApps } from "../app/actions/executeGenerateApps.server";
-import type { HmrContext } from "vite";
 import path from "path";
 
 export function appsPlugin(): Plugin {
+  console.log("🎯 Apps plugin being registered"); // This should show up when Vite loads plugins
+
   return {
     name: "apps",
+    buildStart() {
+      console.log("🏗️ Apps plugin build starting");
+    },
     async configureServer(server) {
-      console.log("🔌 Apps plugin initialized");
-      // Initial generation
-      await executeGenerateApps().catch(console.error);
+      console.log("🚀 Apps plugin server configuration starting");
+      console.log("🔌 Server instance received:", !!server);
 
       // Watch for route changes
       server.watcher.on("change", async (filePath) => {
+        console.log("👀 Watcher detected change:", filePath);
         if (filePath.includes(path.join("app", "routes"))) {
-          console.log("📁 Detected route change:", filePath);
-          await executeGenerateApps().catch(console.error);
+          console.log("📁 Route change detected:", filePath);
+          await executeGenerateApps().catch((err) => {
+            console.error("❌ Execute apps error:", err);
+          });
         }
       });
-    },
 
-    async handleHotUpdate(ctx: HmrContext) {
-      if (ctx.file.includes(path.join("app", "routes"))) {
-        console.log("🔥 Hot update in routes:", ctx.file);
-        await executeGenerateApps().catch(console.error);
+      // Initial generation
+      try {
+        await executeGenerateApps();
+        console.log("✅ Initial apps generation complete");
+      } catch (error) {
+        console.error("❌ Initial apps generation failed:", error);
       }
-      return ctx.modules;
     },
   };
 }
