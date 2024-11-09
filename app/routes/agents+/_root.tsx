@@ -51,12 +51,12 @@ export default function AgentsRoot() {
   const { navigationData, apps } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
 
-  const isResetting = fetcher.state !== 'idle';
+  const isResetting = fetcher.state !== "idle";
 
   const buttons = Array.from({ length: 7 }, (_, i) => (
     <Button
       key={i}
-      onClick={() => window.open('https://www.google.com', '_blank')}
+      onClick={() => window.open("https://www.google.com", "_blank")}
       variant="secondary"
     >
       Random Button {i + 1}
@@ -72,16 +72,23 @@ export default function AgentsRoot() {
           <Button
             variant="destructive"
             onClick={() => {
-              if (window.confirm('Are you sure you want to reset everything? This will delete all data and restart the application.')) {
-                fetcher.submit({}, {
-                  method: 'post',
-                  action: '/api/reset-all'
-                });
+              if (
+                window.confirm(
+                  "Are you sure you want to reset everything? This will delete all data and restart the application.",
+                )
+              ) {
+                fetcher.submit(
+                  {},
+                  {
+                    method: "post",
+                    action: "/api/reset-all",
+                  },
+                );
               }
             }}
             disabled={isResetting}
           >
-            {isResetting ? 'Resetting...' : 'Reset All'}
+            {isResetting ? "Resetting..." : "Reset All"}
           </Button>
         </div>
         <Outlet />

@@ -12,10 +12,10 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await execAsync('npm run reset-all');
+    await execAsync("npm run reset-all");
     return json({ success: true });
   } catch (error) {
-    console.error('Reset all failed:', error);
+    console.error("Reset all failed:", error);
     return json({ error: "Reset failed" }, { status: 500 });
   }
 }
