@@ -2,15 +2,12 @@
 
 import { db } from "~/db";
 import { actionCalls, apps } from "~/db/schema";
+import { apps as generatedApps } from "~/lib/generated/apps";
 
 export async function loadAppsToDB() {
   console.log("📥 Starting to load apps to database");
 
-  const appsPath = path.join(process.cwd(), "app", "lib", "generated", "apps");
-
   try {
-    const { apps: generatedApps } = await import("~/lib/generated/apps");
-
     console.log(`💾 Upserting ${generatedApps.length} apps to database`);
     for (const app of generatedApps) {
       await db
