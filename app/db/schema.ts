@@ -19,6 +19,12 @@ export enum ActionType {
   WORKFLOW = "workflow",
 }
 
+export enum FunctionCallStatus {
+  READY_FOR_APPROVAL = "ready_for_approval",
+  RUNNING = "running",
+  COMPLETED = "completed",
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function enumToPgEnum<T extends Record<string, any>>(
   myEnum: T,
@@ -28,6 +34,7 @@ export function enumToPgEnum<T extends Record<string, any>>(
 }
 
 export const actionTypeEnum = pgEnum("action_type", enumToPgEnum(ActionType));
+export const functionCallStatusEnum = pgEnum("function_call_status", enumToPgEnum(FunctionCallStatus));
 
 export const apps = pgTable("apps", {
   id: serial("id").primaryKey(),
@@ -82,13 +89,13 @@ export const functionCalls = pgTable("function_calls", {
   parentId: integer("parent_id").references((): AnyPgColumn => functionCalls.id, {
     onDelete: "cascade",
   }),
-  status: varchar("status", { length: 256 }).notNull().default("ready_for_approval"),
+  status: functionCallStatusEnum("status")
+    .notNull()
+    .default(FunctionCallStatus.READY_FOR_APPROVAL),
   args: jsonb("args"),
   result: jsonb("result"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-
-export type FunctionCallStatus = "ready_for_approval" | "running" | "completed";
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
