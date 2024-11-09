@@ -52,6 +52,7 @@ export default function TableRoute() {
     {
       id: "actions",
       header: "Actions",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cell: (row: any) => (
         <Button
           size="sm"
