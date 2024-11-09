@@ -8,7 +8,6 @@ import { db } from "~/db";
 import { eq, and, isNull } from "drizzle-orm";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
-  // First get the master action ID
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });
@@ -17,9 +16,11 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     throw new Error("Master action not found");
   }
 
-  // Get master function calls and their children
   const functionCallsData = await db.query.functionCalls.findMany({
-    where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
+    where: and(
+      eq(functionCalls.actionId, masterAction.id),
+      isNull(functionCalls.parentId)
+    ),
     with: {
       action: true,
     },
@@ -34,7 +35,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     children: functionCallsData.map((functionCall, index) => ({
       id: index + 1,
       name: `Master ${functionCall.id}`,
-      urlName: `function-calls/${functionCall.id}`,
+      to: `/agents/function-calls/${functionCall.id}`, // We provide the full URL here
       type: "file" as const,
       children: [] as NavigationNode[],
     })),
@@ -53,7 +54,7 @@ export default function AgentsRoot() {
 
   return (
     <div className="flex h-full">
-      <NavigationTree data={navigationData as NavigationNode} apps={apps} />
+      <NavigationTree data={navigationData} apps={apps} />
       <div className="flex-1">
         <Outlet />
       </div>
