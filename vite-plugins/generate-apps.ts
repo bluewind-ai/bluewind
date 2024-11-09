@@ -8,7 +8,6 @@ import { existsSync } from "fs";
 async function generateAppsFile() {
   console.log("🎯 Starting apps file generation");
 
-  // For now, just hardcode the back-office app
   const appsData = [
     {
       id: 1,
@@ -16,29 +15,24 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    },
+    }
   ];
 
-  // Generate the apps file content
   const fileContent = `
 // THIS FILE IS AUTO-GENERATED - DO NOT EDIT
 export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 `;
 
-  // Ensure the generated directory exists
   const generatedDir = path.join(process.cwd(), "app", "lib", "generated");
   if (!existsSync(generatedDir)) {
     await fs.mkdir(generatedDir, { recursive: true });
   }
 
-  // Write the file
   await fs.writeFile(path.join(generatedDir, "apps.ts"), fileContent, "utf-8");
   console.log("✨ Apps file generated successfully");
 }
 
-// Track changes with timestamps
-const changeMap = new Map<string, number>();
-const DEBOUNCE_TIME = 1000; // 1 second
+let pendingGeneration: Promise<void> | null = null;
 
 export function appsPlugin(): Plugin {
   return {
@@ -56,21 +50,21 @@ export function appsPlugin(): Plugin {
           return;
         }
 
-        const now = Date.now();
-        const lastChange = changeMap.get(filePath);
-
-        if (lastChange && now - lastChange < DEBOUNCE_TIME) {
-          console.log("⏳ Debouncing change for:", filePath);
-          return;
+        // If there's a pending generation, wait for it
+        if (pendingGeneration) {
+          console.log("⏳ Waiting for pending generation to complete");
+          await pendingGeneration;
         }
 
-        changeMap.set(filePath, now);
         console.log("📁 Processing change:", filePath);
+        pendingGeneration = generateAppsFile();
 
         try {
-          await generateAppsFile();
+          await pendingGeneration;
         } catch (err) {
           console.error("❌ Apps generation error:", err);
+        } finally {
+          pendingGeneration = null;
         }
       });
 
@@ -80,6 +74,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    },
+    }
   };
 }
