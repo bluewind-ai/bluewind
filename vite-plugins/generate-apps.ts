@@ -13,7 +13,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    },
+    }
   ];
 
   const fileContent = `
@@ -29,7 +29,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
   const filePath = path.join(generatedDir, "apps.ts");
 
   try {
-    const existingContent = await fs.readFile(filePath, "utf-8");
+    const existingContent = await fs.readFile(filePath, 'utf-8');
     if (existingContent.trim() === fileContent.trim()) {
       return; // File is identical, do nothing
     }
@@ -44,8 +44,8 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 async function loadAppsToDb() {
   try {
     console.log("📡 Calling load-apps endpoint...");
-    const response = await fetch("http://localhost:3000/api/load-apps", {
-      method: "POST",
+    const response = await fetch('http://localhost:3000/api/load-apps', {
+      method: 'POST',
     });
     if (!response.ok) {
       throw new Error(`Failed to load apps: ${response.statusText}`);
@@ -64,26 +64,30 @@ export function appsPlugin(): Plugin {
     async configureServer(server) {
       console.log("🔌 Apps plugin initialized");
 
-      // Handle both HMR and full reloads
-      server.ws.on("*", async (event) => {
-        if (pending) return;
-        if (event === "hmr" || event === "full-reload") {
-          pending = true;
-          console.log(`\n=== 🔄 ${event === "hmr" ? "HMR Update" : "Full Reload"} ===`);
-          try {
-            await loadAppsToDb();
-            console.log("=== ✨ App Sync Complete ===\n");
-          } catch (error) {
-            console.log("=== ❌ App Sync Failed ===\n");
-          } finally {
-            pending = false;
-          }
-        }
+      // Debug all events
+      server.ws.on("connection", () => console.log("🔌 WS Connected"));
+      server.ws.on("close", () => console.log("🔌 WS Closed"));
+
+      // Log all events
+      server.ws.on("*", async (event, data) => {
+        console.log("📡 WS Event:", event, data);
+      });
+
+      // Try different reload events
+      server.middlewares.on("upgrade", () => {
+        console.log("🔄 Middleware Upgrade");
+      });
+
+      server.watcher.on("ready", () => {
+        console.log("👀 Watcher Ready");
       });
 
       server.watcher.on("change", async (filePath) => {
+        console.log("📄 File Changed:", filePath);
+
         if (filePath.includes("generated/apps.ts")) {
-          return; // Silently ignore
+          console.log("⏭️ Ignoring generated file change");
+          return;
         }
 
         if (!filePath.includes(path.join("app", "routes"))) {
@@ -92,6 +96,8 @@ export function appsPlugin(): Plugin {
 
         try {
           await generateAppsFile();
+          console.log("🔄 Triggering load after file generation");
+          await loadAppsToDb();
         } catch (err) {
           console.error("❌ Apps generation error:", err);
         }
@@ -103,6 +109,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    },
+    }
   };
 }
