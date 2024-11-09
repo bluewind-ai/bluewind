@@ -74,9 +74,9 @@ async function main(): Promise<void> {
     insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
 
     if (updatedFiles.length > 0) {
-      // Run fix command with visible output
+      // Run fix command
       try {
-        execSync("npm run fix", { stdio: "inherit" });
+        execSync("npm run fix", { stdio: "pipe" });
       } catch (error) {
         console.log("Fix command completed with warnings - continuing");
       }
