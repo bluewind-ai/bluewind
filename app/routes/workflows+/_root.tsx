@@ -1,15 +1,16 @@
-// app/routes/back-office+/_root.tsx
+// app/routes/workflows+/_root.tsx
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
-import { getTableMetadata, apps } from "~/db/schema";
+import { getTableMetadata } from "~/db/schema";
 import { db } from "~/db";
+import { apps } from "~/db/schema";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {
     id: 0,
-    name: "Database",
+    name: "Workflows",
     type: "root",
     iconKey: "database",
     children: getTableMetadata().map((table, index) => ({
@@ -29,7 +30,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
   });
 }
 
-export default function ObjectsRoot() {
+export default function WorkflowsRoot() {
   const { navigationData, apps } = useLoaderData<typeof loader>();
 
   return (
