@@ -8,7 +8,7 @@ export const loader: LoaderFunction = async () => {
   if (!lastAction) {
     throw new Response("No actions found", { status: 404 });
   }
-  return redirect(`/action-calls/${lastAction.id}`);
+  return redirect(`/actcdscdsion-calls/${lastAction.id}`);
 };
 
 export default function Index() {
