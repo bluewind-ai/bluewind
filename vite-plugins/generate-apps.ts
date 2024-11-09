@@ -15,7 +15,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    },
+    }
   ];
 
   const fileContent = `
@@ -32,7 +32,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
   console.log("✨ Apps file generated successfully");
 }
 
-let pendingGeneration: Promise<void> | null = null;
+let timeoutId: NodeJS.Timeout | null = null;
 
 export function appsPlugin(): Plugin {
   return {
@@ -50,22 +50,22 @@ export function appsPlugin(): Plugin {
           return;
         }
 
-        // If there's a pending generation, wait for it
-        if (pendingGeneration) {
-          console.log("⏳ Waiting for pending generation to complete");
-          await pendingGeneration;
+        // Clear any pending timeout
+        if (timeoutId) {
+          clearTimeout(timeoutId);
         }
 
-        console.log("📁 Processing change:", filePath);
-        pendingGeneration = generateAppsFile();
-
-        try {
-          await pendingGeneration;
-        } catch (err) {
-          console.error("❌ Apps generation error:", err);
-        } finally {
-          pendingGeneration = null;
-        }
+        // Queue new generation with delay
+        timeoutId = setTimeout(async () => {
+          console.log("📁 Processing change:", filePath);
+          try {
+            await generateAppsFile();
+          } catch (err) {
+            console.error("❌ Apps generation error:", err);
+          } finally {
+            timeoutId = null;
+          }
+        }, 100); // 100ms delay
       });
 
       // Initial generation
@@ -74,6 +74,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    },
+    }
   };
 }
