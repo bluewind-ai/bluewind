@@ -15,7 +15,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    }
+    },
   ];
 
   const fileContent = `
@@ -32,7 +32,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 
   // Check if content would be different
   try {
-    const existingContent = await fs.readFile(filePath, 'utf-8');
+    const existingContent = await fs.readFile(filePath, "utf-8");
     if (existingContent.trim() === fileContent.trim()) {
       return; // File is identical, do nothing
     }
@@ -73,6 +73,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    }
+    },
   };
 }
