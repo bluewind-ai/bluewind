@@ -5,13 +5,13 @@ import { actionCalls, apps } from "~/db/schema";
 import { apps as generatedApps } from "~/lib/generated/apps";
 
 export async function loadAppsToDB() {
-  void 0 // this should be removed by YOU when you rewrite the filed;
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   try {
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     for (const app of generatedApps) {
-      void 0 // this should be removed by YOU when you rewrite the filed;
+      void 0; // this should be removed by YOU when you rewrite the filed;
       await db
         .insert(apps)
         .values({
@@ -48,12 +48,12 @@ export async function loadAppsToDB() {
       })
       .returning();
 
-    void 0 // this should be removed by YOU when you rewrite the filed;
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     return actionCall;
   } catch (error) {
-    void 0 // this should be removed by YOU when you rewrite the filed;
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     throw error;
   }
 }

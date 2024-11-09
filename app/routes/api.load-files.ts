@@ -17,7 +17,7 @@ const APPS_DATA = [
 ];
 
 async function generateAppsFile() {
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
   const fileContent = `
 // THIS FILE IS AUTO-GENERATED - DO NOT EDIT
 export const apps = ${JSON.stringify(APPS_DATA, null, 2)} as const;
@@ -28,11 +28,11 @@ export const apps = ${JSON.stringify(APPS_DATA, null, 2)} as const;
 
   const filePath = path.join(generatedDir, "apps.ts");
   await fs.writeFile(filePath, fileContent, "utf-8");
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 }
 
 async function generateActionsFile() {
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
   const actionsDir = path.join(process.cwd(), "app", "actions");
   const files = await fs.readdir(actionsDir);
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
@@ -60,7 +60,7 @@ export const actions = {
 
   await fs.mkdir("app/lib/generated", { recursive: true });
   await fs.writeFile("app/lib/generated/actions.ts", content);
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 }
 
 function kebabToCamel(str: string): string {
@@ -68,13 +68,13 @@ function kebabToCamel(str: string): string {
 }
 
 async function syncApps() {
-  void 0 // this should be removed by YOU when you rewrite the filed;
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   try {
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     for (const app of APPS_DATA) {
-      void 0 // this should be removed by YOU when you rewrite the filed;
+      void 0; // this should be removed by YOU when you rewrite the filed;
       await db
         .insert(apps)
         .values({
@@ -100,7 +100,7 @@ async function syncApps() {
 
     // If not found, create it
     if (!thisAction) {
-      void 0 // this should be removed by YOU when you rewrite the filed;
+      void 0; // this should be removed by YOU when you rewrite the filed;
       const [newAction] = await db
         .insert(actions)
         .values({
@@ -123,28 +123,28 @@ async function syncApps() {
       })
       .returning();
 
-    void 0 // this should be removed by YOU when you rewrite the filed;
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     return actionCall;
   } catch (error) {
-    void 0 // this should be removed by YOU when you rewrite the filed;
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     throw error;
   }
 }
 
 async function syncActions() {
   const actionsDir = path.join(process.cwd(), "app", "actions");
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const files = await fs.readdir(actionsDir);
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const actionNames = actionFiles.map((file) => path.basename(file, ".server.ts"));
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const results = [];
 
@@ -174,7 +174,7 @@ async function syncActions() {
 
   // If not found, create it
   if (!thisAction) {
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     const [newAction] = await db
       .insert(actions)
       .values({
@@ -205,24 +205,24 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function loader() {
   try {
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
 
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     await Promise.all([generateAppsFile(), generateActionsFile()]);
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
 
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     await sleep(1000);
 
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     const appsResult = await syncApps();
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
 
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     const actionsResult = await syncActions();
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
 
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
 
     return json({
       success: true,
@@ -230,7 +230,7 @@ export async function loader() {
       actions: actionsResult,
     });
   } catch (error) {
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     return json(
       {
         success: false,

@@ -8,16 +8,16 @@ import path from "node:path";
 export const loadActions = async () => {
   // Log the directory we're looking in
   const actionsDir = path.join(process.cwd(), "app", "actions");
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const files = await fs.readdir(actionsDir);
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const actionNames = actionFiles.map((file) => path.basename(file, ".server.ts"));
-  void 0 // this should be removed by YOU when you rewrite the filed;
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
   const results = [];
 

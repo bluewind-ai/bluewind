@@ -3,7 +3,7 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
-import { getTableMetadata , apps } from "~/db/schema";
+import { getTableMetadata, apps } from "~/db/schema";
 import { db } from "~/db";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
