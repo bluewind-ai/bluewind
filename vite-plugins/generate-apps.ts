@@ -16,7 +16,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    },
+    }
   ];
 
   // Generate the apps file content
@@ -36,8 +36,9 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
   console.log("✨ Apps file generated successfully");
 }
 
-// Global lock
-let globalLock = false;
+// Track changes with timestamps
+const changeMap = new Map<string, number>();
+const DEBOUNCE_TIME = 1000; // 1 second
 
 export function appsPlugin(): Plugin {
   return {
@@ -46,12 +47,6 @@ export function appsPlugin(): Plugin {
       console.log("🔌 Apps plugin initialized");
 
       server.watcher.on("change", async (filePath) => {
-        // Early return conditions
-        if (globalLock) {
-          console.log("🔒 Generation locked - skipping", filePath);
-          return;
-        }
-
         if (filePath.includes("generated/apps.ts")) {
           console.log("⏭️ Ignoring generated file change");
           return;
@@ -61,18 +56,21 @@ export function appsPlugin(): Plugin {
           return;
         }
 
-        // Set lock before starting
-        globalLock = true;
-        console.log("🔐 Lock acquired");
+        const now = Date.now();
+        const lastChange = changeMap.get(filePath);
+
+        if (lastChange && (now - lastChange) < DEBOUNCE_TIME) {
+          console.log("⏳ Debouncing change for:", filePath);
+          return;
+        }
+
+        changeMap.set(filePath, now);
+        console.log("📁 Processing change:", filePath);
 
         try {
-          console.log("📁 Processing change:", filePath);
           await generateAppsFile();
         } catch (err) {
           console.error("❌ Apps generation error:", err);
-        } finally {
-          globalLock = false;
-          console.log("🔓 Lock released");
         }
       });
 
@@ -82,6 +80,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    },
+    }
   };
 }
