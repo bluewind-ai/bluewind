@@ -2,13 +2,10 @@
 
 import { type LoaderFunction, redirect } from "@remix-run/node";
 import { findNextOrCreateMaster } from "~/lib/actions.server";
+import { path } from "~/utils/path";
 
 export const loader: LoaderFunction = async () => {
-  const lastAction = await findNextOrCreateMaster();
-  if (!lastAction) {
-    throw new Response("No actions found", { status: 404 });
-  }
-  return redirect(`/actcdscdsion-calls/${lastAction.id}`);
+  return redirect(path.to.backOffice());
 };
 
 export default function Index() {
