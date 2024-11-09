@@ -10,7 +10,7 @@ import { eq, and } from "drizzle-orm";
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   // First get the master action ID
   const masterAction = await db.query.actions.findFirst({
-    where: eq(actions.name, "master")
+    where: eq(actions.name, "master"),
   });
 
   if (!masterAction) {
@@ -21,7 +21,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
   const actionCallsData = await db.query.actionCalls.findMany({
     where: and(
       eq(actionCalls.actionId, masterAction.id),
-      eq(actionCalls.parentId, null)  // root level calls only
+      eq(actionCalls.parentId, null), // root level calls only
     ),
     with: {
       action: true,
@@ -36,7 +36,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     iconKey: "database",
     children: actionCallsData.map((actionCall, index) => ({
       id: index + 1,
-      name: `Master ${actionCall.id}`,  // or however you want to name these
+      name: `Master ${actionCall.id}`, // or however you want to name these
       urlName: `action-calls/${actionCall.id}`,
       type: "file" as const,
       children: [] as NavigationNode[],
