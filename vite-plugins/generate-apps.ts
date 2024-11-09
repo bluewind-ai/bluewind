@@ -4,6 +4,7 @@ import { Plugin } from "vite";
 import path from "path";
 import fs from "fs/promises";
 import { existsSync } from "fs";
+import type { HmrContext } from "vite";
 
 async function generateAppsFile() {
   console.log("🎯 Starting apps file generation");
@@ -59,6 +60,12 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
+    },
+
+    // This runs after every HMR update
+    async handleHotUpdate(ctx: HmrContext) {
+      console.log("🔥 Post-HMR update hook triggered");
+      return ctx.modules;
     },
   };
 }
