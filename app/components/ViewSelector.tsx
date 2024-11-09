@@ -17,7 +17,7 @@ import { Button } from "~/components/ui/button";
 import { type apps } from "~/db/schema";
 
 type ViewSelectorProps = {
-  apps: typeof apps.$inferSelect[];
+  apps: (typeof apps.$inferSelect)[];
 };
 
 export function ViewSelector({ apps }: ViewSelectorProps) {
@@ -38,9 +38,7 @@ export function ViewSelector({ apps }: ViewSelectorProps) {
           aria-expanded={open}
           className="w-full justify-between"
         >
-          <div className="flex items-center">
-            {selectedView?.label || "Select view..."}
-          </div>
+          <div className="flex items-center">{selectedView?.label || "Select view..."}</div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
