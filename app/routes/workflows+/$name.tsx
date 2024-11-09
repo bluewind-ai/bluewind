@@ -9,6 +9,18 @@ import { TABLES } from "~/db/schema";
 export async function loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
 
+  if (name === 'action-calls') {
+    const data = await db.query.actionCalls.findMany({
+      with: {
+        action: true,
+        parent: true
+      },
+      orderBy: (actionCalls) => [actionCalls.createdAt],
+    });
+
+    return json({ data });
+  }
+
   const tableEntry = Object.entries(TABLES).find(([_, config]) => config.urlName === name);
   if (!tableEntry) {
     throw new Error(`Table ${name} not found`);
@@ -26,9 +38,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
       break;
     case "actions":
       data = await db.query.actions.findMany();
-      break;
-    case "actionCalls":
-      data = await db.query.actionCalls.findMany();
       break;
     case "requestErrors":
       data = await db.query.requestErrors.findMany();
