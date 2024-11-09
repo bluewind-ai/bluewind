@@ -4,6 +4,14 @@ import { pgTable, serial, integer, varchar, text, timestamp, jsonb } from "drizz
 import { type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+export const apps = pgTable("apps", {
+  id: serial("id").primaryKey(),
+  value: varchar("value", { length: 50 }).notNull().unique(),
+  label: varchar("label", { length: 50 }).notNull(),
+  iconKey: varchar("icon_key", { length: 50 }).notNull(),
+  order: integer("order").notNull(),
+});
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
 });
