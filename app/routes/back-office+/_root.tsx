@@ -4,6 +4,8 @@ import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
 import { getTableMetadata } from "~/db/schema";
+import { db } from "~/db";
+import { apps } from "~/db/schema";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {
@@ -20,17 +22,20 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     })),
   };
 
+  const appsData = await db.select().from(apps).orderBy(apps.order);
+
   return json({
     navigationData,
+    apps: appsData,
   });
 }
 
 export default function ObjectsRoot() {
-  const { navigationData } = useLoaderData<typeof loader>();
+  const { navigationData, apps } = useLoaderData<typeof loader>();
 
   return (
     <div className="flex h-full">
-      <NavigationTree data={navigationData as NavigationNode} />
+      <NavigationTree data={navigationData as NavigationNode} apps={apps} />
       <div className="flex-1">
         <Outlet />
       </div>

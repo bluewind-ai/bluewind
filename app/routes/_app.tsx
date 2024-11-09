@@ -4,6 +4,8 @@ import { useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
 import { NewMain } from "~/components/NewMain";
+import { db } from "~/db";
+import { apps } from "~/db/schema";
 
 export type ViewData = {
   value: string;
@@ -45,18 +47,21 @@ export async function loader() {
     ],
   };
 
+  const appsData = await db.select().from(apps).orderBy(apps.order);
+
   return json({
     navigationData,
     views,
+    apps: appsData,
   });
 }
 
 export default function Index() {
-  const { navigationData } = useLoaderData<typeof loader>();
+  const { navigationData, apps } = useLoaderData<typeof loader>();
 
   return (
     <div className="flex h-full">
-      <NavigationTree data={navigationData} />
+      <NavigationTree data={navigationData} apps={apps} />
       <div className="flex-1">
         <NewMain data={[]} />
       </div>
