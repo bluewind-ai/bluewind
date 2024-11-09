@@ -17,10 +17,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
   }
 
   const functionCallsData = await db.query.functionCalls.findMany({
-    where: and(
-      eq(functionCalls.actionId, masterAction.id),
-      isNull(functionCalls.parentId)
-    ),
+    where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
     with: {
       action: true,
     },
