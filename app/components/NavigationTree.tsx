@@ -1,4 +1,4 @@
-// File: app/components/NavigationTree.tsx
+// app/components/NavigationTree.tsx
 
 import { useState } from "react";
 import { Link, useLocation } from "@remix-run/react";
@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/component
 import { Network, Play, Filter, Table } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { ViewSelector } from "./ViewSelector";
+import { type apps } from "~/db/schema";
 
 export type NavigationNode = {
   id: number;
@@ -99,12 +100,13 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
 
 interface NavigationTreeProps {
   data: NavigationNode;
+  apps: typeof apps.$inferSelect[];
 }
 
-export function NavigationTree({ data }: NavigationTreeProps) {
+export function NavigationTree({ data, apps }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">
-      <ViewSelector />
+      <ViewSelector apps={apps} />
       <NavigationItem node={data} />
     </div>
   );
