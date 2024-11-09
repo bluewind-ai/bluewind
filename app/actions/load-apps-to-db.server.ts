@@ -1,13 +1,13 @@
 // app/actions/load-apps-to-db.server.ts
 
 import { db } from "~/db";
-import { apps } from "~/lib/generated/apps";
-import { functionCalls, actions, FunctionCallStatus, ActionType } from "~/db/schema";
+import { apps as appsTable , functionCalls, actions, FunctionCallStatus, ActionType } from "~/db/schema";
+import { apps as appsData } from "~/lib/generated/apps";
 
 export async function loadAppsToDb() {
-  for (const app of apps) {
+  for (const app of appsData) {
     await db
-      .insert(apps)
+      .insert(appsTable)
       .values({
         value: app.value,
         label: app.name,
@@ -15,7 +15,7 @@ export async function loadAppsToDb() {
         order: app.id,
       })
       .onConflictDoUpdate({
-        target: [apps.value],
+        target: [appsTable.value],
         set: {
           label: app.name,
           iconKey: app.iconKey,
@@ -46,7 +46,7 @@ export async function loadAppsToDb() {
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
-        appsCount: apps.length,
+        appsCount: appsData.length,
       },
     })
     .returning();
