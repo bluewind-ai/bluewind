@@ -1,8 +1,8 @@
 // File: app/components/ViewSelector.tsx
 
 import * as React from "react";
-import { useNavigate, useLocation, useRouteLoaderData } from "@remix-run/react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { useNavigate, useLocation } from "@remix-run/react";
+import { Network, Table, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "~/lib/utils";
 import {
   Command,
@@ -14,14 +14,23 @@ import {
 } from "~/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Button } from "~/components/ui/button";
-import type { ViewData } from "~/routes/_app";
+
+const views = [
+  {
+    value: "objects",
+    label: "Database",
+    icon: <Network className="mr-2 h-4 w-4" />,
+  },
+  {
+    value: "back-office",
+    label: "Back Office",
+    icon: <Table className="mr-2 h-4 w-4" />,
+  },
+] as const;
 
 export function ViewSelector() {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
-  const rootData = useRouteLoaderData<{ views: ViewData[] }>("routes/back-office+/_root");
-  const views = rootData?.views || [];
-
   const [value, setValue] = React.useState(
     location.pathname.startsWith("/back-office") ? "back-office" : "objects",
   );
@@ -35,9 +44,12 @@ export function ViewSelector() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between opacity-50 hover:opacity-100 transition-opacity"
         >
-          <div className="flex items-center">{selectedView?.label || "Select view..."}</div>
+          <div className="flex items-center">
+            {selectedView?.icon}
+            {selectedView?.label || "Select view..."}
+          </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -57,6 +69,7 @@ export function ViewSelector() {
                     setOpen(false);
                   }}
                 >
+                  {view.icon}
                   {view.label}
                   <Check
                     className={cn(
