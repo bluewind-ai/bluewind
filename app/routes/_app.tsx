@@ -54,7 +54,7 @@ const navigationData: NavigationNode = {
   ],
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request: _request }: LoaderFunctionArgs) {
   return json({
     views,
     navigationData,
