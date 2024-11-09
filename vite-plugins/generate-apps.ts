@@ -3,6 +3,7 @@
 import { Plugin } from "vite";
 import path from "path";
 import fs from "fs/promises";
+import { existsSync } from "fs";
 import { db } from "../app/db";
 import { actionCalls, apps } from "../app/db/schema";
 
@@ -22,7 +23,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 
   // Ensure the generated directory exists
   const generatedDir = path.join(process.cwd(), "app", "lib", "generated");
-  if (!fs.existsSync(generatedDir)) {
+  if (!existsSync(generatedDir)) {
     await fs.mkdir(generatedDir, { recursive: true });
   }
 
