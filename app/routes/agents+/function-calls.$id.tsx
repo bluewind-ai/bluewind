@@ -6,12 +6,6 @@ import { db } from "~/db";
 import { functionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
-type LoaderData = {
-  functionCall: NonNullable<Awaited<ReturnType<typeof db.query.functionCalls.findFirst>>> & {
-    action: { name: string };
-  };
-};
-
 export async function loader({ params }: LoaderFunctionArgs) {
   const { id } = params;
 
@@ -31,7 +25,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 
 export default function FunctionCallRoute() {
-  const { functionCall } = useLoaderData<typeof loader>() as LoaderData;
+  const { functionCall } = useLoaderData<typeof loader>();
 
   return (
     <div className="p-4">
@@ -45,7 +39,7 @@ export default function FunctionCallRoute() {
           <h2 className="text-lg font-semibold">Status</h2>
           <p>{functionCall.status}</p>
         </div>
-        {functionCall.args && (
+        {typeof functionCall.args === 'object' && functionCall.args !== null && (
           <div>
             <h2 className="text-lg font-semibold">Arguments</h2>
             <pre className="bg-gray-100 p-2 rounded">
@@ -53,7 +47,7 @@ export default function FunctionCallRoute() {
             </pre>
           </div>
         )}
-        {functionCall.result && (
+        {typeof functionCall.result === 'object' && functionCall.result !== null && (
           <div>
             <h2 className="text-lg font-semibold">Result</h2>
             <pre className="bg-gray-100 p-2 rounded">
