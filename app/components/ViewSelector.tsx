@@ -14,27 +14,30 @@ import {
   CommandList,
 } from "~/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import type { ViewData } from "~/routes/_app";
 
-const views = [
-  {
-    value: "objects",
-    label: "Database",
-    icon: <Network className="mr-2 h-4 w-4" />,
-  },
-  {
-    value: "back-office",
-    label: "Back Office",
-    icon: <Table className="mr-2 h-4 w-4" />,
-  },
-];
+interface ViewSelectorProps {
+  views: ViewData[];
+}
 
-export function ViewSelector() {
+export function ViewSelector({ views }: ViewSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
   const [value, setValue] = React.useState(
     location.pathname.startsWith("/back-office") ? "back-office" : "objects",
   );
   const navigate = useNavigate();
+
+  const getIcon = (iconKey: string) => {
+    switch (iconKey) {
+      case "database":
+        return <Network className="mr-2 h-4 w-4" />;
+      case "table":
+        return <Table className="mr-2 h-4 w-4" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -72,7 +75,7 @@ export function ViewSelector() {
                       value === view.value ? "opacity-100" : "opacity-0",
                     )}
                   />
-                  {view.icon}
+                  {getIcon(view.iconKey)}
                   {view.label}
                 </CommandItem>
               ))}

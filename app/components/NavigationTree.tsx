@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/component
 import { Network, Play, Filter, Table } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { ViewSelector } from "~/components/ViewSelector";
+import type { ViewData } from "~/routes/_app";
 
 export type NavigationNode = {
   id: number;
@@ -66,7 +67,6 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
   );
 
   if (!hasChildren) {
-    // Use urlName for the link if available, otherwise fallback to lowercase name
     const to =
       node.type === "file"
         ? `/${isBackOffice ? "back-office" : "objects"}/${node.urlName || node.name.toLowerCase()}`
@@ -100,12 +100,13 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
 
 interface NavigationTreeProps {
   data: NavigationNode;
+  views: ViewData[];
 }
 
-export function NavigationTree({ data }: NavigationTreeProps) {
+export function NavigationTree({ data, views }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">
-      <ViewSelector />
+      <ViewSelector views={views} />
       <NavigationItem node={data} />
     </div>
   );
