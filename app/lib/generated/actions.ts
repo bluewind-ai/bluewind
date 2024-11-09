@@ -8,6 +8,7 @@ import { loadCsvData } from "~/actions/load-csv-data.server";
 import { loadActions } from "~/actions/load-actions.server";
 import { getTables } from "~/actions/get-tables.server";
 import { getActionCallTree } from "~/actions/get-action-call-tree.server";
+import { generateApps } from "~/actions/generateApps.server";
 import { executeGenerateApps } from "~/actions/executeGenerateApps.server";
 
 export const actions = {
@@ -18,5 +19,6 @@ export const actions = {
   "load-actions": loadActions,
   "get-tables": getTables,
   "get-action-call-tree": getActionCallTree,
+  generateApps: generateApps,
   executeGenerateApps: executeGenerateApps,
 } as const;
