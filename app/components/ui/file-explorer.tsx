@@ -32,6 +32,7 @@ function formatName(name: string): string {
     .join(" ");
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isFileNode(node: any): node is FileNode {
   return "type" in node;
 }
