@@ -37,6 +37,8 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 }
 
 export function appsPlugin(): Plugin {
+  let debounceTimeout: NodeJS.Timeout | null = null;
+
   return {
     name: "apps",
     async configureServer(server) {
@@ -44,12 +46,18 @@ export function appsPlugin(): Plugin {
 
       server.watcher.on("change", async (filePath) => {
         if (filePath.includes(path.join("app", "routes"))) {
-          console.log("📁 Route change detected:", filePath);
-          try {
-            await generateAppsFile();
-          } catch (err) {
-            console.error("❌ Apps generation error:", err);
+          if (debounceTimeout) {
+            clearTimeout(debounceTimeout);
           }
+
+          debounceTimeout = setTimeout(async () => {
+            console.log("📁 Route change detected:", filePath);
+            try {
+              await generateAppsFile();
+            } catch (err) {
+              console.error("❌ Apps generation error:", err);
+            }
+          }, 100); // 100ms debounce
         }
       });
 
