@@ -1,9 +1,11 @@
 // app/routes/workflows+/_root.tsx
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { type NavigationNode } from "~/components/NavigationTree";
-import { apps, actionCalls } from "~/db/schema";
+import { Outlet, useLoaderData } from "@remix-run/react";
+import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
+import { apps, actionCalls, actions } from "~/db/schema";
 import { db } from "~/db";
+import { eq } from "drizzle-orm";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   const actionCallsData = await db.query.actionCalls.findMany({
@@ -33,4 +35,17 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     navigationData,
     apps: appsData,
   });
+}
+
+export default function WorkflowsRoot() {
+  const { navigationData, apps } = useLoaderData<typeof loader>();
+
+  return (
+    <div className="flex h-full">
+      <NavigationTree data={navigationData as NavigationNode} apps={apps} />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+    </div>
+  );
 }
