@@ -57,7 +57,7 @@ async function loadAppsToDb() {
 }
 
 export function appsPlugin(): Plugin {
-  let pending = false;
+  const pending = false;
 
   return {
     name: "apps",
