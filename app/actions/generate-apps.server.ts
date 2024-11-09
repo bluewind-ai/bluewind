@@ -5,7 +5,8 @@ import { actionCalls } from "~/db/schema";
 import fs from "fs/promises";
 import path from "path";
 
-async function scanForApps() {
+export async function generateApps() {
+  console.log("🔍 Scanning routes folder for apps");
   const routesPath = path.join(process.cwd(), "app", "routes");
   const entries = await fs.readdir(routesPath);
 
@@ -14,13 +15,13 @@ async function scanForApps() {
 
   for (const entry of entries) {
     if (entry.includes("+")) {
+      console.log(`📁 Found app: ${entry}`);
       const value = entry.replace("+", "");
       const name = value
         .split("-")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
 
-      // Determine iconKey based on the app
       let iconKey;
       switch (value) {
         case "objects":
@@ -49,12 +50,7 @@ async function scanForApps() {
     }
   }
 
-  return apps;
-}
-
-export const generateApps = async () => {
-  const apps = await scanForApps();
-
+  console.log("📝 Writing apps to generated file");
   const appsFileContent = `// This file is auto-generated. Do not edit it manually
 export const apps = ${JSON.stringify(apps, null, 2)} as const;
 `;
@@ -82,5 +78,6 @@ export const apps = ${JSON.stringify(apps, null, 2)} as const;
     })
     .returning();
 
+  console.log("✅ Generated apps file successfully");
   return actionCall;
-};
+}
