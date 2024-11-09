@@ -1,7 +1,7 @@
 // app/routes/agents+/_root.tsx
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData, useFetcher } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
 import { apps, functionCalls, actions } from "~/db/schema";
 import { db } from "~/db";
@@ -33,7 +33,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     children: functionCallsData.map((functionCall, index) => ({
       id: index + 1,
       name: `Master ${functionCall.id}`,
-      to: `/agents/function-calls/${functionCall.id}`, // We provide the full URL here
+      to: `/agents/function-calls/${functionCall.id}`,
       type: "file" as const,
       children: [] as NavigationNode[],
     })),
@@ -49,11 +49,14 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 
 export default function AgentsRoot() {
   const { navigationData, apps } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
 
-  const buttons = Array.from({ length: 8 }, (_, i) => (
+  const isResetting = fetcher.state !== 'idle';
+
+  const buttons = Array.from({ length: 7 }, (_, i) => (
     <Button
       key={i}
-      onClick={() => window.open("https://www.google.com", "_blank")}
+      onClick={() => window.open('https://www.google.com', '_blank')}
       variant="secondary"
     >
       Random Button {i + 1}
@@ -64,7 +67,23 @@ export default function AgentsRoot() {
     <div className="flex h-full">
       <NavigationTree data={navigationData} apps={apps} />
       <div className="flex-1">
-        <div className="flex gap-2 p-4 flex-wrap">{buttons}</div>
+        <div className="flex gap-2 p-4 flex-wrap">
+          {buttons}
+          <Button
+            variant="destructive"
+            onClick={() => {
+              if (window.confirm('Are you sure you want to reset everything? This will delete all data and restart the application.')) {
+                fetcher.submit({}, {
+                  method: 'post',
+                  action: '/api/reset-all'
+                });
+              }
+            }}
+            disabled={isResetting}
+          >
+            {isResetting ? 'Resetting...' : 'Reset All'}
+          </Button>
+        </div>
         <Outlet />
       </div>
     </div>
