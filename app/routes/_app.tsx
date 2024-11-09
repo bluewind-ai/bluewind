@@ -56,10 +56,7 @@ export default function Index() {
   const { navigationData } = useLoaderData<typeof loader>();
 
   return (
-    <Main
-      data={[]}
-      buttonLabel="Create"
-    >
+    <Main data={[]} buttonLabel="Create">
       <div className="flex h-full">
         <NavigationTree data={navigationData} />
         <div className="flex-1">
