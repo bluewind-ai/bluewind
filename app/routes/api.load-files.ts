@@ -2,7 +2,7 @@
 
 import { json } from "@remix-run/node";
 import { db } from "~/db";
-import { apps, actions, functionCalls } from "~/db/schema";
+import { apps, actions, functionCalls, ActionType } from "~/db/schema";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -112,7 +112,7 @@ async function syncApps() {
         .insert(actions)
         .values({
           name: "load-apps-to-db",
-          type: "action",
+          type: ActionType.SYSTEM,
         })
         .returning();
       thisAction = newAction;
@@ -165,7 +165,7 @@ async function syncActions() {
         .insert(actions)
         .values({
           name,
-          type: "action",
+          type: ActionType.SYSTEM,
         })
         .returning();
       results.push({ name, status: "created" });
@@ -186,7 +186,7 @@ async function syncActions() {
       .insert(actions)
       .values({
         name: "load-actions",
-        type: "action",
+        type: ActionType.SYSTEM,
       })
       .returning();
     thisAction = newAction;
