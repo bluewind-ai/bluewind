@@ -1,4 +1,4 @@
-// In your action-calls/route.tsx, update the layout:
+// In your function-calls/route.tsx, update the layout:
 
 export default function ActionCallsLayout() {
   const { lastAction } = useLoaderData<typeof loader>();

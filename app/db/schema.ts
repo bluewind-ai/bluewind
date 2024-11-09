@@ -128,7 +128,7 @@ export const TABLES: Record<string, TableConfig> = {
   },
   actionCalls: {
     displayName: "Action Calls",
-    urlName: "action-calls",
+    urlName: "function-calls",
   },
   requestErrors: {
     displayName: "Request Errors",

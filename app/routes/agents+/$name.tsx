@@ -9,7 +9,7 @@ import { TABLES } from "~/db/schema";
 export async function loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
 
-  if (name === "action-calls") {
+  if (name === "function-calls") {
     const data = await db.query.actionCalls.findMany({
       with: {
         action: true,

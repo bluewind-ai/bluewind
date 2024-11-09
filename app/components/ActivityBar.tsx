@@ -19,7 +19,7 @@
 //         variant="ghost"
 //         size="icon"
 //         className="h-10 w-10"
-//         onClick={() => navigate("/action-calls")}
+//         onClick={() => navigate("/function-calls")}
 //       >
 //         <Logo />
 //       </Button>
@@ -27,7 +27,7 @@
 //         variant="ghost"
 //         size="icon"
 //         className="h-10 w-10"
-//         onClick={() => navigate("/action-calls")}
+//         onClick={() => navigate("/function-calls")}
 //       >
 //         <Network className="h-5 w-5" />
 //       </Button>
