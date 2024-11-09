@@ -16,7 +16,7 @@ async function generateAppsFile() {
       name: "Back Office",
       iconKey: "settings",
       order: 1,
-    }
+    },
   ];
 
   // Generate the apps file content
@@ -59,7 +59,7 @@ export function appsPlugin(): Plugin {
         const now = Date.now();
         const lastChange = changeMap.get(filePath);
 
-        if (lastChange && (now - lastChange) < DEBOUNCE_TIME) {
+        if (lastChange && now - lastChange < DEBOUNCE_TIME) {
           console.log("⏳ Debouncing change for:", filePath);
           return;
         }
@@ -80,6 +80,6 @@ export function appsPlugin(): Plugin {
       } catch (error) {
         console.error("❌ Initial apps generation failed:", error);
       }
-    }
+    },
   };
 }
