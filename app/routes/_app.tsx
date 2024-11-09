@@ -4,7 +4,6 @@ import { useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { NavigationTree, type NavigationNode } from "~/components/NavigationTree";
 import { NewMain } from "~/components/NewMain";
-import { GenericTableView } from "~/components/GenericTableView";
 
 export type ViewData = {
   value: string;
