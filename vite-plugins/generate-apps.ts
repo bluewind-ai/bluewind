@@ -54,7 +54,18 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 
 async function loadAppsToDB() {
   console.log("📥 Starting to load apps to database");
-  const { apps: generatedApps } = await import("../app/lib/generated/apps");
+
+  const appsPath = path.join(process.cwd(), "app", "lib", "generated", "apps.ts");
+
+  try {
+    await fs.access(appsPath);
+  } catch (error) {
+    console.log("📝 No apps file found, skipping load to DB");
+    return null;
+  }
+
+  // Dynamic import with full path to avoid TypeScript error
+  const { apps: generatedApps } = await import(appsPath);
 
   console.log(`💾 Upserting ${generatedApps.length} apps to database`);
   for (const app of generatedApps) {
