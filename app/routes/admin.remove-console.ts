@@ -20,7 +20,6 @@ export type ActionResponse =
       error: string;
       stack?: string;
     };
-
 export async function action(_: ActionFunctionArgs) {
   const appPath = path.join(process.cwd(), "app");
   const files = await glob("**/*.{ts,tsx}", { cwd: appPath });
