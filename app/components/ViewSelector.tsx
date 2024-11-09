@@ -1,7 +1,7 @@
 // app/components/ViewSelector.tsx
 
 import * as React from "react";
-import { useNavigate, useLocation, useLoaderData } from "@remix-run/react";
+import { useNavigate, useLocation } from "@remix-run/react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "~/lib/utils";
 import {
@@ -38,9 +38,7 @@ export function ViewSelector({ apps }: ViewSelectorProps) {
           aria-expanded={open}
           className="w-full justify-between"
         >
-          <div className="flex items-center">
-            {selectedView?.label || "Select view..."}
-          </div>
+          <div className="flex items-center">{selectedView?.label || "Select view..."}</div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
