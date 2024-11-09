@@ -1,7 +1,7 @@
 // app/actions/load-actions.server.ts
 
 import { db } from "~/db";
-import { actions, functionCalls } from "~/db/schema";
+import { actions, functionCalls, ActionType } from "~/db/schema";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -31,7 +31,7 @@ export const loadActions = async () => {
         .insert(actions)
         .values({
           name,
-          type: "action",
+          type: ActionType.SYSTEM,
         })
         .returning();
       results.push({ name, status: "created" });
