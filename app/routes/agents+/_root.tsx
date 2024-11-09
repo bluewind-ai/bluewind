@@ -53,7 +53,7 @@ export default function AgentsRoot() {
     <button
       key={i}
       className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
-      onClick={() => window.open('https://www.google.com', '_blank')}
+      onClick={() => window.open("https://www.google.com", "_blank")}
     >
       Random Button {i + 1}
     </button>
@@ -63,9 +63,7 @@ export default function AgentsRoot() {
     <div className="flex h-full">
       <NavigationTree data={navigationData} apps={apps} />
       <div className="flex-1">
-        <div className="flex gap-2 p-4 flex-wrap">
-          {buttons}
-        </div>
+        <div className="flex gap-2 p-4 flex-wrap">{buttons}</div>
         <Outlet />
       </div>
     </div>
