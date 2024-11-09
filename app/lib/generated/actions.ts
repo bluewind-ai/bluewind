@@ -18,5 +18,5 @@ export const actions = {
   "load-csv-data": loadCsvData,
   "load-files": loadFiles,
   "load-selectors": loadSelectors,
-  "master": master
+  master: master,
 } as const;
