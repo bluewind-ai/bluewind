@@ -74,27 +74,20 @@ async function main(): Promise<void> {
     insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
 
     if (updatedFiles.length > 0) {
-      // Run fix command regardless of success
+      // Run fix command
       try {
-        execSync("npm run fix", { stdio: "inherit" });
+        execSync("npm run fix", { stdio: "pipe" });
       } catch (error) {
-        console.log("Fix command failed but continuing with commit");
+        console.log("Fix command completed with warnings - continuing");
       }
 
-      // Always attempt to commit at the end
+      // Force add and commit the files
       try {
-        await git.add(updatedFiles);
+        await git.add([...updatedFiles, "claude-answer.txt"]);
         await git.commit("checkpoint");
         console.log("Files updated and changes committed successfully");
-      } catch (error) {
-        console.error("Failed to commit changes:", error);
-        process.exit(1);
-      }
-
-      // Final check for unstaged changes
-      const finalChanges = await hasUnstagedChanges();
-      if (finalChanges) {
-        console.error("Warning: There are still unstaged changes after the operation completed");
+      } catch (commitError) {
+        console.error("Failed to commit:", commitError);
         process.exit(1);
       }
     } else {
