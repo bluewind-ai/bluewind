@@ -19,7 +19,7 @@
     "fix": "npm run format && npm run lint && tsc --noEmit && npm run delete-empty && npm run commit-fixes",
     "clean-all": "rm -rf build && rm -rf .drizzle && rm -rf .drizzle-kit && rm -rf node_modules && rm -rf .eslintcache && rm -rf .prettiercache",
     "reset-db": "sh reset-db.sh",
-    "reset-all": "npm run clean-all && npm install && npm run reset-db && npm run fix",
+    "reset-all": "npm run reset-db && npm run fix",
     "truncate-db": "tsx scripts/truncate-db.ts",
     "remove-console": "tsx scripts/remove-console.ts",
     "instructions": "tsx scripts/generate-instructions.ts",
