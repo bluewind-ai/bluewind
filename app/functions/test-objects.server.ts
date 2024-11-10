@@ -29,7 +29,6 @@ export async function testObjects() {
   void 0; // this should be removed by YOU when you rewrite the filed;
   void 0; // this should be removed by YOU when you rewrite the filed;
 
-  const allObjects = await db.query.objects.findMany();
   void 0; // this should be removed by YOU when you rewrite the filed;
 
   if (!result) {
