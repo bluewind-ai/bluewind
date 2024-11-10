@@ -15,54 +15,66 @@ type ChainState = {
   hasReturning: boolean;
 };
 
-function wrapChain(chain: any, state: ChainState) {
-  return new Proxy(chain, {
-    get(target: any, prop: string | symbol) {
-      console.log(`CHAIN ACCESS [${state.tableName}]:`, String(prop));
-      const value = target[prop];
+function createChainProxy(target: any, state: ChainState): any {
+  return new Proxy(target, {
+    get(obj: any, prop: string | symbol) {
+      const value = obj[prop];
 
-      // Check for execution without returning
+      // Intercept promise methods
       if (prop === "then" || prop === "catch" || prop === "finally") {
         if (!state.hasReturning) {
           throw new Error(
             `Query on table ${state.tableName} must call returning() before execution`,
           );
         }
+        return value.bind(obj);
       }
 
+      // Handle returning()
       if (prop === "returning") {
         state.hasReturning = true;
-        return async function (...args: any[]) {
-          const result = await value.apply(target, args);
+        return (...args: any[]) => {
+          const result = value.apply(obj, args);
           console.log("RETURNING:", { table: state.tableName, result });
           return result;
         };
       }
 
-      // Special handling for onConflictDoUpdate to maintain the chain state
+      // Handle onConflictDoUpdate
       if (prop === "onConflictDoUpdate") {
         return (...args: any[]) => {
           console.log("UPDATE:", { table: state.tableName, args: args[0] });
-          const conflictChain = value.apply(target, args);
-          return wrapChain(conflictChain, state); // Wrap the new chain with the same state
+          const result = value.apply(obj, args);
+          return createChainProxy(result, state);
         };
       }
 
-      // For any other function calls, maintain the chain state
+      // Handle other methods
       if (typeof value === "function") {
-        return function (...args: any[]) {
-          const result = value.apply(target, args);
-          return result instanceof Promise || result?.then ? wrapChain(result, state) : result;
+        return (...args: any[]) => {
+          const result = value.apply(obj, args);
+          if (result && (typeof result === "object" || typeof result === "function")) {
+            return createChainProxy(result, state);
+          }
+          return result;
         };
       }
 
       return value;
     },
+
+    // Crucial: also intercept direct promise usage without .then()
+    apply(target: any, thisArg: any, args: any[]) {
+      if (!state.hasReturning) {
+        throw new Error(`Query on table ${state.tableName} must call returning() before execution`);
+      }
+      return Reflect.apply(target, thisArg, args);
+    },
   });
 }
 
 function createProxy() {
-  const handler = {
+  return new Proxy(baseDb, {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
       const original = target[prop as keyof typeof target];
       console.log("DB ACCESS:", String(prop));
@@ -79,29 +91,16 @@ function createProxy() {
 
           const chain = target.insert(table);
 
-          return new Proxy(chain, {
-            get(chainTarget: any, chainProp: string | symbol) {
-              const value = chainTarget[chainProp];
-
-              if (chainProp === "values") {
-                return (...args: any[]) => {
-                  console.log("VALUES:", { table: tableName, data: args[0] });
-                  const valueChain = value.apply(chainTarget, args);
-                  return wrapChain(valueChain, state);
-                };
-              }
-
-              return typeof value === "function" ? value.bind(chainTarget) : value;
-            },
+          return createChainProxy(chain, {
+            tableName,
+            hasReturning: false,
           });
         };
       }
 
       return typeof original === "function" ? original.bind(target) : original;
     },
-  };
-
-  return new Proxy(baseDb, handler);
+  });
 }
 
 export const db = createProxy();
