@@ -22,7 +22,7 @@ export const actions = {
   "load-csv-data": loadCsvData,
   "load-files": loadFiles,
   "load-selectors": loadSelectors,
-  "master": master,
+  master: master,
   "reset-all": resetAll,
-  "test-objects": testObjects
+  "test-objects": testObjects,
 } as const;

@@ -8,12 +8,14 @@ import { eq } from "drizzle-orm";
 export async function testObjects() {
   console.log("Starting test objects...");
 
-  // Insert a test app
+  const timestamp = Date.now();
+
+  // Insert a test app with unique value
   const [insertedApp] = await db
     .insert(apps)
     .values({
-      value: "test-app",
-      label: "Test App",
+      value: `test-app-${timestamp}`,
+      label: `Test App ${timestamp}`,
       iconKey: "test",
       order: 999,
     })

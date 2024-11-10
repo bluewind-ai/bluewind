@@ -35,9 +35,7 @@
         "actions_name_unique": {
           "name": "actions_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -86,9 +84,7 @@
         "apps_value_unique": {
           "name": "apps_value_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "value"
-          ]
+          "columns": ["value"]
         }
       },
       "policies": {},
@@ -183,12 +179,8 @@
           "name": "function_calls_action_id_actions_id_fk",
           "tableFrom": "function_calls",
           "tableTo": "actions",
-          "columnsFrom": [
-            "action_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["action_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -196,12 +188,8 @@
           "name": "function_calls_parent_id_function_calls_id_fk",
           "tableFrom": "function_calls",
           "tableTo": "function_calls",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -368,12 +356,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -383,9 +367,7 @@
         "sessions_session_token_unique": {
           "name": "sessions_session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "session_token"
-          ]
+          "columns": ["session_token"]
         }
       },
       "policies": {},
@@ -416,20 +398,12 @@
     "public.action_type": {
       "name": "action_type",
       "schema": "public",
-      "values": [
-        "system",
-        "user",
-        "workflow"
-      ]
+      "values": ["system", "user", "workflow"]
     },
     "public.function_call_status": {
       "name": "function_call_status",
       "schema": "public",
-      "values": [
-        "ready_for_approval",
-        "running",
-        "completed"
-      ]
+      "values": ["ready_for_approval", "running", "completed"]
     }
   },
   "schemas": {},
