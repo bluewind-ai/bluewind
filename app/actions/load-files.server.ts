@@ -5,6 +5,11 @@ import { apps, actions, functionCalls, ActionType, FunctionCallStatus } from "~/
 import fs from "node:fs/promises";
 import path from "node:path";
 
+type LoadResult = {
+  name: string;
+  status: string;
+};
+
 const APPS_DATA = [
   {
     id: 1,
@@ -127,7 +132,7 @@ async function syncActions() {
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
   const actionNames = actionFiles.map((file) => path.basename(file, ".server.ts"));
 
-  const results = [];
+  const results: LoadResult[] = [];
 
   for (const name of actionNames) {
     const existing = await db.query.actions.findFirst({
