@@ -72,6 +72,9 @@ export default function AgentsRoot() {
           <Button onClick={() => navigate("/run-function/go-next")} variant="outline">
             Go Next
           </Button>
+          <Button onClick={() => navigate("/run-function/load-files")} variant="outline">
+            Load Files
+          </Button>
           {buttons}
           <Button
             variant="destructive"
