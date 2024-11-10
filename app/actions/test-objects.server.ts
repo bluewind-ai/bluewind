@@ -2,7 +2,7 @@
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import type { PgTable } from "drizzle-orm/pg-core";
+import type { PgTable, TableConfig } from "drizzle-orm/pg-core";
 import * as schema from "~/db/schema";
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
@@ -12,19 +12,25 @@ const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
 function createProxy() {
-  let currentInsertTable: PgTable<any> = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let currentInsertTable: PgTable<TableConfig> | null = null;
 
   return new Proxy(baseDb, {
     get(target, prop) {
       console.log("ROOT GET:", prop);
 
       if (prop === "insert") {
-        return (table: PgTable<any>) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (table: PgTable<TableConfig>) => {
           console.log("INSERT CALLED WITH:", table);
           currentInsertTable = table;
           return {
             values: async (data: Record<string, unknown>) => {
               console.log("VALUES CALLED WITH:", { table: currentInsertTable, data });
+
+              if (!currentInsertTable) {
+                throw new Error("No table specified for insert");
+              }
 
               // Do the original insert
               const result = await target.insert(currentInsertTable).values(data).returning();
