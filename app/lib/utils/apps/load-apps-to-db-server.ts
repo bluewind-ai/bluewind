@@ -20,6 +20,7 @@ export async function loadAppsToDB() {
     await db
       .insert(apps)
       .values({
+        functionCallId: 1,
         value: app.value,
         label: app.name,
         iconKey: app.iconKey,

@@ -46,6 +46,7 @@ function createProxy() {
               await target
                 .insert(schema.objects)
                 .values({
+                  functionCallId: 1,
                   model: "apps",
                   recordId: Number(inserted.id),
                 })
@@ -71,6 +72,7 @@ export async function testObjects() {
   console.log("Using timestamp:", timestamp);
 
   const [insertedApp] = (await testDb.insert(schema.apps).values({
+    functionCallId: 1,
     value: `test-app-${timestamp}`,
     label: `Test App ${timestamp}`,
     iconKey: "test",

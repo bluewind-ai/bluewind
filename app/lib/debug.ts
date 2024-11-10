@@ -22,6 +22,7 @@ export function dd(data: unknown): never {
 
   db.insert(debugLogs).values({
     message: JSON.stringify(debugInfo),
+    functionCallId: 1,
   });
 
   throw new Response(JSON.stringify(debugInfo), {

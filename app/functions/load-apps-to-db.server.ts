@@ -52,6 +52,7 @@ export async function loadAppsToDb() {
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
+      functionCallId: 1,
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,

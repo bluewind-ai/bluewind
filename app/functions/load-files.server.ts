@@ -79,6 +79,7 @@ async function syncApps() {
     await db
       .insert(apps)
       .values({
+        functionCallId: 1,
         value: app.value,
         label: app.name,
         iconKey: app.iconKey,
@@ -112,6 +113,7 @@ async function syncApps() {
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
+      functionCallId: 1,
       actionId: thisAction.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
