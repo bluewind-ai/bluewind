@@ -10,28 +10,11 @@ const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB
 const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
-function wrapWithReturningCheck(chain: any, tableName: string, hasReturning: { value: boolean }) {
-  return new Proxy(chain, {
-    get(target: any, prop: string | symbol) {
-      if (prop === "then" && !hasReturning.value) {
-        throw new Error(`Query on table ${tableName} must call returning()`);
-      }
-
-      const value = target[prop];
-
-      if (prop === "returning") {
-        hasReturning.value = true;
-      }
-
-      return typeof value === "function" ? value.bind(target) : value;
-    },
-  });
-}
-
 function createProxy() {
   const handler = {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
       const original = target[prop as keyof typeof target];
+      console.log("DB ACCESS:", String(prop));
 
       if (prop === "insert") {
         return (table: PgTable<any>) => {
@@ -39,31 +22,55 @@ function createProxy() {
           console.log("INSERT:", tableName);
 
           const chain = target.insert(table);
-          const hasReturning = { value: false };
 
           return new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
+              console.log("CHAIN ACCESS:", String(chainProp));
               const value = chainTarget[chainProp];
 
               if (chainProp === "values") {
                 return (...args: any[]) => {
                   console.log("VALUES:", { table: tableName, data: args[0] });
                   const valueChain = value.apply(chainTarget, args);
+                  let hasReturning = false;
 
                   return new Proxy(valueChain, {
                     get(valuesTarget: any, valuesProp: string | symbol) {
+                      console.log("VALUES CHAIN ACCESS:", String(valuesProp));
                       const method = valuesTarget[valuesProp];
 
                       if (valuesProp === "onConflictDoUpdate") {
                         return (...cArgs: any[]) => {
                           console.log("UPDATE:", { table: tableName, args: cArgs[0] });
                           const conflictChain = method.apply(valuesTarget, cArgs);
-                          return wrapWithReturningCheck(conflictChain, tableName, hasReturning);
+
+                          return new Proxy(conflictChain, {
+                            get(conflictTarget: any, conflictProp: string | symbol) {
+                              console.log("CONFLICT CHAIN ACCESS:", String(conflictProp));
+                              const conflictMethod = conflictTarget[conflictProp];
+
+                              if (conflictProp === "execute") {
+                                if (!hasReturning) {
+                                  throw new Error(
+                                    `Query on table ${tableName} must call returning()`,
+                                  );
+                                }
+                              }
+
+                              if (conflictProp === "returning") {
+                                hasReturning = true;
+                              }
+
+                              return typeof conflictMethod === "function"
+                                ? conflictMethod.bind(conflictTarget)
+                                : conflictMethod;
+                            },
+                          });
                         };
                       }
 
                       if (valuesProp === "returning") {
-                        hasReturning.value = true;
+                        hasReturning = true;
                         return async function (...args: any[]) {
                           const result = await method.apply(valuesTarget, args);
                           console.log("RETURNING:", { table: tableName, result });
@@ -83,8 +90,10 @@ function createProxy() {
                         };
                       }
 
-                      if (valuesProp === "then" && !hasReturning.value) {
-                        throw new Error(`Query on table ${tableName} must call returning()`);
+                      if (valuesProp === "execute") {
+                        if (!hasReturning) {
+                          throw new Error(`Query on table ${tableName} must call returning()`);
+                        }
                       }
 
                       return typeof method === "function" ? method.bind(valuesTarget) : method;
