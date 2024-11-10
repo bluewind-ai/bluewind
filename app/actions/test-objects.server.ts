@@ -2,6 +2,7 @@
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import type { PgTable } from "drizzle-orm/pg-core";
 import * as schema from "~/db/schema";
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
@@ -12,18 +13,18 @@ const baseDb = drizzle(client, { schema });
 
 function createProxy() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let currentInsertTable: any = null;
+  let currentInsertTable: PgTable<any> = null;
 
   return new Proxy(baseDb, {
     get(target, prop) {
       console.log("ROOT GET:", prop);
 
       if (prop === "insert") {
-        return (table: unknown) => {
+        return (table: PgTable<any>) => {
           console.log("INSERT CALLED WITH:", table);
           currentInsertTable = table;
           return {
-            values: async (data: unknown) => {
+            values: async (data: Record<string, unknown>) => {
               console.log("VALUES CALLED WITH:", { table: currentInsertTable, data });
 
               // Do the original insert
@@ -34,14 +35,14 @@ function createProxy() {
 
               // Create the object
               console.log("CREATING OBJECT:", {
-                model: currentInsertTable,
+                model: currentInsertTable._.name,
                 recordId: inserted.id,
               });
 
               const objectResult = await target
                 .insert(schema.objects)
                 .values({
-                  model: currentInsertTable as string,
+                  model: currentInsertTable._.name,
                   recordId: inserted.id,
                 })
                 .returning();
@@ -68,7 +69,7 @@ export async function testObjects() {
   console.log("Using timestamp:", timestamp);
 
   // Insert a test app with unique value
-  const [insertedApp] = await testDb.insert("apps").values({
+  const [insertedApp] = await testDb.insert(schema.apps).values({
     value: `test-app-${timestamp}`,
     label: `Test App ${timestamp}`,
     iconKey: "test",
