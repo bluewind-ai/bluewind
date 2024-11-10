@@ -7,6 +7,10 @@ import * as schema from "~/db/schema";
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
 
+// Define the app insert/return types
+type AppInsert = typeof schema.apps.$inferInsert;
+type AppSelect = typeof schema.apps.$inferSelect;
+
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
@@ -33,7 +37,10 @@ function createProxy() {
               }
 
               // Do the original insert
-              const result = await target.insert(currentInsertTable).values(data).returning();
+              const result = await target
+                .insert(currentInsertTable)
+                .values(data as any)
+                .returning();
               console.log("INSERT RESULT:", result);
 
               const [inserted] = result;
@@ -44,15 +51,13 @@ function createProxy() {
                 recordId: inserted.id,
               });
 
-              const objectResult = await target
+              await target
                 .insert(schema.objects)
                 .values({
                   model: currentInsertTable._.name,
-                  recordId: inserted.id,
+                  recordId: Number(inserted.id),
                 })
                 .returning();
-
-              console.log("OBJECT CREATED:", objectResult);
 
               return result;
             },
@@ -74,17 +79,17 @@ export async function testObjects() {
   console.log("Using timestamp:", timestamp);
 
   // Insert a test app with unique value
-  const [insertedApp] = await testDb.insert(schema.apps).values({
+  const [insertedApp] = (await testDb.insert(schema.apps).values({
     value: `test-app-${timestamp}`,
     label: `Test App ${timestamp}`,
     iconKey: "test",
     order: 999,
-  });
+  })) as [AppSelect];
 
   console.log("Inserted app:", insertedApp);
 
   // Verify an object was created
-  const result = await testDb.query.objects.findFirst({
+  const result = await baseDb.query.objects.findFirst({
     where: (fields, { and, eq }) =>
       and(eq(fields.model, "apps"), eq(fields.recordId, insertedApp.id)),
   });
@@ -96,7 +101,7 @@ export async function testObjects() {
   });
 
   // List all objects to see what's there
-  const allObjects = await testDb.query.objects.findMany();
+  const allObjects = await baseDb.query.objects.findMany();
   console.log("All objects in DB:", allObjects);
 
   // Assert object exists and matches
@@ -110,8 +115,8 @@ export async function testObjects() {
   console.log("✅ Test passed!");
 
   // Cleanup
-  await testDb.delete(schema.apps).where(eq(schema.apps.id, insertedApp.id));
-  await testDb.delete(schema.objects).where(eq(schema.objects.id, result.id));
+  await baseDb.delete(schema.apps).where(eq(schema.apps.id, insertedApp.id));
+  await baseDb.delete(schema.objects).where(eq(schema.objects.id, result.id));
 
   return {
     success: true,
