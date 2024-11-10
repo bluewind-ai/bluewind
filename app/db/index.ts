@@ -10,6 +10,24 @@ const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB
 const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
+function wrapWithReturningCheck(chain: any, tableName: string, hasReturning: { value: boolean }) {
+  return new Proxy(chain, {
+    get(target: any, prop: string | symbol) {
+      if (prop === "then" && !hasReturning.value) {
+        throw new Error(`Query on table ${tableName} must call returning()`);
+      }
+
+      const value = target[prop];
+
+      if (prop === "returning") {
+        hasReturning.value = true;
+      }
+
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  });
+}
+
 function createProxy() {
   const handler = {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
@@ -21,6 +39,7 @@ function createProxy() {
           console.log("INSERT:", tableName);
 
           const chain = target.insert(table);
+          const hasReturning = { value: false };
 
           return new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
@@ -30,49 +49,21 @@ function createProxy() {
                 return (...args: any[]) => {
                   console.log("VALUES:", { table: tableName, data: args[0] });
                   const valueChain = value.apply(chainTarget, args);
-                  let hasReturning = false;
 
                   return new Proxy(valueChain, {
                     get(valuesTarget: any, valuesProp: string | symbol) {
                       const method = valuesTarget[valuesProp];
 
-                      if (valuesProp === "then") {
-                        if (!hasReturning) {
-                          throw new Error(`Insert on table ${tableName} must call returning()`);
-                        }
-                      }
-
                       if (valuesProp === "onConflictDoUpdate") {
                         return (...cArgs: any[]) => {
                           console.log("UPDATE:", { table: tableName, args: cArgs[0] });
                           const conflictChain = method.apply(valuesTarget, cArgs);
-
-                          return new Proxy(conflictChain, {
-                            get(conflictTarget: any, conflictProp: string | symbol) {
-                              const conflictMethod = conflictTarget[conflictProp];
-
-                              if (conflictProp === "then") {
-                                if (!hasReturning) {
-                                  throw new Error(
-                                    `OnConflictDoUpdate on table ${tableName} must call returning()`,
-                                  );
-                                }
-                              }
-
-                              if (conflictProp === "returning") {
-                                hasReturning = true;
-                              }
-
-                              return typeof conflictMethod === "function"
-                                ? conflictMethod.bind(conflictTarget)
-                                : conflictMethod;
-                            },
-                          });
+                          return wrapWithReturningCheck(conflictChain, tableName, hasReturning);
                         };
                       }
 
                       if (valuesProp === "returning") {
-                        hasReturning = true;
+                        hasReturning.value = true;
                         return async function (...args: any[]) {
                           const result = await method.apply(valuesTarget, args);
                           console.log("RETURNING:", { table: tableName, result });
@@ -90,6 +81,10 @@ function createProxy() {
 
                           return result;
                         };
+                      }
+
+                      if (valuesProp === "then" && !hasReturning.value) {
+                        throw new Error(`Query on table ${tableName} must call returning()`);
                       }
 
                       return typeof method === "function" ? method.bind(valuesTarget) : method;
