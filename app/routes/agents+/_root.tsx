@@ -7,7 +7,6 @@ import { apps, functionCalls, actions } from "~/db/schema";
 import { db } from "~/db";
 import { eq, and, isNull } from "drizzle-orm";
 import { Button } from "~/components/ui/button";
-import { goNext } from "~/functions/go-next.server";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   const masterAction = await db.query.actions.findFirst({
@@ -70,13 +69,7 @@ export default function AgentsRoot() {
       <NavigationTree data={navigationData} apps={apps} />
       <div className="flex-1">
         <div className="flex gap-2 p-4 flex-wrap">
-          <Button
-            onClick={async () => {
-              const result = await goNext();
-              navigate(`/agents/function-calls/${result.id}`);
-            }}
-            variant="outline"
-          >
+          <Button onClick={() => navigate("/run-function/go-next")} variant="outline">
             Go Next
           </Button>
           {buttons}
