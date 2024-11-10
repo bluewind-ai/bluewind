@@ -23,58 +23,33 @@ function createProxy() {
         return (table: PgTable<any>) => {
           console.log("INSERT CALLED:", {
             table: table[Symbol.for("drizzle:Name")],
-            methods: Object.getOwnPropertyNames(table),
           });
 
           currentTable = table;
           const chain = insertFn(table);
 
-          console.log("CHAIN CREATED:", {
-            chainMethods: Object.getOwnPropertyNames(Object.getPrototypeOf(chain)),
-            chainProps: Object.getOwnPropertyNames(chain),
-          });
+          console.log("CHAIN METHODS:", chain);
 
-          return new Proxy(chain, {
+          const proxy = new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
-              const chainMethod = chainTarget[chainProp];
               console.log("CHAIN ACCESS:", {
-                chainProp,
-                hasMethod: !!chainMethod,
-                type: typeof chainMethod,
+                prop: String(chainProp),
+                target: chainTarget,
               });
 
-              if (chainProp === "returning") {
-                return async function (...args: any[]) {
-                  console.log("RETURNING CALLED:", { args });
-                  const result = await chainMethod.apply(chainTarget, args);
-                  console.log("RETURN RESULT:", result);
-
-                  if (result?.[0]?.id && currentTable && currentTable !== schema.objects) {
-                    const tableName = currentTable[Symbol.for("drizzle:Name")];
-                    console.log("CREATING OBJECT:", {
-                      model: tableName,
-                      recordId: result[0].id,
-                    });
-
-                    await target
-                      .insert(schema.objects)
-                      .values({
-                        functionCallId: 1,
-                        model: tableName,
-                        recordId: result[0].id,
-                      })
-                      .returning();
-                  }
-
-                  return result;
-                };
-              }
-
-              return typeof chainMethod === "function"
-                ? chainMethod.bind(chainTarget)
-                : chainMethod;
+              const value = chainTarget[chainProp];
+              return typeof value === "function" ? value.bind(chainTarget) : value;
             },
           });
+
+          // Log the available methods on the proxy
+          console.log("PROXY METHODS:", {
+            values: typeof proxy.values,
+            returning: typeof proxy.returning,
+            onConflictDoUpdate: typeof proxy.onConflictDoUpdate,
+          });
+
+          return proxy;
         };
       }
 
