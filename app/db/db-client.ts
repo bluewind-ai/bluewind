@@ -36,6 +36,7 @@ export const createDbClient = (connectionString: string) => {
                 console.log("Proxy attempting to insert object:", {
                   model: table,
                   recordId: inserted.id,
+                  functionCallId: 1,
                 });
 
                 const objectResult = await db
@@ -43,6 +44,7 @@ export const createDbClient = (connectionString: string) => {
                   .values({
                     model: table as string,
                     recordId: inserted.id,
+                    functionCallId: 1,
                   })
                   .returning();
 
