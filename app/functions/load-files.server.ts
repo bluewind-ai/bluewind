@@ -41,8 +41,8 @@ export const apps = ${JSON.stringify(APPS_DATA, null, 2)} as const;
 }
 
 async function generateActionsFile() {
-  const actionsDir = path.join(process.cwd(), "app", "actions");
-  const files = await fs.readdir(actionsDir);
+  const functionsDir = path.join(process.cwd(), "app", "functions");
+  const files = await fs.readdir(functionsDir);
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
 
   const content = `// app/lib/generated/actions.ts
@@ -52,7 +52,7 @@ ${actionFiles
   .map((file) => {
     const basename = path.basename(file, ".server.ts");
     const camelName = kebabToCamel(basename);
-    return `import { ${camelName} } from "~/actions/${basename}.server";`;
+    return `import { ${camelName} } from "~/functions/${basename}.server";`;
   })
   .join("\n")}
 
@@ -125,8 +125,8 @@ async function syncApps() {
 }
 
 async function syncActions() {
-  const actionsDir = path.join(process.cwd(), "app", "actions");
-  const files = await fs.readdir(actionsDir);
+  const functionsDir = path.join(process.cwd(), "app", "functions");
+  const files = await fs.readdir(functionsDir);
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
   const actionNames = actionFiles.map((file) => path.basename(file, ".server.ts"));
 
