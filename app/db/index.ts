@@ -3,6 +3,7 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import type { PgTable } from "drizzle-orm/pg-core";
 import * as schema from "./schema";
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
@@ -10,17 +11,19 @@ const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
 function createProxy() {
-  let currentTable: any = null;
+  let currentTable: PgTable<any> | null = null;
 
   const handler = {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
       const original = target[prop as keyof typeof target];
 
       if (prop === "insert") {
-        return (table: any) => {
+        // Here's the key change - we preserve the original insert function
+        const insertFn = original as typeof target.insert;
+        return (table: PgTable<any>) => {
           console.log("INSERT:", table);
           currentTable = table;
-          const chain = original(table); // Removed .call()
+          const chain = insertFn(table);
 
           return new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
