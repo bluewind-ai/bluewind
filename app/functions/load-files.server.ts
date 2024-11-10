@@ -105,6 +105,7 @@ async function syncApps() {
       .values({
         name: "load-apps-to-db",
         type: ActionType.SYSTEM,
+        functionCallId: 1,
       })
       .returning();
     thisAction = newAction;
@@ -114,7 +115,7 @@ async function syncApps() {
     .insert(functionCalls)
     .values({
       functionCallId: 1,
-      actionId: thisAction.id,
+      actionId: thisAction!.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
@@ -145,6 +146,7 @@ async function syncActions() {
         .values({
           name,
           type: ActionType.SYSTEM,
+          functionCallId: 1,
         })
         .returning();
       results.push({ name, status: "created" });
@@ -163,6 +165,7 @@ async function syncActions() {
       .values({
         name: "load-actions",
         type: ActionType.SYSTEM,
+        functionCallId: 1,
       })
       .returning();
     thisAction = newAction;
@@ -171,7 +174,8 @@ async function syncActions() {
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
-      actionId: thisAction.id,
+      functionCallId: 1,
+      actionId: thisAction!.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
