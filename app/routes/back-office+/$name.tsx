@@ -37,6 +37,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
     case "debugLogs":
       data = await db.query.debugLogs.findMany();
       break;
+    case "objects":
+      data = await db.query.objects.findMany();
+      break;
     default:
       throw new Error(`Table ${name} not found`);
   }
