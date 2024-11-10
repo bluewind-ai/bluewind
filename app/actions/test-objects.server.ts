@@ -2,12 +2,13 @@
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import type { PgTable, TableConfig } from "drizzle-orm/pg-core";
+import type { PgTable } from "drizzle-orm/pg-core";
 import * as schema from "~/db/schema";
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
 
-type AppSelect = typeof schema.apps.$inferSelect;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AppSelect = any;
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 const client = postgres(connectionString);
@@ -15,7 +16,7 @@ const baseDb = drizzle(client, { schema });
 
 function createProxy() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let currentInsertTable: PgTable<TableConfig> | null = null;
+  let currentInsertTable: PgTable<any> | null = null;
 
   return new Proxy(baseDb, {
     get(target, prop) {
@@ -23,11 +24,12 @@ function createProxy() {
 
       if (prop === "insert") {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (table: PgTable<TableConfig>) => {
+        return (table: any) => {
           console.log("INSERT CALLED WITH:", table);
           currentInsertTable = table;
           return {
-            values: async (data: Record<string, unknown>) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            values: async (data: any) => {
               console.log("VALUES CALLED WITH:", { table: currentInsertTable, data });
 
               if (!currentInsertTable) {
@@ -38,7 +40,7 @@ function createProxy() {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const result = await target
                 .insert(currentInsertTable)
-                .values(data as Record<string, unknown>)
+                .values(data as any)
                 .returning();
               console.log("INSERT RESULT:", result);
 
@@ -78,12 +80,13 @@ export async function testObjects() {
   console.log("Using timestamp:", timestamp);
 
   // Insert a test app with unique value
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [insertedApp] = (await testDb.insert(schema.apps).values({
     value: `test-app-${timestamp}`,
     label: `Test App ${timestamp}`,
     iconKey: "test",
     order: 999,
-  })) as [AppSelect];
+  })) as any;
 
   console.log("Inserted app:", insertedApp);
 
