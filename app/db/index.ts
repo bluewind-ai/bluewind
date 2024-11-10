@@ -17,7 +17,8 @@ function createProxy() {
 
       if (prop === "insert") {
         return (table: PgTable<any>) => {
-          console.log("INSERT:", table[Symbol.for("drizzle:Name")]);
+          const tableName = table[Symbol.for("drizzle:Name")];
+          console.log("INSERT:", tableName);
 
           const chain = target.insert(table);
 
@@ -27,6 +28,7 @@ function createProxy() {
 
               if (chainProp === "values") {
                 return (...args: any[]) => {
+                  console.log("VALUES:", { table: tableName, data: args[0] });
                   const valueChain = value.apply(chainTarget, args);
 
                   return new Proxy(valueChain, {
@@ -35,8 +37,8 @@ function createProxy() {
 
                       if (valuesProp === "onConflictDoUpdate") {
                         return (...cArgs: any[]) => {
+                          console.log("UPDATE:", { table: tableName, args: cArgs[0] });
                           const conflictChain = method.apply(valuesTarget, cArgs);
-                          // Just pass through for updates
                           return conflictChain;
                         };
                       }
@@ -44,9 +46,9 @@ function createProxy() {
                       if (valuesProp === "returning") {
                         return async function (...args: any[]) {
                           const result = await method.apply(valuesTarget, args);
+                          console.log("RETURNING:", { table: tableName, result });
 
                           if (result?.[0]?.id && table !== schema.objects) {
-                            const tableName = table[Symbol.for("drizzle:Name")];
                             await target
                               .insert(schema.objects)
                               .values({
