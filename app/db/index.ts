@@ -11,6 +11,8 @@ const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
 function createProxy() {
+  let currentTable: PgTable<any> | null = null;
+
   const handler = {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
       const original = target[prop as keyof typeof target];
@@ -23,6 +25,7 @@ function createProxy() {
             table: table[Symbol.for("drizzle:Name")],
           });
 
+          currentTable = table;
           const chain = insertFn(table);
 
           console.log("CHAIN METHODS:", chain);
