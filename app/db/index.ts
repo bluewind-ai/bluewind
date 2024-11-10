@@ -30,6 +30,7 @@ function createProxy() {
                 return (...args: any[]) => {
                   console.log("VALUES:", { table: tableName, data: args[0] });
                   const valueChain = value.apply(chainTarget, args);
+                  let hasReturning = false;
 
                   return new Proxy(valueChain, {
                     get(valuesTarget: any, valuesProp: string | symbol) {
@@ -38,30 +39,18 @@ function createProxy() {
                       if (valuesProp === "onConflictDoUpdate") {
                         return (...cArgs: any[]) => {
                           console.log("UPDATE:", { table: tableName, args: cArgs[0] });
+                          if (!hasReturning) {
+                            throw new Error(
+                              `OnConflictDoUpdate on table ${tableName} must call returning()`,
+                            );
+                          }
                           const conflictChain = method.apply(valuesTarget, cArgs);
-
-                          // Return new proxy for the conflict chain
-                          return new Proxy(conflictChain, {
-                            get(conflictTarget: any, conflictProp: string | symbol) {
-                              if (conflictProp === "then") {
-                                throw new Error(
-                                  `OnConflictDoUpdate on table ${tableName} must call returning()`,
-                                );
-                              }
-                              const conflictMethod = conflictTarget[conflictProp];
-                              return typeof conflictMethod === "function"
-                                ? conflictMethod.bind(conflictTarget)
-                                : conflictMethod;
-                            },
-                          });
+                          return conflictChain;
                         };
                       }
 
-                      if (valuesProp === "then") {
-                        throw new Error(`Insert on table ${tableName} must call returning()`);
-                      }
-
                       if (valuesProp === "returning") {
+                        hasReturning = true;
                         return async function (...args: any[]) {
                           const result = await method.apply(valuesTarget, args);
                           console.log("RETURNING:", { table: tableName, result });
