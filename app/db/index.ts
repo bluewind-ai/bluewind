@@ -26,19 +26,13 @@ function createProxy() {
           });
 
           const chain = insertFn(table);
-          console.log("CHAIN CREATED:", {
-            chainType: typeof chain,
-            chainKeys: Object.keys(chain),
-            chainMethods: Object.getOwnPropertyNames(Object.getPrototypeOf(chain)),
-          });
+          console.log("CHAIN CREATED:", chain);
 
           const proxy = new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
               console.log("PROXY ACCESS:", {
                 prop: String(chainProp),
                 targetType: typeof chainTarget,
-                valueExists: chainProp in chainTarget,
-                value: typeof chainTarget[chainProp],
               });
 
               const value = chainTarget[chainProp];
@@ -74,6 +68,7 @@ function createProxy() {
             },
           });
 
+          console.log("PROXY CREATED AND RETURNED");
           return proxy;
         };
       }
