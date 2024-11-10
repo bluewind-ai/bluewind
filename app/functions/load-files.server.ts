@@ -92,7 +92,8 @@ async function syncApps() {
           iconKey: app.iconKey,
           order: app.id,
         },
-      });
+      })
+      .returning();
   }
 
   let thisAction = await db.query.actions.findFirst({
