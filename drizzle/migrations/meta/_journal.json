@@ -85,6 +85,13 @@
       "when": 1731177728600,
       "tag": "0011_small_frank_castle",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1731198732208,
+      "tag": "0012_romantic_blade",
+      "breakpoints": true
     }
   ]
 }
