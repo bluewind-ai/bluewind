@@ -43,6 +43,9 @@ export const objects = pgTable("objects", {
   id: serial("id").primaryKey(),
   model: text("model").notNull(),
   recordId: integer("record_id").notNull(),
+  functionCallId: integer("function_call_id")
+    .references(() => functionCalls.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
 export const apps = pgTable("apps", {
@@ -51,10 +54,16 @@ export const apps = pgTable("apps", {
   label: varchar("label", { length: 50 }).notNull(),
   iconKey: varchar("icon_key", { length: 50 }).notNull(),
   order: integer("order").notNull(),
+  functionCallId: integer("function_call_id")
+    .references(() => functionCalls.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
+  functionCallId: integer("function_call_id")
+    .references(() => functionCalls.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
 export const sessions = pgTable("sessions", {
@@ -68,12 +77,18 @@ export const sessions = pgTable("sessions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   expiresAt: timestamp("expires_at").notNull(),
+  functionCallId: integer("function_call_id")
+    .references(() => functionCalls.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
 export const actions = pgTable("actions", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull().unique(),
   type: actionTypeEnum("type").notNull(),
+  functionCallId: integer("function_call_id").references(() => functionCalls.id, {
+    onDelete: "cascade",
+  }),
 });
 
 export type Action = typeof actions.$inferSelect & {
@@ -104,32 +119,6 @@ export const functionCalls = pgTable("function_calls", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(users, {
-    fields: [sessions.userId],
-    references: [users.id],
-  }),
-}));
-
-export const usersRelations = relations(users, ({ many }) => ({
-  sessions: many(sessions),
-}));
-
-export const functionCallsRelations = relations(functionCalls, ({ one }) => ({
-  action: one(actions, {
-    fields: [functionCalls.actionId],
-    references: [actions.id],
-  }),
-  parent: one(functionCalls, {
-    fields: [functionCalls.parentId],
-    references: [functionCalls.id],
-  }),
-}));
-
-export const actionsRelations = relations(actions, ({ many }) => ({
-  calls: many(functionCalls),
-}));
-
 export const requestErrors = pgTable("request_errors", {
   id: serial("id").primaryKey(),
   message: text("message").notNull(),
@@ -139,14 +128,94 @@ export const requestErrors = pgTable("request_errors", {
   body: text("body"),
   stack: text("stack"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  functionCallId: integer("function_call_id")
+    .references(() => functionCalls.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
 export const debugLogs = pgTable("debug_logs", {
   id: serial("id").primaryKey(),
   message: text("message").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  functionCallId: integer("function_call_id")
+    .references(() => functionCalls.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
+// Update relations to include functionCall relationships
+export const objectsRelations = relations(objects, ({ one }) => ({
+  functionCall: one(functionCalls, {
+    fields: [objects.functionCallId],
+    references: [functionCalls.id],
+  }),
+}));
+
+export const appsRelations = relations(apps, ({ one }) => ({
+  functionCall: one(functionCalls, {
+    fields: [apps.functionCallId],
+    references: [functionCalls.id],
+  }),
+}));
+
+export const usersRelations = relations(users, ({ one, many }) => ({
+  sessions: many(sessions),
+  functionCall: one(functionCalls, {
+    fields: [users.functionCallId],
+    references: [functionCalls.id],
+  }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+  functionCall: one(functionCalls, {
+    fields: [sessions.functionCallId],
+    references: [functionCalls.id],
+  }),
+}));
+
+export const actionsRelations = relations(actions, ({ one, many }) => ({
+  calls: many(functionCalls),
+  functionCall: one(functionCalls, {
+    fields: [actions.functionCallId],
+    references: [functionCalls.id],
+  }),
+}));
+
+export const functionCallsRelations = relations(functionCalls, ({ one, many }) => ({
+  action: one(actions, {
+    fields: [functionCalls.actionId],
+    references: [actions.id],
+  }),
+  parent: one(functionCalls, {
+    fields: [functionCalls.parentId],
+    references: [functionCalls.id],
+  }),
+  objects: many(objects),
+  apps: many(apps),
+  users: many(users),
+  sessions: many(sessions),
+  requestErrors: many(requestErrors),
+  debugLogs: many(debugLogs),
+}));
+
+export const requestErrorsRelations = relations(requestErrors, ({ one }) => ({
+  functionCall: one(functionCalls, {
+    fields: [requestErrors.functionCallId],
+    references: [functionCalls.id],
+  }),
+}));
+
+export const debugLogsRelations = relations(debugLogs, ({ one }) => ({
+  functionCall: one(functionCalls, {
+    fields: [debugLogs.functionCallId],
+    references: [functionCalls.id],
+  }),
+}));
+
+// Rest of the code (TABLES and getTableMetadata) remains the same
 type TableConfig = {
   displayName: string;
   urlName: string;
