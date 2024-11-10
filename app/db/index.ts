@@ -17,7 +17,6 @@ function createProxy() {
       console.log("ROOT ACCESS:", { prop, type: typeof original });
 
       if (prop === "insert") {
-        const insertFn = original as typeof target.insert;
         return (table: PgTable<any>) => {
           try {
             console.log("INSERT CALLED:", {
@@ -27,7 +26,8 @@ function createProxy() {
             });
 
             console.log("BEFORE CHAIN");
-            const chain = insertFn(table);
+            // Use target.insert directly instead of extracted insertFn
+            const chain = target.insert(table);
             console.log("AFTER CHAIN:", chain);
 
             console.log("BEFORE PROXY");
