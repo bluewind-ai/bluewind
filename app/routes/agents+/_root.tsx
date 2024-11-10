@@ -1,7 +1,7 @@
 // app/routes/agents+/_root.tsx
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { Outlet, useLoaderData, useFetcher } from "@remix-run/react";
+import { Outlet, useLoaderData, useFetcher, useNavigate } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/navigation-tree";
 import { apps, functionCalls, actions } from "~/db/schema";
 import { db } from "~/db";
@@ -51,6 +51,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 export default function AgentsRoot() {
   const { navigationData, apps } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
+  const navigate = useNavigate();
 
   const isResetting = fetcher.state !== "idle";
 
@@ -69,7 +70,13 @@ export default function AgentsRoot() {
       <NavigationTree data={navigationData} apps={apps} />
       <div className="flex-1">
         <div className="flex gap-2 p-4 flex-wrap">
-          <Button onClick={() => goNext()} variant="outline">
+          <Button
+            onClick={async () => {
+              const result = await goNext();
+              navigate(`/agents/function-calls/${result.id}`);
+            }}
+            variant="outline"
+          >
             Go Next
           </Button>
           {buttons}
