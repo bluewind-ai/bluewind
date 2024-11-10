@@ -15,7 +15,7 @@ export async function action({ request }: ActionFunctionArgs) {
     await execAsync("npm run reset-all");
     return json({ success: true });
   } catch (error) {
-    void 0 // this should be removed by YOU when you rewrite the filed;
+    void 0; // this should be removed by YOU when you rewrite the filed;
     return json({ error: "Reset failed" }, { status: 500 });
   }
 }

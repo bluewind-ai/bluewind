@@ -28,18 +28,14 @@ function createProxy() {
                 throw new Error("No table specified for insert");
               }
 
-              const result = await target
-                .insert(currentInsertTable)
-                .values(data as any)
-                .returning();
-              console.log("INSERT RESULT:", result);
+              // Pass through the original operation
+              const result = await target.insert(currentInsertTable).values(data).returning();
 
-              const [inserted] = result;
+              // Only create objects on successful insert
+              if (!result[0]?.id) return result;
 
               // Skip if inserting into objects table
-              if (currentInsertTable === schema.objects) {
-                return result;
-              }
+              if (currentInsertTable === schema.objects) return result;
 
               const tableName = Object.entries(schema).find(
                 ([_, table]) => table === currentInsertTable,
@@ -51,7 +47,7 @@ function createProxy() {
 
               console.log("CREATING OBJECT:", {
                 model: tableName,
-                recordId: inserted.id,
+                recordId: result[0].id,
               });
 
               await target
@@ -59,7 +55,7 @@ function createProxy() {
                 .values({
                   functionCallId: 1,
                   model: tableName,
-                  recordId: Number(inserted.id),
+                  recordId: result[0].id,
                 })
                 .returning();
 
