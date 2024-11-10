@@ -33,7 +33,7 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
     children: functionCallsData.map((functionCall, index) => ({
       id: index + 1,
       name: `Master ${functionCall.id}`,
-      to: `/agents/function-calls/${functionCall.id}`,
+      to: `/agents/objects?function-call-id=${functionCall.id}`,
       type: "file" as const,
       children: [] as NavigationNode[],
     })),
