@@ -1,69 +1,9 @@
 // app/functions/test-objects.server.ts
 
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import type { PgTable } from "drizzle-orm/pg-core";
-import * as schema from "~/db/schema";
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
-
-const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-const client = postgres(connectionString);
-const baseDb = drizzle(client, { schema });
-
-function createProxy() {
-  let currentInsertTable: PgTable<any> | null = null;
-
-  return new Proxy(baseDb, {
-    get(target, prop) {
-      console.log("ROOT GET:", prop);
-
-      if (prop === "insert") {
-        return (table: any) => {
-          console.log("INSERT CALLED WITH:", table);
-          currentInsertTable = table;
-          return {
-            values: async (data: any) => {
-              console.log("VALUES CALLED WITH:", { table: currentInsertTable, data });
-
-              if (!currentInsertTable) {
-                throw new Error("No table specified for insert");
-              }
-
-              const result = await target
-                .insert(currentInsertTable)
-                .values(data as any)
-                .returning();
-              console.log("INSERT RESULT:", result);
-
-              const [inserted] = result;
-
-              console.log("CREATING OBJECT:", {
-                model: "apps",
-                recordId: inserted.id,
-              });
-
-              await target
-                .insert(schema.objects)
-                .values({
-                  functionCallId: 1,
-                  model: "apps",
-                  recordId: Number(inserted.id),
-                })
-                .returning();
-
-              return result;
-            },
-          };
-        };
-      }
-
-      return target[prop as keyof typeof target];
-    },
-  });
-}
-
-const testDb = createProxy();
+import { db } from "~/db";
+import * as schema from "~/db/schema";
 
 export async function testObjects() {
   console.log("=== Starting test objects ===");
@@ -71,7 +11,7 @@ export async function testObjects() {
   const timestamp = Date.now();
   console.log("Using timestamp:", timestamp);
 
-  const [insertedApp] = (await testDb.insert(schema.apps).values({
+  const [insertedApp] = (await db.insert(schema.apps).values({
     functionCallId: 1,
     value: `test-app-${timestamp}`,
     label: `Test App ${timestamp}`,
@@ -81,7 +21,7 @@ export async function testObjects() {
 
   console.log("Inserted app:", insertedApp);
 
-  const result = await baseDb.query.objects.findFirst({
+  const result = await db.query.objects.findFirst({
     where: (fields, { and, eq }) =>
       and(eq(fields.model, "apps"), eq(fields.recordId, insertedApp.id)),
   });
@@ -92,7 +32,7 @@ export async function testObjects() {
     recordId: insertedApp.id,
   });
 
-  const allObjects = await baseDb.query.objects.findMany();
+  const allObjects = await db.query.objects.findMany();
   console.log("All objects in DB:", allObjects);
 
   if (!result) {
@@ -104,8 +44,8 @@ export async function testObjects() {
 
   console.log("✅ Test passed!");
 
-  await baseDb.delete(schema.apps).where(eq(schema.apps.id, insertedApp.id));
-  await baseDb.delete(schema.objects).where(eq(schema.objects.id, result.id));
+  await db.delete(schema.apps).where(eq(schema.apps.id, insertedApp.id));
+  await db.delete(schema.objects).where(eq(schema.objects.id, result.id));
 
   return {
     success: true,
