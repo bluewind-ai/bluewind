@@ -1,13 +1,7 @@
 // app/actions/load-apps-to-db.server.ts
 
 import { db } from "~/db";
-import {
-  apps as appsTable,
-  functionCalls,
-  actions,
-  FunctionCallStatus,
-  ActionType,
-} from "~/db/schema";
+import { apps as appsTable , functionCalls, actions, FunctionCallStatus, ActionType } from "~/db/schema";
 import { apps as appsData } from "~/lib/generated/apps";
 
 export async function loadAppsToDb() {
