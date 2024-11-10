@@ -12,10 +12,10 @@ interface CodeSnippet {
 
 const git = simpleGit();
 
-async function hasUnstagedChanges(): Promise<boolean> {
-  const status = await git.status();
-  return !status.isClean();
-}
+// async function hasUnstagedChanges(): Promise<boolean> {
+//   const status = await git.status();
+//   return !status.isClean();
+// }
 
 function insertLineAtBeginning(filePath: string, lineToInsert: string): void {
   const content = fs.readFileSync(filePath, "utf-8");
