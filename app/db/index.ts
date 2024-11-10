@@ -20,9 +20,9 @@ function createProxyForChain(
       console.log("CHAIN ACCESS:", String(chainProp));
       const method = chainTarget[chainProp];
 
-      if (chainProp === "returning") {
-        return async function (...args: any[]) {
-          const result = await method.apply(chainTarget, args);
+      if (chainProp === "then") {
+        return async (...args: any[]) => {
+          const result = await chain;
 
           if (result?.[0]?.id && table !== schema.objects) {
             const tableName = table[Symbol.for("drizzle:Name")];
@@ -36,7 +36,7 @@ function createProxyForChain(
               .returning();
           }
 
-          return result;
+          return args[0]?.(result);
         };
       }
 
@@ -77,9 +77,9 @@ function createProxy() {
                         };
                       }
 
-                      if (valuesProp === "returning") {
-                        return async function (...rArgs: any[]) {
-                          const result = await method.apply(valuesTarget, rArgs);
+                      if (valuesProp === "then") {
+                        return async (...args: any[]) => {
+                          const result = await valueChain;
 
                           if (result?.[0]?.id && table !== schema.objects) {
                             const tableName = table[Symbol.for("drizzle:Name")];
@@ -93,7 +93,7 @@ function createProxy() {
                               .returning();
                           }
 
-                          return result;
+                          return args[0]?.(result);
                         };
                       }
 
