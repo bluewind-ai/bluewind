@@ -11,8 +11,6 @@ const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
 function createProxy() {
-  let currentTable: PgTable<any> | null = null;
-
   const handler = {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
       const original = target[prop as keyof typeof target];
@@ -25,7 +23,6 @@ function createProxy() {
             table: table[Symbol.for("drizzle:Name")],
           });
 
-          currentTable = table;
           const chain = insertFn(table);
 
           console.log("CHAIN METHODS:", chain);
@@ -38,11 +35,38 @@ function createProxy() {
               });
 
               const value = chainTarget[chainProp];
+
+              if (chainProp === "returning") {
+                return async function (...args: any[]) {
+                  console.log("RETURNING CALLED:", { args });
+                  const result = await value.apply(chainTarget, args);
+                  console.log("RETURN RESULT:", result);
+
+                  if (result?.[0]?.id && table !== schema.objects) {
+                    const tableName = table[Symbol.for("drizzle:Name")];
+                    console.log("CREATING OBJECT:", {
+                      model: tableName,
+                      recordId: result[0].id,
+                    });
+
+                    await target
+                      .insert(schema.objects)
+                      .values({
+                        functionCallId: 1,
+                        model: tableName,
+                        recordId: result[0].id,
+                      })
+                      .returning();
+                  }
+
+                  return result;
+                };
+              }
+
               return typeof value === "function" ? value.bind(chainTarget) : value;
             },
           });
 
-          // Log the available methods on the proxy
           console.log("PROXY METHODS:", {
             values: typeof proxy.values,
             returning: typeof proxy.returning,
