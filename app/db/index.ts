@@ -17,34 +17,7 @@ function createProxyForChain(
 ) {
   return new Proxy(chain, {
     get(chainTarget: any, chainProp: string | symbol) {
-      console.log("CHAIN ACCESS:", String(chainProp));
       const method = chainTarget[chainProp];
-
-      if (chainProp === "then") {
-        return async (...args: any[]) => {
-          const result = await chain;
-          console.log("THEN RESULT:", { result, table: table[Symbol.for("drizzle:Name")] });
-
-          if (result?.[0]?.id && table !== schema.objects) {
-            const tableName = table[Symbol.for("drizzle:Name")];
-            console.log("CREATING OBJECT FROM THEN:", {
-              model: tableName,
-              recordId: result[0].id,
-            });
-            await target
-              .insert(schema.objects)
-              .values({
-                functionCallId: 1,
-                model: tableName,
-                recordId: result[0].id,
-              })
-              .returning();
-          }
-
-          return args[0]?.(result);
-        };
-      }
-
       return typeof method === "function" ? method.bind(chainTarget) : method;
     },
   });
@@ -63,41 +36,30 @@ function createProxy() {
 
           return new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
-              console.log("CHAIN ACCESS:", String(chainProp));
               const value = chainTarget[chainProp];
 
               if (chainProp === "values") {
                 return (...args: any[]) => {
-                  console.log("VALUES ARGS:", args);
                   const valueChain = value.apply(chainTarget, args);
 
                   return new Proxy(valueChain, {
                     get(valuesTarget: any, valuesProp: string | symbol) {
-                      console.log("VALUES ACCESS:", String(valuesProp));
                       const method = valuesTarget[valuesProp];
 
                       if (valuesProp === "onConflictDoUpdate") {
                         return (...cArgs: any[]) => {
-                          console.log("CONFLICT ARGS:", cArgs);
                           const conflictChain = method.apply(valuesTarget, cArgs);
-                          return createProxyForChain(conflictChain, table, target);
+                          // Just pass through for updates
+                          return conflictChain;
                         };
                       }
 
-                      if (valuesProp === "then") {
-                        return async (...args: any[]) => {
-                          const result = await valueChain;
-                          console.log("VALUES THEN RESULT:", {
-                            result,
-                            table: table[Symbol.for("drizzle:Name")],
-                          });
+                      if (valuesProp === "returning") {
+                        return async function (...args: any[]) {
+                          const result = await method.apply(valuesTarget, args);
 
                           if (result?.[0]?.id && table !== schema.objects) {
                             const tableName = table[Symbol.for("drizzle:Name")];
-                            console.log("CREATING OBJECT FROM VALUES THEN:", {
-                              model: tableName,
-                              recordId: result[0].id,
-                            });
                             await target
                               .insert(schema.objects)
                               .values({
@@ -108,7 +70,7 @@ function createProxy() {
                               .returning();
                           }
 
-                          return args[0]?.(result);
+                          return result;
                         };
                       }
 
