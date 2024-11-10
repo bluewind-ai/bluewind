@@ -21,29 +21,41 @@ function createProxy() {
         return (table: PgTable<any>) => {
           console.log("INSERT CALLED:", {
             table: table[Symbol.for("drizzle:Name")],
+            tableKeys: Object.keys(table),
+            tableMethods: Object.getOwnPropertyNames(Object.getPrototypeOf(table)),
           });
 
           const chain = insertFn(table);
-          console.log("ATTEMPTED CHAIN:", {
-            chain: String(chain),
-            methods: Object.getOwnPropertyNames(Object.getPrototypeOf(chain)),
+          console.log("CHAIN CREATED:", {
+            chainType: typeof chain,
+            chainKeys: Object.keys(chain),
+            chainMethods: Object.getOwnPropertyNames(Object.getPrototypeOf(chain)),
           });
 
           const proxy = new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
-              const value = chainTarget[chainProp];
-              console.log("CHAIN ACCESS:", {
+              console.log("PROXY ACCESS:", {
                 prop: String(chainProp),
-                hasValue: !!value,
-                type: typeof value,
+                targetType: typeof chainTarget,
+                valueExists: chainProp in chainTarget,
+                value: typeof chainTarget[chainProp],
               });
+
+              const value = chainTarget[chainProp];
 
               if (chainProp === "returning") {
                 return async function (...args: any[]) {
+                  console.log("RETURNING CALLED with:", args);
                   const result = await value.apply(chainTarget, args);
+                  console.log("RETURNING RESULT:", result);
 
                   if (result?.[0]?.id && table !== schema.objects) {
                     const tableName = table[Symbol.for("drizzle:Name")];
+                    console.log("CREATING OBJECT:", {
+                      model: tableName,
+                      recordId: result[0].id,
+                    });
+
                     await target
                       .insert(schema.objects)
                       .values({
