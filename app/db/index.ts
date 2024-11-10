@@ -2,7 +2,7 @@
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import type { PgTable } from "drizzle-orm/pg-core";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
@@ -10,66 +10,61 @@ const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
 function createProxy() {
-  let currentInsertTable: PgTable<any> | null = null;
+  let currentTable: any = null;
 
-  return new Proxy(baseDb, {
-    get(target, prop) {
-      console.log("ROOT GET:", prop);
+  const handler = {
+    get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
+      const original = target[prop as keyof typeof target];
 
       if (prop === "insert") {
         return (table: any) => {
-          console.log("INSERT CALLED WITH:", table);
-          currentInsertTable = table;
-          return {
-            values: async (data: any) => {
-              console.log("VALUES CALLED WITH:", { table: currentInsertTable, data });
+          console.log("INSERT:", table);
+          currentTable = table;
+          const chain = original.call(target, table);
 
-              if (!currentInsertTable) {
-                throw new Error("No table specified for insert");
+          return new Proxy(chain, {
+            get(chainTarget: any, chainProp: string | symbol) {
+              const chainMethod = chainTarget[chainProp];
+
+              if (chainProp === "returning") {
+                return async function (...args: any[]) {
+                  console.log("RETURNING:", args);
+                  const result = await chainMethod.apply(chainTarget, args);
+
+                  if (result?.[0]?.id && currentTable !== schema.objects) {
+                    const tableName = currentTable[Symbol.for("drizzle:Name")];
+                    console.log("CREATING OBJECT:", {
+                      model: tableName,
+                      recordId: result[0].id,
+                    });
+
+                    await target
+                      .insert(schema.objects)
+                      .values({
+                        functionCallId: 1,
+                        model: tableName,
+                        recordId: result[0].id,
+                      })
+                      .returning();
+                  }
+
+                  return result;
+                };
               }
 
-              const result = await target.insert(currentInsertTable).values(data).returning();
-
-              console.log("INSERT RESULT:", result);
-              const [inserted] = result;
-
-              // Only create objects on successful insert
-              if (!inserted?.id) return result;
-
-              // Skip if inserting into objects table
-              if (currentInsertTable === schema.objects) return result;
-
-              // Get table name from Symbol
-              const tableName = currentInsertTable[Symbol.for("drizzle:Name")];
-              console.log("Table name from symbol:", tableName);
-
-              if (!tableName) {
-                throw new Error("Could not determine table name");
-              }
-
-              console.log("CREATING OBJECT:", {
-                model: tableName,
-                recordId: inserted.id,
-              });
-
-              await target
-                .insert(schema.objects)
-                .values({
-                  functionCallId: 1,
-                  model: tableName,
-                  recordId: inserted.id,
-                })
-                .returning();
-
-              return result;
+              return typeof chainMethod === "function"
+                ? chainMethod.bind(chainTarget)
+                : chainMethod;
             },
-          };
+          });
         };
       }
 
-      return target[prop as keyof typeof target];
+      return typeof original === "function" ? original.bind(target) : original;
     },
-  });
+  };
+
+  return new Proxy(baseDb, handler);
 }
 
 export const db = createProxy();
