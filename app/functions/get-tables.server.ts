@@ -1,4 +1,4 @@
-// app/actions/get-tables.server.ts
+// app/functions/get-tables.server.ts
 
 import * as schema from "~/db/schema";
 

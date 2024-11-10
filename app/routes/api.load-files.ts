@@ -1,7 +1,7 @@
 // app/routes/api.load-files.ts
 
 import { json } from "@remix-run/node";
-import { loadFiles } from "~/actions/load-files.server";
+import { loadFiles } from "~/functions/load-files.server";
 
 export async function loader() {
   try {

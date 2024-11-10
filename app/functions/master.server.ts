@@ -1,4 +1,4 @@
-// app/actions/master.server.ts
+// app/functions/master.server.ts
 
 import { createAction } from "~/lib/action-builder.server";
 import { loadFiles } from "./load-files.server";

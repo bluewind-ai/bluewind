@@ -2,7 +2,7 @@
 
 import { json } from "@remix-run/node";
 import type { ActionFunction } from "@remix-run/node";
-import { loadAppsToDb } from "~/actions/load-apps-to-db.server";
+import { loadAppsToDb } from "~/functions/load-apps-to-db.server";
 
 export const action: ActionFunction = async () => {
   const result = await loadAppsToDb();

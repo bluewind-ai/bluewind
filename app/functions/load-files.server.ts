@@ -1,4 +1,4 @@
-// app/actions/load-files.server.ts
+// app/functions/load-files.server.ts
 
 import { db } from "~/db";
 import { apps, actions, functionCalls, ActionType, FunctionCallStatus } from "~/db/schema";
@@ -94,12 +94,10 @@ async function syncApps() {
       });
   }
 
-  // First try to find the action
   let thisAction = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });
 
-  // If not found, create it
   if (!thisAction) {
     const [newAction] = await db
       .insert(actions)
@@ -153,12 +151,10 @@ async function syncActions() {
     }
   }
 
-  // First try to find the action
   let thisAction = await db.query.actions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-actions"),
   });
 
-  // If not found, create it
   if (!thisAction) {
     const [newAction] = await db
       .insert(actions)

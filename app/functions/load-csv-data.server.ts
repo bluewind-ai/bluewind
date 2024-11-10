@@ -1,4 +1,4 @@
-// app/actions/load-csv-data.server.ts
+// app/functions/load-csv-data.server.ts
 
 import { createAction } from "~/lib/action-builder.server";
 

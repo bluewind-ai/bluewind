@@ -1,4 +1,4 @@
-// app/actions/load-apps-to-db.server.ts
+// app/functions/load-apps-to-db.server.ts
 
 import { db } from "~/db";
 import {

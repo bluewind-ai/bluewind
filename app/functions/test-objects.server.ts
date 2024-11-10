@@ -1,4 +1,4 @@
-// app/actions/test-objects.server.ts
+// app/functions/test-objects.server.ts
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -12,7 +12,6 @@ const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
 function createProxy() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let currentInsertTable: PgTable<any> | null = null;
 
   return new Proxy(baseDb, {
@@ -20,12 +19,10 @@ function createProxy() {
       console.log("ROOT GET:", prop);
 
       if (prop === "insert") {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (table: any) => {
           console.log("INSERT CALLED WITH:", table);
           currentInsertTable = table;
           return {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             values: async (data: any) => {
               console.log("VALUES CALLED WITH:", { table: currentInsertTable, data });
 
@@ -33,8 +30,6 @@ function createProxy() {
                 throw new Error("No table specified for insert");
               }
 
-              // Do the original insert
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const result = await target
                 .insert(currentInsertTable)
                 .values(data as any)
@@ -43,7 +38,6 @@ function createProxy() {
 
               const [inserted] = result;
 
-              // Create the object
               console.log("CREATING OBJECT:", {
                 model: "apps",
                 recordId: inserted.id,
@@ -76,8 +70,6 @@ export async function testObjects() {
   const timestamp = Date.now();
   console.log("Using timestamp:", timestamp);
 
-  // Insert a test app with unique value
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [insertedApp] = (await testDb.insert(schema.apps).values({
     value: `test-app-${timestamp}`,
     label: `Test App ${timestamp}`,
@@ -87,7 +79,6 @@ export async function testObjects() {
 
   console.log("Inserted app:", insertedApp);
 
-  // Verify an object was created
   const result = await baseDb.query.objects.findFirst({
     where: (fields, { and, eq }) =>
       and(eq(fields.model, "apps"), eq(fields.recordId, insertedApp.id)),
@@ -99,11 +90,9 @@ export async function testObjects() {
     recordId: insertedApp.id,
   });
 
-  // List all objects to see what's there
   const allObjects = await baseDb.query.objects.findMany();
   console.log("All objects in DB:", allObjects);
 
-  // Assert object exists and matches
   if (!result) {
     throw new Error("Object should have been created");
   }
@@ -113,7 +102,6 @@ export async function testObjects() {
 
   console.log("✅ Test passed!");
 
-  // Cleanup
   await baseDb.delete(schema.apps).where(eq(schema.apps.id, insertedApp.id));
   await baseDb.delete(schema.objects).where(eq(schema.objects.id, result.id));
 

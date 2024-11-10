@@ -1,4 +1,4 @@
-// app/actions/go-next.server.ts
+// app/functions/go-next.server.ts
 
 export async function goNext() {
   console.log("=== Starting goNext ===");
