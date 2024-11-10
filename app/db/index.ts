@@ -10,6 +10,41 @@ const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB
 const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
+function createProxyForChain(
+  chain: any,
+  table: PgTable<any>,
+  target: PostgresJsDatabase<typeof schema>,
+) {
+  return new Proxy(chain, {
+    get(chainTarget: any, chainProp: string | symbol) {
+      console.log("CHAIN ACCESS:", String(chainProp));
+      const method = chainTarget[chainProp];
+
+      if (chainProp === "returning") {
+        return async function (...args: any[]) {
+          const result = await method.apply(chainTarget, args);
+
+          if (result?.[0]?.id && table !== schema.objects) {
+            const tableName = table[Symbol.for("drizzle:Name")];
+            await target
+              .insert(schema.objects)
+              .values({
+                functionCallId: 1,
+                model: tableName,
+                recordId: result[0].id,
+              })
+              .returning();
+          }
+
+          return result;
+        };
+      }
+
+      return typeof method === "function" ? method.bind(chainTarget) : method;
+    },
+  });
+}
+
 function createProxy() {
   const handler = {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
@@ -21,7 +56,6 @@ function createProxy() {
 
           const chain = target.insert(table);
 
-          // Create proxy for the QueryPromise
           return new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
               console.log("CHAIN ACCESS:", String(chainProp));
@@ -31,11 +65,17 @@ function createProxy() {
                 return (...args: any[]) => {
                   const valueChain = value.apply(chainTarget, args);
 
-                  // Return a new proxy for the values chain
                   return new Proxy(valueChain, {
                     get(valuesTarget: any, valuesProp: string | symbol) {
                       console.log("VALUES ACCESS:", String(valuesProp));
                       const method = valuesTarget[valuesProp];
+
+                      if (valuesProp === "onConflictDoUpdate") {
+                        return (...cArgs: any[]) => {
+                          const conflictChain = method.apply(valuesTarget, cArgs);
+                          return createProxyForChain(conflictChain, table, target);
+                        };
+                      }
 
                       if (valuesProp === "returning") {
                         return async function (...rArgs: any[]) {
