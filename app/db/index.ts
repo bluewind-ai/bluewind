@@ -35,16 +35,30 @@ function createProxy() {
                     get(valuesTarget: any, valuesProp: string | symbol) {
                       const method = valuesTarget[valuesProp];
 
-                      if (valuesProp === "then") {
-                        throw new Error(`Insert on table ${tableName} must call returning()`);
-                      }
-
                       if (valuesProp === "onConflictDoUpdate") {
                         return (...cArgs: any[]) => {
                           console.log("UPDATE:", { table: tableName, args: cArgs[0] });
                           const conflictChain = method.apply(valuesTarget, cArgs);
-                          return conflictChain;
+
+                          // Return new proxy for the conflict chain
+                          return new Proxy(conflictChain, {
+                            get(conflictTarget: any, conflictProp: string | symbol) {
+                              if (conflictProp === "then") {
+                                throw new Error(
+                                  `OnConflictDoUpdate on table ${tableName} must call returning()`,
+                                );
+                              }
+                              const conflictMethod = conflictTarget[conflictProp];
+                              return typeof conflictMethod === "function"
+                                ? conflictMethod.bind(conflictTarget)
+                                : conflictMethod;
+                            },
+                          });
                         };
+                      }
+
+                      if (valuesProp === "then") {
+                        throw new Error(`Insert on table ${tableName} must call returning()`);
                       }
 
                       if (valuesProp === "returning") {
