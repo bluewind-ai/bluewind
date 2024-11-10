@@ -35,6 +35,10 @@ function createProxy() {
                     get(valuesTarget: any, valuesProp: string | symbol) {
                       const method = valuesTarget[valuesProp];
 
+                      if (valuesProp === "then") {
+                        throw new Error(`Insert on table ${tableName} must call returning()`);
+                      }
+
                       if (valuesProp === "onConflictDoUpdate") {
                         return (...cArgs: any[]) => {
                           console.log("UPDATE:", { table: tableName, args: cArgs[0] });
