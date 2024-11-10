@@ -7,9 +7,6 @@ import * as schema from "~/db/schema";
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AppSelect = any;
-
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
