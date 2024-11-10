@@ -7,8 +7,6 @@ import * as schema from "~/db/schema";
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
 
-// Define the app insert/return types
-type AppInsert = typeof schema.apps.$inferInsert;
 type AppSelect = typeof schema.apps.$inferSelect;
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
@@ -37,9 +35,10 @@ function createProxy() {
               }
 
               // Do the original insert
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const result = await target
                 .insert(currentInsertTable)
-                .values(data as any)
+                .values(data as Record<string, unknown>)
                 .returning();
               console.log("INSERT RESULT:", result);
 
