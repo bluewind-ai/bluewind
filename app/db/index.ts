@@ -19,57 +19,57 @@ function createProxy() {
       if (prop === "insert") {
         const insertFn = original as typeof target.insert;
         return (table: PgTable<any>) => {
-          console.log("INSERT CALLED:", {
-            table: table[Symbol.for("drizzle:Name")],
-            tableKeys: Object.keys(table),
-            tableMethods: Object.getOwnPropertyNames(Object.getPrototypeOf(table)),
-          });
+          try {
+            console.log("INSERT CALLED:", {
+              table: table[Symbol.for("drizzle:Name")],
+              tableKeys: Object.keys(table),
+              tableMethods: Object.getOwnPropertyNames(Object.getPrototypeOf(table)),
+            });
 
-          const chain = insertFn(table);
-          console.log("CHAIN CREATED:", chain);
+            console.log("BEFORE CHAIN");
+            const chain = insertFn(table);
+            console.log("AFTER CHAIN:", chain);
 
-          const proxy = new Proxy(chain, {
-            get(chainTarget: any, chainProp: string | symbol) {
-              console.log("PROXY ACCESS:", {
-                prop: String(chainProp),
-                targetType: typeof chainTarget,
-              });
+            console.log("BEFORE PROXY");
+            const proxy = new Proxy(chain, {
+              get(chainTarget: any, chainProp: string | symbol) {
+                console.log("PROXY ACCESS:", {
+                  prop: String(chainProp),
+                  targetType: typeof chainTarget,
+                });
 
-              const value = chainTarget[chainProp];
+                const value = chainTarget[chainProp];
 
-              if (chainProp === "returning") {
-                return async function (...args: any[]) {
-                  console.log("RETURNING CALLED with:", args);
-                  const result = await value.apply(chainTarget, args);
-                  console.log("RETURNING RESULT:", result);
+                if (chainProp === "returning") {
+                  return async function (...args: any[]) {
+                    const result = await value.apply(chainTarget, args);
 
-                  if (result?.[0]?.id && table !== schema.objects) {
-                    const tableName = table[Symbol.for("drizzle:Name")];
-                    console.log("CREATING OBJECT:", {
-                      model: tableName,
-                      recordId: result[0].id,
-                    });
+                    if (result?.[0]?.id && table !== schema.objects) {
+                      const tableName = table[Symbol.for("drizzle:Name")];
+                      await target
+                        .insert(schema.objects)
+                        .values({
+                          functionCallId: 1,
+                          model: tableName,
+                          recordId: result[0].id,
+                        })
+                        .returning();
+                    }
 
-                    await target
-                      .insert(schema.objects)
-                      .values({
-                        functionCallId: 1,
-                        model: tableName,
-                        recordId: result[0].id,
-                      })
-                      .returning();
-                  }
+                    return result;
+                  };
+                }
 
-                  return result;
-                };
-              }
+                return typeof value === "function" ? value.bind(chainTarget) : value;
+              },
+            });
 
-              return typeof value === "function" ? value.bind(chainTarget) : value;
-            },
-          });
-
-          console.log("PROXY CREATED AND RETURNED");
-          return proxy;
+            console.log("AFTER PROXY");
+            return proxy;
+          } catch (error) {
+            console.error("ERROR IN INSERT:", error);
+            throw error;
+          }
         };
       }
 
