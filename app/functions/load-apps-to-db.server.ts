@@ -19,6 +19,7 @@ export async function loadAppsToDb() {
         label: app.name,
         iconKey: app.iconKey,
         order: app.id,
+        functionCallId: 1,
       })
       .onConflictDoUpdate({
         target: [appsTable.value],
@@ -26,6 +27,7 @@ export async function loadAppsToDb() {
           label: app.name,
           iconKey: app.iconKey,
           order: app.id,
+          functionCallId: 1,
         },
       });
   }
@@ -40,6 +42,7 @@ export async function loadAppsToDb() {
       .values({
         name: "load-apps-to-db",
         type: ActionType.SYSTEM,
+        functionCallId: 1,
       })
       .returning();
     thisAction = newAction;
