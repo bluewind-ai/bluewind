@@ -1,7 +1,7 @@
 // app/routes/agents+/objects.tsx
 
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useFetcher } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import { GenericTableView } from "~/components/generic-table-view";
 import { db } from "~/db";
 import { functionCalls } from "~/db/schema";
@@ -34,7 +34,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function ObjectsRoute() {
   const { functionCall, data } = useLoaderData<typeof loader>();
-  const fetcher = useFetcher();
 
   const extraColumns = [
     {
