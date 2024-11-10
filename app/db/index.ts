@@ -20,7 +20,7 @@ function createProxy() {
         return (table: any) => {
           console.log("INSERT:", table);
           currentTable = table;
-          const chain = original.call(target, table);
+          const chain = original(table); // Removed .call()
 
           return new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
