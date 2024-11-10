@@ -1,4 +1,6 @@
-// THIS FILE IS AUTO-GENERATED - DO NOT EDIT
+
+// app/lib/generated/apps.ts
+
 export const apps = [
   {
     id: 1,
