@@ -62,11 +62,8 @@ async function writeFiles(snippets: CodeSnippet[], baseDir: string = "."): Promi
 
 async function main(): Promise<void> {
   try {
-    const hasChanges = await hasUnstagedChanges();
-    if (hasChanges) {
-      console.error("Error: You have unstaged changes. Please commit or stash them first.");
-      process.exit(1);
-    }
+    await git.add(".");
+    await git.commit("checkpoint");
 
     const text = fs.readFileSync("claude-answer.txt", "utf-8");
     const snippets = extractFileSnippets(text);
