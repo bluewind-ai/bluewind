@@ -25,30 +25,18 @@ function createProxy() {
 
           const chain = insertFn(table);
 
-          console.log("CHAIN METHODS:", chain);
-
           const proxy = new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
-              console.log("CHAIN ACCESS:", {
-                prop: String(chainProp),
-                target: chainTarget,
-              });
+              console.log("CHAIN METHOD:", String(chainProp)); // Just this one extra log
 
               const value = chainTarget[chainProp];
 
               if (chainProp === "returning") {
                 return async function (...args: any[]) {
-                  console.log("RETURNING CALLED:", { args });
                   const result = await value.apply(chainTarget, args);
-                  console.log("RETURN RESULT:", result);
 
                   if (result?.[0]?.id && table !== schema.objects) {
                     const tableName = table[Symbol.for("drizzle:Name")];
-                    console.log("CREATING OBJECT:", {
-                      model: tableName,
-                      recordId: result[0].id,
-                    });
-
                     await target
                       .insert(schema.objects)
                       .values({
@@ -65,12 +53,6 @@ function createProxy() {
 
               return typeof value === "function" ? value.bind(chainTarget) : value;
             },
-          });
-
-          console.log("PROXY METHODS:", {
-            values: typeof proxy.values,
-            returning: typeof proxy.returning,
-            onConflictDoUpdate: typeof proxy.onConflictDoUpdate,
           });
 
           return proxy;
