@@ -24,15 +24,18 @@ export async function testObjects() {
   // Verify an object was created
   const result = await db.query.objects.findFirst({
     where: (fields, { and, eq }) =>
-      and(eq(fields.model, "apps"), eq(fields.recordId, insertedApp.id)),
+      and(eq(fields.model, "apps"), eq(fields.recordId, String(insertedApp.id))),
   });
 
   console.log("Found object:", result);
 
   // Assert object exists and matches
-  assert(result !== null, "Object should have been created");
+  if (!result) {
+    throw new Error("Object should have been created");
+  }
+
   assert(result.model === "apps", "Object model should be 'apps'");
-  assert(result.recordId === insertedApp.id, "Object recordId should match app id");
+  assert(result.recordId === String(insertedApp.id), "Object recordId should match app id");
 
   console.log("✅ Test passed!");
 
