@@ -11,6 +11,7 @@ const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
 function createProxy() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let currentInsertTable: any = null;
 
   return new Proxy(baseDb, {
