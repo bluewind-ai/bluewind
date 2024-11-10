@@ -7,6 +7,9 @@ import * as schema from "~/db/schema";
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AppSelect = any;
+
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
@@ -37,7 +40,6 @@ function createProxy() {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const result = await target
                 .insert(currentInsertTable)
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .values(data as any)
                 .returning();
               console.log("INSERT RESULT:", result);
@@ -46,14 +48,14 @@ function createProxy() {
 
               // Create the object
               console.log("CREATING OBJECT:", {
-                model: currentInsertTable._.name,
+                model: "apps",
                 recordId: inserted.id,
               });
 
               await target
                 .insert(schema.objects)
                 .values({
-                  model: currentInsertTable._.name,
+                  model: "apps",
                   recordId: Number(inserted.id),
                 })
                 .returning();
@@ -84,7 +86,6 @@ export async function testObjects() {
     label: `Test App ${timestamp}`,
     iconKey: "test",
     order: 999,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   })) as any;
 
   console.log("Inserted app:", insertedApp);
