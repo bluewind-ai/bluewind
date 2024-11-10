@@ -9,7 +9,6 @@ import {
   timestamp,
   jsonb,
   pgEnum,
-  uuid,
 } from "drizzle-orm/pg-core";
 import { type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
@@ -41,9 +40,9 @@ export const functionCallStatusEnum = pgEnum(
 );
 
 export const objects = pgTable("objects", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: serial("id").primaryKey(),
   model: text("model").notNull(),
-  recordId: uuid("record_id").notNull(),
+  recordId: integer("record_id").notNull(),
 });
 
 export const apps = pgTable("apps", {

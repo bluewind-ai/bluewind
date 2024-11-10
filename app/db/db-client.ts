@@ -9,7 +9,6 @@ export const createDbClient = (connectionString: string) => {
   const client = postgres(connectionString);
   const db = drizzle(client, { schema });
 
-  // Create proxy to intercept inserts
   return new Proxy(db, {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
       const original = target[prop as keyof typeof target];
@@ -17,7 +16,6 @@ export const createDbClient = (connectionString: string) => {
       if (prop === "insert") {
         return new Proxy(original as object, {
           get(insertTarget: object, insertProp: string | symbol) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const insertOriginal = (insertTarget as any)[insertProp];
 
             if (insertProp === "values") {
@@ -32,7 +30,7 @@ export const createDbClient = (connectionString: string) => {
                 // Track in objects table
                 await db.insert(schema.objects).values({
                   model: table as string,
-                  recordId: inserted.id as string,
+                  recordId: inserted.id,
                 });
 
                 return result;
