@@ -14,39 +14,32 @@ function createProxy() {
   const handler = {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
       const original = target[prop as keyof typeof target];
-      console.log("ROOT ACCESS:", { prop, type: typeof original });
 
       if (prop === "insert") {
         return (table: PgTable<any>) => {
-          console.log("INSERT CALLED:", {
-            table: table[Symbol.for("drizzle:Name")],
-          });
+          console.log("INSERT:", table[Symbol.for("drizzle:Name")]);
 
           const chain = target.insert(table);
 
-          const proxy = new Proxy(chain, {
+          // Create proxy for the QueryPromise
+          return new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
-              console.log("CHAIN ACCESS:", chainProp);
-
+              console.log("CHAIN ACCESS:", String(chainProp));
               const value = chainTarget[chainProp];
 
               if (chainProp === "values") {
                 return (...args: any[]) => {
-                  console.log("VALUES CALLED WITH:", args);
                   const valueChain = value.apply(chainTarget, args);
-                  console.log("VALUES CHAIN:", valueChain);
 
-                  // Create a new proxy for the values chain
+                  // Return a new proxy for the values chain
                   return new Proxy(valueChain, {
                     get(valuesTarget: any, valuesProp: string | symbol) {
-                      console.log("VALUES CHAIN ACCESS:", valuesProp);
-                      const valuesMethod = valuesTarget[valuesProp];
+                      console.log("VALUES ACCESS:", String(valuesProp));
+                      const method = valuesTarget[valuesProp];
 
                       if (valuesProp === "returning") {
                         return async function (...rArgs: any[]) {
-                          console.log("RETURNING CALLED");
-                          const result = await valuesMethod.apply(valuesTarget, rArgs);
-                          console.log("RETURNING RESULT:", result);
+                          const result = await method.apply(valuesTarget, rArgs);
 
                           if (result?.[0]?.id && table !== schema.objects) {
                             const tableName = table[Symbol.for("drizzle:Name")];
@@ -64,9 +57,7 @@ function createProxy() {
                         };
                       }
 
-                      return typeof valuesMethod === "function"
-                        ? valuesMethod.bind(valuesTarget)
-                        : valuesMethod;
+                      return typeof method === "function" ? method.bind(valuesTarget) : method;
                     },
                   });
                 };
@@ -75,8 +66,6 @@ function createProxy() {
               return typeof value === "function" ? value.bind(chainTarget) : value;
             },
           });
-
-          return proxy;
         };
       }
 
