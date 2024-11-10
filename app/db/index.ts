@@ -25,7 +25,7 @@ function createProxy() {
 
           const chain = insertFn(table);
           console.log("ATTEMPTED CHAIN:", {
-            sql: chain.toSQL?.(),
+            chain: String(chain),
             methods: Object.getOwnPropertyNames(Object.getPrototypeOf(chain)),
           });
 
