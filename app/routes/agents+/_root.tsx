@@ -50,8 +50,10 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 export default function AgentsRoot() {
   const { navigationData, apps } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
+  const goNextFetcher = useFetcher();
 
   const isResetting = fetcher.state !== "idle";
+  const isGoingNext = goNextFetcher.state !== "idle";
 
   const buttons = Array.from({ length: 7 }, (_, i) => (
     <Button
@@ -68,6 +70,21 @@ export default function AgentsRoot() {
       <NavigationTree data={navigationData} apps={apps} />
       <div className="flex-1">
         <div className="flex gap-2 p-4 flex-wrap">
+          <Button
+            onClick={() => {
+              goNextFetcher.submit(
+                {},
+                {
+                  method: "post",
+                  action: "/run-function/go-next",
+                },
+              );
+            }}
+            disabled={isGoingNext}
+            variant="outline"
+          >
+            {isGoingNext ? "Going Next..." : "Go Next"}
+          </Button>
           {buttons}
           <Button
             variant="destructive"
