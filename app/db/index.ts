@@ -24,12 +24,19 @@ function createProxy() {
           });
 
           const chain = insertFn(table);
+          console.log("CHAIN:", {
+            methods: Object.keys(chain),
+            proto: Object.keys(Object.getPrototypeOf(chain)),
+          });
 
           const proxy = new Proxy(chain, {
             get(chainTarget: any, chainProp: string | symbol) {
-              console.log("CHAIN METHOD:", String(chainProp)); // Just this one extra log
-
               const value = chainTarget[chainProp];
+              console.log("CHAIN ACCESS:", {
+                prop: String(chainProp),
+                hasValue: !!value,
+                type: typeof value,
+              });
 
               if (chainProp === "returning") {
                 return async function (...args: any[]) {
