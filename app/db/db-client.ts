@@ -16,6 +16,7 @@ export const createDbClient = (connectionString: string) => {
       if (prop === "insert") {
         return new Proxy(original as object, {
           get(insertTarget: object, insertProp: string | symbol) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const insertOriginal = (insertTarget as any)[insertProp];
 
             if (insertProp === "values") {
