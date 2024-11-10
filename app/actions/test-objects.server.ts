@@ -1,14 +1,15 @@
 // app/actions/test-objects.server.ts
 
 import { db } from "~/db";
-import { apps } from "~/db/schema";
+import { apps, objects } from "~/db/schema";
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
 
 export async function testObjects() {
-  console.log("Starting test objects...");
+  console.log("=== Starting test objects ===");
 
   const timestamp = Date.now();
+  console.log("Using timestamp:", timestamp);
 
   // Insert a test app with unique value
   const [insertedApp] = await db
@@ -23,6 +24,9 @@ export async function testObjects() {
 
   console.log("Inserted app:", insertedApp);
 
+  // Give a tiny delay to ensure insert completed
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
   // Verify an object was created
   const result = await db.query.objects.findFirst({
     where: (fields, { and, eq }) =>
@@ -30,6 +34,14 @@ export async function testObjects() {
   });
 
   console.log("Found object:", result);
+  console.log("Query params:", {
+    model: "apps",
+    recordId: insertedApp.id,
+  });
+
+  // List all objects to see what's there
+  const allObjects = await db.query.objects.findMany();
+  console.log("All objects in DB:", allObjects);
 
   // Assert object exists and matches
   if (!result) {
@@ -43,6 +55,7 @@ export async function testObjects() {
 
   // Cleanup
   await db.delete(apps).where(eq(apps.id, insertedApp.id));
+  await db.delete(objects).where(eq(objects.id, result.id));
 
   return {
     success: true,

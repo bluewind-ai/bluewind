@@ -21,18 +21,32 @@ export const createDbClient = (connectionString: string) => {
 
             if (insertProp === "values") {
               return async function (...args: unknown[]) {
+                console.log("Proxy before insert:", { args });
+
                 // Do the original insert
                 const result = await insertOriginal.apply(insertTarget, args);
+                console.log("Proxy after insert result:", result);
 
                 // Get the table name and inserted id from the result
                 const [table] = args;
                 const [inserted] = result;
+                console.log("Proxy extracted data:", { table, inserted });
 
                 // Track in objects table
-                await db.insert(schema.objects).values({
-                  model: table as string,
+                console.log("Proxy attempting to insert object:", {
+                  model: table,
                   recordId: inserted.id,
                 });
+
+                const objectResult = await db
+                  .insert(schema.objects)
+                  .values({
+                    model: table as string,
+                    recordId: inserted.id,
+                  })
+                  .returning();
+
+                console.log("Proxy object insert result:", objectResult);
 
                 return result;
               };
