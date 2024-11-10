@@ -24,8 +24,16 @@ export async function testObjects() {
 
   console.log("Inserted app:", insertedApp);
 
-  // Give a tiny delay to ensure insert completed
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  // Try direct object insertion
+  const [directObject] = await db
+    .insert(objects)
+    .values({
+      model: "test",
+      recordId: 123,
+    })
+    .returning();
+
+  console.log("Direct object insert:", directObject);
 
   // Verify an object was created
   const result = await db.query.objects.findFirst({
@@ -55,7 +63,10 @@ export async function testObjects() {
 
   // Cleanup
   await db.delete(apps).where(eq(apps.id, insertedApp.id));
-  await db.delete(objects).where(eq(objects.id, result.id));
+  if (result) {
+    await db.delete(objects).where(eq(objects.id, result.id));
+  }
+  await db.delete(objects).where(eq(objects.id, directObject.id));
 
   return {
     success: true,
@@ -63,6 +74,7 @@ export async function testObjects() {
     details: {
       insertedApp,
       createdObject: result,
+      directObject,
     },
   };
 }
