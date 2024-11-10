@@ -23,9 +23,14 @@ function createProxyForChain(
       if (chainProp === "then") {
         return async (...args: any[]) => {
           const result = await chain;
+          console.log("THEN RESULT:", { result, table: table[Symbol.for("drizzle:Name")] });
 
           if (result?.[0]?.id && table !== schema.objects) {
             const tableName = table[Symbol.for("drizzle:Name")];
+            console.log("CREATING OBJECT FROM THEN:", {
+              model: tableName,
+              recordId: result[0].id,
+            });
             await target
               .insert(schema.objects)
               .values({
@@ -63,6 +68,7 @@ function createProxy() {
 
               if (chainProp === "values") {
                 return (...args: any[]) => {
+                  console.log("VALUES ARGS:", args);
                   const valueChain = value.apply(chainTarget, args);
 
                   return new Proxy(valueChain, {
@@ -72,6 +78,7 @@ function createProxy() {
 
                       if (valuesProp === "onConflictDoUpdate") {
                         return (...cArgs: any[]) => {
+                          console.log("CONFLICT ARGS:", cArgs);
                           const conflictChain = method.apply(valuesTarget, cArgs);
                           return createProxyForChain(conflictChain, table, target);
                         };
@@ -80,9 +87,17 @@ function createProxy() {
                       if (valuesProp === "then") {
                         return async (...args: any[]) => {
                           const result = await valueChain;
+                          console.log("VALUES THEN RESULT:", {
+                            result,
+                            table: table[Symbol.for("drizzle:Name")],
+                          });
 
                           if (result?.[0]?.id && table !== schema.objects) {
                             const tableName = table[Symbol.for("drizzle:Name")];
+                            console.log("CREATING OBJECT FROM VALUES THEN:", {
+                              model: tableName,
+                              recordId: result[0].id,
+                            });
                             await target
                               .insert(schema.objects)
                               .values({
