@@ -18,7 +18,6 @@ function createProxy() {
       const original = target[prop as keyof typeof target];
 
       if (prop === "insert") {
-        // Here's the key change - we preserve the original insert function
         const insertFn = original as typeof target.insert;
         return (table: PgTable<any>) => {
           console.log("INSERT:", table);
@@ -34,7 +33,7 @@ function createProxy() {
                   console.log("RETURNING:", args);
                   const result = await chainMethod.apply(chainTarget, args);
 
-                  if (result?.[0]?.id && currentTable !== schema.objects) {
+                  if (result?.[0]?.id && currentTable && currentTable !== schema.objects) {
                     const tableName = currentTable[Symbol.for("drizzle:Name")];
                     console.log("CREATING OBJECT:", {
                       model: tableName,
