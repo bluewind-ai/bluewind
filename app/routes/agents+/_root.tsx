@@ -7,6 +7,7 @@ import { apps, functionCalls, actions } from "~/db/schema";
 import { db } from "~/db";
 import { eq, and, isNull } from "drizzle-orm";
 import { Button } from "~/components/ui/button";
+import { goNext } from "~/functions/go-next.server";
 
 export async function loader({ request: _request }: LoaderFunctionArgs) {
   const masterAction = await db.query.actions.findFirst({
@@ -50,10 +51,8 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 export default function AgentsRoot() {
   const { navigationData, apps } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
-  const goNextFetcher = useFetcher();
 
   const isResetting = fetcher.state !== "idle";
-  const isGoingNext = goNextFetcher.state !== "idle";
 
   const buttons = Array.from({ length: 7 }, (_, i) => (
     <Button
@@ -70,20 +69,8 @@ export default function AgentsRoot() {
       <NavigationTree data={navigationData} apps={apps} />
       <div className="flex-1">
         <div className="flex gap-2 p-4 flex-wrap">
-          <Button
-            onClick={() => {
-              goNextFetcher.submit(
-                {},
-                {
-                  method: "post",
-                  action: "/run-function/go-next",
-                },
-              );
-            }}
-            disabled={isGoingNext}
-            variant="outline"
-          >
-            {isGoingNext ? "Going Next..." : "Go Next"}
+          <Button onClick={() => goNext()} variant="outline">
+            Go Next
           </Button>
           {buttons}
           <Button
