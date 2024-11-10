@@ -2,6 +2,7 @@
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 
 export const createDbClient = (connectionString: string) => {
@@ -10,16 +11,16 @@ export const createDbClient = (connectionString: string) => {
 
   // Create proxy to intercept inserts
   return new Proxy(db, {
-    get(target, prop) {
-      const original = target[prop];
+    get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
+      const original = target[prop as keyof typeof target];
 
       if (prop === "insert") {
-        return new Proxy(original, {
-          get(insertTarget, insertProp) {
-            const insertOriginal = insertTarget[insertProp];
+        return new Proxy(original as object, {
+          get(insertTarget: object, insertProp: string | symbol) {
+            const insertOriginal = (insertTarget as any)[insertProp];
 
             if (insertProp === "values") {
-              return async function (...args) {
+              return async function (...args: unknown[]) {
                 // Do the original insert
                 const result = await insertOriginal.apply(insertTarget, args);
 
@@ -29,8 +30,8 @@ export const createDbClient = (connectionString: string) => {
 
                 // Track in objects table
                 await db.insert(schema.objects).values({
-                  model: table,
-                  recordId: inserted.id,
+                  model: table as string,
+                  recordId: inserted.id as string,
                 });
 
                 return result;
