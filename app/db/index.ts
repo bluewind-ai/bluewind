@@ -21,7 +21,15 @@ function wrapChain(chain: any, state: ChainState) {
       console.log(`CHAIN ACCESS [${state.tableName}]:`, String(prop));
       const value = target[prop];
 
-      // Handle returning() call
+      // Check for execution without returning
+      if (prop === "then" || prop === "catch" || prop === "finally") {
+        if (!state.hasReturning) {
+          throw new Error(
+            `Query on table ${state.tableName} must call returning() before execution`,
+          );
+        }
+      }
+
       if (prop === "returning") {
         state.hasReturning = true;
         return async function (...args: any[]) {
@@ -31,23 +39,24 @@ function wrapChain(chain: any, state: ChainState) {
         };
       }
 
-      // Handle promise execution
-      if (prop === "then" || prop === "catch" || prop === "finally" || prop === "execute") {
-        if (!state.hasReturning) {
-          throw new Error(`Query on table ${state.tableName} must call returning()`);
-        }
-      }
-
-      // Handle onConflictDoUpdate
+      // Special handling for onConflictDoUpdate to maintain the chain state
       if (prop === "onConflictDoUpdate") {
         return (...args: any[]) => {
           console.log("UPDATE:", { table: state.tableName, args: args[0] });
           const conflictChain = value.apply(target, args);
-          return wrapChain(conflictChain, state);
+          return wrapChain(conflictChain, state); // Wrap the new chain with the same state
         };
       }
 
-      return typeof value === "function" ? value.bind(target) : value;
+      // For any other function calls, maintain the chain state
+      if (typeof value === "function") {
+        return function (...args: any[]) {
+          const result = value.apply(target, args);
+          return result instanceof Promise || result?.then ? wrapChain(result, state) : result;
+        };
+      }
+
+      return value;
     },
   });
 }
