@@ -48,11 +48,12 @@ export async function loadAppsToDb() {
     thisAction = newAction;
   }
 
+  // At this point TypeScript knows thisAction cannot be undefined since we either
+  // found it or created it
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
-      actionId: thisAction.id,
-      functionCallId: 1,
+      actionId: thisAction!.id, // Add non-null assertion since we know it exists
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
