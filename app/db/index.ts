@@ -45,13 +45,29 @@ function createProxy() {
                       if (valuesProp === "onConflictDoUpdate") {
                         return (...cArgs: any[]) => {
                           console.log("UPDATE:", { table: tableName, args: cArgs[0] });
-                          if (!hasReturning) {
-                            throw new Error(
-                              `OnConflictDoUpdate on table ${tableName} must call returning()`,
-                            );
-                          }
                           const conflictChain = method.apply(valuesTarget, cArgs);
-                          return conflictChain;
+
+                          return new Proxy(conflictChain, {
+                            get(conflictTarget: any, conflictProp: string | symbol) {
+                              const conflictMethod = conflictTarget[conflictProp];
+
+                              if (conflictProp === "then") {
+                                if (!hasReturning) {
+                                  throw new Error(
+                                    `OnConflictDoUpdate on table ${tableName} must call returning()`,
+                                  );
+                                }
+                              }
+
+                              if (conflictProp === "returning") {
+                                hasReturning = true;
+                              }
+
+                              return typeof conflictMethod === "function"
+                                ? conflictMethod.bind(conflictTarget)
+                                : conflictMethod;
+                            },
+                          });
                         };
                       }
 
