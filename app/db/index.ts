@@ -41,8 +41,16 @@ function createProxy() {
                 return result;
               }
 
+              const tableName = Object.entries(schema).find(
+                ([_, table]) => table === currentInsertTable,
+              )?.[0];
+
+              if (!tableName) {
+                throw new Error("Could not determine table name");
+              }
+
               console.log("CREATING OBJECT:", {
-                model: currentInsertTable,
+                model: tableName,
                 recordId: inserted.id,
               });
 
@@ -50,7 +58,7 @@ function createProxy() {
                 .insert(schema.objects)
                 .values({
                   functionCallId: 1,
-                  model: currentInsertTable as string,
+                  model: tableName,
                   recordId: Number(inserted.id),
                 })
                 .returning();
