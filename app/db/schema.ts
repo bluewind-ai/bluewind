@@ -9,6 +9,7 @@ import {
   timestamp,
   jsonb,
   pgEnum,
+  uuid,
 } from "drizzle-orm/pg-core";
 import { type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
@@ -38,6 +39,12 @@ export const functionCallStatusEnum = pgEnum(
   "function_call_status",
   enumToPgEnum(FunctionCallStatus),
 );
+
+export const objects = pgTable("objects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  model: text("model").notNull(),
+  recordId: uuid("record_id").notNull(),
+});
 
 export const apps = pgTable("apps", {
   id: serial("id").primaryKey(),
@@ -170,6 +177,10 @@ export const TABLES: Record<string, TableConfig> = {
   debugLogs: {
     displayName: "Debug Logs",
     urlName: "debug-logs",
+  },
+  objects: {
+    displayName: "Objects",
+    urlName: "objects",
   },
 };
 
