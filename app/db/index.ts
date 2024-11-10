@@ -18,58 +18,58 @@ function createProxy() {
 
       if (prop === "insert") {
         return (table: PgTable<any>) => {
-          try {
-            console.log("INSERT CALLED:", {
-              table: table[Symbol.for("drizzle:Name")],
-              tableKeys: Object.keys(table),
-              tableMethods: Object.getOwnPropertyNames(Object.getPrototypeOf(table)),
-            });
+          console.log("INSERT CALLED:", {
+            table: table[Symbol.for("drizzle:Name")],
+          });
 
-            console.log("BEFORE CHAIN");
-            // Use target.insert directly instead of extracted insertFn
-            const chain = target.insert(table);
-            console.log("AFTER CHAIN:", chain);
+          const chain = target.insert(table);
 
-            console.log("BEFORE PROXY");
-            const proxy = new Proxy(chain, {
-              get(chainTarget: any, chainProp: string | symbol) {
-                console.log("PROXY ACCESS:", {
-                  prop: String(chainProp),
-                  targetType: typeof chainTarget,
-                });
+          const proxy = new Proxy(chain, {
+            get(chainTarget: any, chainProp: string | symbol) {
+              console.log("CHAIN ACCESS:", chainProp);
 
-                const value = chainTarget[chainProp];
+              const value = chainTarget[chainProp];
 
-                if (chainProp === "returning") {
-                  return async function (...args: any[]) {
-                    const result = await value.apply(chainTarget, args);
+              if (chainProp === "values") {
+                return (...args: any[]) => {
+                  console.log("VALUES CALLED WITH:", args);
+                  const valueChain = value.apply(chainTarget, args);
+                  console.log("VALUES RETURNED:", {
+                    hasReturning: typeof valueChain.returning === "function",
+                    hasOnConflict: typeof valueChain.onConflictDoUpdate === "function",
+                    chainProps: Object.keys(valueChain),
+                  });
+                  return valueChain;
+                };
+              }
 
-                    if (result?.[0]?.id && table !== schema.objects) {
-                      const tableName = table[Symbol.for("drizzle:Name")];
-                      await target
-                        .insert(schema.objects)
-                        .values({
-                          functionCallId: 1,
-                          model: tableName,
-                          recordId: result[0].id,
-                        })
-                        .returning();
-                    }
+              if (chainProp === "returning") {
+                return async function (...args: any[]) {
+                  console.log("RETURNING CALLED");
+                  const result = await value.apply(chainTarget, args);
+                  console.log("RETURNING RESULT:", result);
 
-                    return result;
-                  };
-                }
+                  if (result?.[0]?.id && table !== schema.objects) {
+                    const tableName = table[Symbol.for("drizzle:Name")];
+                    await target
+                      .insert(schema.objects)
+                      .values({
+                        functionCallId: 1,
+                        model: tableName,
+                        recordId: result[0].id,
+                      })
+                      .returning();
+                  }
 
-                return typeof value === "function" ? value.bind(chainTarget) : value;
-              },
-            });
+                  return result;
+                };
+              }
 
-            console.log("AFTER PROXY");
-            return proxy;
-          } catch (error) {
-            console.error("ERROR IN INSERT:", error);
-            throw error;
-          }
+              return typeof value === "function" ? value.bind(chainTarget) : value;
+            },
+          });
+
+          return proxy;
         };
       }
 
