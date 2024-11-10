@@ -28,18 +28,20 @@ function createProxy() {
                 throw new Error("No table specified for insert");
               }
 
-              // Pass through the original operation
               const result = await target.insert(currentInsertTable).values(data).returning();
 
+              console.log("INSERT RESULT:", result);
+              const [inserted] = result;
+
               // Only create objects on successful insert
-              if (!result[0]?.id) return result;
+              if (!inserted?.id) return result;
 
               // Skip if inserting into objects table
               if (currentInsertTable === schema.objects) return result;
 
-              const tableName = Object.entries(schema).find(
-                ([_, table]) => table === currentInsertTable,
-              )?.[0];
+              // Get table name from Symbol
+              const tableName = currentInsertTable[Symbol.for("drizzle:Name")];
+              console.log("Table name from symbol:", tableName);
 
               if (!tableName) {
                 throw new Error("Could not determine table name");
@@ -47,7 +49,7 @@ function createProxy() {
 
               console.log("CREATING OBJECT:", {
                 model: tableName,
-                recordId: result[0].id,
+                recordId: inserted.id,
               });
 
               await target
@@ -55,7 +57,7 @@ function createProxy() {
                 .values({
                   functionCallId: 1,
                   model: tableName,
-                  recordId: result[0].id,
+                  recordId: inserted.id,
                 })
                 .returning();
 
