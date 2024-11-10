@@ -10,19 +10,6 @@ const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB
 const client = postgres(connectionString);
 const baseDb = drizzle(client, { schema });
 
-function createProxyForChain(
-  chain: any,
-  table: PgTable<any>,
-  target: PostgresJsDatabase<typeof schema>,
-) {
-  return new Proxy(chain, {
-    get(chainTarget: any, chainProp: string | symbol) {
-      const method = chainTarget[chainProp];
-      return typeof method === "function" ? method.bind(chainTarget) : method;
-    },
-  });
-}
-
 function createProxy() {
   const handler = {
     get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
