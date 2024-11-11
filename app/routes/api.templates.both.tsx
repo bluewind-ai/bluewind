@@ -10,10 +10,7 @@ async function _action(args: ActionFunctionArgs) {
   const instructionsResult = await instructionsAction(args);
   const treeResult = await treeAction(args);
 
-  const instructionsData = await instructionsResult.json();
-  const treeData = await treeResult.json();
-
-  const content = `${instructionsData.content}\n\nCurrent project structure:\n\n${treeData.content}`;
+  const content = `${instructionsResult.content}\n\nCurrent project structure:\n\n${treeResult.content}`;
 
   return { content };
 }

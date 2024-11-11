@@ -11,10 +11,8 @@ async function _action(args: ActionFunctionArgs) {
   const reqClone1 = args.request.clone();
   const reqClone2 = args.request.clone();
 
-  const instructions = await (
-    await instructionsAction({ request: reqClone1 } as ActionFunctionArgs)
-  ).json();
-  const tree = await (await treeAction({ request: reqClone2 } as ActionFunctionArgs)).json();
+  const instructions = await instructionsAction({ request: reqClone1 } as ActionFunctionArgs);
+  const tree = await treeAction({ request: reqClone2 } as ActionFunctionArgs);
 
   const content = `${instructions.content}\n\nCurrent project structure:\n\n${tree.content}`;
 
