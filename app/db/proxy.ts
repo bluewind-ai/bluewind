@@ -8,17 +8,17 @@ import { AnyArgs } from ".";
 import {
   type DbClient,
   type DbTable,
-  type DeleteArgs,
-  type DeleteFn,
   type FindArgs,
   type FindFn,
+  type Owner,
+  type RlsDbClient,
+  type DeleteArgs,
+  type DeleteFn,
   type FromArgs,
   type FromFn,
   type InsertArgs,
   type JoinArgs,
   type JoinFn,
-  type Owner,
-  type RlsDbClient,
   type SetArgs,
   type SetFn,
   type UpdateArgs,
@@ -46,15 +46,30 @@ export const createRlsDbClient = (client: Sql, owner: Owner): RlsDbClient => {
     if (!(table in schema)) {
       throw new Error(`Table ${table} not found in schema`);
     }
-    return Object.values(schema).find((t) => t.name === table);
+    const foundTable = Object.values(schema).find((t) => {
+      const tableConfig = t as unknown as { name?: string };
+      return tableConfig.name === table;
+    });
+    if (!foundTable) {
+      throw new Error(`Table ${table} not found in schema values`);
+    }
+    return foundTable;
   };
 
-  const getAccessPolicy = (
-    table: {
-      [ownerIdColumn]: any;
-    },
-    owner: Owner,
-  ) => eq(table[ownerIdColumn], owner.id);
+  interface TableWithOwner {
+    [ownerIdColumn]: any;
+  }
+
+  const isTableWithOwner = (table: any): table is TableWithOwner => {
+    return ownerIdColumn in table;
+  };
+
+  const getAccessPolicy = (table: unknown, owner: Owner) => {
+    if (!isTableWithOwner(table)) {
+      throw new Error(`Table does not have owner ID column`);
+    }
+    return eq(table[ownerIdColumn], owner.id);
+  };
 
   interface InvokeContext {
     path?: string[];
@@ -105,7 +120,7 @@ export const createRlsDbClient = (client: Sql, owner: Owner): RlsDbClient => {
           const tableName = path[tableIndex]! as keyof typeof db.query;
           const table = getTable(tableName as DbTable);
 
-          if (ownerIdColumn in table) {
+          if (isTableWithOwner(table)) {
             let [config] = findArgs;
 
             if (config?.where) {
@@ -135,7 +150,7 @@ export const createRlsDbClient = (client: Sql, owner: Owner): RlsDbClient => {
                       ...acc,
                       [key]: {
                         where: (table) =>
-                          ownerIdColumn in table ? getAccessPolicy(table as any, owner) : undefined,
+                          isTableWithOwner(table) ? getAccessPolicy(table, owner) : undefined,
                       },
                     };
                   }
@@ -146,9 +161,9 @@ export const createRlsDbClient = (client: Sql, owner: Owner): RlsDbClient => {
                       [key]: {
                         ...value,
                         where: (table, other) =>
-                          ownerIdColumn in table
+                          isTableWithOwner(table)
                             ? and(
-                                getAccessPolicy(table as any, owner),
+                                getAccessPolicy(table, owner),
                                 typeof value.where === "function"
                                   ? value.where(table, other)
                                   : value.where,
@@ -312,6 +327,7 @@ export const createRlsDbClient = (client: Sql, owner: Owner): RlsDbClient => {
           return whereFn(...whereArgs);
         },
       },
+      // ... rest of the overrides remain the same ...
     ];
 
     const fnOverride = overrides.find(({ pattern, action }) => {
