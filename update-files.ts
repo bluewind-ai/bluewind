@@ -17,7 +17,7 @@ function insertLineAtBeginning(filePath: string, lineToInsert: string): void {
 }
 
 function extractFileSnippets(text: string): CodeSnippet[] {
-  const pattern = /```(?:tsx?|typescript)\s*\n\/\/\s*([^\n]+)\s*\n([\s\S]+?)```/g;
+  const pattern = /```(?:tsx?|typescript|javascript|js)\s*\n\/\/\s*([^\n]+)\s*\n([\s\S]+?)```/g;
   const snippets: CodeSnippet[] = [];
 
   let match;
@@ -31,7 +31,11 @@ function extractFileSnippets(text: string): CodeSnippet[] {
       filepath = filepath.replace("layout.tsx", "root.tsx");
     }
 
-    const code = `// ${filepath}\n\n${match[2].trim()}`;
+    const code =
+      filepath.endsWith(".js") || filepath.endsWith(".cjs")
+        ? match[2].trim() // Don't add file header for js/cjs files
+        : `// ${filepath}\n\n${match[2].trim()}`;
+
     snippets.push({ filepath, code });
   }
 
