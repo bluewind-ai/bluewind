@@ -1,13 +1,15 @@
 // app/routes/agents+/$name.tsx
 
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { GenericTableView } from "~/components/generic-table-view";
 import { db } from "~/db";
 import { TABLES } from "~/db/schema";
+import { beforeLoader } from "~/lib/middleware";
 
-async function _loader({ params }: LoaderFunctionArgs) {
-  const { name } = params;
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _loader(args: LoaderFunctionArgs) {
+  const { name } = args.params;
 
   if (name === "function-calls") {
     const data = await db.query.functionCalls.findMany({
@@ -54,9 +56,7 @@ async function _loader({ params }: LoaderFunctionArgs) {
 
 export async function loader(args: LoaderFunctionArgs) {
   await beforeLoader(args);
-  const response = await _loader(args);
-  await afterLoader(args, response);
-  return json(response);
+  return await _loader(args);
 }
 
 export default function TableRoute() {

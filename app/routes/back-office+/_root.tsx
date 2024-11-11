@@ -1,12 +1,14 @@
 // app/routes/back-office+/_root.tsx
 
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/navigation-tree";
 import { getTableMetadata, apps } from "~/db/schema";
 import { db } from "~/db";
+import { beforeLoader } from "~/lib/middleware";
 
-async function _loader({ request: _request }: LoaderFunctionArgs) {
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _loader(args: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {
     id: 0,
     name: "Database",
@@ -31,9 +33,7 @@ async function _loader({ request: _request }: LoaderFunctionArgs) {
 
 export async function loader(args: LoaderFunctionArgs) {
   await beforeLoader(args);
-  const response = await _loader(args);
-  await afterLoader(args, response);
-  return json(response);
+  return await _loader(args);
 }
 
 export default function ObjectsRoot() {

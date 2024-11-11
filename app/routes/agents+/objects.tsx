@@ -1,12 +1,13 @@
 // app/routes/agents+/objects.tsx
 
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { GenericTableView } from "~/components/generic-table-view";
 import { db } from "~/db";
 import { functionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { Button } from "~/components/ui/button";
+import { beforeLoader } from "~/lib/middleware";
 
 async function _loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -34,9 +35,7 @@ async function _loader({ request }: LoaderFunctionArgs) {
 
 export async function loader(args: LoaderFunctionArgs) {
   await beforeLoader(args);
-  const response = await _loader(args);
-  await afterLoader(args, response);
-  return json(response);
+  return await _loader(args);
 }
 
 export default function ObjectsRoute() {

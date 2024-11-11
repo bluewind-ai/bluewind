@@ -1,14 +1,16 @@
 // app/routes/agents+/_root.tsx
 
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData, useFetcher, useNavigate } from "@remix-run/react";
 import { NavigationTree, type NavigationNode } from "~/components/navigation-tree";
 import { apps, functionCalls, actions } from "~/db/schema";
 import { db } from "~/db";
 import { eq, and, isNull } from "drizzle-orm";
 import { Button } from "~/components/ui/button";
+import { beforeLoader } from "~/lib/middleware";
 
-async function _loader({ request: _request }: LoaderFunctionArgs) {
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _loader(args: LoaderFunctionArgs) {
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });
@@ -49,9 +51,7 @@ async function _loader({ request: _request }: LoaderFunctionArgs) {
 
 export async function loader(args: LoaderFunctionArgs) {
   await beforeLoader(args);
-  const response = await _loader(args);
-  await afterLoader(args, response);
-  return json(response);
+  return await _loader(args);
 }
 
 export default function AgentsRoot() {

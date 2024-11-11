@@ -5,8 +5,10 @@ import { path } from "~/utils/path";
 import { db } from "~/db";
 import { actions, ActionType, functionCalls, FunctionCallStatus } from "~/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
+import { beforeLoader } from "~/lib/middleware";
 
-async function _loader() {
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _loader(args: LoaderFunctionArgs) {
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });
@@ -28,7 +30,7 @@ async function _loader() {
       })
       .returning();
 
-    return redirect(path.to.agents(newFunctionCall.id));
+    throw redirect(path.to.agents(newFunctionCall.id));
   }
 
   const masterFunctionCall = await db.query.functionCalls.findFirst({
@@ -44,17 +46,15 @@ async function _loader() {
       })
       .returning();
 
-    return redirect(path.to.agents(newFunctionCall.id));
+    throw redirect(path.to.agents(newFunctionCall.id));
   }
 
-  return redirect(path.to.agents(masterFunctionCall.id));
+  throw redirect(path.to.agents(masterFunctionCall.id));
 }
 
 export async function loader(args: LoaderFunctionArgs) {
   await beforeLoader(args);
-  const response = await _loader(args);
-  await afterLoader(args, response);
-  return json(response);
+  return await _loader(args);
 }
 
 export default function Index() {

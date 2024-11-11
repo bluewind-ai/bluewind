@@ -1,13 +1,15 @@
 // app/routes/api.templates.instructions.tsx
 
-import { json, type ActionFunctionArgs } from "@remix-run/node";
+import { type ActionFunctionArgs } from "@remix-run/node";
+import { beforeAction } from "~/lib/middleware";
 
 type InstructionsProps = {
   fileCount?: number;
 };
 
-async function _action({ request }: ActionFunctionArgs) {
-  const { fileCount } = (await request.json()) as InstructionsProps;
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _action(args: ActionFunctionArgs) {
+  const { fileCount } = (await args.request.json()) as InstructionsProps;
 
   const content = `0- Never use try {} catch {} unless the code was given to you
 
@@ -29,7 +31,5 @@ I repeat: ALWAYS return entire file or files updated please. Even when it looks 
 
 export async function action(args: ActionFunctionArgs) {
   await beforeAction(args);
-  const response = await _action(args);
-  await afterAction(args, response);
-  return json(response);
+  return await _action(args);
 }

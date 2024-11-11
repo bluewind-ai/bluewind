@@ -1,11 +1,12 @@
 // app/routes/new-actions.tsx
 
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { NewMain } from "~/components/new-main";
 import { db } from "~/db";
 import { enrichAction, functionCalls } from "~/db/schema";
 import { desc } from "drizzle-orm";
+import { beforeLoader } from "~/lib/middleware";
 
 type ActionRecord = {
   id: number;
@@ -16,7 +17,8 @@ type ActionRecord = {
   totalCalls: number;
 };
 
-async function _loader() {
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _loader(args: LoaderFunctionArgs) {
   const actions = await db.query.actions.findMany({
     with: {
       calls: {
@@ -42,9 +44,7 @@ async function _loader() {
 
 export async function loader(args: LoaderFunctionArgs) {
   await beforeLoader(args);
-  const response = await _loader(args);
-  await afterLoader(args, response);
-  return json(response);
+  return await _loader(args);
 }
 
 export default function NewActionsRoute() {

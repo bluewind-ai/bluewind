@@ -1,10 +1,14 @@
 // app/routes/api.load-apps.ts
 
-import { json } from "@remix-run/node";
-import type { ActionFunction } from "@remix-run/node";
-import { loadAppsToDb } from "~/functions/load-apps-to-db.server";
+import { ActionFunctionArgs } from "@remix-run/node";
+import { beforeAction } from "~/lib/middleware";
 
-export const action: ActionFunction = async () => {
-  const result = await loadAppsToDb();
-  return json(result);
-};
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _action(args: ActionFunctionArgs) {
+  return { success: true };
+}
+
+export async function action(args: ActionFunctionArgs) {
+  await beforeAction(args);
+  return await _action(args);
+}

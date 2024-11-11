@@ -1,12 +1,14 @@
 // app/routes/api.templates.both.tsx
 
-import { json, type ActionFunctionArgs } from "@remix-run/node";
+import { type ActionFunctionArgs } from "@remix-run/node";
 import { action as instructionsAction } from "./api.templates.instructions";
 import { action as treeAction } from "./api.templates.tree";
+import { beforeAction } from "~/lib/middleware";
 
-async function _action({ request }: ActionFunctionArgs) {
-  const instructionsResult = await instructionsAction({ request } as ActionFunctionArgs);
-  const treeResult = await treeAction({ request } as ActionFunctionArgs);
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _action(args: ActionFunctionArgs) {
+  const instructionsResult = await instructionsAction(args);
+  const treeResult = await treeAction(args);
 
   const instructionsData = await instructionsResult.json();
   const treeData = await treeResult.json();
@@ -18,7 +20,5 @@ async function _action({ request }: ActionFunctionArgs) {
 
 export async function action(args: ActionFunctionArgs) {
   await beforeAction(args);
-  const response = await _action(args);
-  await afterAction(args, response);
-  return json(response);
+  return await _action(args);
 }

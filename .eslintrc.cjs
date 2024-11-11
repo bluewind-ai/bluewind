@@ -6,6 +6,8 @@ module.exports = {
     ecmaFeatures: {
       jsx: true,
     },
+    project: "./tsconfig.json",  // Add this line
+    tsconfigRootDir: __dirname,  // Add this line
   },
   env: {
     browser: true,
@@ -21,7 +23,7 @@ module.exports = {
   ],
 
   extends: ["eslint:recommended"],
-  plugins: ["local", "unused-imports"],
+  plugins: ["local", "unused-imports", "deprecation"],
 
   overrides: [
     {
@@ -75,6 +77,10 @@ module.exports = {
       files: ["**/*.{ts,tsx}"],
       plugins: ["@typescript-eslint", "import", "local"],
       parser: "@typescript-eslint/parser",
+      parserOptions: {
+        project: "./tsconfig.json",  // Add this line
+        tsconfigRootDir: __dirname,  // Add this line
+      },
       settings: {
         "import/internal-regex": "^~/",
         "import/resolver": {
@@ -94,6 +100,8 @@ module.exports = {
       rules: {
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/ban-ts-comment": "error",
+        "deprecation/deprecation": "error"
       },
     },
 

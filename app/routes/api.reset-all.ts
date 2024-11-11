@@ -1,13 +1,15 @@
 // app/routes/api.reset-all.ts
 
-import { json, type ActionFunctionArgs } from "@remix-run/node";
+import { type ActionFunctionArgs } from "@remix-run/node";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { beforeAction } from "~/lib/middleware";
 
 const execAsync = promisify(exec);
 
-async function _action({ request }: ActionFunctionArgs) {
-  if (request.method !== "POST") {
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _action(args: ActionFunctionArgs) {
+  if (args.request.method !== "POST") {
     return { error: "Method not allowed", status: 405 };
   }
 
@@ -17,7 +19,5 @@ async function _action({ request }: ActionFunctionArgs) {
 
 export async function action(args: ActionFunctionArgs) {
   await beforeAction(args);
-  const response = await _action(args);
-  await afterAction(args, response);
-  return json(response);
+  return await _action(args);
 }

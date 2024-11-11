@@ -1,11 +1,12 @@
 // app/routes/_app.tsx
 
 import { useLoaderData } from "@remix-run/react";
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import { NavigationTree, type NavigationNode } from "~/components/navigation-tree";
 import { NewMain } from "~/components/new-main";
 import { db } from "~/db";
 import { apps } from "~/db/schema";
+import { beforeLoader } from "~/lib/middleware";
 
 export type ViewData = {
   value: string;
@@ -26,7 +27,8 @@ export const views: ViewData[] = [
   },
 ] as const;
 
-async function _loader() {
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _loader(args: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {
     id: 0,
     name: "Root",
@@ -58,9 +60,7 @@ async function _loader() {
 
 export async function loader(args: LoaderFunctionArgs) {
   await beforeLoader(args);
-  const response = await _loader(args);
-  await afterLoader(args, response);
-  return json(response);
+  return await _loader(args);
 }
 
 export default function Index() {

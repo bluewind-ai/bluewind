@@ -31,15 +31,14 @@ module.exports = {
           const actualLoader = sourceCode.getText(loaderNode);
           const expectedLoader = `export async function loader(args: LoaderFunctionArgs) {
   await beforeLoader(args);
-  const response = await _loader(args);
-  await afterLoader(args, response);
-  return json(response);
+  return await _loader(args);
 }`;
 
           if (actualLoader.replace(/\s+/g, "") !== expectedLoader.replace(/\s+/g, "")) {
             context.report({
               node: loaderNode,
-              message: "Loader must match template: 'export async function loader(args: LoaderFunctionArgs) {...}'",
+              message:
+                "Loader must match template: 'export async function loader(args: LoaderFunctionArgs) {...}'",
             });
           }
         }
@@ -48,15 +47,14 @@ module.exports = {
           const actualAction = sourceCode.getText(actionNode);
           const expectedAction = `export async function action(args: ActionFunctionArgs) {
   await beforeAction(args);
-  const response = await _action(args);
-  await afterAction(args, response);
-  return json(response);
+  return await _action(args);
 }`;
 
           if (actualAction.replace(/\s+/g, "") !== expectedAction.replace(/\s+/g, "")) {
             context.report({
               node: actionNode,
-              message: "Action must match template: 'export async function action(args: ActionFunctionArgs) {...}'",
+              message:
+                "Action must match template: 'export async function action(args: ActionFunctionArgs) {...}'",
             });
           }
         }

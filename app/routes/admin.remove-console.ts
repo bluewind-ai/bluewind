@@ -2,10 +2,11 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { json, type ActionFunctionArgs } from "@remix-run/node";
+import { type ActionFunctionArgs } from "@remix-run/node";
 import fs from "fs/promises";
 import path from "path";
 import { glob } from "glob";
+import { beforeAction } from "~/lib/middleware";
 
 export type ActionResponse =
   | {
@@ -21,7 +22,8 @@ export type ActionResponse =
       stack?: string;
     };
 
-async function _action(_: ActionFunctionArgs) {
+// eslint-disable-next-line unused-imports/no-unused-vars
+async function _action(args: ActionFunctionArgs) {
   const appPath = path.join(process.cwd(), "app");
   const files = await glob("**/*.{ts,tsx}", { cwd: appPath });
 
@@ -58,7 +60,5 @@ async function _action(_: ActionFunctionArgs) {
 
 export async function action(args: ActionFunctionArgs) {
   await beforeAction(args);
-  const response = await _action(args);
-  await afterAction(args, response);
-  return json(response);
+  return await _action(args);
 }
