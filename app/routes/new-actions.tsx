@@ -5,7 +5,7 @@ import { useLoaderData } from "@remix-run/react";
 import { NewMain } from "~/components/new-main";
 import { db } from "~/db";
 import { enrichAction, functionCalls } from "~/db/schema";
-import type { SQL } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 
 type ActionRecord = {
   id: number;
@@ -20,9 +20,7 @@ export async function loader() {
   const actions = await db.query.actions.findMany({
     with: {
       calls: {
-        orderBy: (calls: typeof functionCalls, { desc }: { desc: (col: SQL) => SQL }) => [
-          desc(calls.createdAt),
-        ],
+        orderBy: [desc(functionCalls.createdAt)],
         limit: 1,
       },
     },
@@ -32,9 +30,9 @@ export async function loader() {
     id: action.id,
     name: action.name,
     displayName: enrichAction(action).displayName,
-    lastCallStatus: action.calls[0]?.status || "never_run",
-    lastRunAt: action.calls[0]?.createdAt || null,
-    totalCalls: action.calls.length,
+    lastCallStatus: action.calls?.[0]?.status || "never_run",
+    lastRunAt: action.calls?.[0]?.createdAt || null,
+    totalCalls: action.calls?.length || 0,
   }));
 
   return json(

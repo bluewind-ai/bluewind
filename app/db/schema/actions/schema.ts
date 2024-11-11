@@ -1,15 +1,15 @@
 // app/db/schema/actions/schema.ts
 
-import { pgTable, serial, integer, varchar, type PgTableWithColumns } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, varchar, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { functionCalls } from "../function-calls/schema";
 import { actionTypeEnum } from "../enums";
 
-export const actions: PgTableWithColumns<any> = pgTable("actions", {
+export const actions = pgTable("actions", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull().unique(),
   type: actionTypeEnum("type").notNull(),
-  functionCallId: integer("function_call_id").references(() => functionCalls.id, {
+  functionCallId: integer("function_call_id").references((): AnyPgColumn => functionCalls.id, {
     onDelete: "cascade",
   }),
 });

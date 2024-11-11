@@ -19,7 +19,6 @@ export const loader: LoaderFunction = async () => {
       .values({
         name: "master",
         type: ActionType.SYSTEM,
-        csdcdcds: "csdcds",
       })
       .returning();
 

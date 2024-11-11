@@ -1,14 +1,6 @@
 // app/db/schema/function-calls/schema.ts
 
-import {
-  pgTable,
-  serial,
-  integer,
-  jsonb,
-  timestamp,
-  type PgTableWithColumns,
-  type AnyPgColumn,
-} from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, jsonb, timestamp, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { actions } from "../actions/schema";
 import { objects } from "../objects/schema";
@@ -20,7 +12,7 @@ import { debugLogs } from "../debug-logs/schema";
 import { functionCallStatusEnum } from "../enums";
 import { FunctionCallStatus } from "../types";
 
-export const functionCalls: PgTableWithColumns<any> = pgTable("function_calls", {
+export const functionCalls = pgTable("function_calls", {
   id: serial("id").primaryKey(),
   actionId: integer("action_id")
     .references(() => actions.id, { onDelete: "cascade" })
