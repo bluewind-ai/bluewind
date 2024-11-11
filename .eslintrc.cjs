@@ -1,5 +1,3 @@
-// .eslintrc.cjs
-
 module.exports = {
   root: true,
   parserOptions: {
@@ -28,9 +26,11 @@ module.exports = {
   overrides: [
     {
       files: ["*.js", "*.mjs", "*.ts", "*.tsx"],
+      plugins: ["local"],
       rules: {
         "local/file-header": "error",
         "local/file-naming": "error",
+        "local/route-template-check": "error",
         "unused-imports/no-unused-imports": "error",
         "unused-imports/no-unused-vars": [
           "warn",
@@ -49,7 +49,7 @@ module.exports = {
 
     {
       files: ["**/*.{js,jsx,ts,tsx}"],
-      plugins: ["react", "jsx-a11y"],
+      plugins: ["react", "jsx-a11y", "local"],
       extends: [
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
@@ -73,7 +73,7 @@ module.exports = {
 
     {
       files: ["**/*.{ts,tsx}"],
-      plugins: ["@typescript-eslint", "import"],
+      plugins: ["@typescript-eslint", "import", "local"],
       parser: "@typescript-eslint/parser",
       settings: {
         "import/internal-regex": "^~/",

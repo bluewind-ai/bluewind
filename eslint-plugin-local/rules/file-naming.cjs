@@ -1,4 +1,3 @@
-// eslint-plugin-local/rules/file-naming.js
 /* eslint-env node */
 
 module.exports = {
