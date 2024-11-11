@@ -12,15 +12,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useNavigate, Form } from "@remix-run/react";
 import { Button } from "./ui/button";
-
-type ActionRecord = {
-  id: number;
-  name: string;
-  displayName: string;
-  lastCallStatus: string;
-  lastRunAt: string | null;
-  totalCalls: number;
-};
+import { type ActionRecord } from "~/types/action-record";
 
 interface NewMainProps {
   data: ActionRecord[];

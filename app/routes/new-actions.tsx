@@ -7,15 +7,7 @@ import { db } from "~/db";
 import { enrichAction, functionCalls } from "~/db/schema";
 import { desc } from "drizzle-orm";
 import { beforeLoader } from "~/lib/middleware";
-
-type ActionRecord = {
-  id: number;
-  name: string;
-  displayName: string;
-  lastCallStatus: string;
-  lastRunAt: Date | null;
-  totalCalls: number;
-};
+import { type ActionRecord } from "~/types/action-record";
 
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
@@ -33,7 +25,7 @@ async function _loader(args: LoaderFunctionArgs) {
     name: action.name,
     displayName: enrichAction(action).displayName,
     lastCallStatus: action.calls?.[0]?.status || "never_run",
-    lastRunAt: action.calls?.[0]?.createdAt || null,
+    lastRunAt: action.calls?.[0]?.createdAt?.toISOString() || null,
     totalCalls: action.calls?.length || 0,
   }));
 
