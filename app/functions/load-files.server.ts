@@ -186,6 +186,7 @@ async function syncActions() {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function loadFiles() {
+  console.log("Loading files...");
   await Promise.all([generateAppsFile(), generateActionsFile()]);
   await sleep(1000);
 

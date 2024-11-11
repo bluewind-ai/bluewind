@@ -79,19 +79,16 @@ export default function AgentsRoot() {
           <Button
             variant="destructive"
             onClick={() => {
-              if (
-                window.confirm(
-                  "Are you sure you want to reset everything? This will delete all data and restart the application.",
-                )
-              ) {
-                fetcher.submit(
-                  {},
-                  {
-                    method: "post",
-                    action: "/api/reset-all",
-                  },
-                );
-              }
+              fetcher.submit(
+                {},
+                {
+                  method: "post",
+                  action: "/api/reset-all",
+                },
+              );
+              setTimeout(() => {
+                window.location.href = "/";
+              }, 4000);
             }}
             disabled={isResetting}
           >

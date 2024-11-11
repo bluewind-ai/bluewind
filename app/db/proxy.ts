@@ -91,6 +91,10 @@ export const createRlsDbClient = (client: Sql, owner: Owner): RlsDbClient => {
     const { path = [], fnPath = [] } = context;
 
     const pathAsString = path.join(".");
+    console.log("🔒 RLS Proxy Intercepted:", {
+      operation: pathAsString,
+      args: fn.args,
+    });
 
     const matchPath = (pattern: string) => {
       return new RegExp(`^${pattern.replace(/\./g, "\\.").replace(/\*/g, ".*")}$`).test(

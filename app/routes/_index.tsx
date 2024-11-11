@@ -1,12 +1,13 @@
 // app/routes/_index.tsx
 
-import { type LoaderFunction, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { path } from "~/utils/path";
 import { db } from "~/db";
 import { actions, ActionType, functionCalls, FunctionCallStatus } from "~/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 
-export const loader: LoaderFunction = async () => {
+// This should error because it's not using withMiddleware
+export async function loader() {
   // First get the master action
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
@@ -53,7 +54,7 @@ export const loader: LoaderFunction = async () => {
   }
 
   return redirect(path.to.agents(masterFunctionCall.id));
-};
+}
 
 export default function Index() {
   return null;
