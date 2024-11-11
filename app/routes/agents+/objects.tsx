@@ -8,7 +8,7 @@ import { functionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { Button } from "~/components/ui/button";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+async function _loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const functionCallId = url.searchParams.get("function-call-id");
 
@@ -29,7 +29,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const objectsList = await db.query.objects.findMany();
 
-  return json({ functionCall, data: objectsList });
+  return { functionCall, data: objectsList };
+}
+
+export async function loader(args: LoaderFunctionArgs) {
+  await beforeLoader(args);
+  const response = await _loader(args);
+  await afterLoader(args, response);
+  return json(response);
 }
 
 export default function ObjectsRoute() {

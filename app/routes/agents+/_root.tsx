@@ -8,7 +8,7 @@ import { db } from "~/db";
 import { eq, and, isNull } from "drizzle-orm";
 import { Button } from "~/components/ui/button";
 
-export async function loader({ request: _request }: LoaderFunctionArgs) {
+async function _loader({ request: _request }: LoaderFunctionArgs) {
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });
@@ -41,10 +41,17 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 
   const appsData = await db.select().from(apps).orderBy(apps.order);
 
-  return json({
+  return {
     navigationData,
     apps: appsData,
-  });
+  };
+}
+
+export async function loader(args: LoaderFunctionArgs) {
+  await beforeLoader(args);
+  const response = await _loader(args);
+  await afterLoader(args, response);
+  return json(response);
 }
 
 export default function AgentsRoot() {

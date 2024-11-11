@@ -20,7 +20,8 @@ export type ActionResponse =
       error: string;
       stack?: string;
     };
-export async function action(_: ActionFunctionArgs) {
+
+async function _action(_: ActionFunctionArgs) {
   const appPath = path.join(process.cwd(), "app");
   const files = await glob("**/*.{ts,tsx}", { cwd: appPath });
 
@@ -32,7 +33,6 @@ export async function action(_: ActionFunctionArgs) {
     const filePath = path.join(appPath, file);
     const content = await fs.readFile(filePath, "utf-8");
 
-    // Updated regex that handles nested parentheses
     const newContent = content.replace(
       /console\.[a-zA-Z]+\(((?:[^()]*|\([^()]*\))*)\)/g,
       "void 0 // this should be removed by YOU when you rewrite the filed",
@@ -47,11 +47,18 @@ export async function action(_: ActionFunctionArgs) {
     }
   }
 
-  return json<ActionResponse>({
+  return {
     success: true,
     totalRemoved,
     modifiedFiles,
     modifiedFilePaths,
     message: `Removed ${totalRemoved} console calls from ${modifiedFiles} files`,
-  });
+  };
+}
+
+export async function action(args: ActionFunctionArgs) {
+  await beforeAction(args);
+  const response = await _action(args);
+  await afterAction(args, response);
+  return json(response);
 }

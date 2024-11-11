@@ -1,6 +1,6 @@
 // app/routes/new-actions.tsx
 
-import { json } from "@remix-run/node";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { NewMain } from "~/components/new-main";
 import { db } from "~/db";
@@ -16,7 +16,7 @@ type ActionRecord = {
   totalCalls: number;
 };
 
-export async function loader() {
+async function _loader() {
   const actions = await db.query.actions.findMany({
     with: {
       calls: {
@@ -35,12 +35,16 @@ export async function loader() {
     totalCalls: action.calls?.length || 0,
   }));
 
-  return json(
-    { data: enrichedActions },
-    {
-      status: 200,
-    },
-  );
+  return {
+    data: enrichedActions,
+  };
+}
+
+export async function loader(args: LoaderFunctionArgs) {
+  await beforeLoader(args);
+  const response = await _loader(args);
+  await afterLoader(args, response);
+  return json(response);
 }
 
 export default function NewActionsRoute() {

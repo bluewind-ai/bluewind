@@ -6,7 +6,7 @@ import { NavigationTree, type NavigationNode } from "~/components/navigation-tre
 import { getTableMetadata, apps } from "~/db/schema";
 import { db } from "~/db";
 
-export async function loader({ request: _request }: LoaderFunctionArgs) {
+async function _loader({ request: _request }: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {
     id: 0,
     name: "Database",
@@ -23,10 +23,17 @@ export async function loader({ request: _request }: LoaderFunctionArgs) {
 
   const appsData = await db.select().from(apps).orderBy(apps.order);
 
-  return json({
+  return {
     navigationData,
     apps: appsData,
-  });
+  };
+}
+
+export async function loader(args: LoaderFunctionArgs) {
+  await beforeLoader(args);
+  const response = await _loader(args);
+  await afterLoader(args, response);
+  return json(response);
 }
 
 export default function ObjectsRoot() {

@@ -3,7 +3,7 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { actions } from "~/lib/generated/actions";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+async function _loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
 
   if (!name || !(name in actions)) {
@@ -13,5 +13,12 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const fn = actions[name as keyof typeof actions];
   await fn();
 
-  return json({ success: true });
+  return { success: true };
+}
+
+export async function loader(args: LoaderFunctionArgs) {
+  await beforeLoader(args);
+  const response = await _loader(args);
+  await afterLoader(args, response);
+  return json(response);
 }

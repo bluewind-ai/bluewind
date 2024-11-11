@@ -6,16 +6,18 @@ import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
-export async function action({ request }: ActionFunctionArgs) {
+async function _action({ request }: ActionFunctionArgs) {
   if (request.method !== "POST") {
-    return json({ error: "Method not allowed" }, { status: 405 });
+    return { error: "Method not allowed", status: 405 };
   }
 
-  try {
-    await execAsync("npm run reset-all");
-    return json({ success: true });
-  } catch (error) {
-    void 0; // this should be removed by YOU when you rewrite the filed;
-    return json({ error: "Reset failed" }, { status: 500 });
-  }
+  await execAsync("npm run reset-all");
+  return { success: true };
+}
+
+export async function action(args: ActionFunctionArgs) {
+  await beforeAction(args);
+  const response = await _action(args);
+  await afterAction(args, response);
+  return json(response);
 }

@@ -6,7 +6,7 @@ import { GenericTableView } from "~/components/generic-table-view";
 import { db } from "~/db";
 import { TABLES } from "~/db/schema";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+async function _loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
 
   if (name === "function-calls") {
@@ -18,7 +18,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
       orderBy: (functionCalls) => [functionCalls.createdAt],
     });
 
-    return json({ data });
+    return { data };
   }
 
   const tableEntry = Object.entries(TABLES).find(([_, config]) => config.urlName === name);
@@ -49,7 +49,14 @@ export async function loader({ params }: LoaderFunctionArgs) {
       throw new Error(`Table ${name} not found`);
   }
 
-  return json({ data });
+  return { data };
+}
+
+export async function loader(args: LoaderFunctionArgs) {
+  await beforeLoader(args);
+  const response = await _loader(args);
+  await afterLoader(args, response);
+  return json(response);
 }
 
 export default function TableRoute() {

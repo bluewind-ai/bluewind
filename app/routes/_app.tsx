@@ -1,7 +1,7 @@
 // app/routes/_app.tsx
 
 import { useLoaderData } from "@remix-run/react";
-import { json } from "@remix-run/node";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { NavigationTree, type NavigationNode } from "~/components/navigation-tree";
 import { NewMain } from "~/components/new-main";
 import { db } from "~/db";
@@ -26,7 +26,7 @@ export const views: ViewData[] = [
   },
 ] as const;
 
-export async function loader() {
+async function _loader() {
   const navigationData: NavigationNode = {
     id: 0,
     name: "Root",
@@ -49,11 +49,18 @@ export async function loader() {
 
   const appsData = await db.select().from(apps).orderBy(apps.order);
 
-  return json({
+  return {
     navigationData,
     views,
     apps: appsData,
-  });
+  };
+}
+
+export async function loader(args: LoaderFunctionArgs) {
+  await beforeLoader(args);
+  const response = await _loader(args);
+  await afterLoader(args, response);
+  return json(response);
 }
 
 export default function Index() {

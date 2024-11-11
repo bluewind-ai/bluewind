@@ -6,7 +6,7 @@ type InstructionsProps = {
   fileCount?: number;
 };
 
-export async function action({ request }: ActionFunctionArgs) {
+async function _action({ request }: ActionFunctionArgs) {
   const { fileCount } = (await request.json()) as InstructionsProps;
 
   const content = `0- Never use try {} catch {} unless the code was given to you
@@ -24,5 +24,12 @@ export async function action({ request }: ActionFunctionArgs) {
 5- IF you want to suggest to edit files, ALWAYS return entire file or files updated please. EVEN WHEN THEY'RE LONG.
 I repeat: ALWAYS return entire file or files updated please. Even when it looks stupid to do so. even when the change is literally one line.`;
 
-  return json({ content });
+  return { content };
+}
+
+export async function action(args: ActionFunctionArgs) {
+  await beforeAction(args);
+  const response = await _action(args);
+  await afterAction(args, response);
+  return json(response);
 }

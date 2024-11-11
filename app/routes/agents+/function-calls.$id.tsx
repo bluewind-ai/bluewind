@@ -6,7 +6,7 @@ import { db } from "~/db";
 import { functionCalls } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+async function _loader({ params }: LoaderFunctionArgs) {
   const { id } = params;
 
   const functionCall = await db.query.functionCalls.findFirst({
@@ -21,7 +21,14 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw new Error(`Function call ${id} not found`);
   }
 
-  return json({ functionCall });
+  return { functionCall };
+}
+
+export async function loader(args: LoaderFunctionArgs) {
+  await beforeLoader(args);
+  const response = await _loader(args);
+  await afterLoader(args, response);
+  return json(response);
 }
 
 export default function FunctionCallRoute() {

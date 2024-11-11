@@ -1,20 +1,17 @@
 // app/routes/_index.tsx
 
-import { redirect } from "@remix-run/node";
+import { redirect, type LoaderFunctionArgs } from "@remix-run/node";
 import { path } from "~/utils/path";
 import { db } from "~/db";
 import { actions, ActionType, functionCalls, FunctionCallStatus } from "~/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 
-// This should error because it's not using withMiddleware
-export async function loader() {
-  // First get the master action
+async function _loader() {
   const masterAction = await db.query.actions.findFirst({
     where: eq(actions.name, "master"),
   });
 
   if (!masterAction) {
-    // Create master action if it doesn't exist
     const [newMasterAction] = await db
       .insert(actions)
       .values({
@@ -23,7 +20,6 @@ export async function loader() {
       })
       .returning();
 
-    // Create its function call
     const [newFunctionCall] = await db
       .insert(functionCalls)
       .values({
@@ -35,13 +31,11 @@ export async function loader() {
     return redirect(path.to.agents(newFunctionCall.id));
   }
 
-  // Get the root master function call
   const masterFunctionCall = await db.query.functionCalls.findFirst({
     where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
   });
 
   if (!masterFunctionCall) {
-    // Create master function call if it doesn't exist
     const [newFunctionCall] = await db
       .insert(functionCalls)
       .values({
@@ -54,6 +48,13 @@ export async function loader() {
   }
 
   return redirect(path.to.agents(masterFunctionCall.id));
+}
+
+export async function loader(args: LoaderFunctionArgs) {
+  await beforeLoader(args);
+  const response = await _loader(args);
+  await afterLoader(args, response);
+  return json(response);
 }
 
 export default function Index() {
