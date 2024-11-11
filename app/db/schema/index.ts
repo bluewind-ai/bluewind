@@ -1,18 +1,18 @@
-// app/db/schema.ts
+// app/db/schema/index.ts
 
-export * from "./schema/actions/schema";
-export * from "./schema/apps/schema";
-export * from "./schema/debug-logs/schema";
-export * from "./schema/function-calls/schema";
-export * from "./schema/objects/schema";
-export * from "./schema/request-errors/schema";
-export * from "./schema/sessions/schema";
-export * from "./schema/users/schema";
-export * from "./schema/enums";
-export * from "./schema/types";
+export * from "./types";
+export * from "./enums";
+export * from "./function-calls/schema";
+export * from "./objects/schema";
+export * from "./apps/schema";
+export * from "./users/schema";
+export * from "./sessions/schema";
+export * from "./actions/schema";
+export * from "./request-errors/schema";
+export * from "./debug-logs/schema";
 
 // Table metadata
-export type TableConfig = {
+type TableConfig = {
   displayName: string;
   urlName: string;
 };
@@ -48,11 +48,7 @@ export const TABLES: Record<string, TableConfig> = {
   },
 };
 
-export interface TableMetadata extends TableConfig {
-  name: string;
-}
-
-export function getTableMetadata(): TableMetadata[] {
+export function getTableMetadata() {
   return Object.entries(TABLES).map(([key, config]) => ({
     name: key,
     ...config,

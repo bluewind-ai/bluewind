@@ -2,20 +2,11 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { simpleGit } from "simple-git";
-import { execSync } from "child_process";
 
 interface CodeSnippet {
   filepath: string;
   code: string;
 }
-
-const git = simpleGit();
-
-// async function hasUnstagedChanges(): Promise<boolean> {
-//   const status = await git.status();
-//   return !status.isClean();
-// }
 
 function insertLineAtBeginning(filePath: string, lineToInsert: string): void {
   const content = fs.readFileSync(filePath, "utf-8");
@@ -61,33 +52,10 @@ async function writeFiles(snippets: CodeSnippet[], baseDir: string = "."): Promi
 }
 
 async function main(): Promise<void> {
-  try {
-    await git.add(".");
-    await git.commit("checkpoint");
-
-    const text = fs.readFileSync("claude-answer.txt", "utf-8");
-    const snippets = extractFileSnippets(text);
-    const updatedFiles = await writeFiles(snippets);
-    insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
-
-    if (updatedFiles.length > 0) {
-      // Try to run fix but don't fail if it errors
-      try {
-        execSync("npm run fix", { stdio: "inherit" });
-      } catch (error) {
-        console.log("Fix command failed but continuing with commit");
-      }
-
-      await git.add(updatedFiles);
-      await git.commit("checkpoint");
-      console.log("Files updated and changes committed successfully");
-    } else {
-      console.log("No files were updated");
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    process.exit(1);
-  }
+  const text = fs.readFileSync("claude-answer.txt", "utf-8");
+  const snippets = extractFileSnippets(text);
+  await writeFiles(snippets);
+  insertLineAtBeginning("claude-answer.txt", "// claude-answer.txt");
 }
 
 main();

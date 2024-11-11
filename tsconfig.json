@@ -29,7 +29,7 @@
       "~/*": ["./app/*"]
     },
     "noEmit": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "useUnknownInCatchVariables": false
   }
 }

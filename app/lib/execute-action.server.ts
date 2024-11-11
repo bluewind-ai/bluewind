@@ -7,8 +7,11 @@ import { actions as actionMap } from "./generated/actions";
 import { contextStore } from "./action-builder.server";
 import type { ActionInsert } from "./action-builder.server";
 
+// Create a type from the keys of actionMap
+type ActionName = keyof typeof actionMap;
+
 export async function executeAction({ params }: ActionFunctionArgs) {
-  const name = params.name;
+  const name = params.name as ActionName;
   if (!name || !(name in actionMap)) {
     throw new Error(`Action ${name} not found`);
   }

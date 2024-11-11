@@ -43,7 +43,7 @@ export const getFunctionCallTree = createAction("get-function-call-tree", async 
 
   function buildTree(rootId: number): FunctionCallTree | null {
     const call = allCalls.find((c) => c.id === rootId);
-    if (!call) return null;
+    if (!call || !call.action) return null;
 
     const children = allCalls
       .filter((c) => c.parentId === call.id)
