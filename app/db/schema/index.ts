@@ -1,15 +1,15 @@
 // app/db/schema/index.ts
 
-export * from "./types";
+export * from "./actions/schema";
+export * from "./apps/schema";
+export * from "./debug-logs/schema";
 export * from "./enums";
 export * from "./function-calls/schema";
 export * from "./objects/schema";
-export * from "./apps/schema";
-export * from "./users/schema";
-export * from "./sessions/schema";
-export * from "./actions/schema";
 export * from "./request-errors/schema";
-export * from "./debug-logs/schema";
+export * from "./sessions/schema";
+export * from "./types";
+export * from "./users/schema";
 
 // Table metadata
 type TableConfig = {

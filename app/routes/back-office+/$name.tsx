@@ -1,12 +1,13 @@
 // app/routes/back-office+/$name.tsx
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useFetcher } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+
 import { GenericTableView } from "~/components/generic-table-view";
+import { Button } from "~/components/ui/button";
 import { db } from "~/db";
 import { TABLES } from "~/db/schema";
-import { Button } from "~/components/ui/button";
-import { beforeLoader } from "~/lib/middleware";
+import { loaderMiddleware } from "~/lib/middleware";
 
 async function _loader({ params }: LoaderFunctionArgs) {
   const { name } = params;
@@ -49,8 +50,7 @@ async function _loader({ params }: LoaderFunctionArgs) {
 }
 
 export async function loader(args: LoaderFunctionArgs) {
-  await beforeLoader(args);
-  return await _loader(args);
+  return await loaderMiddleware(args, () => _loader(args));
 }
 
 export default function TableRoute() {

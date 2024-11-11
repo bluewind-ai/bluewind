@@ -1,9 +1,10 @@
 // app/components/view-selector.tsx
 
-import * as React from "react";
-import { useNavigate, useLocation } from "@remix-run/react";
+import { useLocation, useNavigate } from "@remix-run/react";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "~/lib/utils";
+import * as React from "react";
+
+import { Button } from "~/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -13,8 +14,8 @@ import {
   CommandList,
 } from "~/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
-import { Button } from "~/components/ui/button";
 import { type apps } from "~/db/schema";
+import { cn } from "~/lib/utils";
 
 type ViewSelectorProps = {
   apps: (typeof apps.$inferSelect)[];

@@ -1,8 +1,8 @@
 // vite-plugins/request-logger.ts
 
-import type { Plugin } from "vite";
 import chalk from "chalk";
-import type { ServerResponse, IncomingMessage } from "http";
+import type { IncomingMessage, ServerResponse } from "http";
+import type { Plugin } from "vite";
 
 export function requestLoggerPlugin(): Plugin {
   return {

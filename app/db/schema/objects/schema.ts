@@ -1,7 +1,8 @@
 // app/db/schema/objects/schema.ts
 
-import { pgTable, serial, integer, text } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { integer, pgTable, serial, text } from "drizzle-orm/pg-core";
+
 import { functionCalls } from "../function-calls/schema";
 
 export const objects = pgTable("objects", {

@@ -1,8 +1,9 @@
 // app/routes/run-function.$name.ts
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
+
 import { actions } from "~/lib/generated/actions";
-import { beforeLoader } from "~/lib/middleware";
+import { loaderMiddleware } from "~/lib/middleware";
 
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
@@ -19,6 +20,5 @@ async function _loader(args: LoaderFunctionArgs) {
 }
 
 export async function loader(args: LoaderFunctionArgs) {
-  await beforeLoader(args);
-  return await _loader(args);
+  return await loaderMiddleware(args, () => _loader(args));
 }

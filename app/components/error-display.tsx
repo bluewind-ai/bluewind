@@ -1,6 +1,6 @@
 // app/components/error-display.tsx
 
-import { useRouteError, isRouteErrorResponse } from "@remix-run/react";
+import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 
 export function ErrorDisplay() {
   const error = useRouteError();

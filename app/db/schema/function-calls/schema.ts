@@ -1,16 +1,17 @@
 // app/db/schema/function-calls/schema.ts
 
-import { pgTable, serial, integer, jsonb, timestamp, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { type AnyPgColumn, integer, jsonb, pgTable, serial, timestamp } from "drizzle-orm/pg-core";
+
 import { actions } from "../actions/schema";
-import { objects } from "../objects/schema";
 import { apps } from "../apps/schema";
-import { users } from "../users/schema";
-import { sessions } from "../sessions/schema";
-import { requestErrors } from "../request-errors/schema";
 import { debugLogs } from "../debug-logs/schema";
 import { functionCallStatusEnum } from "../enums";
+import { objects } from "../objects/schema";
+import { requestErrors } from "../request-errors/schema";
+import { sessions } from "../sessions/schema";
 import { FunctionCallStatus } from "../types";
+import { users } from "../users/schema";
 
 export const functionCalls = pgTable("function_calls", {
   id: serial("id").primaryKey(),

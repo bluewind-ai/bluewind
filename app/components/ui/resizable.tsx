@@ -1,9 +1,9 @@
 // app/components/ui/resizable.tsx
 
+import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import * as ResizablePrimitive from "react-resizable-panels";
 
 import { cn } from "~/lib/utils";
-import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 
 const ResizablePanelGroup = ({
   className,
@@ -39,4 +39,4 @@ const ResizableHandle = ({
   </ResizablePrimitive.PanelResizeHandle>
 );
 
-export { ResizablePanelGroup, ResizablePanel, ResizableHandle };
+export { ResizableHandle, ResizablePanel, ResizablePanelGroup };

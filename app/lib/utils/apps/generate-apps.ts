@@ -1,9 +1,10 @@
 // app/lib/utils/apps/generate-apps.ts
 
-import { db } from "~/db";
-import { functionCalls, FunctionCallStatus } from "~/db/schema";
 import fs from "fs";
 import path from "path";
+
+import { db } from "~/db";
+import { functionCalls, FunctionCallStatus } from "~/db/schema";
 
 export async function generateApps() {
   console.log("🎯 Starting apps file generation");

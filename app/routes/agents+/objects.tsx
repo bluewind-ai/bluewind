@@ -2,12 +2,13 @@
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { eq } from "drizzle-orm";
+
 import { GenericTableView } from "~/components/generic-table-view";
+import { Button } from "~/components/ui/button";
 import { db } from "~/db";
 import { functionCalls } from "~/db/schema";
-import { eq } from "drizzle-orm";
-import { Button } from "~/components/ui/button";
-import { beforeLoader } from "~/lib/middleware";
+import { loaderMiddleware } from "~/lib/middleware";
 
 async function _loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -34,8 +35,7 @@ async function _loader({ request }: LoaderFunctionArgs) {
 }
 
 export async function loader(args: LoaderFunctionArgs) {
-  await beforeLoader(args);
-  return await _loader(args);
+  return await loaderMiddleware(args, () => _loader(args));
 }
 
 export default function ObjectsRoute() {
@@ -45,7 +45,7 @@ export default function ObjectsRoute() {
     {
       id: "actions",
       header: "Actions",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       cell: (row: any) => (
         <div className="flex gap-2">
           <Button

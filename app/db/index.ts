@@ -2,9 +2,10 @@
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "./schema";
+
 import { createRlsDbClient } from "./proxy";
 import type { Owner } from "./proxy.types";
+import * as schema from "./schema";
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 

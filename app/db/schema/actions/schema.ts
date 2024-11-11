@@ -1,9 +1,10 @@
 // app/db/schema/actions/schema.ts
 
-import { pgTable, serial, integer, varchar, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { functionCalls } from "../function-calls/schema";
+import { type AnyPgColumn, integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+
 import { actionTypeEnum } from "../enums";
+import { functionCalls } from "../function-calls/schema";
 
 export const actions = pgTable("actions", {
   id: serial("id").primaryKey(),

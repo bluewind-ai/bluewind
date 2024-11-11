@@ -1,11 +1,12 @@
 // app/routes/_index.tsx
 
-import { redirect, type LoaderFunctionArgs } from "@remix-run/node";
-import { path } from "~/utils/path";
+import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { and, eq, isNull } from "drizzle-orm";
+
 import { db } from "~/db";
 import { actions, ActionType, functionCalls, FunctionCallStatus } from "~/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
-import { beforeLoader } from "~/lib/middleware";
+import { loaderMiddleware } from "~/lib/middleware";
+import { path } from "~/utils/path";
 
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
@@ -53,8 +54,7 @@ async function _loader(args: LoaderFunctionArgs) {
 }
 
 export async function loader(args: LoaderFunctionArgs) {
-  await beforeLoader(args);
-  return await _loader(args);
+  return await loaderMiddleware(args, () => _loader(args));
 }
 
 export default function Index() {

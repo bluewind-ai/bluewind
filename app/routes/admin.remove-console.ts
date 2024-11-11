@@ -4,9 +4,10 @@
 
 import { type ActionFunctionArgs } from "@remix-run/node";
 import fs from "fs/promises";
-import path from "path";
 import { glob } from "glob";
-import { beforeAction } from "~/lib/middleware";
+import path from "path";
+
+import { actionMiddleware } from "~/lib/middleware";
 
 export type ActionResponse =
   | {
@@ -59,6 +60,5 @@ async function _action(args: ActionFunctionArgs) {
 }
 
 export async function action(args: ActionFunctionArgs) {
-  await beforeAction(args);
-  return await _action(args);
+  return await actionMiddleware(args, () => _action(args));
 }

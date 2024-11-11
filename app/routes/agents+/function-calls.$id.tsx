@@ -2,10 +2,11 @@
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { eq } from "drizzle-orm";
+
 import { db } from "~/db";
 import { functionCalls } from "~/db/schema";
-import { eq } from "drizzle-orm";
-import { beforeLoader } from "~/lib/middleware";
+import { loaderMiddleware } from "~/lib/middleware";
 
 async function _loader({ params }: LoaderFunctionArgs) {
   const { id } = params;
@@ -26,8 +27,7 @@ async function _loader({ params }: LoaderFunctionArgs) {
 }
 
 export async function loader(args: LoaderFunctionArgs) {
-  await beforeLoader(args);
-  return await _loader(args);
+  return await loaderMiddleware(args, () => _loader(args));
 }
 
 export default function FunctionCallRoute() {

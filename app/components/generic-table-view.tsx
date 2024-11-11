@@ -1,15 +1,15 @@
 // app/components/generic-table-view.tsx
 
 import {
-  useReactTable,
-  getCoreRowModel,
   createColumnHelper,
   flexRender,
+  getCoreRowModel,
   getSortedRowModel,
   type SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GenericRecord = Record<string, any>;

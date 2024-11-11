@@ -3,6 +3,7 @@
 module.exports = {
   meta: {
     type: "problem",
+    fixable: "code", // Add this to make the rule fixable
   },
   create(context) {
     return {
@@ -30,8 +31,7 @@ module.exports = {
         if (loaderNode) {
           const actualLoader = sourceCode.getText(loaderNode);
           const expectedLoader = `export async function loader(args: LoaderFunctionArgs) {
-  await beforeLoader(args);
-  return await _loader(args);
+  return await loaderMiddleware(args, () => _loader(args));
 }`;
 
           if (actualLoader.replace(/\s+/g, "") !== expectedLoader.replace(/\s+/g, "")) {
@@ -39,6 +39,9 @@ module.exports = {
               node: loaderNode,
               message:
                 "Loader must match template: 'export async function loader(args: LoaderFunctionArgs) {...}'",
+              fix: (fixer) => {
+                return fixer.replaceText(loaderNode, expectedLoader);
+              },
             });
           }
         }
@@ -46,8 +49,7 @@ module.exports = {
         if (actionNode) {
           const actualAction = sourceCode.getText(actionNode);
           const expectedAction = `export async function action(args: ActionFunctionArgs) {
-  await beforeAction(args);
-  return await _action(args);
+  return await actionMiddleware(args, () => _action(args));
 }`;
 
           if (actualAction.replace(/\s+/g, "") !== expectedAction.replace(/\s+/g, "")) {
@@ -55,6 +57,9 @@ module.exports = {
               node: actionNode,
               message:
                 "Action must match template: 'export async function action(args: ActionFunctionArgs) {...}'",
+              fix: (fixer) => {
+                return fixer.replaceText(actionNode, expectedAction);
+              },
             });
           }
         }

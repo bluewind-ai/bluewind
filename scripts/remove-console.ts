@@ -1,6 +1,7 @@
 // scripts/remove-console.ts
 
 import fetch from "node-fetch";
+
 import type { ActionResponse } from "../app/routes/admin.remove-console";
 
 async function removeConsole() {

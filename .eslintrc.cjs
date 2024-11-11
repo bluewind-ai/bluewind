@@ -6,8 +6,8 @@ module.exports = {
     ecmaFeatures: {
       jsx: true,
     },
-    project: "./tsconfig.json",  // Add this line
-    tsconfigRootDir: __dirname,  // Add this line
+    project: "./tsconfig.json",
+    tsconfigRootDir: __dirname,
   },
   env: {
     browser: true,
@@ -23,7 +23,7 @@ module.exports = {
   ],
 
   extends: ["eslint:recommended"],
-  plugins: ["local", "unused-imports", "deprecation"],
+  plugins: ["local", "unused-imports", "deprecation", "simple-import-sort"],
 
   overrides: [
     {
@@ -75,11 +75,11 @@ module.exports = {
 
     {
       files: ["**/*.{ts,tsx}"],
-      plugins: ["@typescript-eslint", "import", "local"],
+      plugins: ["@typescript-eslint", "import", "local", "simple-import-sort"],
       parser: "@typescript-eslint/parser",
       parserOptions: {
-        project: "./tsconfig.json",  // Add this line
-        tsconfigRootDir: __dirname,  // Add this line
+        project: "./tsconfig.json",
+        tsconfigRootDir: __dirname,
       },
       settings: {
         "import/internal-regex": "^~/",
@@ -101,7 +101,12 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/ban-ts-comment": "error",
-        "deprecation/deprecation": "error"
+        "deprecation/deprecation": "error",
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error",
+        "import/first": "error",
+        "import/newline-after-import": "error",
+        "import/no-duplicates": "error",
       },
     },
 

@@ -1,7 +1,8 @@
 // app/db/schema/sessions/schema.ts
 
-import { pgTable, serial, integer, text, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { integer, jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+
 import { functionCalls } from "../function-calls/schema";
 import { users } from "../users/schema";
 

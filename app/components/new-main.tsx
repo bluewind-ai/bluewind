@@ -1,18 +1,20 @@
 // app/components/new-main.tsx
 
+import { Form, useNavigate } from "@remix-run/react";
 import {
-  useReactTable,
-  getCoreRowModel,
   createColumnHelper,
   flexRender,
+  getCoreRowModel,
   getSortedRowModel,
   type SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useNavigate, Form } from "@remix-run/react";
-import { Button } from "./ui/button";
+import { useState } from "react";
+
 import { type ActionRecord } from "~/types/action-record";
+
+import { Button } from "./ui/button";
 
 interface NewMainProps {
   data: ActionRecord[];

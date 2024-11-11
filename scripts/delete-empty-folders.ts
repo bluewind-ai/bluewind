@@ -1,6 +1,6 @@
 // scripts/delete-empty-folders.ts
 
-import { readdirSync, statSync, rmdirSync } from "fs";
+import { readdirSync, rmdirSync, statSync } from "fs";
 import { join } from "path";
 
 const EXCLUDED_DIRS = ["node_modules", "dist", ".git", ".next", "build", "coverage"];

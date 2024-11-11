@@ -1,7 +1,8 @@
 // app/db/schema/request-errors/schema.ts
 
-import { pgTable, serial, integer, text, varchar, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { integer, jsonb, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
+
 import { functionCalls } from "../function-calls/schema";
 
 export const requestErrors = pgTable("request_errors", {

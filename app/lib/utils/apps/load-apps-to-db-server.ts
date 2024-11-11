@@ -1,9 +1,10 @@
 // app/lib/utils/apps/load-apps-to-db-server.ts
 
-import { db } from "~/db";
-import { functionCalls, apps, FunctionCallStatus } from "~/db/schema";
-import path from "path";
 import fs from "fs";
+import path from "path";
+
+import { db } from "~/db";
+import { apps, functionCalls, FunctionCallStatus } from "~/db/schema";
 
 export async function loadAppsToDB() {
   console.log("📥 Starting to load apps to database");

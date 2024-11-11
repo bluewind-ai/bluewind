@@ -2,10 +2,11 @@
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
-import { NavigationTree, type NavigationNode } from "~/components/navigation-tree";
-import { getTableMetadata, apps } from "~/db/schema";
+
+import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { db } from "~/db";
-import { beforeLoader } from "~/lib/middleware";
+import { apps, getTableMetadata } from "~/db/schema";
+import { loaderMiddleware } from "~/lib/middleware";
 
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
@@ -32,8 +33,7 @@ async function _loader(args: LoaderFunctionArgs) {
 }
 
 export async function loader(args: LoaderFunctionArgs) {
-  await beforeLoader(args);
-  return await _loader(args);
+  return await loaderMiddleware(args, () => _loader(args));
 }
 
 export default function ObjectsRoot() {

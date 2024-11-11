@@ -1,7 +1,8 @@
 // app/routes/api.templates.instructions.tsx
 
 import { type ActionFunctionArgs } from "@remix-run/node";
-import { beforeAction } from "~/lib/middleware";
+
+import { actionMiddleware } from "~/lib/middleware";
 
 type InstructionsProps = {
   fileCount?: number;
@@ -30,6 +31,5 @@ I repeat: ALWAYS return entire file or files updated please. Even when it looks 
 }
 
 export async function action(args: ActionFunctionArgs) {
-  await beforeAction(args);
-  return await _action(args);
+  return await actionMiddleware(args, () => _action(args));
 }

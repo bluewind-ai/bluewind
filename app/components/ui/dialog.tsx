@@ -3,10 +3,11 @@
 /* eslint-disable react/no-unknown-property */
 "use client";
 
-import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { cn } from "~/lib/utils";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import * as React from "react";
+
+import { cn } from "~/lib/utils";
 
 const Dialog = DialogPrimitive.Root;
 
@@ -94,13 +95,13 @@ DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
   Dialog,
-  DialogPortal,
-  DialogOverlay,
-  DialogTrigger,
   DialogClose,
   DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
   DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
 };

@@ -2,11 +2,11 @@
 
 import { db } from "~/db";
 import {
+  actions,
+  ActionType,
   apps as appsTable,
   functionCalls,
-  actions,
   FunctionCallStatus,
-  ActionType,
 } from "~/db/schema";
 import { apps as appsData } from "~/lib/generated/apps";
 

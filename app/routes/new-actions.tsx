@@ -2,11 +2,12 @@
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { desc } from "drizzle-orm";
+
 import { NewMain } from "~/components/new-main";
 import { db } from "~/db";
 import { enrichAction, functionCalls } from "~/db/schema";
-import { desc } from "drizzle-orm";
-import { beforeLoader } from "~/lib/middleware";
+import { loaderMiddleware } from "~/lib/middleware";
 import { type ActionRecord } from "~/types/action-record";
 
 // eslint-disable-next-line unused-imports/no-unused-vars
@@ -35,8 +36,7 @@ async function _loader(args: LoaderFunctionArgs) {
 }
 
 export async function loader(args: LoaderFunctionArgs) {
-  await beforeLoader(args);
-  return await _loader(args);
+  return await loaderMiddleware(args, () => _loader(args));
 }
 
 export default function NewActionsRoute() {

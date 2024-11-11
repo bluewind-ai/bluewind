@@ -1,12 +1,13 @@
 // app/routes/_app.tsx
 
-import { useLoaderData } from "@remix-run/react";
 import { type LoaderFunctionArgs } from "@remix-run/node";
-import { NavigationTree, type NavigationNode } from "~/components/navigation-tree";
+import { useLoaderData } from "@remix-run/react";
+
+import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { NewMain } from "~/components/new-main";
 import { db } from "~/db";
 import { apps } from "~/db/schema";
-import { beforeLoader } from "~/lib/middleware";
+import { loaderMiddleware } from "~/lib/middleware";
 
 export type ViewData = {
   value: string;
@@ -59,8 +60,7 @@ async function _loader(args: LoaderFunctionArgs) {
 }
 
 export async function loader(args: LoaderFunctionArgs) {
-  await beforeLoader(args);
-  return await _loader(args);
+  return await loaderMiddleware(args, () => _loader(args));
 }
 
 export default function Index() {

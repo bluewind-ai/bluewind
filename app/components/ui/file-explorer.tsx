@@ -1,7 +1,8 @@
 // app/components/ui/file-explorer.tsx
 
-import { useState } from "react";
 import { Link } from "@remix-run/react";
+import { useState } from "react";
+
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 
 type BaseNode = {

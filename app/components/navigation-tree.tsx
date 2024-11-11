@@ -1,11 +1,13 @@
 // app/components/navigation-tree.tsx
 
-import { useState } from "react";
 import { Link } from "@remix-run/react";
+import { Filter, Network, Play, Table } from "lucide-react";
+import { useState } from "react";
+
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { Network, Play, Filter, Table } from "lucide-react";
-import { cn } from "~/lib/utils";
 import { type apps } from "~/db/schema";
+import { cn } from "~/lib/utils";
+
 import { ViewSelector } from "./view-selector";
 
 export type NavigationNode = {

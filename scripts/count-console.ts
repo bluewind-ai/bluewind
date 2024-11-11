@@ -1,7 +1,7 @@
 // scripts/count-console.ts
 
-import { Project, SyntaxKind, CallExpression } from "ts-morph";
 import path from "path";
+import { CallExpression, Project, SyntaxKind } from "ts-morph";
 
 const project = new Project();
 const appPath = path.join(process.cwd(), "app");

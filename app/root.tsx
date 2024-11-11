@@ -1,15 +1,16 @@
 // app/root.tsx
 
+import "./tailwind.css";
+
 import {
+  isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  isRouteErrorResponse,
   useRouteError,
 } from "@remix-run/react";
-import "./tailwind.css";
 
 function Document({ children }: { children: React.ReactNode }) {
   return (

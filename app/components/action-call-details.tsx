@@ -1,7 +1,8 @@
 // app/components/action-call-details.tsx
 
-import type { functionCalls, actions } from "~/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
+
+import type { actions, functionCalls } from "~/db/schema";
 
 type ActionCallDetailsProps = {
   functionCall: InferSelectModel<typeof functionCalls>;

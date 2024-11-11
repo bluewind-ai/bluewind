@@ -1,11 +1,12 @@
 // vite.config.ts
 
 import { vitePlugin as remix } from "@remix-run/dev";
-import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
-import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 import { flatRoutes } from "remix-flat-routes";
+import tailwindcss from "tailwindcss";
+import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
+
 // import { actionsPlugin } from "./vite-plugins/generate-actions";
 import { requestLoggerPlugin } from "./vite-plugins/request-logger";
 

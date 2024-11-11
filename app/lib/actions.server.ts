@@ -1,8 +1,9 @@
 // app/lib/actions.server.ts
 
+import { and, desc, eq, inArray, isNull } from "drizzle-orm";
+
 import { db } from "~/db";
-import { functionCalls, actions, ActionType, FunctionCallStatus } from "~/db/schema";
-import { and, inArray, isNull, eq, desc } from "drizzle-orm";
+import { actions, ActionType, functionCalls, FunctionCallStatus } from "~/db/schema";
 
 export async function findNextOrCreateMaster() {
   // First check for any existing function calls that need approval

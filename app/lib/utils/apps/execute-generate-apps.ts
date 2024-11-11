@@ -2,8 +2,9 @@
 
 import { db } from "~/db";
 import { functionCalls, FunctionCallStatus } from "~/db/schema";
-import { loadAppsToDB } from "./load-apps-to-db-server";
+
 import { generateApps } from "./generate-apps";
+import { loadAppsToDB } from "./load-apps-to-db-server";
 
 export async function executeGenerateApps() {
   console.log("🚀 Starting complete apps generation process");

@@ -3,7 +3,8 @@
 import { type ActionFunctionArgs } from "@remix-run/node";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { beforeAction } from "~/lib/middleware";
+
+import { actionMiddleware } from "~/lib/middleware";
 
 const execAsync = promisify(exec);
 
@@ -18,6 +19,5 @@ async function _action(args: ActionFunctionArgs) {
 }
 
 export async function action(args: ActionFunctionArgs) {
-  await beforeAction(args);
-  return await _action(args);
+  return await actionMiddleware(args, () => _action(args));
 }
