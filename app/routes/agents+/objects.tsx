@@ -14,8 +14,6 @@ async function _loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const functionCallId = url.searchParams.get("function-call-id") || "1";
 
-  dd({ url, functionCallId }); // This will stop execution and show the debug info
-
   const functionCall = await db.query.functionCalls.findFirst({
     where: eq(functionCalls.id, parseInt(functionCallId)),
     with: {

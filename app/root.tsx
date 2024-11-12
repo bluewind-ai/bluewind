@@ -39,7 +39,60 @@ export function ErrorBoundary() {
   if (isRouteErrorResponse(error)) {
     errorOutput = `${error.status} ${error.statusText}\n${JSON.stringify(error.data, null, 2)}`;
   } else if (error instanceof Error) {
-    errorOutput = `${error.name}: ${error.message}\n\n${error.stack}`;
+    // Special handling for dd() calls
+    if (error.message.startsWith("DD_DEBUG_BREAK: ")) {
+      const [debugData, ...stackParts] = error.message
+        .replace("DD_DEBUG_BREAK: ", "")
+        .split("\n\n");
+      const stack = stackParts.join("\n\n");
+
+      const formattedStack = stack
+        .split("\n")
+        .map((line) => {
+          if (!line.includes("debug.ts")) {
+            // Skip debug.ts lines
+            const match = line.match(/\((.*?):(\d+):(\d+)\)/) || line.match(/at (.*?):(\d+):(\d+)/);
+
+            if (match) {
+              const [_, filePath, line, col] = match;
+              // Only include app paths
+              if (filePath.includes("/app/")) {
+                const cleanPath = filePath.replace("/Users/merwanehamadi/code/bluewind/", "");
+                return `    at <a href="vscode://file${filePath}:${line}:${col}" class="text-blue-500 hover:underline">${cleanPath}:${line}:${col}</a>`;
+              }
+            }
+          }
+          return null;
+        })
+        .filter(Boolean)
+        .join("\n");
+
+      errorOutput = `${debugData}\n\n${formattedStack}`;
+    } else {
+      // Regular error handling
+      const stackLines = error.stack
+        ?.split("\n")
+        .map((line) => {
+          if (!line.includes("debug.ts")) {
+            // Skip debug.ts lines
+            const match = line.match(/\((.*?):(\d+):(\d+)\)/) || line.match(/at (.*?):(\d+):(\d+)/);
+
+            if (match) {
+              const [_, filePath, line, col] = match;
+              // Only include app paths
+              if (filePath.includes("/app/")) {
+                const cleanPath = filePath.replace("/Users/merwanehamadi/code/bluewind/", "");
+                return `    at <a href="vscode://file${filePath}:${line}:${col}" class="text-blue-500 hover:underline">${cleanPath}:${line}:${col}</a>`;
+              }
+            }
+          }
+          return null;
+        })
+        .filter(Boolean)
+        .join("\n");
+
+      errorOutput = `${error.name}: ${error.message}\n\n${stackLines}`;
+    }
   } else {
     errorOutput = JSON.stringify(error, null, 2);
   }
@@ -47,7 +100,10 @@ export function ErrorBoundary() {
   return (
     <Document>
       <div className="p-4 font-mono">
-        <pre className="text-red-500 whitespace-pre-wrap">{errorOutput}</pre>
+        <div
+          className="text-red-500 whitespace-pre-wrap"
+          dangerouslySetInnerHTML={{ __html: errorOutput }}
+        />
       </div>
     </Document>
   );
