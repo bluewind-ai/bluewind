@@ -12,7 +12,10 @@ import { loaderMiddleware } from "~/lib/middleware";
 
 async function _loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const functionCallId = url.searchParams.get("function-call-id") || "1";
+  const functionCallId = url.searchParams.get("function-call-id");
+  if (!functionCallId) {
+    throw new Error("Function call ID is required");
+  }
 
   const functionCall = await db.query.functionCalls.findFirst({
     where: eq(functionCalls.id, parseInt(functionCallId)),
