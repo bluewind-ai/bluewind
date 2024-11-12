@@ -4,61 +4,101 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
+import { createInsertOverride, type FnPathItem, type InterceptFn } from "./db-overrides";
 import * as schema from "./schema";
 
-export const createDbClient = (connectionString: string) => {
+type DbClient = PostgresJsDatabase<typeof schema>;
+
+interface InvokeContext {
+  path?: string[];
+  fnPath?: FnPathItem[];
+  db?: DbClient;
+}
+
+interface OverrideFn {
+  pattern: string | string[];
+  action: (db: DbClient) => unknown;
+}
+
+export const createDbClient = (connectionString: string): DbClient => {
   const client = postgres(connectionString);
   const db = drizzle(client, { schema });
 
-  return new Proxy(db, {
-    get(target: PostgresJsDatabase<typeof schema>, prop: string | symbol) {
-      const original = target[prop as keyof typeof target];
+  const intercept = (fn: InterceptFn, context: InvokeContext = {}) => {
+    const { path = [], fnPath = [], db: contextDb } = context;
+    const pathAsString = path.join(".");
 
-      if (prop === "insert") {
-        return new Proxy(original as object, {
-          get(insertTarget: object, insertProp: string | symbol) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const insertOriginal = (insertTarget as any)[insertProp];
+    const matchPath = (pattern: string) => pattern === pathAsString;
 
-            if (insertProp === "values") {
-              return async function (...args: unknown[]) {
-                console.log("Proxy before insert:", { args });
+    const overrides: OverrideFn[] = [
+      {
+        pattern: "db.insert.values",
+        action: (dbInstance) => createInsertOverride(fn, fnPath, dbInstance),
+      },
+    ];
 
-                // Do the original insert
-                const result = await insertOriginal.apply(insertTarget, args);
-                console.log("Proxy after insert result:", result);
-
-                // Get the table name and inserted id from the result
-                const [table] = args;
-                const [inserted] = result;
-                console.log("Proxy extracted data:", { table, inserted });
-
-                // Track in objects table
-                console.log("Proxy attempting to insert object:", {
-                  model: table,
-                  recordId: inserted.id,
-                  functionCallId: 1,
-                });
-
-                const objectResult = await db
-                  .insert(schema.objects)
-                  .values({
-                    model: table as string,
-                    recordId: inserted.id,
-                    functionCallId: 1,
-                  })
-                  .returning();
-
-                console.log("Proxy object insert result:", objectResult);
-
-                return result;
-              };
-            }
-            return insertOriginal;
-          },
-        });
+    const fnOverride = overrides.find(({ pattern }) => {
+      if (Array.isArray(pattern)) {
+        return pattern.some(matchPath);
       }
-      return original;
-    },
-  });
+      return matchPath(pattern);
+    })?.action;
+
+    if (fnOverride && contextDb) {
+      if (pathAsString === "db.insert.values") {
+        console.log("Intercepting insert.values call");
+      }
+      return fnOverride(contextDb);
+    }
+
+    return fn.invoke(...fn.args);
+  };
+
+  const createProxy = <T extends object>(target: T, context: InvokeContext = {}): T => {
+    const { path = [], fnPath = [] } = context;
+
+    return new Proxy(target, {
+      get(innerTarget: T, prop: string | symbol): unknown {
+        const currentPath = path.concat(prop.toString());
+        const value = Reflect.get(innerTarget, prop);
+
+        if (typeof value === "function") {
+          return (...args: unknown[]) => {
+            const currentFnPath = [...fnPath, { name: prop.toString(), args }];
+
+            const result = intercept(
+              {
+                invoke: value.bind(innerTarget),
+                name: prop.toString(),
+                args,
+              },
+              { path: currentPath, fnPath: currentFnPath, db },
+            );
+
+            if (typeof result === "object" && result !== null && !Array.isArray(result)) {
+              return createProxy(result as T, {
+                path: currentPath,
+                fnPath: currentFnPath,
+                db,
+              });
+            }
+
+            return result;
+          };
+        }
+
+        if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+          return createProxy(value as T, {
+            path: currentPath,
+            fnPath,
+            db,
+          });
+        }
+
+        return value;
+      },
+    });
+  };
+
+  return createProxy(db, { path: ["db"], db });
 };

@@ -12,11 +12,7 @@ import { loaderMiddleware } from "~/lib/middleware";
 
 async function _loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const functionCallId = url.searchParams.get("function-call-id");
-
-  if (!functionCallId) {
-    throw new Error("function-call-id is required");
-  }
+  const functionCallId = url.searchParams.get("function-call-id") || "1"; // Default to master function call
 
   const functionCall = await db.query.functionCalls.findFirst({
     where: eq(functionCalls.id, parseInt(functionCallId)),
@@ -45,7 +41,6 @@ export default function ObjectsRoute() {
     {
       id: "actions",
       header: "Actions",
-
       cell: (row: any) => (
         <div className="flex gap-2">
           <Button

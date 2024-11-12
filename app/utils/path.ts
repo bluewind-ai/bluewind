@@ -3,7 +3,7 @@
 export const path = {
   to: {
     backOffice: () => "/back-office",
-    agents: (id: number) => `/agents/function-calls/${id}`,
+    agents: (id: number) => `/agents/objects?function-call=${id}`,
     // Add more routes as needed
   },
 } as const;

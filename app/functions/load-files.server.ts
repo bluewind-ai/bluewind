@@ -4,11 +4,16 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { db } from "~/db";
-import { actions, ActionType, apps, functionCalls, FunctionCallStatus } from "~/db/schema";
+import { apps, functionCalls, FunctionCallStatus } from "~/db/schema";
+
+import { createSystemAction } from "./create-system-action.server";
+
+console.log("DB client type:", typeof db.insert);
 
 type LoadResult = {
   name: string;
   status: string;
+  actionId?: number;
 };
 
 const APPS_DATA = [
@@ -93,7 +98,8 @@ async function syncApps() {
           iconKey: app.iconKey,
           order: app.id,
         },
-      });
+      })
+      .returning();
   }
 
   let thisAction = await db.query.actions.findFirst({
@@ -101,14 +107,8 @@ async function syncApps() {
   });
 
   if (!thisAction) {
-    const [newAction] = await db
-      .insert(actions)
-      .values({
-        name: "load-apps-to-db",
-        type: ActionType.SYSTEM,
-      })
-      .returning();
-    thisAction = newAction;
+    const { action } = await createSystemAction("load-apps-to-db");
+    thisAction = action;
   }
 
   const [functionCall] = await db
@@ -140,14 +140,8 @@ async function syncActions() {
     });
 
     if (!existing) {
-      await db
-        .insert(actions)
-        .values({
-          name,
-          type: ActionType.SYSTEM,
-        })
-        .returning();
-      results.push({ name, status: "created" });
+      const { action } = await createSystemAction(name);
+      results.push({ name, status: "created", actionId: action.id });
     } else {
       results.push({ name, status: "exists" });
     }
@@ -158,14 +152,8 @@ async function syncActions() {
   });
 
   if (!thisAction) {
-    const [newAction] = await db
-      .insert(actions)
-      .values({
-        name: "load-actions",
-        type: ActionType.SYSTEM,
-      })
-      .returning();
-    thisAction = newAction;
+    const { action } = await createSystemAction("load-actions");
+    thisAction = action;
   }
 
   const [functionCall] = await db

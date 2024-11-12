@@ -70,7 +70,7 @@ export default function TableRoute() {
             fetcher.submit(
               {},
               {
-                method: "get",
+                method: "post",
                 action: `/run-function/${row.name}`,
                 preventScrollReset: true,
               },

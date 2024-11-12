@@ -1,0 +1,6 @@
+// In app/db/db-client.ts, update the override line to:
+
+{
+  pattern: "db.insert.values",
+  action: () => createInsertOverride(fn, fnPath),
+},
