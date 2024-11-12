@@ -5,6 +5,7 @@ import path from "node:path";
 
 import { db } from "~/db";
 import { apps, functionCalls, FunctionCallStatus } from "~/db/schema";
+import { createAction } from "~/lib/action-builder.server";
 
 import { createSystemAction } from "./create-system-action.server";
 
@@ -173,8 +174,7 @@ async function syncActions() {
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-export async function loadFiles() {
+export const loadFiles = createAction("load-files", async () => {
   console.log("Loading files...");
   await Promise.all([generateAppsFile(), generateActionsFile()]);
   await sleep(1000);
@@ -187,4 +187,4 @@ export async function loadFiles() {
     apps: appsResult,
     actions: actionsResult,
   };
-}
+});

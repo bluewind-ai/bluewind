@@ -1,8 +1,9 @@
 // app/functions/get-tables.server.ts
 
 import * as schema from "~/db/schema";
+import { createAction } from "~/lib/action-builder.server";
 
-export function getTables() {
+export const getTables = createAction("get-tables", async () => {
   const entries = Object.entries(schema);
   console.log(
     "Schema entries:",
@@ -19,4 +20,4 @@ export function getTables() {
 
   console.log("Tables found:", tables);
   return tables;
-}
+});

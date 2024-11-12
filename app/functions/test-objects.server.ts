@@ -5,8 +5,9 @@ import { eq } from "drizzle-orm";
 
 import { db } from "~/db";
 import * as schema from "~/db/schema";
+import { createAction } from "~/lib/action-builder.server";
 
-export async function testObjects() {
+export const testObjects = createAction("test-objects", async () => {
   void 0; // this should be removed by YOU when you rewrite the filed;
 
   const timestamp = Date.now();
@@ -52,4 +53,4 @@ export async function testObjects() {
       createdObject: result,
     },
   };
-}
+});

@@ -8,9 +8,10 @@ import {
   functionCalls,
   FunctionCallStatus,
 } from "~/db/schema";
+import { createAction } from "~/lib/action-builder.server";
 import { apps as appsData } from "~/lib/generated/apps";
 
-export async function loadAppsToDb() {
+export const loadAppsToDb = createAction("load-apps-to-db", async () => {
   for (const app of appsData) {
     await db
       .insert(appsTable)
@@ -63,4 +64,4 @@ export async function loadAppsToDb() {
     .returning();
 
   return functionCall;
-}
+});

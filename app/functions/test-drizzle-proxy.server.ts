@@ -3,11 +3,12 @@
 import { db } from "~/db";
 import * as schema from "~/db/schema";
 import { ActionType } from "~/db/schema/types";
+import { createAction } from "~/lib/action-builder.server";
 
 type Action = typeof schema.actions.$inferSelect;
 type FunctionCall = typeof schema.functionCalls.$inferSelect;
 
-export async function testDrizzleProxy() {
+export const testDrizzleProxy = createAction("test-drizzle-proxy", async () => {
   console.log("Starting drizzle proxy test");
 
   const timestamp = Date.now();
@@ -75,4 +76,4 @@ export async function testDrizzleProxy() {
     console.error("Error in test:", error);
     throw error;
   }
-}
+});
