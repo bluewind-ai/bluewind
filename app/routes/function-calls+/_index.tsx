@@ -1,6 +1,6 @@
 // app/routes/function-calls+/_index.tsx
 
-import { type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
+import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import { and, eq, isNull } from "drizzle-orm";
 
@@ -106,10 +106,9 @@ async function _action(args: ActionFunctionArgs) {
   });
 
   if (!functionCall) {
-    throw new Error("Function call not found");
+    return null;
   }
 
-  // Initialize the context
   const context: ActionContext = {
     currentNode: {
       ...functionCall,
@@ -119,14 +118,16 @@ async function _action(args: ActionFunctionArgs) {
     hitCount: 0,
   };
 
-  // Run the action inside the context
-  return await contextStore.run(context, async () => {
+  await contextStore.run(context, async () => {
     const action = actions[name];
     if (!action) {
-      throw new Error(`Action ${name} not found`);
+      return null;
     }
     return await action();
   });
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  return redirect("/");
 }
 
 export async function loader(args: LoaderFunctionArgs) {

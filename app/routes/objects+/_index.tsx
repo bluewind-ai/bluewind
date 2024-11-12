@@ -131,6 +131,12 @@ export default function Objects() {
               {isResetting ? "Resetting..." : "Reset All"}
             </Button>
           </resetFetcher.Form>
+
+          <resetFetcher.Form method="post" action="/api/truncate-db">
+            <Button variant="destructive" type="submit" disabled={isResetting}>
+              {isResetting ? "Resetting..." : "Truncate DB"}
+            </Button>
+          </resetFetcher.Form>
         </div>
         <Outlet />
       </div>
