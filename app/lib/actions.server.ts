@@ -5,6 +5,8 @@ import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 import { db } from "~/db";
 import { ActionType, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
 
+import { createAction, suspend } from "./action-builder.server";
+
 export async function findNextOrCreateMaster() {
   // First check for any existing function calls that need approval
   const existingActionCall = await db.query.functionCalls.findFirst({
@@ -51,3 +53,14 @@ export async function findNextOrCreateMaster() {
 
   return newActionCall;
 }
+
+export const actions: Record<string, () => Promise<unknown>> = {
+  master: createAction("master", async () => {
+    await suspend();
+  }),
+  "load-files": createAction("load-files", async () => {
+    // Add your load-files action implementation here
+    console.log("Loading files...");
+    await suspend();
+  }),
+};
