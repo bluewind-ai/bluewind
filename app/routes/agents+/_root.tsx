@@ -75,7 +75,7 @@ export default function AgentsRoot() {
 
   const isResetting = resetFetcher.state !== "idle";
 
-  const buttons = Array.from({ length: 7 }, (_, i) => (
+  const buttons = Array.from({ length: 1 }, (_, i) => (
     <Button
       key={i}
       onClick={() => window.open("https://www.google.com", "_blank")}
