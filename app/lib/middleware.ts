@@ -21,24 +21,40 @@ async function requestMiddleware<Args, T>(args: Args, fn: () => Promise<T>): Pro
     .map((line) => `    at ${line.substring(line.indexOf("/app/"))}`)
     .reverse()
     .join("\n");
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  console.log(`${request.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  console.log("Starting transaction in middleware for", request.method, url.pathname);
   return await operationsStorage.run([], async () => {
-    return await db.transaction(async () => {
-      void 0; // this should be removed by YOU when you rewrite the filed;
-      const result = await fn();
+    let result;
+    try {
+      result = await db.transaction(async () => {
+        console.log("Inside transaction in middleware");
+        const result = await fn();
+        console.log("Function completed successfully in middleware, returned:", result);
 
-      const operations = operationsStorage.getStore();
-      void 0; // this should be removed by YOU when you rewrite the filed;
+        const operations = operationsStorage.getStore();
+        console.log("Transaction about to commit. Collected operations:", operations);
 
-      return result;
-    });
+        return result;
+      });
+      console.log("Transaction committed in middleware");
+    } catch (error) {
+      console.log("Transaction rolled back because of error:", error);
+      console.log("Error stack:", error.stack);
+      throw error;
+    }
+
+    console.log("Transaction in middleware finishing up with result:", result);
+    return result;
   });
 }
 
-export const loaderMiddleware = <T>(args: LoaderFunctionArgs, fn: () => Promise<T>) =>
-  requestMiddleware<LoaderFunctionArgs, T>(args, fn);
+export const loaderMiddleware = <T>(args: LoaderFunctionArgs, fn: () => Promise<T>) => {
+  console.log("Loader middleware called");
+  return requestMiddleware<LoaderFunctionArgs, T>(args, fn);
+};
 
-export const actionMiddleware = <T>(args: ActionFunctionArgs, fn: () => Promise<T>) =>
-  requestMiddleware<ActionFunctionArgs, T>(args, fn);
+export const actionMiddleware = <T>(args: ActionFunctionArgs, fn: () => Promise<T>) => {
+  console.log("Action middleware called");
+  return requestMiddleware<ActionFunctionArgs, T>(args, fn);
+};

@@ -8,13 +8,16 @@ import { ActionType, functionCalls, FunctionCallStatus, serverFunctions } from "
 import { loaderMiddleware } from "~/lib/middleware";
 import { path } from "~/utils/path";
 
-// eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
+  const allServerFunctions = await db.select().from(serverFunctions);
+  console.log("ALL SERVER FUNCTIONS:", allServerFunctions);
+
   const masterAction = await db.query.serverFunctions.findFirst({
     where: eq(serverFunctions.name, "master"),
   });
 
   if (!masterAction) {
+    return redirect(path.to.agents());
     const [newMasterAction] = await db
       .insert(serverFunctions)
       .values({
@@ -31,8 +34,9 @@ async function _loader(args: LoaderFunctionArgs) {
       })
       .returning();
 
-    throw redirect(path.to.agents(newFunctionCall.id));
+    return redirect(path.to.agents(newFunctionCall.id));
   }
+  return redirect(path.to.agents(masterAction.id));
 
   const masterFunctionCall = await db.query.functionCalls.findFirst({
     where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
@@ -47,10 +51,10 @@ async function _loader(args: LoaderFunctionArgs) {
       })
       .returning();
 
-    throw redirect(path.to.agents(newFunctionCall.id));
+    return redirect(path.to.agents(newFunctionCall.id));
   }
 
-  throw redirect(path.to.agents(masterFunctionCall.id));
+  return redirect(path.to.agents(1));
 }
 
 export async function loader(args: LoaderFunctionArgs) {

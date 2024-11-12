@@ -28,6 +28,16 @@ export const createDbClient = (connectionString: string): DbClient => {
     const { path = [], fnPath = [], db: contextDb } = context;
     const pathAsString = path.join(".");
 
+    // Get the current stack trace
+    // const stack = new Error().stack?.split("\n").slice(1).join("\n");
+
+    console.log("Intercepting call:", {
+      path: pathAsString,
+      functionName: fn.name,
+      args: fn.args,
+      // stack,
+    });
+
     const matchPath = (pattern: string) => pattern === pathAsString;
 
     const overrides: OverrideFn[] = [

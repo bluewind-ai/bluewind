@@ -3,7 +3,8 @@
 export const path = {
   to: {
     backOffice: () => "/back-office",
-    agents: (id: number) => `/objects?function-call-id=${id}`,
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    agents: (id?: number) => `/objects`,
     // Add more routes as needed
   },
 } as const;

@@ -5,10 +5,14 @@ import { functionCalls, objects, serverFunctions } from "~/db/schema";
 import { createAction } from "~/lib/action-builder.server";
 
 export const truncateDb = createAction("truncate-db", async () => {
-  // Truncate tables in the correct order (respecting foreign keys)
-  await db.delete(objects);
-  await db.delete(functionCalls);
-  await db.delete(serverFunctions);
+  const objectsDeleted = await db.delete(objects);
+  console.log("Objects deleted:", objectsDeleted);
+
+  const functionCallsDeleted = await db.delete(functionCalls);
+  console.log("Function calls deleted:", functionCallsDeleted);
+
+  const serverFunctionsDeleted = await db.delete(serverFunctions);
+  console.log("Server functions deleted:", serverFunctionsDeleted);
 
   return {
     success: true,
