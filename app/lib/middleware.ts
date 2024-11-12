@@ -1,6 +1,16 @@
 // app/lib/middleware.ts
 
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
+import { AsyncLocalStorage } from "async_hooks";
+
+import { db } from "~/db";
+
+export type StoredOperation = {
+  tableName: string;
+  recordId: number;
+};
+
+export const operationsStorage = new AsyncLocalStorage<StoredOperation[]>();
 
 async function requestMiddleware<Args, T>(args: Args, fn: () => Promise<T>): Promise<T> {
   const request = (args as any).request;
@@ -13,7 +23,18 @@ async function requestMiddleware<Args, T>(args: Args, fn: () => Promise<T>): Pro
     .join("\n");
   console.log(`${request.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
-  return await fn();
+  console.log("Starting transaction");
+  return await operationsStorage.run([], async () => {
+    return await db.transaction(async () => {
+      console.log("Inside transaction");
+      const result = await fn();
+
+      const operations = operationsStorage.getStore();
+      console.log("Transaction completed. Collected operations:", operations);
+
+      return result;
+    });
+  });
 }
 
 export const loaderMiddleware = <T>(args: LoaderFunctionArgs, fn: () => Promise<T>) =>

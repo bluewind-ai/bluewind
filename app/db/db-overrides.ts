@@ -42,21 +42,18 @@ export const createInsertOverride = (
   const tableName = getTableNameFromInsert(fn.args);
   const insertResult = fn.invoke(...fn.args) as PgInsertResult;
 
-  // Handle all inserts the same way for now
+  // Get the return value with ID
   const returnValue = insertResult.returning();
 
   return returnValue.then(async (result) => {
     const recordId = result[0]?.id;
-    if (recordId && tableName) {
-      await _db
-        .insert(schema.objects)
-        .values({
-          model: tableName,
-          recordId: recordId,
-          functionCallId: 1,
-        })
-        .returning();
-    }
+
+    console.log("DB Insert Operation:", {
+      table: tableName,
+      id: recordId,
+      values: fn.args[0],
+    });
+
     return result;
   });
 };
