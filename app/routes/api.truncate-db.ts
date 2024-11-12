@@ -22,7 +22,7 @@ async function _action(args: ActionFunctionArgs) {
   const serverFunctionsDeleted = await deleteServerFunctions.returning({ id: serverFunctions.id });
   console.log("Server functions deleted:", serverFunctionsDeleted);
 
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 0));
 
   return redirect("/");
 }

@@ -44,7 +44,6 @@ async function _loader(_args: LoaderFunctionArgs) {
     };
   }
 
-  // Get all function calls that have objects
   const functionCallsData = await db.query.functionCalls.findMany({
     with: {
       action: true,
@@ -105,9 +104,11 @@ export default function Objects() {
   const loadFilesFetcher = useFetcher();
   const resetFetcher = useFetcher();
   const truncateFetcher = useFetcher();
+  const bootstrapFetcher = useFetcher();
 
   const isResetting = resetFetcher.state !== "idle";
   const isTruncating = truncateFetcher.state !== "idle";
+  const isBootstrapping = bootstrapFetcher.state !== "idle";
 
   return (
     <div className="flex h-full">
@@ -139,6 +140,12 @@ export default function Objects() {
               {isTruncating ? "Resetting..." : "Truncate DB"}
             </Button>
           </truncateFetcher.Form>
+
+          <bootstrapFetcher.Form method="post" action="/api/bootstrap">
+            <Button type="submit" variant="outline" disabled={isBootstrapping}>
+              {isBootstrapping ? "Bootstrapping..." : "Bootstrap DB"}
+            </Button>
+          </bootstrapFetcher.Form>
         </div>
         <Outlet />
       </div>

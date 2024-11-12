@@ -1,7 +1,7 @@
 // app/routes/_index.tsx
 
 import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { and, eq, isNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { db } from "~/db";
 import { ActionType, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
@@ -38,23 +38,23 @@ async function _loader(args: LoaderFunctionArgs) {
   }
   return redirect(path.to.agents(masterAction.id));
 
-  const masterFunctionCall = await db.query.functionCalls.findFirst({
-    where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
-  });
+  // const masterFunctionCall = await db.query.functionCalls.findFirst({
+  //   where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
+  // });
 
-  if (!masterFunctionCall) {
-    const [newFunctionCall] = await db
-      .insert(functionCalls)
-      .values({
-        actionId: masterAction.id,
-        status: FunctionCallStatus.READY_FOR_APPROVAL,
-      })
-      .returning();
+  // if (!masterFunctionCall) {
+  //   const [newFunctionCall] = await db
+  //     .insert(functionCalls)
+  //     .values({
+  //       actionId: masterAction.id,
+  //       status: FunctionCallStatus.READY_FOR_APPROVAL,
+  //     })
+  //     .returning();
 
-    return redirect(path.to.agents(newFunctionCall.id));
-  }
+  //   return redirect(path.to.agents(newFunctionCall.id));
+  // }
 
-  return redirect(path.to.agents(1));
+  // return redirect(path.to.agents(1));
 }
 
 export async function loader(args: LoaderFunctionArgs) {
