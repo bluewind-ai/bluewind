@@ -15,12 +15,6 @@ export interface FnPathItem {
   args: unknown[];
 }
 
-interface PgInsertResult {
-  execute: () => Promise<unknown>;
-  returning: () => Promise<Array<{ id: number }>>;
-  onConflictDoUpdate: (config: any) => PgInsertResult;
-}
-
 const getTableNameFromInsert = (args: unknown[]) => {
   const tableArg = args[0];
 
@@ -40,20 +34,15 @@ export const createInsertOverride = (
   _db: PostgresJsDatabase<typeof schema>,
 ) => {
   const tableName = getTableNameFromInsert(fn.args);
-  const insertResult = fn.invoke(...fn.args) as PgInsertResult;
+  const result = fn.invoke(...fn.args) as Promise<Array<{ id: number }>>;
 
-  // Get the return value with ID
-  const returnValue = insertResult.returning();
-
-  return returnValue.then(async (result) => {
-    const recordId = result[0]?.id;
-
+  result.then((rows) => {
     console.log("DB Insert Operation:", {
       table: tableName,
-      id: recordId,
+      id: rows[0]?.id,
       values: fn.args[0],
     });
-
-    return result;
   });
+
+  return result;
 };
