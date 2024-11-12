@@ -104,8 +104,10 @@ export default function Objects() {
   const goNextFetcher = useFetcher();
   const loadFilesFetcher = useFetcher();
   const resetFetcher = useFetcher();
+  const truncateFetcher = useFetcher();
 
   const isResetting = resetFetcher.state !== "idle";
+  const isTruncating = truncateFetcher.state !== "idle";
 
   return (
     <div className="flex h-full">
@@ -132,11 +134,11 @@ export default function Objects() {
             </Button>
           </resetFetcher.Form>
 
-          <resetFetcher.Form method="post" action="/api/truncate-db">
-            <Button variant="destructive" type="submit" disabled={isResetting}>
-              {isResetting ? "Resetting..." : "Truncate DB"}
+          <truncateFetcher.Form method="post" action="/api/truncate-db">
+            <Button variant="destructive" type="submit" disabled={isTruncating}>
+              {isTruncating ? "Resetting..." : "Truncate DB"}
             </Button>
-          </resetFetcher.Form>
+          </truncateFetcher.Form>
         </div>
         <Outlet />
       </div>

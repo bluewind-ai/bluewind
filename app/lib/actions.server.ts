@@ -60,7 +60,7 @@ export const actions: Record<string, () => Promise<unknown>> = {
   }),
   "load-files": createAction("load-files", async () => {
     // Add your load-files action implementation here
-    console.log("Loading files...");
+    void 0; // this should be removed by YOU when you rewrite the filed;
     await suspend();
   }),
 };

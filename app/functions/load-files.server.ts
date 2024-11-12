@@ -9,7 +9,7 @@ import { createAction } from "~/lib/action-builder.server";
 
 import { createSystemAction } from "./create-system-action.server";
 
-console.log("DB client type:", typeof db.insert);
+void 0; // this should be removed by YOU when you rewrite the filed;
 
 type LoadResult = {
   name: string;
@@ -175,7 +175,7 @@ async function syncActions() {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const loadFiles = createAction("load-files", async () => {
-  console.log("Loading files...");
+  void 0; // this should be removed by YOU when you rewrite the filed;
   await Promise.all([generateAppsFile(), generateActionsFile()]);
   await sleep(1000);
 

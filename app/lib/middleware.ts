@@ -21,16 +21,16 @@ async function requestMiddleware<Args, T>(args: Args, fn: () => Promise<T>): Pro
     .map((line) => `    at ${line.substring(line.indexOf("/app/"))}`)
     .reverse()
     .join("\n");
-  console.log(`${request.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
+  void 0; // this should be removed by YOU when you rewrite the filed;
 
-  console.log("Starting transaction");
+  void 0; // this should be removed by YOU when you rewrite the filed;
   return await operationsStorage.run([], async () => {
     return await db.transaction(async () => {
-      console.log("Inside transaction");
+      void 0; // this should be removed by YOU when you rewrite the filed;
       const result = await fn();
 
       const operations = operationsStorage.getStore();
-      console.log("Transaction completed. Collected operations:", operations);
+      void 0; // this should be removed by YOU when you rewrite the filed;
 
       return result;
     });

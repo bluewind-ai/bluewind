@@ -28,12 +28,6 @@ export const createDbClient = (connectionString: string): DbClient => {
     const { path = [], fnPath = [], db: contextDb } = context;
     const pathAsString = path.join(".");
 
-    console.log("Intercepting call:", {
-      path: pathAsString,
-      functionName: fn.name,
-      args: fn.args,
-    });
-
     const matchPath = (pattern: string) => pattern === pathAsString;
 
     const overrides: OverrideFn[] = [
@@ -51,13 +45,9 @@ export const createDbClient = (connectionString: string): DbClient => {
     })?.action;
 
     if (fnOverride && contextDb) {
-      if (pathAsString === "db.insert.values") {
-        console.log("Matched override for db.insert.values");
-      }
       return fnOverride(contextDb);
     }
 
-    console.log("No override found, executing original function");
     return fn.invoke(...fn.args);
   };
 
