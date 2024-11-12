@@ -1,6 +1,6 @@
 // app/routes/function-calls+/_index.tsx
 
-import { type LoaderFunctionArgs } from "@remix-run/node";
+import { type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import { and, eq, isNull } from "drizzle-orm";
 
@@ -9,7 +9,9 @@ import { type NavigationNode, NavigationTree } from "~/components/navigation-tre
 import { Button } from "~/components/ui/button";
 import { db } from "~/db";
 import { apps, functionCalls, getTableMetadata, serverFunctions } from "~/db/schema";
-import { loaderMiddleware } from "~/lib/middleware";
+import { type ActionContext, contextStore } from "~/lib/action-builder.server";
+import { actions } from "~/lib/actions.server";
+import { actionMiddleware, loaderMiddleware } from "~/lib/middleware";
 
 async function _loader(_args: LoaderFunctionArgs) {
   const masterAction = await db.query.serverFunctions.findFirst({
@@ -92,8 +94,47 @@ async function _loader(_args: LoaderFunctionArgs) {
   };
 }
 
+async function _action(args: ActionFunctionArgs) {
+  const formData = await args.request.formData();
+  const name = formData.get("name") as keyof typeof actions;
+
+  const functionCall = await db.query.functionCalls.findFirst({
+    where: eq(functionCalls.id, 1), // For now use master call
+    with: {
+      action: true,
+    },
+  });
+
+  if (!functionCall) {
+    throw new Error("Function call not found");
+  }
+
+  // Initialize the context
+  const context: ActionContext = {
+    currentNode: {
+      ...functionCall,
+      actionName: functionCall.action.name,
+      children: [],
+    },
+    hitCount: 0,
+  };
+
+  // Run the action inside the context
+  return await contextStore.run(context, async () => {
+    const action = actions[name];
+    if (!action) {
+      throw new Error(`Action ${name} not found`);
+    }
+    return await action();
+  });
+}
+
 export async function loader(args: LoaderFunctionArgs) {
   return await loaderMiddleware(args, () => _loader(args));
+}
+
+export async function action(args: ActionFunctionArgs) {
+  return await actionMiddleware(args, () => _action(args));
 }
 
 export default function FunctionCalls() {
