@@ -25,7 +25,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
 
   fs.writeFileSync(path.join(generatedDir, "apps.ts"), fileContent, "utf-8");
 
-  const thisAction = await db.query.actions.findFirst({
+  const thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "generate-apps"),
   });
 

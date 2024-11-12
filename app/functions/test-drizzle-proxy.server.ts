@@ -5,7 +5,7 @@ import * as schema from "~/db/schema";
 import { ActionType } from "~/db/schema/types";
 import { createAction } from "~/lib/action-builder.server";
 
-type Action = typeof schema.actions.$inferSelect;
+type Action = typeof schema.serverFunctions.$inferSelect;
 type FunctionCall = typeof schema.functionCalls.$inferSelect;
 
 export const testDrizzleProxy = createAction("test-drizzle-proxy", async () => {
@@ -17,7 +17,7 @@ export const testDrizzleProxy = createAction("test-drizzle-proxy", async () => {
   try {
     // Test 1: Insert into actions table
     console.log("Test 1: Inserting test action:", testActionName);
-    const actionResult = (await db.insert(schema.actions).values({
+    const actionResult = (await db.insert(schema.serverFunctions).values({
       name: testActionName,
       type: ActionType.SYSTEM,
     })) as Action[];

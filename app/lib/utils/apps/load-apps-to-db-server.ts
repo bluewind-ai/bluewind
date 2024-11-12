@@ -37,7 +37,7 @@ export async function loadAppsToDB() {
       });
   }
 
-  const thisAction = await db.query.actions.findFirst({
+  const thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });
 

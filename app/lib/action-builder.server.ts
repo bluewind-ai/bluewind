@@ -45,7 +45,7 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
     context.currentNode.status = FunctionCallStatus.RUNNING;
 
     if (context.hitCount === 2) {
-      const nextAction = await db.query.actions.findFirst({
+      const nextAction = await db.query.serverFunctions.findFirst({
         where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
       });
 

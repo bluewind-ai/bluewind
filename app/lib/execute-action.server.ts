@@ -18,7 +18,7 @@ export async function executeAction({ params }: ActionFunctionArgs) {
     throw new Error(`Action ${name} not found`);
   }
 
-  const action = await db.query.actions.findFirst({
+  const action = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, name),
   });
   void 0; // this should be removed by YOU when you rewrite the filed;

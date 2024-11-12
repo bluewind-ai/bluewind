@@ -15,7 +15,7 @@ export async function executeGenerateApps() {
   const loadResult = await loadAppsToDB();
   console.log("✓ Apps loaded to database");
 
-  const thisAction = await db.query.actions.findFirst({
+  const thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "execute-generate-apps"),
   });
 

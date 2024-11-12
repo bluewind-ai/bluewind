@@ -28,7 +28,7 @@ async function _loader({ params }: LoaderFunctionArgs) {
       data = await db.query.sessions.findMany();
       break;
     case "actions":
-      data = await db.query.actions.findMany();
+      data = await db.query.serverFunctions.findMany();
       break;
     case "functionCalls":
       data = await db.query.functionCalls.findMany();

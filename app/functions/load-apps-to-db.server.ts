@@ -2,11 +2,11 @@
 
 import { db } from "~/db";
 import {
-  actions,
   ActionType,
   apps as appsTable,
   functionCalls,
   FunctionCallStatus,
+  serverFunctions,
 } from "~/db/schema";
 import { createAction } from "~/lib/action-builder.server";
 import { apps as appsData } from "~/lib/generated/apps";
@@ -33,13 +33,13 @@ export const loadAppsToDb = createAction("load-apps-to-db", async () => {
       });
   }
 
-  let thisAction = await db.query.actions.findFirst({
+  let thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });
 
   if (!thisAction) {
     const [newAction] = await db
-      .insert(actions)
+      .insert(serverFunctions)
       .values({
         name: "load-apps-to-db",
         type: ActionType.SYSTEM,

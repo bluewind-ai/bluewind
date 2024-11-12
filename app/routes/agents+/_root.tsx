@@ -7,12 +7,12 @@ import { and, eq, isNull } from "drizzle-orm";
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { Button } from "~/components/ui/button";
 import { db } from "~/db";
-import { actions, apps, functionCalls } from "~/db/schema";
+import { apps, functionCalls, serverFunctions } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
 
 async function _loader(_args: LoaderFunctionArgs) {
-  const masterAction = await db.query.actions.findFirst({
-    where: eq(actions.name, "master"),
+  const masterAction = await db.query.serverFunctions.findFirst({
+    where: eq(serverFunctions.name, "master"),
   });
 
   console.log("masterAction:", masterAction);

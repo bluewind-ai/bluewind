@@ -1,14 +1,14 @@
 // app/functions/create-system-action.server.ts
 
 import { db } from "~/db";
-import { actions, ActionType } from "~/db/schema";
+import { ActionType, serverFunctions } from "~/db/schema";
 
 /**
  * Creates a system action with a specific name and returns the created record
  */
 export async function createSystemAction(name: string = "test-system-action") {
   const [insertedAction] = await db
-    .insert(actions)
+    .insert(serverFunctions)
     .values({
       name,
       type: ActionType.SYSTEM,

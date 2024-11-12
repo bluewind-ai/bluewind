@@ -12,7 +12,7 @@ export function enumToPgEnum<T extends Record<string, any>>(
   return Object.values(myEnum).map((value: any) => `${value}`) as any;
 }
 
-export const actionTypeEnum = pgEnum("action_type", enumToPgEnum(ActionType));
+export const serverFunctionTypeEnum = pgEnum("action_type", enumToPgEnum(ActionType));
 export const functionCallStatusEnum = pgEnum(
   "function_call_status",
   enumToPgEnum(FunctionCallStatus),

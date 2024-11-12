@@ -103,7 +103,7 @@ async function syncApps() {
       .returning();
   }
 
-  let thisAction = await db.query.actions.findFirst({
+  let thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });
 
@@ -136,7 +136,7 @@ async function syncActions() {
   const results: LoadResult[] = [];
 
   for (const name of actionNames) {
-    const existing = await db.query.actions.findFirst({
+    const existing = await db.query.serverFunctions.findFirst({
       where: (fields, { eq }) => eq(fields.name, name),
     });
 
@@ -148,7 +148,7 @@ async function syncActions() {
     }
   }
 
-  let thisAction = await db.query.actions.findFirst({
+  let thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-actions"),
   });
 

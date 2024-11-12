@@ -4,7 +4,7 @@
 import { AsyncLocalStorage } from "async_hooks";
 
 import { db } from "~/db";
-import { actions, functionCalls, FunctionCallStatus } from "~/db/schema";
+import { functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
 
 import { actions as actionMap } from "./generated/actions";
 
@@ -13,7 +13,7 @@ export type ActionCallNode = typeof functionCalls.$inferSelect & {
   children: ActionCallNode[];
 };
 
-export type Action = typeof actions.$inferSelect;
+export type Action = typeof serverFunctions.$inferSelect;
 export type ActionInsert = typeof functionCalls.$inferInsert;
 
 export type ActionContext = {
@@ -41,7 +41,7 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
     void 0; // this should be removed by YOU when you rewrite the filed;
 
     if (context.hitCount === 2) {
-      const nextAction = await db.query.actions.findFirst({
+      const nextAction = await db.query.serverFunctions.findFirst({
         where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
       });
 
@@ -94,7 +94,7 @@ export async function executeAction(name: keyof typeof actionMap) {
     throw new Error(`Action ${name} not found`);
   }
 
-  const action = await db.query.actions.findFirst({
+  const action = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, name),
   });
   void 0; // this should be removed by YOU when you rewrite the filed;

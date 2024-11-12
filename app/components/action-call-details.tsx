@@ -2,11 +2,11 @@
 
 import type { InferSelectModel } from "drizzle-orm";
 
-import type { actions, functionCalls } from "~/db/schema";
+import type { functionCalls, serverFunctions } from "~/db/schema";
 
 type ActionCallDetailsProps = {
   functionCall: InferSelectModel<typeof functionCalls>;
-  action: InferSelectModel<typeof actions>;
+  action: InferSelectModel<typeof serverFunctions>;
 };
 
 export function ActionCallDetails({ functionCall, action }: ActionCallDetailsProps) {

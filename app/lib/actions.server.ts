@@ -3,7 +3,7 @@
 import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 
 import { db } from "~/db";
-import { actions, ActionType, functionCalls, FunctionCallStatus } from "~/db/schema";
+import { ActionType, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
 
 export async function findNextOrCreateMaster() {
   // First check for any existing function calls that need approval
@@ -31,13 +31,18 @@ export async function findNextOrCreateMaster() {
   }
 
   // If no function calls exist at all, create the first master action
-  const masterAction = await db.query.actions.findFirst({
-    where: eq(actions.name, "master"),
+  const masterAction = await db.query.serverFunctions.findFirst({
+    where: eq(serverFunctions.name, "master"),
   });
 
   const action =
     masterAction ||
-    (await db.insert(actions).values({ name: "master", type: ActionType.SYSTEM }).returning())[0];
+    (
+      await db
+        .insert(serverFunctions)
+        .values({ name: "master", type: ActionType.SYSTEM })
+        .returning()
+    )[0];
 
   const [newActionCall] = await db
     .insert(functionCalls)

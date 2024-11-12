@@ -4,19 +4,19 @@ import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { and, eq, isNull } from "drizzle-orm";
 
 import { db } from "~/db";
-import { actions, ActionType, functionCalls, FunctionCallStatus } from "~/db/schema";
+import { ActionType, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
 import { path } from "~/utils/path";
 
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
-  const masterAction = await db.query.actions.findFirst({
-    where: eq(actions.name, "master"),
+  const masterAction = await db.query.serverFunctions.findFirst({
+    where: eq(serverFunctions.name, "master"),
   });
 
   if (!masterAction) {
     const [newMasterAction] = await db
-      .insert(actions)
+      .insert(serverFunctions)
       .values({
         name: "master",
         type: ActionType.SYSTEM,
