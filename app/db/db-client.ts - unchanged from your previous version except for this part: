@@ -1,8 +1,0 @@
-// app/db/db-client.ts - unchanged from your previous version except for this part:
-
-const overrides: OverrideFn[] = [
-  {
-    pattern: "db.insert.values",
-    action: () => createInsertOverride(fn, fnPath),
-  },
-];
