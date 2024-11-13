@@ -1,5 +1,4 @@
 // app/routes/objects+/_index.tsx
-
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
@@ -12,7 +11,6 @@ import { loaderMiddleware } from "~/lib/middleware";
 
 async function _loader(args: LoaderFunctionArgs) {
   const { db } = args.context;
-
   const masterAction = await db.query.serverFunctions.findFirst({
     where: eq(serverFunctions.name, "master"),
   });

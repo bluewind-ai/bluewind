@@ -62,7 +62,7 @@ export const createDbClient = (connectionString: string): DbClient => {
         `No requestId in context for operation: ${JSON.stringify(operation, null, 2)}`,
       );
     }
-
+    // no-qa
     console.log("Intercepting call:", {
       path: pathAsString,
       functionName: fn.name,

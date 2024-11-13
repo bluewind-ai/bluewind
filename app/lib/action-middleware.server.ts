@@ -1,5 +1,4 @@
 // app/lib/action-middleware.server.ts
-
 import { AsyncLocalStorage } from "async_hooks";
 import { eq } from "drizzle-orm";
 
@@ -16,29 +15,23 @@ export type ActionContext = {
   currentNode: ActionCallNode;
   hitCount: number;
 };
-
 const contextStore = new AsyncLocalStorage<ActionContext>();
-
 class SuspendError extends Error {
   constructor() {
     super("Action suspended for approval");
   }
 }
-
 export function withActionMiddleware(name: string, fn: () => Promise<any>) {
   return async () => {
-    console.log("withActionMiddleware called for action:", name);
     const context = contextStore.getStore();
     if (!context) {
       throw new Error("Action context not initialized");
     }
     context.hitCount++;
     if (context.hitCount === 2) {
-      console.log("Hit count reached 2, looking for load-csv-data action");
       const nextAction = await db.query.serverFunctions.findFirst({
         where: () => eq(serverFunctions.name, "load-csv-data"),
       });
-      console.log("Found next action:", nextAction);
       if (!nextAction) return;
       const insertData: ActionInsert = {
         actionId: nextAction.id,
@@ -47,11 +40,9 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
         args: {},
       };
       const nextCall = await db.insert(functionCalls).values(insertData).returning();
-      console.log("Created next function call:", nextCall);
       const currentCall = await db.query.functionCalls.findFirst({
         where: () => eq(functionCalls.id, context.currentNode.id),
       });
-      console.log("Retrieved current call:", currentCall);
       return {
         ...currentCall,
         actionName: name,
@@ -62,9 +53,7 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
     return context.currentNode;
   };
 }
-
 export function suspend() {
   throw new SuspendError();
 }
-
 export { contextStore };

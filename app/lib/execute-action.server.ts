@@ -1,5 +1,4 @@
 // app/lib/execute-action.server.ts
-
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { eq } from "drizzle-orm";
 
@@ -10,25 +9,18 @@ import { contextStore } from "./action-builder.server";
 import { actions as actionMap } from "./generated/actions";
 
 type ActionName = keyof typeof actionMap;
-
 export async function executeAction(args: ActionFunctionArgs) {
   const { db } = args.context;
   const name = args.params.name as ActionName;
-  console.log("executeAction called with name:", name);
-
   if (!name || !(name in actionMap)) {
     throw new Error(`Action ${name} not found`);
   }
-
   const action = await db.query.serverFunctions.findFirst({
     where: () => eq(serverFunctions.name, name),
   });
-  console.log("Found action in database:", action);
-
   if (!action) {
     throw new Error(`Action ${name} not found in database`);
   }
-
   const rootCall = await db
     .insert(functionCalls)
     .values({
@@ -37,8 +29,6 @@ export async function executeAction(args: ActionFunctionArgs) {
       args: {},
     } satisfies ActionInsert)
     .returning();
-  console.log("Created root function call:", rootCall);
-
   return await contextStore.run(
     {
       currentNode: {

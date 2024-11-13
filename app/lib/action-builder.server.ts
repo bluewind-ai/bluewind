@@ -1,5 +1,4 @@
 // app/lib/action-builder.server.ts
-
 import { AsyncLocalStorage } from "async_hooks";
 import { eq } from "drizzle-orm";
 
@@ -23,7 +22,6 @@ class SuspendError extends Error {
 }
 export function withActionMiddleware(name: string, fn: () => Promise<any>) {
   return async () => {
-    console.log("action-builder: withActionMiddleware called for action:", name);
     const context = contextStore.getStore();
     if (!context) {
       throw new Error("Action context not initialized");
@@ -33,14 +31,11 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
       .update(functionCalls)
       .set({ status: FunctionCallStatus.RUNNING })
       .where(eq(functionCalls.id, context.currentNode.id));
-    console.log("Updated function call status to RUNNING for id:", context.currentNode.id);
     context.currentNode.status = FunctionCallStatus.RUNNING;
     if (context.hitCount === 2) {
-      console.log("action-builder: Hit count reached 2, looking for load-csv-data action");
       const nextAction = await db.query.serverFunctions.findFirst({
         where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
       });
-      console.log("action-builder: Found next action:", nextAction);
       if (!nextAction) return;
       const insertData: ActionInsert = {
         actionId: nextAction.id,
@@ -49,7 +44,6 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
         args: {},
       };
       const nextCall = await db.insert(functionCalls).values(insertData).returning();
-      console.log("action-builder: Created next function call:", nextCall);
       const currentCall = await db.query.functionCalls.findFirst({
         where: (fields, { eq }) => eq(fields.id, context.currentNode.id),
       });
@@ -64,7 +58,6 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
   };
 }
 export function createAction(name: string, fn: () => Promise<any>) {
-  console.log("Creating action:", name);
   return withActionMiddleware(name, fn);
 }
 export function suspend() {
