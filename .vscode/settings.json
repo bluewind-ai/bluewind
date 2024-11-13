@@ -30,7 +30,7 @@
     "**/.git": true,
     "**/__pycache__": true,
     "**/.pytest_cache": true,
-    "**/node_modules": true,
+    // "**/node_modules": true,
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
