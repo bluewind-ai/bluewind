@@ -1,5 +1,4 @@
 // app/functions/load-apps-to-db.server.ts
-import { db } from "~/db";
 import {
   ActionType,
   apps as appsTable,
@@ -9,6 +8,7 @@ import {
 } from "~/db/schema";
 import { createAction } from "~/lib/action-builder.server";
 import { apps as appsData } from "~/lib/generated/apps";
+import { db } from "~/middleware";
 
 export const loadAppsToDb = createAction("load-apps-to-db", async () => {
   for (const app of appsData) {

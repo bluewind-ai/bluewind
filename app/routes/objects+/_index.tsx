@@ -1,4 +1,5 @@
 // app/routes/objects+/_index.tsx
+
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
@@ -7,7 +8,13 @@ import { BackOfficeTree } from "~/components/back-office-tree";
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { Button } from "~/components/ui/button";
 import { apps, functionCalls, getTableMetadata, serverFunctions } from "~/db/schema";
+import type { FunctionCall } from "~/db/schema/function-calls/schema";
 import { loaderMiddleware } from "~/lib/middleware";
+
+type FunctionCallWithRelations = FunctionCall & {
+  objects: Array<{ id: number }>;
+  action: { id: number };
+};
 
 async function _loader(args: LoaderFunctionArgs) {
   const { db } = args.context;
@@ -54,8 +61,8 @@ async function _loader(args: LoaderFunctionArgs) {
     type: "root",
     iconKey: "database",
     children: functionCallsData
-      .filter((call) => call.objects.length > 0)
-      .map((functionCall, index) => ({
+      .filter((call: FunctionCallWithRelations) => call.objects.length > 0)
+      .map((functionCall: FunctionCallWithRelations, index: number) => ({
         id: index + 1,
         name: `Call ${functionCall.id} Objects`,
         to: `/objects/${functionCall.id}`,

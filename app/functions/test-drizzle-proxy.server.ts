@@ -1,8 +1,8 @@
 // app/functions/test-drizzle-proxy.server.ts
-import { db } from "~/db";
 import * as schema from "~/db/schema";
 import { ActionType } from "~/db/schema/types";
 import { createAction } from "~/lib/action-builder.server";
+import { db } from "~/middleware";
 
 type Action = typeof schema.serverFunctions.$inferSelect;
 type FunctionCall = typeof schema.functionCalls.$inferSelect;

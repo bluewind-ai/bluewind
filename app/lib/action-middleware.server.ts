@@ -2,8 +2,8 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { eq } from "drizzle-orm";
 
-import { db } from "~/db";
 import { functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
+import { db } from "~/middleware";
 
 export type ActionCallNode = typeof functionCalls.$inferSelect & {
   actionName: string;

@@ -1,8 +1,8 @@
 // app/functions/go-next.server.ts
 import { eq } from "drizzle-orm";
 
-import { db } from "~/db";
 import { functionCalls, FunctionCallStatus } from "~/db/schema";
+import { db } from "~/middleware";
 
 export async function goNext() {
   // this should be removed by YOU when you rewrite the filed;

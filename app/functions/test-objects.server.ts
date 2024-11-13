@@ -2,9 +2,9 @@
 import { strict as assert } from "assert";
 import { eq } from "drizzle-orm";
 
-import { db } from "~/db";
 import * as schema from "~/db/schema";
 import { createAction } from "~/lib/action-builder.server";
+import { db } from "~/middleware";
 
 export const testObjects = createAction("test-objects", async () => {
   // this should be removed by YOU when you rewrite the filed;

@@ -4,9 +4,9 @@ import { useLoaderData } from "@remix-run/react";
 import { desc } from "drizzle-orm";
 
 import { NewMain } from "~/components/new-main";
-import { db } from "~/db";
 import { enrichServerFunction, functionCalls } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
+import { db } from "~/middleware";
 import { type ActionRecord } from "~/types/action-record";
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {

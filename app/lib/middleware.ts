@@ -2,14 +2,6 @@
 
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 
-import { type DbClient } from "~/db/db-client";
-
-declare module "@remix-run/node" {
-  interface AppLoadContext {
-    db: DbClient;
-  }
-}
-
 async function requestMiddleware<
   Args extends {
     context: any;

@@ -5,9 +5,9 @@ import path from "node:path";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { eq } from "drizzle-orm";
 
-import { db } from "~/db";
 import { apps, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
 import { contextStore, createAction } from "~/lib/action-builder.server";
+import { db } from "~/middleware";
 
 import { createSystemAction } from "./create-system-action.server";
 

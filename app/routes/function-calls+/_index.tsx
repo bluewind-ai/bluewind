@@ -6,11 +6,11 @@ import { and, eq, isNull } from "drizzle-orm";
 import { BackOfficeTree } from "~/components/back-office-tree";
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { Button } from "~/components/ui/button";
-import { db } from "~/db";
 import { apps, functionCalls, getTableMetadata, serverFunctions } from "~/db/schema";
 import { type ActionContext, contextStore } from "~/lib/action-builder.server";
 import { actions } from "~/lib/actions.server";
 import { actionMiddleware, loaderMiddleware } from "~/lib/middleware";
+import { db } from "~/middleware";
 
 async function _loader(_args: LoaderFunctionArgs) {
   const masterAction = await db.query.serverFunctions.findFirst({

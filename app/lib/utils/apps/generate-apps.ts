@@ -2,8 +2,8 @@
 import fs from "fs";
 import path from "path";
 
-import { db } from "~/db";
 import { functionCalls, FunctionCallStatus } from "~/db/schema";
+import { db } from "~/middleware";
 
 export async function generateApps() {
   // this should be removed by YOU when you rewrite the filed;

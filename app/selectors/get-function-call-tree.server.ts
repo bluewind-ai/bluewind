@@ -1,9 +1,9 @@
 // app/selectors/get-function-call-tree.server.ts
 import { eq } from "drizzle-orm";
 
-import { db } from "~/db";
 import { functionCalls } from "~/db/schema";
 import { createAction } from "~/lib/action-builder.server";
+import { db } from "~/middleware";
 
 interface FunctionCallTree {
   id: number;

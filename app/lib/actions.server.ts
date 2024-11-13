@@ -1,8 +1,8 @@
 // app/lib/actions.server.ts
 import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 
-import { db } from "~/db";
 import { ActionType, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
+import { db } from "~/middleware";
 
 import { createAction, suspend } from "./action-builder.server";
 
