@@ -2,9 +2,11 @@
 
 import { vitePlugin as remix } from "@remix-run/dev";
 import autoprefixer from "autoprefixer";
+import { expressDevServer } from "remix-express-dev-server";
 import { flatRoutes } from "remix-flat-routes";
 import tailwindcss from "tailwindcss";
 import { defineConfig } from "vite";
+import { denyImports, envOnlyMacros } from "vite-env-only";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 // import { actionsPlugin } from "./vite-plugins/generate-actions";
@@ -18,6 +20,9 @@ declare module "@remix-run/node" {
 
 export default defineConfig({
   plugins: [
+    expressDevServer(),
+    denyImports({}),
+    envOnlyMacros(),
     remix({
       future: {
         v3_fetcherPersist: true,

@@ -9,7 +9,12 @@ import type { AppLoadContext, EntryContext } from "@remix-run/node";
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { isbot } from "isbot";
+import morgan from "morgan";
 import { renderToPipeableStream } from "react-dom/server";
+import { createExpressApp } from "remix-create-express-app";
+
+import { db } from "./db";
+import { sayHello } from "./hello.server";
 
 const ABORT_DELAY = 5000;
 export default function handleRequest(
@@ -93,3 +98,18 @@ function handleBrowserRequest(
     setTimeout(abort, ABORT_DELAY);
   });
 }
+
+export const app = createExpressApp({
+  configure: (app) => {
+    app.use(morgan("tiny"));
+  },
+  getLoadContext: () => {
+    // Return a minimal context first - the actual db instance
+    // will be injected by the middleware later
+    return {
+      db, // Use the actual db instance
+      sayHello,
+    } as AppLoadContext;
+  },
+  unstable_middleware: true,
+});

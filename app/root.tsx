@@ -1,6 +1,7 @@
 // app/root.tsx
 import "./tailwind.css";
 
+import { LoaderFunctionArgs } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   Links,
@@ -8,6 +9,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
 
@@ -100,11 +102,19 @@ export function ErrorBoundary() {
   );
 }
 export default function App() {
+  const data = useLoaderData();
   return (
     <Document>
       <div className="flex-1 overflow-auto">
+        <div>
+          <pre>{JSON.stringify(data, null, 2)}</pre>
+        </div>
         <Outlet />
       </div>
     </Document>
   );
+}
+
+export async function loader({ context }: LoaderFunctionArgs) {
+  return { message: context.sayHello?.() };
 }

@@ -50,6 +50,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-resizable-panels": "^2.1.6",
+    "remix-create-express-app": "^0.4.5",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "ts-morph": "^24.0.0",
@@ -58,6 +59,7 @@
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.9",
     "@remix-run/dev": "^2.13.1",
+    "@types/morgan": "^1.9.9",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
@@ -78,13 +80,16 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "morgan": "^1.10.0",
     "postcss": "^8.4.38",
     "prettier": "^3.3.3",
+    "remix-express-dev-server": "^0.4.4",
     "remix-flat-routes": "^0.6.5",
     "simple-git": "^3.27.0",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.1.6",
     "vite": "^5.1.0",
+    "vite-env-only": "^3.0.3",
     "vite-tsconfig-paths": "^4.2.1"
   },
   "engines": {
