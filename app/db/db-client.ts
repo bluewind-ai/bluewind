@@ -4,12 +4,6 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import {
-  captureInsertTable,
-  createInsertOverride,
-  type FnPathItem,
-  type InterceptFn,
-} from "./db-overrides";
 import * as schema from "./schema";
 
 type BaseDbClient = PostgresJsDatabase<typeof schema>;
@@ -18,101 +12,87 @@ export interface DbClient extends BaseDbClient {
   withContext: (context: Record<string, unknown>) => DbClient;
 }
 
+interface InterceptFn {
+  invoke: (...args: unknown[]) => unknown;
+  name: string;
+  args: unknown[];
+}
+
+interface FnPathItem {
+  name: string;
+  args: unknown[];
+}
+
 interface InvokeContext {
   path?: string[];
   fnPath?: FnPathItem[];
-  db?: DbClient;
   requestContext?: Record<string, unknown>;
 }
 
-interface OverrideFn {
-  pattern: string | string[];
-  action: (db: DbClient) => unknown;
-}
+let currentTableName: string | null = null;
 
 export const createDbClient = (connectionString: string): DbClient => {
   const client = postgres(connectionString);
   const baseDb = drizzle(client, { schema });
 
   const intercept = (fn: InterceptFn, context: InvokeContext = {}) => {
-    const { path = [], fnPath = [], requestContext = {} } = context;
+    const { path = [], requestContext = {} } = context;
     const pathAsString = path.join(".");
 
-    console.log("INTERCEPT ENTRY:", {
-      pathAsString,
-      fnName: fn.name,
-      args: fn.args,
-      context: requestContext,
-      fnPath: fnPath.map((f) => ({ name: f.name, args: f.args })),
-    });
-
-    const drizzleNameSymbol = Symbol.for("drizzle:Name");
-    const table = fn.args[0] as { [key: symbol]: string } | undefined;
-    if (
-      table?.[drizzleNameSymbol] === "requests" ||
-      fnPath.some(
-        (f) =>
-          (f.args[0] as { [key: symbol]: string } | undefined)?.[drizzleNameSymbol] === "requests",
-      )
-    ) {
-      return fn.invoke(...fn.args);
-    }
-
-    if (!requestContext.requestId) {
-      const operation = {
-        path: pathAsString,
-        functionName: fn.name,
-        tableName: table?.[drizzleNameSymbol],
-        context: requestContext,
-      };
-      throw new Error(
-        `No requestId in context for operation: ${JSON.stringify(operation, null, 2)}`,
-      );
-    }
-
-    console.log("Intercepting call:", {
-      path: pathAsString,
-      functionName: fn.name,
-      args: fn.args,
-      requestId: requestContext.requestId,
-    });
-
-    const matchPath = (pattern: string) => pattern === pathAsString;
-
     if (pathAsString === "db.insert") {
-      captureInsertTable(fn.args[0]);
-    }
-
-    const overrides: OverrideFn[] = [
-      {
-        pattern: "db.insert.values",
-        action: (dbInstance) => createInsertOverride(fn, fnPath, dbInstance),
-      },
-    ];
-
-    const fnOverride = overrides.find(({ pattern }) => {
-      if (Array.isArray(pattern)) {
-        return pattern.some(matchPath);
+      const tableArg = fn.args[0];
+      if (tableArg && typeof tableArg === "object") {
+        const symbols = Object.getOwnPropertySymbols(tableArg);
+        const drizzleNameSymbol = symbols.find((s) => s.description === "drizzle:Name");
+        if (drizzleNameSymbol) {
+          currentTableName = (tableArg as any)[drizzleNameSymbol];
+          console.log("Captured table name:", currentTableName);
+        }
       }
-      return matchPath(pattern);
-    })?.action;
-
-    if (fnOverride && context.db) {
-      return fnOverride(context.db);
     }
 
-    return fn.invoke(...fn.args);
+    const result = fn.invoke(...fn.args);
+
+    if (pathAsString === "db.insert.values") {
+      const originalResult = result as { returning: () => Promise<Array<{ id: number }>> };
+      const origReturning = originalResult.returning.bind(originalResult);
+
+      originalResult.returning = () => {
+        const promise = origReturning();
+        if (requestContext.requestId) {
+          return promise.then((rows) => {
+            if (!requestContext.insertedObjects) {
+              requestContext.insertedObjects = [];
+            }
+            (requestContext.insertedObjects as any[]).push({
+              table: currentTableName,
+              id: rows[0]?.id,
+              values: fn.args[0],
+              rows,
+            });
+
+            console.log("Insert completed with rows:", rows, "for table:", currentTableName);
+            console.log("DB Insert Operation:", {
+              table: currentTableName,
+              id: rows[0]?.id,
+              values: fn.args[0],
+              path: fn.name,
+            });
+            console.log("Current requestContext:", requestContext);
+            return rows;
+          });
+        }
+        return promise;
+      };
+
+      return originalResult;
+    }
+
+    return result;
   };
 
   function wrapWithProxy(target: BaseDbClient, context: InvokeContext = {}): DbClient {
     const { path = [], fnPath = [], requestContext = {} } = context;
-
-    console.log("WRAP_PROXY ENTRY:", {
-      targetType: typeof target,
-      path,
-      fnPath: fnPath.map((f) => ({ name: f.name, args: f.args })),
-      requestContext,
-    });
 
     const handler: ProxyHandler<BaseDbClient> = {
       get(target, prop) {
