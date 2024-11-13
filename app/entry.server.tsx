@@ -17,6 +17,7 @@ import { renderToPipeableStream } from "react-dom/server";
 import { createExpressApp } from "remix-create-express-app";
 
 import { db } from "./db";
+import { DbClient } from "./db/db-client";
 import { requests } from "./db/schema/requests/schema";
 import { sayHello } from "./hello.server";
 
@@ -103,6 +104,9 @@ function handleBrowserRequest(
   });
 }
 
+interface DbClientWithContext extends DbClient {
+  requestContext?: Record<string, unknown>;
+}
 // app/entry.server.tsx
 export const app = createExpressApp({
   configure: (app) => {
@@ -128,7 +132,20 @@ export const app = createExpressApp({
         const tx = dbWithContext.transaction(async (trx) => {
           (req as any).requestId = requestId;
           (req as any).trx = trx;
-          next();
+
+          // Call next() and wait for it to complete
+          await new Promise<void>((resolve) => {
+            next();
+            res.on("finish", () => {
+              // Get the context from the dbWithContext that has our insertedObjects
+              console.log("\n\nFINAL TRANSACTION CONTEXT:", {
+                requestId,
+                insertedObjects: (dbWithContext as DbClientWithContext).requestContext
+                  ?.insertedObjects,
+              });
+              resolve();
+            });
+          });
         });
 
         // Add error handling for the transaction

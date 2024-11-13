@@ -12,35 +12,26 @@ export interface DbClient extends BaseDbClient {
   withContext: (context: Record<string, unknown>) => DbClient;
 }
 
-interface InterceptFn {
-  invoke: (...args: unknown[]) => unknown;
-  name: string;
-  args: unknown[];
-}
-
-interface FnPathItem {
-  name: string;
-  args: unknown[];
-}
-
-interface InvokeContext {
-  path?: string[];
-  fnPath?: FnPathItem[];
-  requestContext?: Record<string, unknown>;
+interface InsertResult {
+  values: (...args: unknown[]) => {
+    returning: () => Promise<Array<{ id: number }>>;
+  };
 }
 
 let currentTableName: string | null = null;
 
-export const createDbClient = (connectionString: string): DbClient => {
-  const client = postgres(connectionString);
-  const baseDb = drizzle(client, { schema });
+function wrapFunction(
+  value: (...args: unknown[]) => unknown,
+  target: BaseDbClient,
+  prop: string | symbol,
+  requestContext: Record<string, unknown>,
+) {
+  return function (this: unknown, ...args: unknown[]) {
+    const result = value.apply(this || target, args);
 
-  const intercept = (fn: InterceptFn, context: InvokeContext = {}) => {
-    const { path = [], requestContext = {} } = context;
-    const pathAsString = path.join(".");
-
-    if (pathAsString === "db.insert") {
-      const tableArg = fn.args[0];
+    // Capture table name from insert
+    if (prop === "insert") {
+      const tableArg = args[0];
       if (tableArg && typeof tableArg === "object") {
         const symbols = Object.getOwnPropertySymbols(tableArg);
         const drizzleNameSymbol = symbols.find((s) => s.description === "drizzle:Name");
@@ -48,104 +39,63 @@ export const createDbClient = (connectionString: string): DbClient => {
           currentTableName = (tableArg as any)[drizzleNameSymbol];
           console.log("Captured table name:", currentTableName);
         }
+
+        // Modify the result to intercept values()
+        const insertResult = result as InsertResult;
+        const originalValues = insertResult.values;
+
+        insertResult.values = function (...valuesArgs: unknown[]) {
+          const valuesResult = originalValues.apply(this, valuesArgs);
+          const originalReturning = valuesResult.returning;
+
+          valuesResult.returning = function () {
+            const promise = originalReturning.apply(this);
+            if (!requestContext.requestId) return promise;
+
+            return promise.then((rows: Array<{ id: number }>) => {
+              if (!requestContext.insertedObjects) {
+                requestContext.insertedObjects = [];
+              }
+              (requestContext.insertedObjects as any[]).push({
+                table: currentTableName,
+                id: rows[0]?.id,
+                values: valuesArgs[0],
+                rows,
+              });
+
+              console.log("Insert completed with rows:", rows, "for table:", currentTableName);
+              console.log("Current requestContext:", requestContext);
+              return rows;
+            });
+          };
+          return valuesResult;
+        };
       }
-    }
-
-    const result = fn.invoke(...fn.args);
-
-    if (pathAsString === "db.insert.values") {
-      const originalResult = result as { returning: () => Promise<Array<{ id: number }>> };
-      const origReturning = originalResult.returning.bind(originalResult);
-
-      originalResult.returning = () => {
-        const promise = origReturning();
-        if (requestContext.requestId) {
-          return promise.then((rows) => {
-            if (!requestContext.insertedObjects) {
-              requestContext.insertedObjects = [];
-            }
-            (requestContext.insertedObjects as any[]).push({
-              table: currentTableName,
-              id: rows[0]?.id,
-              values: fn.args[0],
-              rows,
-            });
-
-            console.log("Insert completed with rows:", rows, "for table:", currentTableName);
-            console.log("DB Insert Operation:", {
-              table: currentTableName,
-              id: rows[0]?.id,
-              values: fn.args[0],
-              path: fn.name,
-            });
-            console.log("Current requestContext:", requestContext);
-            return rows;
-          });
-        }
-        return promise;
-      };
-
-      return originalResult;
     }
 
     return result;
   };
+}
 
-  function wrapWithProxy(target: BaseDbClient, context: InvokeContext = {}): DbClient {
-    const { path = [], fnPath = [], requestContext = {} } = context;
+const proxyHandler = (
+  requestContext: Record<string, unknown> = {},
+): ProxyHandler<BaseDbClient> => ({
+  get(target, prop) {
+    const value = Reflect.get(target, prop);
 
-    const handler: ProxyHandler<BaseDbClient> = {
-      get(target, prop) {
-        if (prop === "withContext") {
-          return (newContext: Record<string, unknown>) => {
-            return wrapWithProxy(target, {
-              ...context,
-              requestContext: { ...requestContext, ...newContext },
-            });
-          };
-        }
+    if (prop === "withContext") {
+      return (newContext: Record<string, unknown>) =>
+        new Proxy(target, proxyHandler({ ...requestContext, ...newContext }));
+    }
 
-        const value = Reflect.get(target, prop);
-        const currentPath = path.concat(prop.toString());
+    if (typeof value !== "function") return value;
 
-        if (typeof value === "function") {
-          return (...args: unknown[]) => {
-            const currentFnPath = [...fnPath, { name: prop.toString(), args }];
-            const result = intercept(
-              {
-                invoke: value.bind(target),
-                name: prop.toString(),
-                args,
-              },
-              { path: currentPath, fnPath: currentFnPath, requestContext },
-            );
+    return wrapFunction(value, target, prop, requestContext);
+  },
+});
 
-            if (result && typeof result === "object") {
-              return wrapWithProxy(result as BaseDbClient, {
-                path: currentPath,
-                fnPath: currentFnPath,
-                requestContext,
-              });
-            }
-
-            return result;
-          };
-        }
-
-        if (value && typeof value === "object") {
-          return wrapWithProxy(value as BaseDbClient, {
-            path: currentPath,
-            fnPath,
-            requestContext,
-          });
-        }
-
-        return value;
-      },
-    };
-
-    return new Proxy(target, handler) as DbClient;
-  }
-
-  return wrapWithProxy(baseDb, { path: ["db"] });
+export const createDbClient = (connectionString: string): DbClient => {
+  const client = postgres(connectionString);
+  const db = drizzle(client, { schema });
+  return new Proxy(db, proxyHandler()) as DbClient;
 };
