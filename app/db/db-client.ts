@@ -38,7 +38,14 @@ export const createDbClient = (connectionString: string): DbClient => {
     const { path = [], fnPath = [], requestContext = {} } = context;
     const pathAsString = path.join(".");
 
-    // Special case: if it's the requests table operations, let them through without overrides
+    console.log("INTERCEPT ENTRY:", {
+      pathAsString,
+      fnName: fn.name,
+      args: fn.args,
+      context: requestContext,
+      fnPath: fnPath.map((f) => ({ name: f.name, args: f.args })),
+    });
+
     const drizzleNameSymbol = Symbol.for("drizzle:Name");
     const table = fn.args[0] as { [key: symbol]: string } | undefined;
     if (
@@ -62,7 +69,7 @@ export const createDbClient = (connectionString: string): DbClient => {
         `No requestId in context for operation: ${JSON.stringify(operation, null, 2)}`,
       );
     }
-    // no-qa
+
     console.log("Intercepting call:", {
       path: pathAsString,
       functionName: fn.name,
@@ -100,10 +107,15 @@ export const createDbClient = (connectionString: string): DbClient => {
   function wrapWithProxy(target: BaseDbClient, context: InvokeContext = {}): DbClient {
     const { path = [], fnPath = [], requestContext = {} } = context;
 
-    // Create a proxy handler that preserves 'this' binding
+    console.log("WRAP_PROXY ENTRY:", {
+      targetType: typeof target,
+      path,
+      fnPath: fnPath.map((f) => ({ name: f.name, args: f.args })),
+      requestContext,
+    });
+
     const handler: ProxyHandler<BaseDbClient> = {
       get(target, prop) {
-        // Handle withContext specially
         if (prop === "withContext") {
           return (newContext: Record<string, unknown>) => {
             return wrapWithProxy(target, {
@@ -116,7 +128,6 @@ export const createDbClient = (connectionString: string): DbClient => {
         const value = Reflect.get(target, prop);
         const currentPath = path.concat(prop.toString());
 
-        // If it's a function, wrap it
         if (typeof value === "function") {
           return (...args: unknown[]) => {
             const currentFnPath = [...fnPath, { name: prop.toString(), args }];
@@ -141,7 +152,6 @@ export const createDbClient = (connectionString: string): DbClient => {
           };
         }
 
-        // If it's an object (but not null), wrap it in a proxy too
         if (value && typeof value === "object") {
           return wrapWithProxy(value as BaseDbClient, {
             path: currentPath,
