@@ -12,12 +12,17 @@ import {
 } from "./db-overrides";
 import * as schema from "./schema";
 
-type DbClient = PostgresJsDatabase<typeof schema>;
+type BaseDbClient = PostgresJsDatabase<typeof schema>;
+
+export interface DbClient extends BaseDbClient {
+  withContext: (context: Record<string, unknown>) => DbClient;
+}
 
 interface InvokeContext {
   path?: string[];
   fnPath?: FnPathItem[];
   db?: DbClient;
+  requestContext?: Record<string, unknown>;
 }
 
 interface OverrideFn {
@@ -27,16 +32,17 @@ interface OverrideFn {
 
 export const createDbClient = (connectionString: string): DbClient => {
   const client = postgres(connectionString);
-  const db = drizzle(client, { schema });
+  const baseDb = drizzle(client, { schema });
 
   const intercept = (fn: InterceptFn, context: InvokeContext = {}) => {
-    const { path = [], fnPath = [], db: contextDb } = context;
+    const { path = [], fnPath = [], requestContext = {} } = context;
     const pathAsString = path.join(".");
 
     console.log("Intercepting call:", {
       path: pathAsString,
       functionName: fn.name,
       args: fn.args,
+      requestId: requestContext.requestId,
     });
 
     const matchPath = (pattern: string) => pattern === pathAsString;
@@ -59,39 +65,50 @@ export const createDbClient = (connectionString: string): DbClient => {
       return matchPath(pattern);
     })?.action;
 
-    if (fnOverride && contextDb) {
-      return fnOverride(contextDb);
+    if (fnOverride && context.db) {
+      return fnOverride(context.db);
     }
 
     return fn.invoke(...fn.args);
   };
 
-  const createProxy = <T extends object>(target: T, context: InvokeContext = {}): T => {
-    const { path = [], fnPath = [] } = context;
+  function wrapWithProxy(target: BaseDbClient, context: InvokeContext = {}): DbClient {
+    const { path = [], fnPath = [], requestContext = {} } = context;
 
-    return new Proxy(target, {
-      get(innerTarget: T, prop: string | symbol): unknown {
+    // Create a proxy handler that preserves 'this' binding
+    const handler: ProxyHandler<BaseDbClient> = {
+      get(target, prop) {
+        // Handle withContext specially
+        if (prop === "withContext") {
+          return (newContext: Record<string, unknown>) => {
+            return wrapWithProxy(target, {
+              ...context,
+              requestContext: { ...requestContext, ...newContext },
+            });
+          };
+        }
+
+        const value = Reflect.get(target, prop);
         const currentPath = path.concat(prop.toString());
-        const value = Reflect.get(innerTarget, prop);
 
+        // If it's a function, wrap it
         if (typeof value === "function") {
           return (...args: unknown[]) => {
             const currentFnPath = [...fnPath, { name: prop.toString(), args }];
-
             const result = intercept(
               {
-                invoke: value.bind(innerTarget),
+                invoke: value.bind(target),
                 name: prop.toString(),
                 args,
               },
-              { path: currentPath, fnPath: currentFnPath, db },
+              { path: currentPath, fnPath: currentFnPath, requestContext },
             );
 
-            if (typeof result === "object" && result !== null && !Array.isArray(result)) {
-              return createProxy(result as T, {
+            if (result && typeof result === "object") {
+              return wrapWithProxy(result as BaseDbClient, {
                 path: currentPath,
                 fnPath: currentFnPath,
-                db,
+                requestContext,
               });
             }
 
@@ -99,18 +116,21 @@ export const createDbClient = (connectionString: string): DbClient => {
           };
         }
 
-        if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-          return createProxy(value as T, {
+        // If it's an object (but not null), wrap it in a proxy too
+        if (value && typeof value === "object") {
+          return wrapWithProxy(value as BaseDbClient, {
             path: currentPath,
             fnPath,
-            db,
+            requestContext,
           });
         }
 
         return value;
       },
-    });
-  };
+    };
 
-  return createProxy(db, { path: ["db"], db });
+    return new Proxy(target, handler) as DbClient;
+  }
+
+  return wrapWithProxy(baseDb, { path: ["db"] });
 };

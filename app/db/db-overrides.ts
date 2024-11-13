@@ -18,11 +18,6 @@ export interface FnPathItem {
 
 let currentTableName: string | null = null;
 
-const getTableNameFromInsert = (args: unknown[]) => {
-  console.log("Getting table name, current:", currentTableName);
-  return currentTableName;
-};
-
 export const createInsertOverride = (
   fn: InterceptFn,
   _fnPath: FnPathItem[],

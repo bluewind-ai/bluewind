@@ -4,6 +4,7 @@ import { type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/nod
 import { AsyncLocalStorage } from "async_hooks";
 
 import { db } from "~/db";
+import { requests } from "~/db/schema/requests/schema";
 
 export type StoredOperation = {
   tableName: string;
@@ -46,7 +47,14 @@ async function requestMiddleware<Args, T>(args: Args, fn: () => Promise<T>): Pro
 
   console.log("Starting transaction in middleware for", request.method, url.pathname);
   return await operationsStorage.run([], async () => {
-    const result = await db.transaction(async () => {
+    // Create a request record and get its ID
+    const [requestRecord] = await db.insert(requests).values({}).returning();
+
+    // Create a db instance with context
+    const dbWithContext = db.withContext({ requestId: requestRecord.id });
+
+    console.log("Inside transaction in middleware");
+    const result = await dbWithContext.transaction(async () => {
       console.log("Inside transaction in middleware");
       const result = await fn();
       console.log("Function completed successfully in middleware, returned:", result);
