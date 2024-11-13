@@ -1,16 +1,15 @@
 // app/functions/create-system-action.server.ts
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
+import { and, eq } from "drizzle-orm";
 
-import { ActionType, serverFunctions } from "~/db/schema";
+import { ActionType, objects, serverFunctions } from "~/db/schema";
 
-/**
- * Creates a system action with a specific name and returns the created record
- */
 export async function createSystemAction(
   args: LoaderFunctionArgs,
   name: string = "test-system-action",
 ) {
+  console.log("Creating system action:", name);
   const { db } = args.context;
 
   const [insertedAction] = await db
@@ -20,15 +19,13 @@ export async function createSystemAction(
       type: ActionType.SYSTEM,
     })
     .returning();
+  console.log("Created system action:", insertedAction);
 
-  // this should be removed by YOU when you rewrite the filed;
-  // Query for the automatically created object record
   const objectRecord = await db.query.objects.findFirst({
-    where: (fields, { and, eq }) =>
-      and(eq(fields.model, "actions"), eq(fields.recordId, insertedAction.id)),
+    where: () => and(eq(objects.model, "actions"), eq(objects.recordId, insertedAction.id)),
   });
+  console.log("Found object record:", objectRecord);
 
-  // this should be removed by YOU when you rewrite the filed;
   return {
     success: true,
     action: insertedAction,
