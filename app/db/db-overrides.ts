@@ -30,25 +30,45 @@ export const createInsertOverride = (
 ) => {
   const tableName = currentTableName;
   console.log("Creating insert override for table:", tableName);
-  const result = fn.invoke(...fn.args) as Promise<Array<{ id: number }>>;
 
-  result
-    .then((rows) => {
-      console.log("Insert completed with rows:", rows, "for table:", tableName);
-      storeOperation(tableName, rows[0]?.id, fn.args[0], fn.name);
+  // Get the original result
+  const originalResult = fn.invoke(...fn.args);
 
-      console.log("DB Insert Operation:", {
-        table: tableName,
-        id: rows[0]?.id,
-        values: fn.args[0],
-        path: fn.name,
-      });
-    })
-    .finally(() => {
-      clearInsertTable();
-    });
+  // Return a proxy that preserves the chain methods
+  return new Proxy(originalResult as object, {
+    get(target: any, prop: string) {
+      if (prop === "then") {
+        // Special handling for the promise chain
+        return (resolve: any, reject: any) => {
+          return (target as Promise<Array<{ id: number }>>)
+            .then((rows) => {
+              console.log("Insert completed with rows:", rows, "for table:", tableName);
+              if (rows && rows.length > 0) {
+                storeOperation(tableName, rows[0]?.id, fn.args[0], fn.name);
+                console.log("DB Insert Operation:", {
+                  table: tableName,
+                  id: rows[0]?.id,
+                  values: fn.args[0],
+                  path: fn.name,
+                });
+              }
+              return resolve(rows);
+            })
+            .catch(reject)
+            .finally(() => {
+              clearInsertTable();
+            });
+        };
+      }
 
-  return result;
+      // Forward all other method calls
+      const value = (target as any)[prop];
+      if (typeof value === "function") {
+        return value.bind(target);
+      }
+      return value;
+    },
+  });
 };
 
 export const captureInsertTable = (tableArg: unknown) => {
