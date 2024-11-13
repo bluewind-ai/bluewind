@@ -1,5 +1,4 @@
 // app/components/new-main.tsx
-
 import { Form, useNavigate } from "@remix-run/react";
 import {
   createColumnHelper,
@@ -19,9 +18,7 @@ import { Button } from "./ui/button";
 interface NewMainProps {
   data: ActionRecord[];
 }
-
 const columnHelper = createColumnHelper<ActionRecord>();
-
 const STATUS_COLORS = {
   completed: "text-green-600 bg-green-50",
   running: "text-blue-600 bg-blue-50",
@@ -29,7 +26,6 @@ const STATUS_COLORS = {
   failed: "text-red-600 bg-red-50",
   never_run: "text-gray-500 bg-gray-50",
 } as const;
-
 function createColumns(navigate: (path: string) => void) {
   return [
     columnHelper.accessor("displayName", {
@@ -81,11 +77,9 @@ function createColumns(navigate: (path: string) => void) {
     }),
   ];
 }
-
 export function NewMain({ data }: NewMainProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const navigate = useNavigate();
-
   const table = useReactTable({
     data,
     columns: createColumns(navigate),
@@ -96,7 +90,6 @@ export function NewMain({ data }: NewMainProps) {
     },
     onSortingChange: setSorting,
   });
-
   return (
     <div className="p-4">
       <table className="min-w-full border-collapse border border-slate-200">

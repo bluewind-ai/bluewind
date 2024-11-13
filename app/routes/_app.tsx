@@ -1,5 +1,4 @@
 // app/routes/_app.tsx
-
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
@@ -14,7 +13,6 @@ export type ViewData = {
   label: string;
   iconKey: string;
 };
-
 export const views: ViewData[] = [
   {
     value: "objects",
@@ -27,7 +25,6 @@ export const views: ViewData[] = [
     iconKey: "table",
   },
 ] as const;
-
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {
@@ -49,23 +46,18 @@ async function _loader(args: LoaderFunctionArgs) {
       },
     ],
   };
-
   const appsData = await db.select().from(apps).orderBy(apps.order);
-
   return {
     navigationData,
     views,
     apps: appsData,
   };
 }
-
 export async function loader(args: LoaderFunctionArgs) {
   return await loaderMiddleware(args, () => _loader(args));
 }
-
 export default function Index() {
   const { navigationData, apps } = useLoaderData<typeof loader>();
-
   return (
     <div className="flex h-full">
       <NavigationTree data={navigationData} apps={apps} />

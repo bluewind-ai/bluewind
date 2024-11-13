@@ -1,5 +1,4 @@
 // app/entry.server.tsx
-
 import "./lib/debug"; // Added this import
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -12,8 +11,7 @@ import { RemixServer } from "@remix-run/react";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 
-const ABORT_DELAY = 5_000;
-
+const ABORT_DELAY = 5000;
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -25,7 +23,6 @@ export default function handleRequest(
     ? handleBotRequest(request, responseStatusCode, responseHeaders, remixContext)
     : handleBrowserRequest(request, responseStatusCode, responseHeaders, remixContext);
 }
-
 function handleBotRequest(
   request: Request,
   responseStatusCode: number,
@@ -41,16 +38,13 @@ function handleBotRequest(
           shellRendered = true;
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
-
           responseHeaders.set("Content-Type", "text/html");
-
           resolve(
             new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
             }),
           );
-
           pipe(body);
         },
         onShellError(error: unknown) {
@@ -61,11 +55,9 @@ function handleBotRequest(
         },
       },
     );
-
     setTimeout(abort, ABORT_DELAY);
   });
 }
-
 function handleBrowserRequest(
   request: Request,
   responseStatusCode: number,
@@ -81,16 +73,13 @@ function handleBrowserRequest(
           shellRendered = true;
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
-
           responseHeaders.set("Content-Type", "text/html");
-
           resolve(
             new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
             }),
           );
-
           pipe(body);
         },
         onShellError(error: unknown) {
@@ -101,7 +90,6 @@ function handleBrowserRequest(
         },
       },
     );
-
     setTimeout(abort, ABORT_DELAY);
   });
 }

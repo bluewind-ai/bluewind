@@ -1,5 +1,4 @@
 // app/db/schema/server-functions/schema.ts
-
 import { relations } from "drizzle-orm";
 import { type AnyPgColumn, integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
 
@@ -14,11 +13,9 @@ export const serverFunctions = pgTable("server_functions", {
     onDelete: "cascade",
   }),
 });
-
 export type ServerFunction = typeof serverFunctions.$inferSelect & {
   displayName: string;
 };
-
 export function enrichServerFunction(
   serverFunction: typeof serverFunctions.$inferSelect,
 ): ServerFunction {
@@ -30,7 +27,6 @@ export function enrichServerFunction(
       .join(" "),
   };
 }
-
 export const serverFunctionsRelations = relations(serverFunctions, ({ one, many }) => ({
   calls: many(functionCalls),
   functionCall: one(functionCalls, {

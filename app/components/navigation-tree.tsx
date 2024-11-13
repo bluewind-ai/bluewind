@@ -1,5 +1,4 @@
 // app/components/navigation-tree.tsx
-
 import { Link } from "@remix-run/react";
 import { Filter, Network, Play, Table } from "lucide-react";
 import { useState } from "react";
@@ -18,10 +17,8 @@ export type NavigationNode = {
   type: "root" | "app" | "file";
   children: NavigationNode[];
 };
-
 function getIcon(node: NavigationNode) {
   if (!node.iconKey) return null;
-
   switch (node.iconKey) {
     case "favicon":
       return <img src="/favicon.ico" alt={`${node.name} icon`} className="h-5 w-5" />;
@@ -35,14 +32,12 @@ function getIcon(node: NavigationNode) {
       return <Table className="h-5 w-5" />;
   }
 }
-
 function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: number }) {
   const [isOpen, setIsOpen] = useState(true);
   const icon = getIcon(node);
   const hasChildren = node.children.length > 0;
   const isRoot = node.type === "root";
   const isApp = node.type === "app";
-
   const content = (
     <div className="flex items-center gap-2">
       {icon}
@@ -58,14 +53,12 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
       </span>
     </div>
   );
-
   const itemClasses = cn(
     "flex items-center gap-2 p-2 rounded-md w-full",
     "hover:bg-accent hover:text-accent-foreground transition-colors",
     isRoot && "h-12",
     isApp && "pl-4",
   );
-
   if (!hasChildren && node.to) {
     return (
       <Link to={node.to} className={itemClasses} data-discover="true">
@@ -73,7 +66,6 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
       </Link>
     );
   }
-
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className={itemClasses}>{content}</CollapsibleTrigger>
@@ -87,12 +79,10 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
     </Collapsible>
   );
 }
-
 interface NavigationTreeProps {
   data: NavigationNode;
   apps: (typeof apps.$inferSelect)[];
 }
-
 export function NavigationTree({ data, apps }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">

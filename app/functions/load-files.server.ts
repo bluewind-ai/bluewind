@@ -1,5 +1,4 @@
 // app/functions/load-files.server.ts
-
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -8,15 +7,12 @@ import { apps, functionCalls, FunctionCallStatus } from "~/db/schema";
 import { createAction } from "~/lib/action-builder.server";
 
 import { createSystemAction } from "./create-system-action.server";
-
-void 0; // this should be removed by YOU when you rewrite the filed;
-
+// this should be removed by YOU when you rewrite the filed;
 type LoadResult = {
   name: string;
   status: string;
   actionId?: number;
 };
-
 const APPS_DATA = [
   {
     id: 1,
@@ -33,25 +29,20 @@ const APPS_DATA = [
     order: 2,
   },
 ];
-
 async function generateAppsFile() {
   const fileContent = `
 // THIS FILE IS AUTO-GENERATED - DO NOT EDIT
 export const apps = ${JSON.stringify(APPS_DATA, null, 2)} as const;
 `;
-
   const generatedDir = path.join(process.cwd(), "app", "lib", "generated");
   await fs.mkdir(generatedDir, { recursive: true });
-
   const filePath = path.join(generatedDir, "apps.ts");
   await fs.writeFile(filePath, fileContent, "utf-8");
 }
-
 async function generateActionsFile() {
   const functionsDir = path.join(process.cwd(), "app", "functions");
   const files = await fs.readdir(functionsDir);
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
-
   const content = `// app/lib/generated/actions.ts
 // This file is auto-generated. Do not edit it manually.
 
@@ -72,15 +63,12 @@ export const actions = {
     })
     .join(",\n  ")}
 } as const;`;
-
   await fs.mkdir("app/lib/generated", { recursive: true });
   await fs.writeFile("app/lib/generated/actions.ts", content);
 }
-
 function kebabToCamel(str: string): string {
   return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 }
-
 async function syncApps() {
   for (const app of APPS_DATA) {
     await db
@@ -102,16 +90,13 @@ async function syncApps() {
       })
       .returning();
   }
-
   let thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });
-
   if (!thisAction) {
     const { action } = await createSystemAction("load-apps-to-db");
     thisAction = action;
   }
-
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
@@ -123,23 +108,18 @@ async function syncApps() {
       },
     })
     .returning();
-
   return functionCall;
 }
-
 async function syncActions() {
   const functionsDir = path.join(process.cwd(), "app", "functions");
   const files = await fs.readdir(functionsDir);
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
   const actionNames = actionFiles.map((file) => path.basename(file, ".server.ts"));
-
   const results: LoadResult[] = [];
-
   for (const name of actionNames) {
     const existing = await db.query.serverFunctions.findFirst({
       where: (fields, { eq }) => eq(fields.name, name),
     });
-
     if (!existing) {
       const { action } = await createSystemAction(name);
       results.push({ name, status: "created", actionId: action.id });
@@ -147,16 +127,13 @@ async function syncActions() {
       results.push({ name, status: "exists" });
     }
   }
-
   let thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-actions"),
   });
-
   if (!thisAction) {
     const { action } = await createSystemAction("load-actions");
     thisAction = action;
   }
-
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
@@ -169,19 +146,15 @@ async function syncActions() {
       },
     })
     .returning();
-
   return functionCall;
 }
-
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const loadFiles = createAction("load-files", async () => {
-  void 0; // this should be removed by YOU when you rewrite the filed;
+  // this should be removed by YOU when you rewrite the filed;
   await Promise.all([generateAppsFile(), generateActionsFile()]);
   await sleep(1000);
-
   const appsResult = await syncApps();
   const actionsResult = await syncActions();
-
   return {
     success: true,
     apps: appsResult,

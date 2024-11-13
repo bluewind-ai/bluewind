@@ -1,5 +1,4 @@
 // app/root.tsx
-
 import "./tailwind.css";
 
 import {
@@ -31,11 +30,9 @@ function Document({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
-
 export function ErrorBoundary() {
   const error = useRouteError();
   let errorOutput = "";
-
   if (isRouteErrorResponse(error)) {
     errorOutput = `${error.status} ${error.statusText}\n${JSON.stringify(error.data, null, 2)}`;
   } else if (error instanceof Error) {
@@ -45,14 +42,12 @@ export function ErrorBoundary() {
         .replace("DD_DEBUG_BREAK: ", "")
         .split("\n\n");
       const stack = stackParts.join("\n\n");
-
       const formattedStack = stack
         .split("\n")
         .map((line) => {
           if (!line.includes("debug.ts")) {
             // Skip debug.ts lines
             const match = line.match(/\((.*?):(\d+):(\d+)\)/) || line.match(/at (.*?):(\d+):(\d+)/);
-
             if (match) {
               const [_, filePath, line, col] = match;
               // Only include app paths
@@ -66,7 +61,6 @@ export function ErrorBoundary() {
         })
         .filter(Boolean)
         .join("\n");
-
       errorOutput = `${debugData}\n\n${formattedStack}`;
     } else {
       // Regular error handling
@@ -76,7 +70,6 @@ export function ErrorBoundary() {
           if (!line.includes("debug.ts")) {
             // Skip debug.ts lines
             const match = line.match(/\((.*?):(\d+):(\d+)\)/) || line.match(/at (.*?):(\d+):(\d+)/);
-
             if (match) {
               const [_, filePath, line, col] = match;
               // Only include app paths
@@ -90,13 +83,11 @@ export function ErrorBoundary() {
         })
         .filter(Boolean)
         .join("\n");
-
       errorOutput = `${error.name}: ${error.message}\n\n${stackLines}`;
     }
   } else {
     errorOutput = JSON.stringify(error, null, 2);
   }
-
   return (
     <Document>
       <div className="p-4 font-mono">
@@ -108,7 +99,6 @@ export function ErrorBoundary() {
     </Document>
   );
 }
-
 export default function App() {
   return (
     <Document>

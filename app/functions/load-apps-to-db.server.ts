@@ -1,5 +1,4 @@
 // app/functions/load-apps-to-db.server.ts
-
 import { db } from "~/db";
 import {
   ActionType,
@@ -32,11 +31,9 @@ export const loadAppsToDb = createAction("load-apps-to-db", async () => {
         },
       });
   }
-
   let thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });
-
   if (!thisAction) {
     const [newAction] = await db
       .insert(serverFunctions)
@@ -48,7 +45,6 @@ export const loadAppsToDb = createAction("load-apps-to-db", async () => {
       .returning();
     thisAction = newAction;
   }
-
   // At this point TypeScript knows thisAction cannot be undefined since we either
   // found it or created it
   const [functionCall] = await db
@@ -62,6 +58,5 @@ export const loadAppsToDb = createAction("load-apps-to-db", async () => {
       },
     })
     .returning();
-
   return functionCall;
 });

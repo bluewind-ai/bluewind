@@ -1,5 +1,4 @@
 // app/types/action-record.ts
-
 export type ActionRecord = {
   id: number;
   name: string;

@@ -1,5 +1,4 @@
 // app/routes/api.templates.instructions.tsx
-
 import { type ActionFunctionArgs } from "@remix-run/node";
 
 import { actionMiddleware } from "~/lib/middleware";
@@ -7,11 +6,9 @@ import { actionMiddleware } from "~/lib/middleware";
 type InstructionsProps = {
   fileCount?: number;
 };
-
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _action(args: ActionFunctionArgs) {
   const { fileCount } = (await args.request.json()) as InstructionsProps;
-
   const content = `0- Never use try {} catch {} unless the code was given to you
 
 1- ONE FILE PER SNIPPET. meaning ${fileCount ? `${fileCount} copy paste` : "one copy paste"} icon per file.
@@ -26,10 +23,8 @@ async function _action(args: ActionFunctionArgs) {
 
 5- IF you want to suggest to edit files, ALWAYS return entire file or files updated please. EVEN WHEN THEY'RE LONG.
 I repeat: ALWAYS return entire file or files updated please. Even when it looks stupid to do so. even when the change is literally one line.`;
-
   return { content };
 }
-
 export async function action(args: ActionFunctionArgs) {
   return await actionMiddleware(args, () => _action(args));
 }

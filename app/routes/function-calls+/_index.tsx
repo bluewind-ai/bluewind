@@ -1,5 +1,4 @@
 // app/routes/function-calls+/_index.tsx
-
 import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import { and, eq, isNull } from "drizzle-orm";
@@ -17,9 +16,7 @@ async function _loader(_args: LoaderFunctionArgs) {
   const masterAction = await db.query.serverFunctions.findFirst({
     where: eq(serverFunctions.name, "master"),
   });
-
-  console.log("masterAction:", masterAction);
-
+  // this should be removed by YOU when you rewrite the filed;
   if (!masterAction) {
     return {
       navigationData: {
@@ -45,7 +42,6 @@ async function _loader(_args: LoaderFunctionArgs) {
       apps: [],
     };
   }
-
   const functionCallsData = await db.query.functionCalls.findMany({
     where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
     with: {
@@ -53,9 +49,7 @@ async function _loader(_args: LoaderFunctionArgs) {
     },
     orderBy: functionCalls.createdAt,
   });
-
-  console.log("functionCallsData:", functionCallsData);
-
+  // this should be removed by YOU when you rewrite the filed;
   const navigationData: NavigationNode = {
     id: 0,
     name: "Function Calls",
@@ -69,7 +63,6 @@ async function _loader(_args: LoaderFunctionArgs) {
       children: [] as NavigationNode[],
     })),
   };
-
   const backOfficeData: NavigationNode = {
     id: 0,
     name: "Database",
@@ -83,32 +76,26 @@ async function _loader(_args: LoaderFunctionArgs) {
       children: [] as NavigationNode[],
     })),
   };
-
   const appsData = await db.select().from(apps).orderBy(apps.order);
-  console.log("appsData:", appsData);
-
+  // this should be removed by YOU when you rewrite the filed;
   return {
     navigationData,
     backOfficeData,
     apps: appsData,
   };
 }
-
 async function _action(args: ActionFunctionArgs) {
   const formData = await args.request.formData();
   const name = formData.get("name") as keyof typeof actions;
-
   const functionCall = await db.query.functionCalls.findFirst({
     where: eq(functionCalls.id, 1), // For now use master call
     with: {
       action: true,
     },
   });
-
   if (!functionCall) {
     return null;
   }
-
   const context: ActionContext = {
     currentNode: {
       ...functionCall,
@@ -117,7 +104,6 @@ async function _action(args: ActionFunctionArgs) {
     },
     hitCount: 0,
   };
-
   await contextStore.run(context, async () => {
     const action = actions[name];
     if (!action) {
@@ -125,27 +111,21 @@ async function _action(args: ActionFunctionArgs) {
     }
     return await action();
   });
-
   await new Promise((resolve) => setTimeout(resolve, 3000));
   return redirect("/");
 }
-
 export async function loader(args: LoaderFunctionArgs) {
   return await loaderMiddleware(args, () => _loader(args));
 }
-
 export async function action(args: ActionFunctionArgs) {
   return await actionMiddleware(args, () => _action(args));
 }
-
 export default function FunctionCalls() {
   const { navigationData, backOfficeData, apps } = useLoaderData<typeof loader>();
   const goNextFetcher = useFetcher();
   const loadFilesFetcher = useFetcher();
   const resetFetcher = useFetcher();
-
   const isResetting = resetFetcher.state !== "idle";
-
   return (
     <div className="flex h-full">
       <NavigationTree data={navigationData} apps={apps} />

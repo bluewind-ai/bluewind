@@ -1,5 +1,4 @@
 // app/components/generic-table-view.tsx
-
 import {
   createColumnHelper,
   flexRender,
@@ -10,10 +9,8 @@ import {
 } from "@tanstack/react-table";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GenericRecord = Record<string, any>;
-
 interface GenericTableViewProps {
   data: GenericRecord[];
   extraColumns?: Array<{
@@ -22,17 +19,13 @@ interface GenericTableViewProps {
     cell: (row: GenericRecord) => React.ReactNode;
   }>;
 }
-
 const columnHelper = createColumnHelper<GenericRecord>();
-
 function createColumnsFromData(
   data: GenericRecord[],
   extraColumns: GenericTableViewProps["extraColumns"] = [],
 ) {
   if (data.length === 0) return [];
-
   const keys = [...new Set(data.flatMap(Object.keys))];
-
   const dataColumns = keys.map((key) =>
     columnHelper.accessor(key, {
       header: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
@@ -45,7 +38,6 @@ function createColumnsFromData(
       },
     }),
   );
-
   const extraColumnsConfig = extraColumns.map((col) =>
     columnHelper.display({
       id: col.id,
@@ -53,14 +45,11 @@ function createColumnsFromData(
       cell: (info) => col.cell(info.row.original),
     }),
   );
-
   return [...dataColumns, ...extraColumnsConfig];
 }
-
 export function GenericTableView({ data, extraColumns }: GenericTableViewProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const columns = createColumnsFromData(data, extraColumns);
-
   const table = useReactTable({
     data,
     columns,
@@ -71,11 +60,9 @@ export function GenericTableView({ data, extraColumns }: GenericTableViewProps) 
     },
     onSortingChange: setSorting,
   });
-
   if (data.length === 0) {
     return <div className="p-4">No data available</div>;
   }
-
   return (
     <div className="p-4">
       <table className="min-w-full border-collapse border border-slate-200">

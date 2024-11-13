@@ -1,5 +1,4 @@
 // app/db/schema/debug-logs/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
@@ -13,7 +12,6 @@ export const debugLogs = pgTable("debug_logs", {
     .references(() => functionCalls.id, { onDelete: "cascade" })
     .notNull(),
 });
-
 export const debugLogsRelations = relations(debugLogs, ({ one }) => ({
   functionCall: one(functionCalls, {
     fields: [debugLogs.functionCallId],

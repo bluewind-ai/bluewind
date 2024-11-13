@@ -3,7 +3,7 @@
 export const loader = async () => {
   const rawActions = await db.query.serverFunctions.findMany();
   const enrichedActions = rawActions.map(enrichServerFunction);
-  void 0;
+
 
   const fileData: FileNode = {
     id: 0,

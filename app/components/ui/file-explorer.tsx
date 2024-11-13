@@ -1,5 +1,4 @@
 // app/components/ui/file-explorer.tsx
-
 import { Link } from "@remix-run/react";
 import { useState } from "react";
 
@@ -9,39 +8,32 @@ type BaseNode = {
   id: number;
   children: BaseNode[];
 };
-
 type FileNode = BaseNode & {
   name: string;
   type: "file" | "folder";
 };
-
 type ActionCallNode = BaseNode & {
   actionName: string;
   status: string;
 };
-
 type NodeProps = {
   node: FileNode | ActionCallNode;
   level?: number;
   type: "file" | "functionCall";
 };
-
 function formatName(name: string): string {
   return name
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isFileNode(node: any): node is FileNode {
   return "type" in node;
 }
-
 function ExplorerNode({ node, level = 0, type }: NodeProps) {
   const [isOpen, setIsOpen] = useState(true);
   const paddingLeft = `${level * 20}px`;
-
   const content = (
     <>
       {node.children.length > 0 && (
@@ -68,7 +60,6 @@ function ExplorerNode({ node, level = 0, type }: NodeProps) {
       )}
     </>
   );
-
   return (
     <div>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -100,12 +91,10 @@ function ExplorerNode({ node, level = 0, type }: NodeProps) {
     </div>
   );
 }
-
 type FileExplorerProps = {
   data: FileNode | ActionCallNode;
   type: "file" | "functionCall";
 };
-
 export function FileExplorer({ data, type }: FileExplorerProps) {
   return (
     <div className="border-r h-full overflow-y-auto bg-white">

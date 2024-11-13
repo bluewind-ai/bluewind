@@ -1,10 +1,8 @@
 // app/components/error-display.tsx
-
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 
 export function ErrorDisplay() {
   const error = useRouteError();
-
   return (
     <div
       style={{

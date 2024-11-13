@@ -1,5 +1,4 @@
 // app/db/schema/request-errors/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, jsonb, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
@@ -18,7 +17,6 @@ export const requestErrors = pgTable("request_errors", {
     .references(() => functionCalls.id, { onDelete: "cascade" })
     .notNull(),
 });
-
 export const requestErrorsRelations = relations(requestErrors, ({ one }) => ({
   functionCall: one(functionCalls, {
     fields: [requestErrors.functionCallId],

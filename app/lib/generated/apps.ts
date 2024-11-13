@@ -1,5 +1,4 @@
 // app/lib/generated/apps.ts
-
 export const apps = [
   {
     id: 1,

@@ -1,5 +1,4 @@
 // app/utils/path.ts
-
 export const path = {
   to: {
     backOffice: () => "/back-office",

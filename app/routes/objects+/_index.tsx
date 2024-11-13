@@ -1,5 +1,4 @@
 // app/routes/objects+/_index.tsx
-
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
@@ -15,9 +14,7 @@ async function _loader(_args: LoaderFunctionArgs) {
   const masterAction = await db.query.serverFunctions.findFirst({
     where: eq(serverFunctions.name, "master"),
   });
-
-  console.log("masterAction:", masterAction);
-
+  // this should be removed by YOU when you rewrite the filed;
   if (!masterAction) {
     return {
       navigationData: {
@@ -43,7 +40,6 @@ async function _loader(_args: LoaderFunctionArgs) {
       apps: [],
     };
   }
-
   const functionCallsData = await db.query.functionCalls.findMany({
     with: {
       action: true,
@@ -51,9 +47,7 @@ async function _loader(_args: LoaderFunctionArgs) {
     },
     orderBy: functionCalls.createdAt,
   });
-
-  console.log("functionCallsData:", functionCallsData);
-
+  // this should be removed by YOU when you rewrite the filed;
   const navigationData: NavigationNode = {
     id: 0,
     name: "Objects",
@@ -69,7 +63,6 @@ async function _loader(_args: LoaderFunctionArgs) {
         children: [] as NavigationNode[],
       })),
   };
-
   const backOfficeData: NavigationNode = {
     id: 0,
     name: "Database",
@@ -83,21 +76,17 @@ async function _loader(_args: LoaderFunctionArgs) {
       children: [] as NavigationNode[],
     })),
   };
-
   const appsData = await db.select().from(apps).orderBy(apps.order);
-  console.log("appsData:", appsData);
-
+  // this should be removed by YOU when you rewrite the filed;
   return {
     navigationData,
     backOfficeData,
     apps: appsData,
   };
 }
-
 export async function loader(args: LoaderFunctionArgs) {
   return await loaderMiddleware(args, () => _loader(args));
 }
-
 export default function Objects() {
   const { navigationData, backOfficeData, apps } = useLoaderData<typeof loader>();
   const goNextFetcher = useFetcher();
@@ -105,11 +94,9 @@ export default function Objects() {
   const resetFetcher = useFetcher();
   const truncateFetcher = useFetcher();
   const bootstrapFetcher = useFetcher();
-
   const isResetting = resetFetcher.state !== "idle";
   const isTruncating = truncateFetcher.state !== "idle";
   const isBootstrapping = bootstrapFetcher.state !== "idle";
-
   return (
     <div className="flex h-full">
       <NavigationTree data={navigationData} apps={apps} />

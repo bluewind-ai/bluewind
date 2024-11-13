@@ -1,6 +1,5 @@
 // app/lib/generated/actions.ts
 // This file is auto-generated. Do not edit it manually.
-
 import { createSystemAction } from "~/functions/create-system-action.server";
 import { getFunctionCallTree } from "~/functions/get-function-call-tree.server";
 import { getTables } from "~/functions/get-tables.server";

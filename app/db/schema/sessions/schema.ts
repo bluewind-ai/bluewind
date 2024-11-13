@@ -1,5 +1,4 @@
 // app/db/schema/sessions/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
@@ -21,7 +20,6 @@ export const sessions = pgTable("sessions", {
     .references(() => functionCalls.id, { onDelete: "cascade" })
     .notNull(),
 });
-
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],

@@ -1,5 +1,4 @@
 // app/server/actions/get-function-call.ts
-
 import { desc } from "drizzle-orm";
 
 import { db } from "~/db";

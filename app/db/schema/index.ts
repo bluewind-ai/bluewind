@@ -1,5 +1,4 @@
 // app/db/schema/index.ts
-
 export * from "./apps/schema";
 export * from "./debug-logs/schema";
 export * from "./enums";
@@ -10,13 +9,11 @@ export * from "./server-functions/schema";
 export * from "./sessions/schema";
 export * from "./types";
 export * from "./users/schema";
-
 // Table metadata
 type TableConfig = {
   displayName: string;
   urlName: string;
 };
-
 export const TABLES: Record<string, TableConfig> = {
   users: {
     displayName: "Users",
@@ -47,7 +44,6 @@ export const TABLES: Record<string, TableConfig> = {
     urlName: "objects",
   },
 };
-
 export function getTableMetadata() {
   return Object.entries(TABLES).map(([key, config]) => ({
     name: key,

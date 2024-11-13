@@ -1,5 +1,4 @@
 // app/db/schema/apps/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
 
@@ -15,7 +14,6 @@ export const apps = pgTable("apps", {
     .references(() => functionCalls.id, { onDelete: "cascade" })
     .notNull(),
 });
-
 export const appsRelations = relations(apps, ({ one }) => ({
   functionCall: one(functionCalls, {
     fields: [apps.functionCallId],

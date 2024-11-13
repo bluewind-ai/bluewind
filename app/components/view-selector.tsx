@@ -1,5 +1,4 @@
 // app/components/view-selector.tsx
-
 import { useLocation, useNavigate } from "@remix-run/react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
@@ -20,7 +19,6 @@ import { cn } from "~/lib/utils";
 type ViewSelectorProps = {
   apps: (typeof apps.$inferSelect)[];
 };
-
 export function ViewSelector({ apps }: ViewSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
@@ -29,7 +27,6 @@ export function ViewSelector({ apps }: ViewSelectorProps) {
   );
   const navigate = useNavigate();
   const selectedView = apps.find((view) => view.value === value);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

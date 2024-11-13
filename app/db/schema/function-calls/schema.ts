@@ -1,5 +1,4 @@
 // app/db/schema/function-calls/schema.ts
-
 import { relations } from "drizzle-orm";
 import { type AnyPgColumn, integer, jsonb, pgTable, serial, timestamp } from "drizzle-orm/pg-core";
 
@@ -26,11 +25,9 @@ export const functionCalls = pgTable("function_calls", {
   result: jsonb("result"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-
 export type FunctionCall = typeof functionCalls.$inferSelect & {
   action?: typeof serverFunctions.$inferSelect;
 };
-
 export const functionCallsRelations = relations(functionCalls, ({ one, many }) => ({
   action: one(serverFunctions, {
     fields: [functionCalls.actionId],
