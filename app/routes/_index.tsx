@@ -1,13 +1,15 @@
 // app/routes/_index.tsx
+
 import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { eq } from "drizzle-orm";
 
-import { db } from "~/db";
 import { ActionType, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
 import { path } from "~/utils/path";
-// eslint-disable-next-line unused-imports/no-unused-vars
+
 async function _loader(args: LoaderFunctionArgs) {
+  const { db } = args.context;
+
   await db.select().from(serverFunctions);
   // this should be removed by YOU when you rewrite the filed;
   const masterAction = await db.query.serverFunctions.findFirst({
@@ -47,9 +49,11 @@ async function _loader(args: LoaderFunctionArgs) {
   // }
   // return redirect(path.to.agents(1));
 }
+
 export async function loader(args: LoaderFunctionArgs) {
   return await loaderMiddleware(args, () => _loader(args));
 }
+
 export default function Index() {
   return null;
 }

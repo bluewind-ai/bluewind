@@ -29,9 +29,14 @@ async function requestMiddleware<Args extends { context: any }, T>(
   console.log("Starting transaction in middleware for", request.method, url.pathname);
 
   const [requestRecord] = await db.insert(requests).values({}).returning();
-  const dbWithContext = db.withContext({ requestId: requestRecord.id });
 
-  // Insert db into args.context
+  // Put requestId in args.context
+  args.context.requestId = requestRecord.id;
+
+  // Pass the whole args.context to withContext
+  const dbWithContext = db.withContext(args.context);
+
+  // Put the contextualized db back in args.context
   args.context.db = dbWithContext;
 
   console.log("Inside transaction in middleware");

@@ -1,4 +1,5 @@
 // app/routes/objects+/_index.tsx
+
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
@@ -6,11 +7,12 @@ import { eq } from "drizzle-orm";
 import { BackOfficeTree } from "~/components/back-office-tree";
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { Button } from "~/components/ui/button";
-import { db } from "~/db";
 import { apps, functionCalls, getTableMetadata, serverFunctions } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
 
-async function _loader(_args: LoaderFunctionArgs) {
+async function _loader(args: LoaderFunctionArgs) {
+  const { db } = args.context;
+
   const masterAction = await db.query.serverFunctions.findFirst({
     where: eq(serverFunctions.name, "master"),
   });

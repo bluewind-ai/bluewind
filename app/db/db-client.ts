@@ -38,6 +38,31 @@ export const createDbClient = (connectionString: string): DbClient => {
     const { path = [], fnPath = [], requestContext = {} } = context;
     const pathAsString = path.join(".");
 
+    // Special case: if it's the requests table operations, let them through without overrides
+    const drizzleNameSymbol = Symbol.for("drizzle:Name");
+    const table = fn.args[0] as { [key: symbol]: string } | undefined;
+    if (
+      table?.[drizzleNameSymbol] === "requests" ||
+      fnPath.some(
+        (f) =>
+          (f.args[0] as { [key: symbol]: string } | undefined)?.[drizzleNameSymbol] === "requests",
+      )
+    ) {
+      return fn.invoke(...fn.args);
+    }
+
+    if (!requestContext.requestId) {
+      const operation = {
+        path: pathAsString,
+        functionName: fn.name,
+        tableName: table?.[drizzleNameSymbol],
+        context: requestContext,
+      };
+      throw new Error(
+        `No requestId in context for operation: ${JSON.stringify(operation, null, 2)}`,
+      );
+    }
+
     console.log("Intercepting call:", {
       path: pathAsString,
       functionName: fn.name,
