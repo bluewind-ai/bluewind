@@ -4,7 +4,6 @@ import { useLoaderData } from "@remix-run/react";
 
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { NewMain } from "~/components/new-main";
-import { db } from "~/db";
 import { apps } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
 
@@ -27,6 +26,7 @@ export const views: ViewData[] = [
 ] as const;
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
+  const { db } = args.context;
   const navigationData: NavigationNode = {
     id: 0,
     name: "Root",
