@@ -3,16 +3,16 @@
 import { type ActionFunctionArgs, redirect } from "@remix-run/node";
 import { eq, sql } from "drizzle-orm";
 
-import { db } from "~/db";
 import { functionCalls, serverFunctions } from "~/db/schema";
 import { ActionType, FunctionCallStatus } from "~/db/schema/types";
 import { actionMiddleware } from "~/lib/middleware";
 
-async function _action(_args: ActionFunctionArgs) {
+async function _action(args: ActionFunctionArgs) {
   console.log("\n=== Starting Bootstrap Action ===");
   console.log("Starting bootstrap action", new Date().toISOString());
 
-  // Raw SQL check
+  const { db } = args.context; // This db is already configured with requestId
+
   console.log("\n--- Raw SQL Check ---");
   const rawCheck = await db.execute(sql`SELECT * FROM server_functions WHERE name = 'master'`);
   console.log("Raw SQL result:", rawCheck);
