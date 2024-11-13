@@ -1,5 +1,5 @@
 // app/lib/action-middleware.server.ts
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { AsyncLocalStorage } from "async_hooks";
 
 import { db } from "~/db";
@@ -25,18 +25,18 @@ class SuspendError extends Error {
 }
 export function withActionMiddleware(name: string, fn: () => Promise<any>) {
   return async () => {
+    console.log("withActionMiddleware called for action:", name);
     const context = contextStore.getStore();
     if (!context) {
       throw new Error("Action context not initialized");
     }
     context.hitCount++;
-    // this should be removed by YOU when you rewrite the filed;
-    // this should be removed by YOU when you rewrite the filed;
     if (context.hitCount === 2) {
+      console.log("Hit count reached 2, looking for load-csv-data action");
       const nextAction = await db.query.serverFunctions.findFirst({
         where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
       });
-      // this should be removed by YOU when you rewrite the filed;
+      console.log("Found next action:", nextAction);
       if (!nextAction) return;
       const insertData: ActionInsert = {
         actionId: nextAction.id,
@@ -45,41 +45,33 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
         args: {},
       };
       const nextCall = await db.insert(functionCalls).values(insertData).returning();
-      // this should be removed by YOU when you rewrite the filed;
+      console.log("Created next function call:", nextCall);
       const currentCall = await db.query.functionCalls.findFirst({
         where: (fields, { eq }) => eq(fields.id, context.currentNode.id),
       });
+      console.log("Retrieved current call:", currentCall);
       return {
         ...currentCall,
         actionName: name,
         children: [{ ...nextCall[0], actionName: nextAction.name, children: [] }],
       };
     }
-    // this should be removed by YOU when you rewrite the filed;
-    try {
-      await fn();
-      // this should be removed by YOU when you rewrite the filed;
-      return context.currentNode;
-    } catch (error) {
-      // this should be removed by YOU when you rewrite the filed;
-      if (error instanceof SuspendError) {
-        return context.currentNode;
-      }
-      throw error;
-    }
+    await fn();
+    return context.currentNode;
   };
 }
 export function suspend() {
   throw new SuspendError();
 }
 export async function executeAction(name: keyof typeof actionMap) {
+  console.log("executeAction called with name:", name);
   if (!name || !(name in actionMap)) {
     throw new Error(`Action ${name} not found`);
   }
   const action = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, name),
   });
-  // this should be removed by YOU when you rewrite the filed;
+  console.log("Found action in database:", action);
   if (!action) {
     throw new Error(`Action ${name} not found in database`);
   }
@@ -91,7 +83,7 @@ export async function executeAction(name: keyof typeof actionMap) {
       args: {},
     } satisfies ActionInsert)
     .returning();
-  // this should be removed by YOU when you rewrite the filed;
+  console.log("Created root function call:", rootCall);
   return await contextStore.run(
     {
       currentNode: {

@@ -4,7 +4,12 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import { createInsertOverride, type FnPathItem, type InterceptFn } from "./db-overrides";
+import {
+  captureInsertTable,
+  createInsertOverride,
+  type FnPathItem,
+  type InterceptFn,
+} from "./db-overrides";
 import * as schema from "./schema";
 
 type DbClient = PostgresJsDatabase<typeof schema>;
@@ -28,17 +33,17 @@ export const createDbClient = (connectionString: string): DbClient => {
     const { path = [], fnPath = [], db: contextDb } = context;
     const pathAsString = path.join(".");
 
-    // Get the current stack trace
-    // const stack = new Error().stack?.split("\n").slice(1).join("\n");
-
     console.log("Intercepting call:", {
       path: pathAsString,
       functionName: fn.name,
       args: fn.args,
-      // stack,
     });
 
     const matchPath = (pattern: string) => pattern === pathAsString;
+
+    if (pathAsString === "db.insert") {
+      captureInsertTable(fn.args[0]);
+    }
 
     const overrides: OverrideFn[] = [
       {
