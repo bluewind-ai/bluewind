@@ -3,7 +3,6 @@
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import * as schema from "~/db/schema";
-import { storeOperation } from "~/lib/middleware";
 
 export interface InterceptFn {
   invoke: (...args: unknown[]) => unknown;
@@ -39,7 +38,6 @@ export const createInsertOverride = (
             .then((rows) => {
               console.log("Insert completed with rows:", rows, "for table:", tableName);
               if (rows && rows.length > 0) {
-                storeOperation(tableName, rows[0]?.id, fn.args[0], fn.name);
                 console.log("DB Insert Operation:", {
                   table: tableName,
                   id: rows[0]?.id,

@@ -1,38 +1,9 @@
 // app/lib/middleware.ts
 
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { AsyncLocalStorage } from "async_hooks";
 
 import { db } from "~/db";
 import { requests } from "~/db/schema/requests/schema";
-
-export type StoredOperation = {
-  tableName: string;
-  recordId: number;
-  values: unknown;
-  timestamp: number;
-  path?: string;
-};
-
-export const operationsStorage = new AsyncLocalStorage<StoredOperation[]>();
-
-export const storeOperation = (
-  tableName: string | null,
-  id: number | undefined,
-  values: unknown,
-  path?: string,
-) => {
-  const operations = operationsStorage.getStore();
-  if (operations && tableName && id) {
-    operations.push({
-      tableName: tableName,
-      recordId: id,
-      values,
-      timestamp: Date.now(),
-      path,
-    });
-  }
-};
 
 async function requestMiddleware<Args, T>(args: Args, fn: () => Promise<T>): Promise<T> {
   const request = (args as any).request;
@@ -46,29 +17,25 @@ async function requestMiddleware<Args, T>(args: Args, fn: () => Promise<T>): Pro
   console.log(`${request.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
   console.log("Starting transaction in middleware for", request.method, url.pathname);
-  return await operationsStorage.run([], async () => {
-    // Create a request record and get its ID
-    const [requestRecord] = await db.insert(requests).values({}).returning();
 
-    // Create a db instance with context
-    const dbWithContext = db.withContext({ requestId: requestRecord.id });
+  // First create the request record
+  const [requestRecord] = await db.insert(requests).values({}).returning();
 
+  // Create db with the request context
+  const dbWithContext = db.withContext({ requestId: requestRecord.id });
+
+  console.log("Inside transaction in middleware");
+  const result = await dbWithContext.transaction(async () => {
     console.log("Inside transaction in middleware");
-    const result = await dbWithContext.transaction(async () => {
-      console.log("Inside transaction in middleware");
-      const result = await fn();
-      console.log("Function completed successfully in middleware, returned:", result);
-
-      const operations = operationsStorage.getStore();
-      console.log("Transaction about to commit. DB Operations performed:", operations);
-
-      return result;
-    });
-    console.log("Transaction committed in middleware");
-
-    console.log("Transaction in middleware finishing up with result:", result);
+    const result = await fn();
+    console.log("Function completed successfully in middleware, returned:", result);
+    console.log("Transaction about to commit");
     return result;
   });
+
+  console.log("Transaction committed in middleware");
+  console.log("Transaction in middleware finishing up with result:", result);
+  return result;
 }
 
 export const loaderMiddleware = <T>(args: LoaderFunctionArgs, fn: () => Promise<T>) => {
