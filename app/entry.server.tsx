@@ -103,6 +103,7 @@ function handleBrowserRequest(
   });
 }
 
+// app/entry.server.tsx
 export const app = createExpressApp({
   configure: (app) => {
     app.use(morgan("tiny"));
@@ -118,20 +119,33 @@ export const app = createExpressApp({
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
       try {
+        // First create the request record without a transaction
         const [requestRecord] = await db.insert(requests).values({}).returning();
-        // Make requestId available to subsequent middleware
-        (req as any).requestId = requestRecord.id;
+        const requestId = requestRecord.id;
+
+        // Now we can start a transaction with the requestId in context
+        const dbWithContext = db.withContext({ requestId });
+        const tx = dbWithContext.transaction(async (trx) => {
+          (req as any).requestId = requestId;
+          (req as any).trx = trx;
+          next();
+        });
+
+        // Add error handling for the transaction
+        tx.catch((error) => {
+          console.error("Transaction failed:", error);
+          next(error);
+        });
       } catch (error) {
-        console.error("Failed to insert request record:", error);
+        console.error("Failed to create request record:", error);
+        next(error);
       }
-      next();
     });
   },
-  getLoadContext: () => {
-    // Return a minimal context first - the actual db instance
-    // will be injected by the middleware later
+  getLoadContext: (req) => {
+    const trx = (req as any).trx;
     return {
-      db, // Use the actual db instance
+      db: trx ? db.withContext({ trx, requestId: (req as any).requestId }) : db,
       sayHello,
     } as AppLoadContext;
   },
