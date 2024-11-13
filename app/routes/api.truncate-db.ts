@@ -1,28 +1,50 @@
 // app/routes/api.truncate-db.ts
 
 import { type ActionFunctionArgs, redirect } from "@remix-run/node";
+import { type PgTable } from "drizzle-orm/pg-core";
 
-import { functionCalls, objects, serverFunctions } from "~/db/schema";
+import {
+  debugLogs,
+  functionCalls,
+  objects,
+  requestErrors,
+  requests,
+  serverFunctions as actions,
+  sessions,
+  TABLES,
+  users,
+} from "~/db/schema";
 import { actionMiddleware } from "~/lib/middleware";
 
 async function _action(args: ActionFunctionArgs) {
   const { db } = args.context;
 
-  console.log("Truncating database tables...");
+  console.log("Truncating all database tables...");
 
-  const deleteObjects = db.delete(objects);
-  await deleteObjects.returning({ id: objects.id });
-  console.log("Deleted objects");
+  const tableMap: Record<string, PgTable<any>> = {
+    functionCalls,
+    actions,
+    objects,
+    requestErrors,
+    debugLogs,
+    sessions,
+    users,
+    requests,
+  };
 
-  const deleteFunctionCalls = db.delete(functionCalls);
-  await deleteFunctionCalls.returning({ id: functionCalls.id });
-  console.log("Deleted function calls");
+  for (const tableName in TABLES) {
+    console.log(`Truncating table: ${tableName}`);
 
-  const deleteServerFunctions = db.delete(serverFunctions);
-  await deleteServerFunctions.returning({ id: serverFunctions.id });
-  console.log("Deleted server functions");
+    if (tableName in tableMap) {
+      await db.delete(tableMap[tableName]).returning();
+      console.log(`Successfully truncated ${tableName}`);
+    } else {
+      console.log(`Skipping ${tableName} - no table reference found`);
+    }
+  }
 
   await new Promise((resolve) => setTimeout(resolve, 0));
+  console.log("Database truncation complete");
   return redirect("/");
 }
 
