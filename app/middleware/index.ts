@@ -44,10 +44,39 @@ function createDbProxy(db: BaseDbClient, context: { queries: DrizzleQuery[] }) {
             const drizzleNameSymbol = symbols.find((s) => s.description === "drizzle:Name");
             if (drizzleNameSymbol) {
               const tableName = (tableArg as any)[drizzleNameSymbol];
-              context.queries.push({
-                type: "insert",
-                table: tableName,
-                query: args[0],
+              const query = value.apply(this || target, args);
+
+              return new Proxy(query, {
+                get(target, prop) {
+                  const chainValue = Reflect.get(target, prop);
+
+                  if (prop === "values") {
+                    return function (...args: unknown[]) {
+                      const valuesQuery = chainValue.apply(target, args);
+
+                      return new Proxy(valuesQuery, {
+                        get(target, prop) {
+                          const returningValue = Reflect.get(target, prop);
+
+                          if (prop === "returning") {
+                            return async function (...args: unknown[]) {
+                              const result = await returningValue.apply(target, args);
+                              context.queries.push({
+                                type: "insert",
+                                table: tableName,
+                                query: args[0],
+                                result,
+                              });
+                              return result;
+                            };
+                          }
+                          return returningValue;
+                        },
+                      });
+                    };
+                  }
+                  return chainValue;
+                },
               });
             }
           }
@@ -97,10 +126,26 @@ export function configureMiddleware(app: any) {
         await new Promise<void>((resolve) => {
           next();
           res.on("finish", () => {
-            console.log("\n\nFINAL TRANSACTION CONTEXT:", {
-              requestId: context.requestId,
-              queries: context.queries,
+            const formattedQueries = context.queries.map((q) => {
+              const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
+              return {
+                type: q.type,
+                table: q.table,
+                ids: ids,
+              };
             });
+
+            console.log(
+              "\n\nFINAL TRANSACTION CONTEXT:",
+              JSON.stringify(
+                {
+                  requestId: context.requestId,
+                  queries: formattedQueries,
+                },
+                null,
+                2,
+              ),
+            );
             resolve();
           });
         });
