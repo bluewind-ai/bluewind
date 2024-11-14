@@ -12,12 +12,6 @@ import { objects } from "~/db/schema/objects/schema";
 import { requests } from "~/db/schema/requests/schema";
 import { sayHello } from "~/hello.server";
 
-declare module "@remix-run/node" {
-  interface AppLoadContext {
-    db: DbClient;
-  }
-}
-
 export interface DrizzleQuery {
   type: "insert" | "select" | "update" | "delete";
   table: string;
@@ -189,9 +183,9 @@ export function configureMiddleware(app: any) {
   });
 }
 
-export function getLoadContext(req: ExpressRequest) {
+export function getLoadContext(req: ExpressRequest): AppLoadContext {
   const context = (req as any).context;
-  if (!context) return { db } as AppLoadContext;
+  if (!context) return { db };
 
   const dbWithProxy = createDbProxy(db, context);
 
@@ -201,5 +195,11 @@ export function getLoadContext(req: ExpressRequest) {
     trx: context.trx,
     queries: context.queries,
     sayHello,
-  } as AppLoadContext;
+  };
+}
+
+declare module "@remix-run/node" {
+  interface AppLoadContext {
+    db: DbClient;
+  }
 }

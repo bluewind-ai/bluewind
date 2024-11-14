@@ -51,12 +51,8 @@
           "name": "apps_function_call_id_function_calls_id_fk",
           "tableFrom": "apps",
           "tableTo": "function_calls",
-          "columnsFrom": [
-            "function_call_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -66,9 +62,7 @@
         "apps_value_unique": {
           "name": "apps_value_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "value"
-          ]
+          "columns": ["value"]
         }
       },
       "policies": {},
@@ -111,12 +105,8 @@
           "name": "debug_logs_function_call_id_function_calls_id_fk",
           "tableFrom": "debug_logs",
           "tableTo": "function_calls",
-          "columnsFrom": [
-            "function_call_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -189,12 +179,8 @@
           "name": "function_calls_action_id_server_functions_id_fk",
           "tableFrom": "function_calls",
           "tableTo": "server_functions",
-          "columnsFrom": [
-            "action_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["action_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -202,12 +188,8 @@
           "name": "function_calls_request_id_requests_id_fk",
           "tableFrom": "function_calls",
           "tableTo": "requests",
-          "columnsFrom": [
-            "request_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["request_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -215,12 +197,8 @@
           "name": "function_calls_parent_id_function_calls_id_fk",
           "tableFrom": "function_calls",
           "tableTo": "function_calls",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -266,12 +244,8 @@
           "name": "objects_function_call_id_function_calls_id_fk",
           "tableFrom": "objects",
           "tableTo": "function_calls",
-          "columnsFrom": [
-            "function_call_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -348,12 +322,8 @@
           "name": "request_errors_function_call_id_function_calls_id_fk",
           "tableFrom": "request_errors",
           "tableTo": "function_calls",
-          "columnsFrom": [
-            "function_call_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -425,12 +395,8 @@
           "name": "server_functions_request_id_requests_id_fk",
           "tableFrom": "server_functions",
           "tableTo": "requests",
-          "columnsFrom": [
-            "request_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["request_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -438,12 +404,8 @@
           "name": "server_functions_function_call_id_function_calls_id_fk",
           "tableFrom": "server_functions",
           "tableTo": "function_calls",
-          "columnsFrom": [
-            "function_call_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -453,9 +415,7 @@
         "server_functions_name_unique": {
           "name": "server_functions_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -530,12 +490,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -543,12 +499,8 @@
           "name": "sessions_function_call_id_function_calls_id_fk",
           "tableFrom": "sessions",
           "tableTo": "function_calls",
-          "columnsFrom": [
-            "function_call_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -558,9 +510,7 @@
         "sessions_session_token_unique": {
           "name": "sessions_session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "session_token"
-          ]
+          "columns": ["session_token"]
         }
       },
       "policies": {},
@@ -590,12 +540,8 @@
           "name": "users_function_call_id_function_calls_id_fk",
           "tableFrom": "users",
           "tableTo": "function_calls",
-          "columnsFrom": [
-            "function_call_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -624,10 +570,7 @@
     "public.action_type": {
       "name": "action_type",
       "schema": "public",
-      "values": [
-        "USER",
-        "SYSTEM"
-      ]
+      "values": ["USER", "SYSTEM"]
     }
   },
   "schemas": {},

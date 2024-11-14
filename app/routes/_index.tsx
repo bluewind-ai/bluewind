@@ -2,7 +2,7 @@
 import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { eq } from "drizzle-orm";
 
-import { ActionType, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
+import { serverFunctions } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
 import { path } from "~/utils/path";
 
@@ -15,21 +15,6 @@ async function _loader(args: LoaderFunctionArgs) {
   });
   if (!masterAction) {
     return redirect(path.to.agents());
-    const [newMasterAction] = await db
-      .insert(serverFunctions)
-      .values({
-        name: "master",
-        type: ActionType.SYSTEM,
-      })
-      .returning();
-    const [newFunctionCall] = await db
-      .insert(functionCalls)
-      .values({
-        actionId: newMasterAction.id,
-        status: FunctionCallStatus.READY_FOR_APPROVAL,
-      })
-      .returning();
-    return redirect(path.to.agents(newFunctionCall.id));
   }
   return redirect(path.to.agents(masterAction.id));
   // const masterFunctionCall = await db.query.functionCalls.findFirst({
