@@ -94,83 +94,83 @@ export const db = baseDb;
 export function configureMiddleware(app: any) {
   app.use(morgan("tiny"));
   app.use(async (req: ExpressRequest, res: Response, next: NextFunction) => {
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const stack = new Error().stack
-      ?.split("\n")
-      .filter((line) => line.includes("/app/"))
-      .map((line) => `    at ${line.substring(line.indexOf("/app/"))}`)
-      .reverse()
-      .join("\n");
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const stack = new Error().stack
+        ?.split("\n")
+        .filter((line) => line.includes("/app/"))
+        .map((line) => `    at ${line.substring(line.indexOf("/app/"))}`)
+        .reverse()
+        .join("\n");
 
-    console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
+      console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
-    const context = {
-      queries: [] as DrizzleQuery[],
-      db: db,
-      requestId: undefined as number | undefined,
-      trx: undefined as unknown,
-    };
+      const context = {
+        queries: [] as DrizzleQuery[],
+        db: db,
+        requestId: undefined as number | undefined,
+        trx: undefined as unknown,
+      };
 
-    const dbWithProxy = createDbProxy(db, context);
-    const [requestRecord] = await dbWithProxy.insert(requests).values({}).returning();
-    context.requestId = requestRecord.id;
+      const dbWithProxy = createDbProxy(db, context);
+      dd("dbWithProxy");
+      const [requestRecord] = await dbWithProxy.insert(requests).values({}).returning();
+      context.requestId = requestRecord.id;
 
-    const tx = dbWithProxy.transaction(async (trx) => {
-      const proxiedTrx = createDbProxy(trx, context);
-      context.trx = proxiedTrx;
-      (req as any).requestId = context.requestId;
-      (req as any).trx = proxiedTrx;
-      (req as any).context = context;
+      await dbWithProxy.transaction(async (trx) => {
+        const proxiedTrx = createDbProxy(trx, context);
+        context.trx = proxiedTrx;
+        (req as any).requestId = context.requestId;
+        (req as any).trx = proxiedTrx;
+        (req as any).context = context;
 
-      await next(); // Now we can await next()
-      const requestId = context.requestId;
-      if (!requestId) {
-        throw new Error("Could not create request record");
-      }
-      await proxiedTrx
-        .insert(objects)
-        .values({
-          model: "Request",
-          recordId: requestId,
-        })
-        .returning();
+        await next(); // Now we can await next()
+        const requestId = context.requestId;
+        if (!requestId) {
+          throw new Error("Could not create request record");
+        }
+        await proxiedTrx
+          .insert(objects)
+          .values({
+            model: "Request",
+            recordId: requestId,
+          })
+          .returning();
 
-      const formattedQueries = context.queries.map((q) => {
-        const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
-        return {
-          type: q.type,
-          table: q.table,
-          ids: ids,
-        };
+        const formattedQueries = context.queries.map((q) => {
+          const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
+          return {
+            type: q.type,
+            table: q.table,
+            ids: ids,
+          };
+        });
+
+        console.log(
+          "\n\nFINAL TRANSACTION CONTEXT:",
+          JSON.stringify(
+            {
+              requestId: context.requestId,
+              queries: formattedQueries,
+            },
+            null,
+            2,
+          ),
+        );
+
+        if (!context.requestId) {
+          throw new Error("Could not create request record");
+        }
+        try {
+          await countTables(trx);
+        } catch (error) {
+          await db.delete(requests).where(eq(requests.id, context.requestId));
+          throw error;
+        }
       });
-
-      console.log(
-        "\n\nFINAL TRANSACTION CONTEXT:",
-        JSON.stringify(
-          {
-            requestId: context.requestId,
-            queries: formattedQueries,
-          },
-          null,
-          2,
-        ),
-      );
-
-      if (!context.requestId) {
-        throw new Error("Could not create request record");
-      }
-      try {
-        await countTables(trx);
-      } catch (error) {
-        await db.delete(requests).where(eq(requests.id, context.requestId));
-        throw error;
-      }
-    });
-
-    tx.catch((error) => {
-      console.error("Transaction failed:", error);
-      next(error);
-    });
+    } catch (error) {
+      next(error); // This ensures all errors go through Express's error handling
+    }
   });
 }
 
