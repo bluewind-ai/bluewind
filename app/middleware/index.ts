@@ -1,18 +1,16 @@
 // app/middleware/index.ts
 
 import type { AppLoadContext } from "@remix-run/node";
-import { eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
-import type { NextFunction, Request as ExpressRequest, Response } from "express";
+import type { Request as ExpressRequest } from "express";
 import morgan from "morgan";
 import postgres from "postgres";
 
 import * as schema from "~/db/schema";
-import { objects } from "~/db/schema/objects/schema";
-import { requests } from "~/db/schema/requests/schema";
-import { countTables } from "~/functions/count-tables.server";
 import { sayHello } from "~/hello.server";
+
+import { main } from "./main";
 
 export interface DrizzleQuery {
   type: "insert" | "select" | "update" | "delete";
@@ -25,7 +23,7 @@ export type DbClient = PostgresJsDatabase<typeof schema>;
 
 type DbInsertFunction = (...args: any[]) => any;
 
-function createDbProxy<T extends { insert: DbInsertFunction }>(
+export function createDbProxy<T extends { insert: DbInsertFunction }>(
   db: T,
   context: { queries: DrizzleQuery[] },
 ) {
@@ -93,83 +91,7 @@ export const db = baseDb;
 
 export function configureMiddleware(app: any) {
   app.use(morgan("tiny"));
-  app.use(async (req: ExpressRequest, res: Response, next: NextFunction) => {
-    const context = {
-      queries: [] as DrizzleQuery[],
-      db: db,
-      requestId: undefined as number | undefined,
-      trx: undefined as unknown,
-    };
-
-    const dbWithProxy = createDbProxy(db, context);
-    const [requestRecord] = await dbWithProxy.insert(requests).values({}).returning();
-    context.requestId = requestRecord.id;
-
-    try {
-      const url = new URL(req.url, `http://${req.headers.host}`);
-      const stack = new Error().stack
-        ?.split("\n")
-        .filter((line) => line.includes("/app/"))
-        .map((line) => `    at ${line.substring(line.indexOf("/app/"))}`)
-        .reverse()
-        .join("\n");
-
-      // no-qa
-      console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
-
-      // dd(requestRecord);
-
-      await dbWithProxy.transaction(async (trx) => {
-        const proxiedTrx = createDbProxy(trx, context);
-        context.trx = proxiedTrx;
-        (req as any).requestId = context.requestId;
-        (req as any).trx = proxiedTrx;
-        (req as any).context = context;
-
-        await next(); // Now we can await next()
-        const requestId = context.requestId;
-        if (!requestId) {
-          throw new Error("Could not create request record");
-        }
-        await proxiedTrx
-          .insert(objects)
-          .values({
-            model: "Request",
-            recordId: requestId,
-          })
-          .returning();
-
-        const formattedQueries = context.queries.map((q) => {
-          const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
-          return {
-            type: q.type,
-            table: q.table,
-            ids: ids,
-          };
-        });
-
-        console.log(
-          "\n\nFINAL TRANSACTION CONTEXT:",
-          JSON.stringify(
-            {
-              requestId: context.requestId,
-              queries: formattedQueries,
-            },
-            null,
-            2,
-          ),
-        );
-
-        if (!context.requestId) {
-          throw new Error("Could not create request record");
-        }
-        await countTables(trx);
-      });
-    } catch (error) {
-      await db.delete(requests).where(eq(requests.id, context.requestId));
-      next(error);
-    }
-  });
+  app.use(main());
 }
 
 export function getLoadContext(req: ExpressRequest): AppLoadContext {
