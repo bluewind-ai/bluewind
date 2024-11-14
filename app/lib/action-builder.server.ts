@@ -36,8 +36,13 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
       const nextAction = await db.query.serverFunctions.findFirst({
         where: (fields, { eq }) => eq(fields.name, "load-csv-data"),
       });
+      const request = await db.query.requests.findFirst();
+      if (!request) {
+        throw new Error("No request found");
+      }
       if (!nextAction) return;
       const insertData: ActionInsert = {
+        requestId: request.id,
         actionId: nextAction.id,
         parentId: context.currentNode.id,
         status: FunctionCallStatus.READY_FOR_APPROVAL,

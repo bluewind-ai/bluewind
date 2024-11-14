@@ -13,10 +13,14 @@ type DbClient = PostgresJsDatabase<typeof schema>;
 async function _action(args: ActionFunctionArgs) {
   const { trx } = args.context;
   const db = trx as DbClient;
-
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
   const [masterAction] = await db
     .insert(serverFunctions)
     .values({
+      requestId: request.id,
       name: "master",
       type: ActionType.SYSTEM,
     })
@@ -25,6 +29,7 @@ async function _action(args: ActionFunctionArgs) {
   await db
     .insert(functionCalls)
     .values({
+      requestId: request.id,
       actionId: masterAction.id,
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })

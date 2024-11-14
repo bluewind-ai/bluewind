@@ -1,4 +1,5 @@
 // app/db/schema/function-calls/schema.ts
+
 import { relations } from "drizzle-orm";
 import { type AnyPgColumn, integer, jsonb, pgTable, serial, timestamp } from "drizzle-orm/pg-core";
 
@@ -7,6 +8,7 @@ import { debugLogs } from "../debug-logs/schema";
 import { functionCallStatusEnum } from "../enums";
 import { objects } from "../objects/schema";
 import { requestErrors } from "../request-errors/schema";
+import { requests } from "../requests/schema";
 import { serverFunctions } from "../server-functions/schema";
 import { sessions } from "../sessions/schema";
 import { FunctionCallStatus } from "../types";
@@ -17,6 +19,9 @@ export const functionCalls = pgTable("function_calls", {
   actionId: integer("action_id")
     .references(() => serverFunctions.id, { onDelete: "cascade" })
     .notNull(),
+  requestId: integer("request_id")
+    .references(() => requests.id, { onDelete: "cascade" })
+    .notNull(),
   parentId: integer("parent_id").references((): AnyPgColumn => functionCalls.id, {
     onDelete: "cascade",
   }),
@@ -25,10 +30,16 @@ export const functionCalls = pgTable("function_calls", {
   result: jsonb("result"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
 export type FunctionCall = typeof functionCalls.$inferSelect & {
   action?: typeof serverFunctions.$inferSelect;
 };
+
 export const functionCallsRelations = relations(functionCalls, ({ one, many }) => ({
+  request: one(requests, {
+    fields: [functionCalls.requestId],
+    references: [requests.id],
+  }),
   action: one(serverFunctions, {
     fields: [functionCalls.actionId],
     references: [serverFunctions.id],

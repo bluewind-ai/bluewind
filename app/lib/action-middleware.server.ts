@@ -34,6 +34,7 @@ export function withActionMiddleware(name: string, fn: () => Promise<any>) {
       });
       if (!nextAction) return;
       const insertData: ActionInsert = {
+        requestId: context.currentNode.requestId,
         actionId: nextAction.id,
         parentId: context.currentNode.id,
         status: FunctionCallStatus.READY_FOR_APPROVAL,

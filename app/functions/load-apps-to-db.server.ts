@@ -34,10 +34,15 @@ export const loadAppsToDb = createAction("load-apps-to-db", async () => {
   let thisAction = await db.query.serverFunctions.findFirst({
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
   if (!thisAction) {
     const [newAction] = await db
       .insert(serverFunctions)
       .values({
+        requestId: request.id,
         name: "load-apps-to-db",
         type: ActionType.SYSTEM,
         functionCallId: 1,
@@ -50,6 +55,7 @@ export const loadAppsToDb = createAction("load-apps-to-db", async () => {
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
+      requestId: request.id,
       actionId: thisAction!.id, // Add non-null assertion since we know it exists
       status: FunctionCallStatus.COMPLETED,
       result: {

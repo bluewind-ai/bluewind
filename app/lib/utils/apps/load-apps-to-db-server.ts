@@ -36,10 +36,15 @@ export async function loadAppsToDB() {
     where: (fields, { eq }) => eq(fields.name, "load-apps-to-db"),
   });
   if (!thisAction) throw new Error("load-apps-to-db not found in database");
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
       actionId: thisAction.id,
+      requestId: request.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,

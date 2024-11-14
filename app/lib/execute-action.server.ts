@@ -21,10 +21,15 @@ export async function executeAction(args: ActionFunctionArgs) {
   if (!action) {
     throw new Error(`Action ${name} not found in database`);
   }
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
   const rootCall = await db
     .insert(functionCalls)
     .values({
       actionId: action.id,
+      requestId: request.id,
       status: FunctionCallStatus.READY_FOR_APPROVAL,
       args: {},
     } satisfies ActionInsert)

@@ -12,7 +12,12 @@ export const testDrizzleProxy = createAction("test-drizzle-proxy", async () => {
   const testActionName = `test-action-${timestamp}`;
   // Test 1: Insert into actions table
   // this should be removed by YOU when you rewrite the filed;
+  const request1 = await db.query.requests.findFirst();
+  if (!request1) {
+    throw new Error("No request found");
+  }
   const actionResult = (await db.insert(schema.serverFunctions).values({
+    requestId: request1.id,
     name: testActionName,
     type: ActionType.SYSTEM,
   })) as Action[];
@@ -22,7 +27,12 @@ export const testDrizzleProxy = createAction("test-drizzle-proxy", async () => {
   }
   // Test 2: Insert into function_calls table using the action's ID
   // this should be removed by YOU when you rewrite the filed;
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
   const functionCallResult = (await db.insert(schema.functionCalls).values({
+    requestId: request.id,
     actionId: actionResult[0].id,
     // Add any other required fields based on your schema
   })) as FunctionCall[];

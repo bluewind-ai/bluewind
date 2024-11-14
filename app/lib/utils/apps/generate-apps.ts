@@ -23,9 +23,14 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
     where: (fields, { eq }) => eq(fields.name, "generate-apps"),
   });
   if (!thisAction) throw new Error("generate-apps not found in database");
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
+      requestId: request.id,
       actionId: thisAction.id,
       status: FunctionCallStatus.COMPLETED,
       result: {

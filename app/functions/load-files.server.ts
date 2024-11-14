@@ -103,9 +103,14 @@ async function syncApps() {
     const { action } = await createSystemAction(dummyArgs, "load-apps-to-db");
     thisAction = action;
   }
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
+      requestId: request.id,
       actionId: thisAction!.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
@@ -144,10 +149,16 @@ async function syncActions() {
     const { action } = await createSystemAction(dummyArgs, "load-actions");
     thisAction = action;
   }
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
+
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
       actionId: thisAction!.id,
+      requestId: request.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,

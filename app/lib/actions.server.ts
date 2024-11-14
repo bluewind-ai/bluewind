@@ -31,17 +31,25 @@ export async function findNextOrCreateMaster() {
   const masterAction = await db.query.serverFunctions.findFirst({
     where: eq(serverFunctions.name, "master"),
   });
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
   const action =
     masterAction ||
     (
       await db
         .insert(serverFunctions)
-        .values({ name: "master", type: ActionType.SYSTEM })
+        .values({ requestId: request.id, name: "master", type: ActionType.SYSTEM })
         .returning()
     )[0];
   const [newActionCall] = await db
     .insert(functionCalls)
-    .values({ actionId: action.id, status: FunctionCallStatus.READY_FOR_APPROVAL })
+    .values({
+      requestId: request.id,
+      actionId: action.id,
+      status: FunctionCallStatus.READY_FOR_APPROVAL,
+    })
     .returning();
   return newActionCall;
 }

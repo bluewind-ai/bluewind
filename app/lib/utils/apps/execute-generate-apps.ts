@@ -15,9 +15,14 @@ export async function executeGenerateApps() {
     where: (fields, { eq }) => eq(fields.name, "execute-generate-apps"),
   });
   if (!thisAction) throw new Error("execute-generate-apps not found in database");
+  const request = await db.query.requests.findFirst();
+  if (!request) {
+    throw new Error("No request found");
+  }
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
+      requestId: request.id,
       actionId: thisAction.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
