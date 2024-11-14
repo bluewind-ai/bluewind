@@ -18,8 +18,6 @@ export function main(): any {
     };
 
     const dbWithProxy = createDbProxy(db, context);
-    const [requestRecord] = await dbWithProxy.insert(requests).values({}).returning();
-    context.requestId = requestRecord.id;
 
     try {
       const url = new URL(req.url, `http://${req.headers.host}`);
@@ -35,6 +33,11 @@ export function main(): any {
       await dbWithProxy.transaction(
         async (trx) => {
           const proxiedTrx = createDbProxy(trx, context);
+
+          // Move request creation inside transaction
+          const [requestRecord] = await proxiedTrx.insert(requests).values({}).returning();
+          context.requestId = requestRecord.id;
+
           context.trx = proxiedTrx;
           (req as any).requestId = context.requestId;
           (req as any).trx = proxiedTrx;
@@ -84,7 +87,9 @@ export function main(): any {
         },
       );
     } catch (error) {
-      await db.delete(requests).where(eq(requests.id, context.requestId));
+      if (context.requestId) {
+        await db.delete(requests).where(eq(requests.id, context.requestId));
+      }
       next(error);
     }
   };
