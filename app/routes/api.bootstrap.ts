@@ -3,8 +3,8 @@ import { type ActionFunctionArgs, redirect } from "@remix-run/node";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import * as schema from "~/db/schema";
-import { functionCalls, serverFunctions } from "~/db/schema";
-import { ActionType, FunctionCallStatus } from "~/db/schema/types";
+import { functionCalls } from "~/db/schema";
+import { FunctionCallStatus } from "~/db/schema/types";
 import { actionMiddleware } from "~/lib/middleware";
 
 type DbClient = PostgresJsDatabase<typeof schema>;
@@ -15,19 +15,19 @@ async function _action(args: ActionFunctionArgs) {
   if (!request) {
     throw new Error("No request found");
   }
-  const [masterAction] = await db
-    .insert(serverFunctions)
-    .values({
-      requestId: request.id,
-      name: "master",
-      type: ActionType.SYSTEM,
-    })
-    .returning();
+  // const [masterAction] = await db
+  //   .insert(serverFunctions)
+  //   .values({
+  //     requestId: request.id,
+  //     name: "master",
+  //     type: ActionType.SYSTEM,
+  //   })
+  //   .returning();
   await db
     .insert(functionCalls)
     .values({
       requestId: request.id,
-      actionId: masterAction.id,
+      actionId: 196,
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })
     .returning();
