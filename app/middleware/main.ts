@@ -29,62 +29,83 @@ export function main(): any {
 
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
-      await dbWithProxy.transaction(
-        async (trx) => {
-          const proxiedTrx = createDbProxy(trx, context);
+      let nextCalled = false;
 
-          // Move request creation inside transaction
-          const [requestRecord] = await proxiedTrx.insert(requests).values({}).returning();
-          context.requestId = requestRecord.id;
+      const runTransaction = async () => {
+        await dbWithProxy.transaction(
+          async (trx) => {
+            const proxiedTrx = createDbProxy(trx, context);
 
-          context.trx = proxiedTrx;
-          (req as any).requestId = context.requestId;
-          (req as any).trx = proxiedTrx;
-          (req as any).context = context;
+            const [requestRecord] = await proxiedTrx.insert(requests).values({}).returning();
+            context.requestId = requestRecord.id;
 
-          await next();
-          const requestId = context.requestId;
-          if (!requestId) {
-            throw new Error("Could not create request record");
+            context.trx = proxiedTrx;
+            (req as any).requestId = context.requestId;
+            (req as any).trx = proxiedTrx;
+            (req as any).context = context;
+
+            if (!nextCalled) {
+              await next();
+              nextCalled = true;
+            }
+
+            const requestId = context.requestId;
+            if (!requestId) {
+              throw new Error("Could not create request record");
+            }
+            await proxiedTrx
+              .insert(objects)
+              .values({
+                model: "Request",
+                recordId: requestId,
+              })
+              .returning();
+
+            const formattedQueries = context.queries.map((q) => {
+              const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
+              return {
+                type: q.type,
+                table: q.table,
+                ids: ids,
+              };
+            });
+
+            console.log(
+              "\n\nFINAL TRANSACTION CONTEXT:",
+              JSON.stringify(
+                {
+                  requestId: context.requestId,
+                  queries: formattedQueries,
+                },
+                null,
+                2,
+              ),
+            );
+
+            if (!context.requestId) {
+              throw new Error("Could not create request record");
+            }
+            await countTables(trx);
+          },
+          {
+            isolationLevel: "serializable",
+          },
+        );
+      };
+
+      let retries = 3;
+      while (retries > 0) {
+        try {
+          await runTransaction();
+          break;
+        } catch (error: any) {
+          if (error?.code === "40001" && retries > 1) {
+            retries--;
+            continue;
           }
-          await proxiedTrx
-            .insert(objects)
-            .values({
-              model: "Request",
-              recordId: requestId,
-            })
-            .returning();
-
-          const formattedQueries = context.queries.map((q) => {
-            const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
-            return {
-              type: q.type,
-              table: q.table,
-              ids: ids,
-            };
-          });
-
-          console.log(
-            "\n\nFINAL TRANSACTION CONTEXT:",
-            JSON.stringify(
-              {
-                requestId: context.requestId,
-                queries: formattedQueries,
-              },
-              null,
-              2,
-            ),
-          );
-
-          if (!context.requestId) {
-            throw new Error("Could not create request record");
-          }
-          await countTables(trx);
-        },
-        {
-          isolationLevel: "serializable",
-        },
-      );
+          throw error;
+        }
+      }
     } catch (error) {
       next(error);
     }
