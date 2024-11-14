@@ -114,7 +114,6 @@ export default function App() {
     </Document>
   );
 }
-
 export async function loader({ context }: LoaderFunctionArgs) {
   return { message: context.sayHello?.() };
 }

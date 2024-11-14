@@ -114,6 +114,7 @@ export function configureMiddleware(app: any) {
         .reverse()
         .join("\n");
 
+      // no-qa
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
       // dd(requestRecord);

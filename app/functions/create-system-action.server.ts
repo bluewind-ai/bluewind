@@ -1,5 +1,4 @@
 // app/functions/create-system-action.server.ts
-
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { and, eq } from "drizzle-orm";
 

@@ -1,5 +1,4 @@
 // app/entry.server.tsx
-
 import "./lib/debug";
 
 import { PassThrough } from "node:stream";
@@ -15,7 +14,6 @@ import { createExpressApp } from "remix-create-express-app";
 import { configureMiddleware, getLoadContext } from "./middleware";
 
 const ABORT_DELAY = 5000;
-
 export default function handleRequest(
   request: WebRequest,
   responseStatusCode: number,
@@ -27,7 +25,6 @@ export default function handleRequest(
     ? handleBotRequest(request, responseStatusCode, responseHeaders, remixContext)
     : handleBrowserRequest(request, responseStatusCode, responseHeaders, remixContext);
 }
-
 function handleBotRequest(
   request: WebRequest,
   responseStatusCode: number,
@@ -61,7 +58,6 @@ function handleBotRequest(
     setTimeout(abort, ABORT_DELAY);
   });
 }
-
 function handleBrowserRequest(
   request: WebRequest,
   responseStatusCode: number,
@@ -95,7 +91,6 @@ function handleBrowserRequest(
     setTimeout(abort, ABORT_DELAY);
   });
 }
-
 export const app = createExpressApp({
   configure: configureMiddleware,
   getLoadContext,

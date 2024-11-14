@@ -1,5 +1,4 @@
 // app/routes/api.count-tables.ts
-
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { sql } from "drizzle-orm";
 import { type PgTable } from "drizzle-orm/pg-core";
@@ -21,7 +20,6 @@ import type { DbClient } from "~/middleware";
 async function _loader(args: LoaderFunctionArgs) {
   const context = args.context;
   const trx = context.trx as DbClient;
-
   const tableMap: Record<string, PgTable<any>> = {
     functionCalls,
     actions,
@@ -31,10 +29,8 @@ async function _loader(args: LoaderFunctionArgs) {
     users,
     requests,
   };
-
   const counts: Record<string, number> = {};
   let totalCount = 0;
-
   // Count all tables except objects
   for (const tableName in TABLES) {
     if (tableName === "objects") continue;
@@ -42,11 +38,9 @@ async function _loader(args: LoaderFunctionArgs) {
     counts[tableName] = Number(result[0].count);
     totalCount += counts[tableName];
   }
-
   // Count objects table
   const objectsResult = await trx.select({ count: sql<number>`count(*)` }).from(objects);
   const objectsCount = Number(objectsResult[0].count);
-
   if (totalCount !== objectsCount) {
     throw new Error(
       `Object count mismatch!\n` +
@@ -55,7 +49,6 @@ async function _loader(args: LoaderFunctionArgs) {
         `Table counts:\n${JSON.stringify(counts, null, 2)}`,
     );
   }
-
   return Response.json({
     tableCounts: counts,
     totalCount,
@@ -63,7 +56,6 @@ async function _loader(args: LoaderFunctionArgs) {
     matches: true,
   });
 }
-
 export async function loader(args: LoaderFunctionArgs) {
   return await loaderMiddleware(args, () => _loader(args));
 }

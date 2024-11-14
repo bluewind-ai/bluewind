@@ -1,5 +1,4 @@
 // app/functions/load-files.server.ts
-
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -7,7 +6,7 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { eq } from "drizzle-orm";
 
 import { apps, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
-import { contextStore, createAction } from "~/lib/action-builder.server";
+import { createAction } from "~/lib/action-builder.server";
 import { db } from "~/middleware";
 
 import { createSystemAction } from "./create-system-action.server";
@@ -17,7 +16,6 @@ type LoadResult = {
   status: string;
   actionId?: number;
 };
-
 const APPS_DATA = [
   {
     id: 1,
@@ -34,7 +32,6 @@ const APPS_DATA = [
     order: 2,
   },
 ];
-
 async function generateAppsFile() {
   const fileContent = `
 // THIS FILE IS AUTO-GENERATED - DO NOT EDIT
@@ -45,7 +42,6 @@ export const apps = ${JSON.stringify(APPS_DATA, null, 2)} as const;
   const filePath = path.join(generatedDir, "apps.ts");
   await fs.writeFile(filePath, fileContent, "utf-8");
 }
-
 async function generateActionsFile() {
   const functionsDir = path.join(process.cwd(), "app", "functions");
   const files = await fs.readdir(functionsDir);
@@ -73,14 +69,10 @@ export const actions = {
   await fs.mkdir("app/lib/generated", { recursive: true });
   await fs.writeFile("app/lib/generated/actions.ts", content);
 }
-
 function kebabToCamel(str: string): string {
   return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 }
-
 async function syncApps(args: LoaderFunctionArgs) {
-  const store = contextStore.getStore();
-  console.log("Syncing apps with store:", store);
   for (const app of APPS_DATA) {
     await args.context.db
       .insert(apps)
@@ -123,10 +115,7 @@ async function syncApps(args: LoaderFunctionArgs) {
     .returning();
   return functionCall;
 }
-
 async function syncActions(args: LoaderFunctionArgs) {
-  const store = contextStore.getStore();
-  console.log("Syncing actions with store:", store);
   const functionsDir = path.join(process.cwd(), "app", "functions");
   const files = await fs.readdir(functionsDir);
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
@@ -166,12 +155,8 @@ async function syncActions(args: LoaderFunctionArgs) {
     .returning();
   return functionCall;
 }
-
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const loadFiles = createAction("load-files", async () => {
-  const store = contextStore.getStore();
-  console.log("Starting loadFiles with store:", store);
   await Promise.all([generateAppsFile(), generateActionsFile()]);
   await sleep(1000);
   const args = {

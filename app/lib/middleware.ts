@@ -1,5 +1,4 @@
 // app/lib/middleware.ts
-
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 
 async function requestMiddleware<
@@ -13,14 +12,12 @@ async function requestMiddleware<
   const result = await fn(args);
   return result;
 }
-
 export const loaderMiddleware = <T>(
   args: LoaderFunctionArgs,
   fn: (args: LoaderFunctionArgs) => Promise<T>,
 ) => {
   return requestMiddleware<LoaderFunctionArgs, T>(args, fn);
 };
-
 export const actionMiddleware = <T>(
   args: ActionFunctionArgs,
   fn: (args: ActionFunctionArgs) => Promise<T>,
