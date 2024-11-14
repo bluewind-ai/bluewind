@@ -1,13 +1,19 @@
 // app/routes/api.bootstrap.ts
 
 import { type ActionFunctionArgs, redirect } from "@remix-run/node";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
+import * as schema from "~/db/schema";
 import { functionCalls, serverFunctions } from "~/db/schema";
 import { ActionType, FunctionCallStatus } from "~/db/schema/types";
 import { actionMiddleware } from "~/lib/middleware";
 
+type DbClient = PostgresJsDatabase<typeof schema>;
+
 async function _action(args: ActionFunctionArgs) {
-  const { db } = args.context;
+  const { trx } = args.context;
+  const db = trx as DbClient;
+
   const [masterAction] = await db
     .insert(serverFunctions)
     .values({
@@ -15,6 +21,7 @@ async function _action(args: ActionFunctionArgs) {
       type: ActionType.SYSTEM,
     })
     .returning();
+
   await db
     .insert(functionCalls)
     .values({
@@ -22,6 +29,7 @@ async function _action(args: ActionFunctionArgs) {
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })
     .returning();
+
   await new Promise((resolve) => setTimeout(resolve, 1));
 
   // Log the full args.context to see what's actually in there
@@ -33,6 +41,7 @@ async function _action(args: ActionFunctionArgs) {
 
   return redirect("/");
 }
+
 export async function action(args: ActionFunctionArgs) {
   return await actionMiddleware(args, () => _action(args));
 }
