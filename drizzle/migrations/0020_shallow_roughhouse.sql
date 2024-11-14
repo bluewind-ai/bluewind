@@ -1,0 +1,1 @@
+ALTER TABLE "objects" ALTER COLUMN "function_call_id" DROP NOT NULL;

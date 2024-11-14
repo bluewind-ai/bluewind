@@ -123,29 +123,17 @@ export function configureMiddleware(app: any) {
       (req as any).context = context;
 
       await next(); // Now we can await next()
-
-      // Create the object before we log
-      const functionCallQuery = context.queries.find((q) => q.table === "function_calls");
-      if (
-        functionCallQuery &&
-        Array.isArray(functionCallQuery.result) &&
-        functionCallQuery.result[0] &&
-        context.requestId
-      ) {
-        const functionCallId = functionCallQuery.result[0].id;
-        const requestId = context.requestId;
-
-        if (typeof functionCallId === "number" && typeof requestId === "number") {
-          await proxiedTrx
-            .insert(objects)
-            .values({
-              model: "Request",
-              recordId: requestId,
-              functionCallId: functionCallId,
-            })
-            .returning();
-        }
+      const requestId = context.requestId;
+      if (!requestId) {
+        throw new Error("Could not create request record");
       }
+      await proxiedTrx
+        .insert(objects)
+        .values({
+          model: "Request",
+          recordId: requestId,
+        })
+        .returning();
 
       const formattedQueries = context.queries.map((q) => {
         const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
@@ -167,6 +155,7 @@ export function configureMiddleware(app: any) {
           2,
         ),
       );
+
       if (!context.requestId) {
         throw new Error("Could not create request record");
       }

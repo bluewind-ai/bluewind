@@ -8,9 +8,9 @@ export const objects = pgTable("objects", {
   id: serial("id").primaryKey(),
   model: text("model").notNull(),
   recordId: integer("record_id").notNull(),
-  functionCallId: integer("function_call_id")
-    .references(() => functionCalls.id, { onDelete: "cascade" })
-    .notNull(),
+  functionCallId: integer("function_call_id").references(() => functionCalls.id, {
+    onDelete: "cascade",
+  }),
 });
 export const objectsRelations = relations(objects, ({ one }) => ({
   functionCall: one(functionCalls, {
