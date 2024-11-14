@@ -94,6 +94,17 @@ export const db = baseDb;
 export function configureMiddleware(app: any) {
   app.use(morgan("tiny"));
   app.use(async (req: ExpressRequest, res: Response, next: NextFunction) => {
+    const context = {
+      queries: [] as DrizzleQuery[],
+      db: db,
+      requestId: undefined as number | undefined,
+      trx: undefined as unknown,
+    };
+
+    const dbWithProxy = createDbProxy(db, context);
+    const [requestRecord] = await dbWithProxy.insert(requests).values({}).returning();
+    context.requestId = requestRecord.id;
+
     try {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const stack = new Error().stack
@@ -105,17 +116,7 @@ export function configureMiddleware(app: any) {
 
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
-      const context = {
-        queries: [] as DrizzleQuery[],
-        db: db,
-        requestId: undefined as number | undefined,
-        trx: undefined as unknown,
-      };
-
-      const dbWithProxy = createDbProxy(db, context);
-      dd("dbWithProxy");
-      const [requestRecord] = await dbWithProxy.insert(requests).values({}).returning();
-      context.requestId = requestRecord.id;
+      // dd(requestRecord);
 
       await dbWithProxy.transaction(async (trx) => {
         const proxiedTrx = createDbProxy(trx, context);
@@ -161,15 +162,11 @@ export function configureMiddleware(app: any) {
         if (!context.requestId) {
           throw new Error("Could not create request record");
         }
-        try {
-          await countTables(trx);
-        } catch (error) {
-          await db.delete(requests).where(eq(requests.id, context.requestId));
-          throw error;
-        }
+        await countTables(trx);
       });
     } catch (error) {
-      next(error); // This ensures all errors go through Express's error handling
+      await db.delete(requests).where(eq(requests.id, context.requestId));
+      next(error);
     }
   });
 }
