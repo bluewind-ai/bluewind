@@ -1,5 +1,6 @@
 // app/middleware/main.ts
 
+import { sql } from "drizzle-orm";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
 
 import { objects, requests } from "~/db/schema";
@@ -29,15 +30,28 @@ export function main(): any {
 
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
+      const [result] = await db.execute<{ request_id: number }>(sql`
+        WITH request_insert AS (
+          INSERT INTO ${requests} DEFAULT VALUES
+          RETURNING id
+        ),
+        object_insert AS (
+          INSERT INTO ${objects} (model, record_id)
+          SELECT 'Request', id FROM request_insert
+          RETURNING *
+        )
+        SELECT request_insert.id as request_id
+        FROM request_insert, object_insert;
+      `);
+
+      context.requestId = result.request_id;
+
       let nextCalled = false;
 
       const runTransaction = async () => {
         await dbWithProxy.transaction(
           async (trx) => {
             const proxiedTrx = createDbProxy(trx, context);
-
-            const [requestRecord] = await proxiedTrx.insert(requests).values({}).returning();
-            context.requestId = requestRecord.id;
 
             context.trx = proxiedTrx;
             (req as any).requestId = context.requestId;
@@ -48,18 +62,6 @@ export function main(): any {
               await next();
               nextCalled = true;
             }
-
-            const requestId = context.requestId;
-            if (!requestId) {
-              throw new Error("Could not create request record");
-            }
-            await proxiedTrx
-              .insert(objects)
-              .values({
-                model: "Request",
-                recordId: requestId,
-              })
-              .returning();
 
             const formattedQueries = context.queries.map((q) => {
               const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
