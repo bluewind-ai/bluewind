@@ -1,6 +1,5 @@
 // app/middleware/main.ts
 
-import { eq } from "drizzle-orm";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
 
 import { objects, requests } from "~/db/schema";
@@ -87,9 +86,6 @@ export function main(): any {
         },
       );
     } catch (error) {
-      if (context.requestId) {
-        await db.delete(requests).where(eq(requests.id, context.requestId));
-      }
       next(error);
     }
   };
