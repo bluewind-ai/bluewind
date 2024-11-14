@@ -185,7 +185,12 @@ export function configureMiddleware(app: any) {
 
 export function getLoadContext(req: ExpressRequest): AppLoadContext {
   const context = (req as any).context;
-  if (!context) return { db };
+  if (!context)
+    return {
+      db,
+      queries: [], // Needs this
+      sayHello, // Needs this
+    };
 
   const dbWithProxy = createDbProxy(db, context);
 
@@ -201,5 +206,9 @@ export function getLoadContext(req: ExpressRequest): AppLoadContext {
 declare module "@remix-run/node" {
   interface AppLoadContext {
     db: DbClient;
+    requestId?: number;
+    trx?: DbClient;
+    queries: DrizzleQuery[];
+    sayHello: () => string;
   }
 }

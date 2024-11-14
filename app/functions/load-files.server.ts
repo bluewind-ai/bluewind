@@ -1,4 +1,5 @@
 // app/functions/load-files.server.ts
+
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -16,6 +17,7 @@ type LoadResult = {
   status: string;
   actionId?: number;
 };
+
 const APPS_DATA = [
   {
     id: 1,
@@ -32,6 +34,7 @@ const APPS_DATA = [
     order: 2,
   },
 ];
+
 async function generateAppsFile() {
   const fileContent = `
 // THIS FILE IS AUTO-GENERATED - DO NOT EDIT
@@ -42,6 +45,7 @@ export const apps = ${JSON.stringify(APPS_DATA, null, 2)} as const;
   const filePath = path.join(generatedDir, "apps.ts");
   await fs.writeFile(filePath, fileContent, "utf-8");
 }
+
 async function generateActionsFile() {
   const functionsDir = path.join(process.cwd(), "app", "functions");
   const files = await fs.readdir(functionsDir);
@@ -69,14 +73,16 @@ export const actions = {
   await fs.mkdir("app/lib/generated", { recursive: true });
   await fs.writeFile("app/lib/generated/actions.ts", content);
 }
+
 function kebabToCamel(str: string): string {
   return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 }
-async function syncApps() {
+
+async function syncApps(args: LoaderFunctionArgs) {
   const store = contextStore.getStore();
-  if (!store) throw new Error("No context store found");
+  console.log("Syncing apps with store:", store);
   for (const app of APPS_DATA) {
-    await db
+    await args.context.db
       .insert(apps)
       .values({
         functionCallId: 1,
@@ -95,23 +101,19 @@ async function syncApps() {
       })
       .returning();
   }
-  let thisAction = await db.query.serverFunctions.findFirst({
+  let thisAction = await args.context.db.query.serverFunctions.findFirst({
     where: () => eq(serverFunctions.name, "load-apps-to-db"),
   });
   if (!thisAction) {
-    const dummyArgs = { context: { db } } as LoaderFunctionArgs;
-    const { action } = await createSystemAction(dummyArgs, "load-apps-to-db");
+    const { action } = await createSystemAction(args, "load-apps-to-db");
     thisAction = action;
   }
-  const request = await db.query.requests.findFirst();
-  if (!request) {
-    throw new Error("No request found");
-  }
-  const [functionCall] = await db
+  const request = await args.context.db.query.requests.findFirst();
+  const [functionCall] = await args.context.db
     .insert(functionCalls)
     .values({
-      requestId: request.id,
-      actionId: thisAction!.id,
+      requestId: request!.id,
+      actionId: thisAction.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
@@ -121,44 +123,39 @@ async function syncApps() {
     .returning();
   return functionCall;
 }
-async function syncActions() {
+
+async function syncActions(args: LoaderFunctionArgs) {
   const store = contextStore.getStore();
-  if (!store) throw new Error("No context store found");
+  console.log("Syncing actions with store:", store);
   const functionsDir = path.join(process.cwd(), "app", "functions");
   const files = await fs.readdir(functionsDir);
   const actionFiles = files.filter((file) => file.endsWith(".server.ts"));
   const actionNames = actionFiles.map((file) => path.basename(file, ".server.ts"));
   const results: LoadResult[] = [];
   for (const name of actionNames) {
-    const existing = await db.query.serverFunctions.findFirst({
+    const existing = await args.context.db.query.serverFunctions.findFirst({
       where: () => eq(serverFunctions.name, name),
     });
     if (!existing) {
-      const dummyArgs = { context: { db } } as LoaderFunctionArgs;
-      const { action } = await createSystemAction(dummyArgs, name);
+      const { action } = await createSystemAction(args, name);
       results.push({ name, status: "created", actionId: action.id });
     } else {
       results.push({ name, status: "exists" });
     }
   }
-  let thisAction = await db.query.serverFunctions.findFirst({
+  let thisAction = await args.context.db.query.serverFunctions.findFirst({
     where: () => eq(serverFunctions.name, "load-actions"),
   });
   if (!thisAction) {
-    const dummyArgs = { context: { db } } as LoaderFunctionArgs;
-    const { action } = await createSystemAction(dummyArgs, "load-actions");
+    const { action } = await createSystemAction(args, "load-actions");
     thisAction = action;
   }
-  const request = await db.query.requests.findFirst();
-  if (!request) {
-    throw new Error("No request found");
-  }
-
-  const [functionCall] = await db
+  const request = await args.context.db.query.requests.findFirst();
+  const [functionCall] = await args.context.db
     .insert(functionCalls)
     .values({
-      actionId: thisAction!.id,
-      requestId: request.id,
+      requestId: request!.id,
+      actionId: thisAction.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
@@ -169,12 +166,25 @@ async function syncActions() {
     .returning();
   return functionCall;
 }
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const loadFiles = createAction("load-files", async () => {
+  const store = contextStore.getStore();
+  console.log("Starting loadFiles with store:", store);
   await Promise.all([generateAppsFile(), generateActionsFile()]);
   await sleep(1000);
-  const appsResult = await syncApps();
-  const actionsResult = await syncActions();
+  const args = {
+    context: {
+      db,
+      queries: [],
+      sayHello: () => "hello",
+    },
+    request: new Request("http://localhost"),
+    params: {},
+  } as LoaderFunctionArgs;
+  const appsResult = await syncApps(args);
+  const actionsResult = await syncActions(args);
   return {
     success: true,
     apps: appsResult,

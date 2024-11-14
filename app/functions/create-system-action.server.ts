@@ -1,4 +1,5 @@
 // app/functions/create-system-action.server.ts
+
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { and, eq } from "drizzle-orm";
 
@@ -9,11 +10,13 @@ export async function createSystemAction(
   name: string = "test-system-action",
 ) {
   const { db } = args.context;
+  const request = await db.query.requests.findFirst();
   const [insertedAction] = await db
     .insert(serverFunctions)
     .values({
       name,
       type: ActionType.SYSTEM,
+      requestId: request!.id,
     })
     .returning();
   const objectRecord = await db.query.objects.findFirst({
