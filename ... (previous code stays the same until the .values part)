@@ -1,9 +1,0 @@
-// ... (previous code stays the same until the .values part)
-
-await tx
-              .insert(functionCalls)
-              .values({
-                actionId: existingAction.id,
-                status: "running"
-              })
-              .returning();

@@ -1,5 +1,0 @@
-// Special case: if it's the requests table insert, let it through without overrides
-
-if (pathAsString === "db.insert" && fn.args[0]?.[Symbol.for("drizzle:Name")] === "requests") {
-  return fn.invoke(...fn.args);
-}

@@ -1,6 +1,7 @@
 // app/middleware/index.ts
 
 import type { AppLoadContext } from "@remix-run/node";
+import { eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
@@ -10,6 +11,7 @@ import postgres from "postgres";
 import * as schema from "~/db/schema";
 import { objects } from "~/db/schema/objects/schema";
 import { requests } from "~/db/schema/requests/schema";
+import { countTables } from "~/functions/count-tables.server";
 import { sayHello } from "~/hello.server";
 
 export interface DrizzleQuery {
@@ -102,84 +104,84 @@ export function configureMiddleware(app: any) {
 
     console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
-    try {
-      const context = {
-        queries: [] as DrizzleQuery[],
-        db: db,
-        requestId: undefined as number | undefined,
-        trx: undefined as unknown,
-      };
+    const context = {
+      queries: [] as DrizzleQuery[],
+      db: db,
+      requestId: undefined as number | undefined,
+      trx: undefined as unknown,
+    };
 
-      const dbWithProxy = createDbProxy(db, context);
-      const [requestRecord] = await dbWithProxy.insert(requests).values({}).returning();
-      context.requestId = requestRecord.id;
+    const dbWithProxy = createDbProxy(db, context);
+    const [requestRecord] = await dbWithProxy.insert(requests).values({}).returning();
+    context.requestId = requestRecord.id;
 
-      const tx = dbWithProxy.transaction(async (trx) => {
-        // Only create the proxy once
-        const proxiedTrx = createDbProxy(trx, context);
-        context.trx = proxiedTrx;
-        (req as any).requestId = context.requestId;
-        (req as any).trx = proxiedTrx;
-        (req as any).context = context;
+    const tx = dbWithProxy.transaction(async (trx) => {
+      const proxiedTrx = createDbProxy(trx, context);
+      context.trx = proxiedTrx;
+      (req as any).requestId = context.requestId;
+      (req as any).trx = proxiedTrx;
+      (req as any).context = context;
 
-        await new Promise<void>((resolve) => {
-          next();
-          res.on("finish", async () => {
-            // Create the object before we log and resolve
-            const functionCallQuery = context.queries.find((q) => q.table === "function_calls");
-            if (
-              functionCallQuery &&
-              Array.isArray(functionCallQuery.result) &&
-              functionCallQuery.result[0] &&
-              context.requestId
-            ) {
-              const functionCallId = functionCallQuery.result[0].id;
-              const requestId = context.requestId;
-              if (typeof functionCallId === "number" && typeof requestId === "number") {
-                await proxiedTrx
-                  .insert(objects)
-                  .values({
-                    model: "Request",
-                    recordId: requestId,
-                    functionCallId: functionCallId,
-                  })
-                  .returning();
-              }
-            }
+      await next(); // Now we can await next()
 
-            const formattedQueries = context.queries.map((q) => {
-              const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
-              return {
-                type: q.type,
-                table: q.table,
-                ids: ids,
-              };
-            });
+      // Create the object before we log
+      const functionCallQuery = context.queries.find((q) => q.table === "function_calls");
+      if (
+        functionCallQuery &&
+        Array.isArray(functionCallQuery.result) &&
+        functionCallQuery.result[0] &&
+        context.requestId
+      ) {
+        const functionCallId = functionCallQuery.result[0].id;
+        const requestId = context.requestId;
 
-            console.log(
-              "\n\nFINAL TRANSACTION CONTEXT:",
-              JSON.stringify(
-                {
-                  requestId: context.requestId,
-                  queries: formattedQueries,
-                },
-                null,
-                2,
-              ),
-            );
-            resolve();
-          });
-        });
+        if (typeof functionCallId === "number" && typeof requestId === "number") {
+          await proxiedTrx
+            .insert(objects)
+            .values({
+              model: "Request",
+              recordId: requestId,
+              functionCallId: functionCallId,
+            })
+            .returning();
+        }
+      }
+
+      const formattedQueries = context.queries.map((q) => {
+        const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
+        return {
+          type: q.type,
+          table: q.table,
+          ids: ids,
+        };
       });
 
-      tx.catch((error) => {
-        console.error("Transaction failed:", error);
-        next(error);
-      });
-    } catch (error) {
-      console.error("Failed to create request record:", error);
+      console.log(
+        "\n\nFINAL TRANSACTION CONTEXT:",
+        JSON.stringify(
+          {
+            requestId: context.requestId,
+            queries: formattedQueries,
+          },
+          null,
+          2,
+        ),
+      );
+      if (!context.requestId) {
+        throw new Error("Could not create request record");
+      }
+      try {
+        await countTables(trx);
+      } catch (error) {
+        await db.delete(requests).where(eq(requests.id, context.requestId));
+        throw error;
+      }
+    });
+
+    tx.catch((error) => {
+      console.error("Transaction failed:", error);
       next(error);
-    }
+    });
   });
 }
 
