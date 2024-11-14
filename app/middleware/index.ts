@@ -5,10 +5,10 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
 import morgan from "morgan";
-import type { Sql } from "postgres";
 import postgres from "postgres";
 
 import * as schema from "~/db/schema";
+import { objects } from "~/db/schema/objects/schema";
 import { requests } from "~/db/schema/requests/schema";
 import { sayHello } from "~/hello.server";
 
@@ -17,8 +17,6 @@ declare module "@remix-run/node" {
     db: DbClient;
   }
 }
-
-type BaseDbClient = PostgresJsDatabase<typeof schema> & { $client: Sql<Record<string, never>> };
 
 export interface DrizzleQuery {
   type: "insert" | "select" | "update" | "delete";
@@ -29,7 +27,12 @@ export interface DrizzleQuery {
 
 export type DbClient = PostgresJsDatabase<typeof schema>;
 
-function createDbProxy(db: BaseDbClient, context: { queries: DrizzleQuery[] }) {
+type DbInsertFunction = (...args: any[]) => any;
+
+function createDbProxy<T extends { insert: DbInsertFunction }>(
+  db: T,
+  context: { queries: DrizzleQuery[] },
+) {
   return new Proxy(db, {
     get(target, prop) {
       const value = Reflect.get(target, prop);
@@ -118,14 +121,38 @@ export function configureMiddleware(app: any) {
       context.requestId = requestRecord.id;
 
       const tx = dbWithProxy.transaction(async (trx) => {
-        context.trx = trx;
+        // Only create the proxy once
+        const proxiedTrx = createDbProxy(trx, context);
+        context.trx = proxiedTrx;
         (req as any).requestId = context.requestId;
-        (req as any).trx = trx;
+        (req as any).trx = proxiedTrx;
         (req as any).context = context;
 
         await new Promise<void>((resolve) => {
           next();
-          res.on("finish", () => {
+          res.on("finish", async () => {
+            // Create the object before we log and resolve
+            const functionCallQuery = context.queries.find((q) => q.table === "function_calls");
+            if (
+              functionCallQuery &&
+              Array.isArray(functionCallQuery.result) &&
+              functionCallQuery.result[0] &&
+              context.requestId
+            ) {
+              const functionCallId = functionCallQuery.result[0].id;
+              const requestId = context.requestId;
+              if (typeof functionCallId === "number" && typeof requestId === "number") {
+                await proxiedTrx
+                  .insert(objects)
+                  .values({
+                    model: "Request",
+                    recordId: requestId,
+                    functionCallId: functionCallId,
+                  })
+                  .returning();
+              }
+            }
+
             const formattedQueries = context.queries.map((q) => {
               const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
               return {
