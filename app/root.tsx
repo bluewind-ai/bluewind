@@ -1,4 +1,5 @@
 // app/root.tsx
+
 import "./tailwind.css";
 
 import { LoaderFunctionArgs } from "@remix-run/node";
@@ -23,15 +24,14 @@ function Document({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="h-full">
-        <div className="flex h-full">
-          <div className="flex-1">{children}</div>
-        </div>
+        {children}
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
   );
 }
+
 export function ErrorBoundary() {
   const error = useRouteError();
   let errorOutput = "";
@@ -101,11 +101,12 @@ export function ErrorBoundary() {
     </Document>
   );
 }
+
 export default function App() {
   const data = useLoaderData();
   return (
     <Document>
-      <div className="flex-1 overflow-auto">
+      <div className="h-full overflow-hidden">
         <div>
           <pre>{JSON.stringify(data, null, 2)}</pre>
         </div>
@@ -114,6 +115,7 @@ export default function App() {
     </Document>
   );
 }
+
 export async function loader({ context }: LoaderFunctionArgs) {
   return { message: context.sayHello?.() };
 }
