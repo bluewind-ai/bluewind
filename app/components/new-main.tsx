@@ -1,6 +1,6 @@
 // app/components/new-main.tsx
 
-import { type ColumnDef,type SortingState } from "@tanstack/react-table";
+import { type ColumnDef, type SortingState } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,

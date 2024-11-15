@@ -10,9 +10,11 @@ export function ServerFunctionsButtons() {
   const resetFetcher = useFetcher();
   const truncateFetcher = useFetcher();
   const bootstrapFetcher = useFetcher();
+  const generateRoutesFetcher = useFetcher();
   const isResetting = resetFetcher.state !== "idle";
   const isTruncating = truncateFetcher.state !== "idle";
   const isBootstrapping = bootstrapFetcher.state !== "idle";
+
   return (
     <div className="flex gap-2 p-4 flex-wrap">
       <goNextFetcher.Form method="post" action="/function-calls">
@@ -46,6 +48,12 @@ export function ServerFunctionsButtons() {
           {isBootstrapping ? "Bootstrapping..." : "Bootstrap DB"}
         </Button>
       </bootstrapFetcher.Form>
+
+      <generateRoutesFetcher.Form action="/api/generate-routes">
+        <Button type="submit" variant="outline" disabled={generateRoutesFetcher.state !== "idle"}>
+          {generateRoutesFetcher.state !== "idle" ? "Generating..." : "Generate All Routes"}
+        </Button>
+      </generateRoutesFetcher.Form>
     </div>
   );
 }

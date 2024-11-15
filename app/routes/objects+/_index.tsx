@@ -8,16 +8,11 @@ import { objects } from "~/db/schema";
 
 export async function loader(args: LoaderFunctionArgs) {
   const { db } = args.context;
-  // const url = new URL(args.request.url);
-  // const functionCallId = url.searchParams.get("function-call-id");
-  // if (!functionCallId) {
-  //   throw new Error("Missing function-call-id parameter");
-  // }
-
   const tableObjects = await db.query.objects.findMany({
     orderBy: objects.id,
-    // where: eq(objects.functionCallId, parseInt(functionCallId)),
   });
+
+  console.log("Loader data:", tableObjects);
 
   return {
     tableObjects,
@@ -26,6 +21,8 @@ export async function loader(args: LoaderFunctionArgs) {
 
 export default function Objects() {
   const { tableObjects } = useLoaderData<typeof loader>();
+
+  console.log("Component data:", tableObjects);
 
   return <NewMain data={tableObjects} />;
 }

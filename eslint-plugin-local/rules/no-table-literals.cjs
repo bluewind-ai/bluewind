@@ -60,7 +60,7 @@ module.exports = {
           if (tableEntry) {
             context.report({
               node,
-              message: `String literal "${node.value}" should use TableModel enum from "~/db/schema" instead`,
+              message: `String literal "${node.value}" should use TABLES from "~/db/schema/table-models.ts" instead`,
             });
           }
         }
