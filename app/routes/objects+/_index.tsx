@@ -1,12 +1,10 @@
 // app/routes/objects+/_index.tsx
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 
-import { BackOfficeTree } from "~/components/back-office-tree";
-import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
-import { NewMain } from "~/components/new-main";
-import { ServerFunctionsButtons } from "~/components/server-functions-buttons";
+import type { NavigationNode } from "~/components/navigation-tree";
+import { AdminLayout } from "~/components/ui/admin-root";
 import { functionCalls } from "~/db/schema";
 import type { FunctionCall } from "~/db/schema/function-calls/schema";
 import { createNavigationTrees } from "~/functions/create-navigation-trees.server";
@@ -80,14 +78,11 @@ export default function Objects() {
   });
 
   return (
-    <div className="flex h-full">
-      <NavigationTree data={navigationData} apps={apps} />
-      <div className="flex-1">
-        <ServerFunctionsButtons />
-        <NewMain data={objects} />
-        <Outlet />
-      </div>
-      <BackOfficeTree data={backOfficeData} apps={apps} />
-    </div>
+    <AdminLayout
+      navigationData={navigationData}
+      backOfficeData={backOfficeData}
+      apps={apps}
+      mainData={objects}
+    />
   );
 }
