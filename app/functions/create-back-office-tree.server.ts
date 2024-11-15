@@ -1,5 +1,4 @@
 // app/functions/create-back-office-tree.server.ts
-
 import type { NavigationNode } from "~/components/navigation-tree";
 import { getTableMetadata } from "~/db/schema";
 

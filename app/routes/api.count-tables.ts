@@ -31,7 +31,6 @@ async function _loader(args: LoaderFunctionArgs) {
   };
   const counts: Record<string, number> = {};
   let totalCount = 0;
-
   // Count all tables except objects
   for (const tableName in TABLES) {
     if (tableName === TABLES.objects.urlName) continue;

@@ -1,5 +1,4 @@
 // app/factories/stories.factory.ts
-
 import type { ActionRecord } from "~/types/action-record";
 
 export const STORIES = {

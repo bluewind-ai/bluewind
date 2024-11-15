@@ -1,5 +1,4 @@
 // app/routes/objects+/_index.tsx
-
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
@@ -21,18 +20,14 @@ type FunctionCallWithRelations = FunctionCall & {
     id: number;
   };
 };
-
 async function _loader(args: LoaderFunctionArgs) {
   const { db } = args.context;
   const url = new URL(args.request.url);
   const functionCallId = url.searchParams.get("function-call-id") || undefined;
-
   const tableObjects = await loadObjectsTable(db, { functionCallId });
-
   const masterAction = await db.query.serverFunctions.findFirst({
     where: eq(serverFunctions.name, "master"),
   });
-
   if (!masterAction) {
     return {
       navigationData: {
@@ -47,7 +42,6 @@ async function _loader(args: LoaderFunctionArgs) {
       objects: tableObjects,
     };
   }
-
   const functionCallsData = await db.query.functionCalls.findMany({
     with: {
       action: true,
@@ -55,7 +49,6 @@ async function _loader(args: LoaderFunctionArgs) {
     },
     orderBy: functionCalls.createdAt,
   });
-
   const navigationData: NavigationNode = {
     id: 0,
     name: "Objects",
@@ -71,9 +64,7 @@ async function _loader(args: LoaderFunctionArgs) {
         children: [] as NavigationNode[],
       })),
   };
-
   const appsData = await db.select().from(apps).orderBy(apps.order);
-
   return {
     navigationData,
     backOfficeData: createBackOfficeTree(),
@@ -81,14 +72,11 @@ async function _loader(args: LoaderFunctionArgs) {
     objects: tableObjects,
   };
 }
-
 export async function loader(args: LoaderFunctionArgs) {
   return await _loader(args);
 }
-
 export default function Objects() {
   const { navigationData, backOfficeData, apps, objects } = useLoaderData<typeof loader>();
-
   return (
     <div className="flex h-full">
       <NavigationTree data={navigationData} apps={apps} />

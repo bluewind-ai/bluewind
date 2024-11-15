@@ -1,5 +1,4 @@
 // app/routes/back-office+/$name.tsx
-
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 
@@ -41,11 +40,9 @@ async function _loader({ params }: LoaderFunctionArgs) {
   }
   return { data };
 }
-
 export async function loader(args: LoaderFunctionArgs) {
   return await loaderMiddleware(args, () => _loader(args));
 }
-
 export default function TableRoute() {
   const { data } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();

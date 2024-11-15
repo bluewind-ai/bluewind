@@ -1,5 +1,4 @@
 // app/middleware/main.ts
-
 import { sql } from "drizzle-orm";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
 
@@ -16,9 +15,7 @@ export function main(): any {
       requestId: undefined as number | undefined,
       trx: undefined as unknown,
     };
-
     const dbWithProxy = createDbProxy(db, context);
-
     try {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const stack = new Error().stack
@@ -27,11 +24,11 @@ export function main(): any {
         .map((line) => `    at ${line.substring(line.indexOf("/app/"))}`)
         .reverse()
         .join("\n");
-
+      // no-qa
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
-
-      console.log("SQL Insert incoming!", { model: TableModel.REQUESTS });
-      const [result] = await db.execute<{ request_id: number }>(sql`
+      const [result] = await db.execute<{
+        request_id: number;
+      }>(sql`
         WITH request_insert AS (
           INSERT INTO ${requests} DEFAULT VALUES
           RETURNING id
@@ -44,51 +41,23 @@ export function main(): any {
         SELECT request_insert.id as request_id
         FROM request_insert, object_insert;
       `);
-
       context.requestId = result.request_id;
-
       const runTransaction = async () => {
         await dbWithProxy.transaction(
           async (trx) => {
             const proxiedTrx = createDbProxy(trx, context);
-
             context.trx = proxiedTrx;
             (req as any).requestId = context.requestId;
             (req as any).trx = proxiedTrx;
             (req as any).context = context;
-
             await new Promise<void>((resolve) => {
               next();
               res.on("finish", resolve);
             });
 
-            console.log("FINISHED REQUEST", context.queries);
-
-            const formattedQueries = context.queries.map((q) => {
-              const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
-              return {
-                type: q.type,
-                table: q.table,
-                ids: ids,
-              };
-            });
-
-            console.log(
-              "\n\nFINAL TRANSACTION CONTEXT:",
-              JSON.stringify(
-                {
-                  requestId: context.requestId,
-                  queries: formattedQueries,
-                },
-                null,
-                2,
-              ),
-            );
-
             if (!context.requestId) {
               throw new Error("Could not create request record");
             }
-
             const objectsToInsert = context.queries
               .filter((q) => q.result)
               .flatMap((q) => {
@@ -100,12 +69,9 @@ export function main(): any {
                   functionCallId: null,
                 }));
               });
-
             if (objectsToInsert.length > 0) {
-              console.log("Drizzle Insert incoming!", JSON.stringify(objectsToInsert, null, 2));
               await trx.insert(objects).values(objectsToInsert);
             }
-
             await countTables(trx);
           },
           {
@@ -113,7 +79,6 @@ export function main(): any {
           },
         );
       };
-
       let retries = 3;
       while (retries > 0) {
         try {
@@ -132,7 +97,6 @@ export function main(): any {
     }
   };
 }
-
 function getTableModelFromTable(table: string): (typeof TableModel)[keyof typeof TableModel] {
   const mapping: Record<string, (typeof TableModel)[keyof typeof TableModel]> = {
     users: TableModel.USERS,
@@ -144,6 +108,5 @@ function getTableModelFromTable(table: string): (typeof TableModel)[keyof typeof
     objects: TableModel.OBJECTS,
     requests: TableModel.REQUESTS,
   };
-
   return mapping[table] || TableModel.OBJECTS;
 }

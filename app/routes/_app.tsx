@@ -12,7 +12,6 @@ export type ViewData = {
   label: string;
   iconKey: string;
 };
-
 export const views: ViewData[] = [
   {
     value: TABLES.objects.urlName,

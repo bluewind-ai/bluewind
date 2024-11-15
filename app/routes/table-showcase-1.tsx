@@ -1,5 +1,4 @@
 // app/routes/table-showcase-1.tsx
-
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
@@ -11,7 +10,6 @@ export async function loader(_args: LoaderFunctionArgs) {
     data: STORIES.actionRecords.basic,
   };
 }
-
 export default function TableShowcase() {
   const { data } = useLoaderData<typeof loader>();
   return <NewMain data={data} />;

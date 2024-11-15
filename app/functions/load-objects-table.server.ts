@@ -1,5 +1,4 @@
 // app/functions/load-objects-table.server.ts
-
 import { eq } from "drizzle-orm";
 
 import { objects } from "~/db/schema";
@@ -9,7 +8,6 @@ import type { ActionRecord } from "~/types/action-record";
 export type LoadObjectsTableArgs = {
   functionCallId?: string;
 };
-
 export async function loadObjectsTable(
   db: DbClient,
   args: LoadObjectsTableArgs,
@@ -20,7 +18,6 @@ export async function loadObjectsTable(
       ? eq(objects.functionCallId, parseInt(args.functionCallId))
       : undefined,
   });
-
   return allObjects.map((obj) => ({
     id: obj.id,
     name: obj.model,

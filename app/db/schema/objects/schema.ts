@@ -1,5 +1,4 @@
 // app/db/schema/objects/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, pgTable } from "drizzle-orm/pg-core";
 
@@ -13,7 +12,6 @@ export const objects = pgTable(TableModel.OBJECTS, {
   recordId: integer("record_id").notNull(),
   functionCallId: integer("function_call_id"),
 });
-
 export const objectsRelations = relations(objects, ({ one }) => ({
   functionCall: one(functionCalls, {
     fields: [objects.functionCallId],
