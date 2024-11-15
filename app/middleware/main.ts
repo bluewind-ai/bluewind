@@ -46,7 +46,7 @@ export function main(): any {
 
       context.requestId = result.request_id;
 
-      let nextCalled = false;
+      const nextCalled = false;
 
       const runTransaction = async () => {
         await dbWithProxy.transaction(
@@ -58,14 +58,28 @@ export function main(): any {
             (req as any).trx = proxiedTrx;
             (req as any).context = context;
 
-            if (!nextCalled) {
-              console.log("Queries BEFORE next:", context.queries); // Should have data
-              await next();
-              console.log("Queries RIGHT AFTER next:", context.queries); // Is it empty here?
-              console.log("Context object:", context); // Let's see the whole context
-              nextCalled = true;
-            }
+            await new Promise<void>((resolve) => {
+              next();
+              res.on("finish", resolve);
+            });
+            // dd(context.queries);
+            console.log("FINISHED REQUEST", context.queries);
+            // dd(
+            //   context.queries.map((q) => ({
+            //     model: q.table,
+            //     request_id: context.requestId,
+            //   })),
+            // );
+            // db.insert(objects).values(
+            //   dd(
+            //     context.queries.map((q) => ({
+            //       model: q.table,
+            //       request_id: context.requestId,
+            //     })),
+            //   ),
+            // );
 
+            // dd(context.queries);
             const formattedQueries = context.queries.map((q) => {
               const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
               return {

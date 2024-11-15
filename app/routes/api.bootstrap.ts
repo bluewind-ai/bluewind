@@ -26,13 +26,12 @@ async function _action(args: ActionFunctionArgs) {
     .insert(functionCalls)
     .values({
       requestId: request.id,
-      actionId: 202,
+      actionId: 3,
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })
     .returning();
 
   await new Promise((resolve) => setTimeout(resolve, 1));
-  dd(args.context.queries);
 
   return redirect("/");
 }

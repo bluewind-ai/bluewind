@@ -26,6 +26,26 @@ function stringifyWithCircularRefs(
           return `[Depth ${currentDepth}]`;
         }
 
+        if (Array.isArray(value)) {
+          if (value.length > MAX_KEYS) {
+            return [
+              ...value
+                .slice(0, MAX_KEYS)
+                .map((item) =>
+                  typeof item === "object" && item !== null
+                    ? JSON.parse(stringifyWithCircularRefs(item, space, currentDepth + 1))
+                    : item,
+                ),
+              `[${value.length - MAX_KEYS} more...]`,
+            ];
+          }
+          return value.map((item) =>
+            typeof item === "object" && item !== null
+              ? JSON.parse(stringifyWithCircularRefs(item, space, currentDepth + 1))
+              : item,
+          );
+        }
+
         if (Object.keys(value).length > MAX_KEYS) {
           const limited: Record<string, unknown> = {};
           Object.keys(value)
@@ -39,16 +59,14 @@ function stringifyWithCircularRefs(
           return { ...limited, _truncated: `[${Object.keys(value).length - MAX_KEYS} more...]` };
         }
 
-        if (typeof value === "object") {
-          const processed: Record<string, unknown> = {};
-          Object.keys(value).forEach((k) => {
-            processed[k] =
-              typeof value[k] === "object" && value[k] !== null
-                ? JSON.parse(stringifyWithCircularRefs(value[k], space, currentDepth + 1))
-                : value[k];
-          });
-          return processed;
-        }
+        const processed: Record<string, unknown> = {};
+        Object.keys(value).forEach((k) => {
+          processed[k] =
+            typeof value[k] === "object" && value[k] !== null
+              ? JSON.parse(stringifyWithCircularRefs(value[k], space, currentDepth + 1))
+              : value[k];
+        });
+        return processed;
       }
 
       return value;
@@ -58,13 +76,7 @@ function stringifyWithCircularRefs(
 }
 
 function dd(...args: any[]): never {
-  const formattedArgs = args.map((arg) => {
-    try {
-      return stringifyWithCircularRefs(arg);
-    } catch (e) {
-      return `[Failed to stringify: ${e.message}]`;
-    }
-  });
+  const formattedArgs = args.map((arg) => stringifyWithCircularRefs(arg));
 
   console.log("\n=== Debug Dump ===\n");
   formattedArgs.forEach((arg, i) => {
