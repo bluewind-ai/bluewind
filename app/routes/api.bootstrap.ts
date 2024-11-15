@@ -5,7 +5,6 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "~/db/schema";
 import { functionCalls } from "~/db/schema";
 import { FunctionCallStatus } from "~/db/schema/types";
-import { actionMiddleware } from "~/lib/middleware";
 
 type DbClient = PostgresJsDatabase<typeof schema>;
 async function _action(args: ActionFunctionArgs) {
@@ -31,9 +30,13 @@ async function _action(args: ActionFunctionArgs) {
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })
     .returning();
+
   await new Promise((resolve) => setTimeout(resolve, 1));
+  dd(args.context.queries);
+
   return redirect("/");
 }
 export async function action(args: ActionFunctionArgs) {
-  return await actionMiddleware(args, () => _action(args));
+  const response = await _action(args);
+  return response;
 }

@@ -3,7 +3,6 @@ import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { eq } from "drizzle-orm";
 
 import { serverFunctions } from "~/db/schema";
-import { loaderMiddleware } from "~/lib/middleware";
 import { path } from "~/utils/path";
 
 async function _loader(args: LoaderFunctionArgs) {
@@ -33,7 +32,8 @@ async function _loader(args: LoaderFunctionArgs) {
   // return redirect(path.to.agents(1));
 }
 export async function loader(args: LoaderFunctionArgs) {
-  return await loaderMiddleware(args, () => _loader(args));
+  return await _loader(args);
+  // return await loaderMiddleware(args, () => _loader(args));
 }
 export default function Index() {
   return null;

@@ -8,7 +8,6 @@ import { type NavigationNode, NavigationTree } from "~/components/navigation-tre
 import { Button } from "~/components/ui/button";
 import { apps, functionCalls, getTableMetadata, serverFunctions } from "~/db/schema";
 import type { FunctionCall } from "~/db/schema/function-calls/schema";
-import { loaderMiddleware } from "~/lib/middleware";
 
 type FunctionCallWithRelations = FunctionCall & {
   objects: Array<{
@@ -94,7 +93,7 @@ async function _loader(args: LoaderFunctionArgs) {
   };
 }
 export async function loader(args: LoaderFunctionArgs) {
-  return await loaderMiddleware(args, () => _loader(args));
+  return await _loader(args);
 }
 export default function Objects() {
   const { navigationData, backOfficeData, apps } = useLoaderData<typeof loader>();

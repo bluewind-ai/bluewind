@@ -59,7 +59,10 @@ export function main(): any {
             (req as any).context = context;
 
             if (!nextCalled) {
+              console.log("Queries BEFORE next:", context.queries); // Should have data
               await next();
+              console.log("Queries RIGHT AFTER next:", context.queries); // Is it empty here?
+              console.log("Context object:", context); // Let's see the whole context
               nextCalled = true;
             }
 

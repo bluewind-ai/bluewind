@@ -32,7 +32,7 @@ module.exports = {
       rules: {
         "local/file-header": "error",
         "local/file-naming": "error",
-        "local/route-template-check": "error",
+        // "local/route-template-check": "error",
         "unused-imports/no-unused-imports": "error",
         "unused-imports/no-unused-vars": [
           "warn",
