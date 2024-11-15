@@ -7,16 +7,9 @@ import { NewMain } from "~/components/new-main";
 
 export async function loader(args: LoaderFunctionArgs) {
   const { db } = args.context;
-  // const url = new URL(args.request.url);
-  // const functionCallId = url.searchParams.get("function-call-id");
-  // if (!functionCallId) {
-  //   throw new Error("Missing function-call-id parameter");
-  // }
+  const tableObjects = await db.query.functionCalls.findMany();
 
-  const tableObjects = await db.query.functionCalls.findMany({
-    // orderBy: functionCalls.id,
-    // where: eq(objects.functionCallId, parseInt(functionCallId)),
-  });
+  console.log("Loader data:", tableObjects);
 
   return {
     tableObjects,
@@ -25,6 +18,8 @@ export async function loader(args: LoaderFunctionArgs) {
 
 export default function Objects() {
   const { tableObjects } = useLoaderData<typeof loader>();
+
+  console.log("Objects component data:", tableObjects);
 
   return <NewMain data={tableObjects} />;
 }

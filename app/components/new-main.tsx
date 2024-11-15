@@ -1,8 +1,7 @@
 // app/components/new-main.tsx
 
-import type { SortingState } from "@tanstack/react-table";
+import { type ColumnDef,type SortingState } from "@tanstack/react-table";
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
@@ -11,27 +10,26 @@ import {
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
-interface NewMainProps {
-  data: any[];
-}
-
-const columnHelper = createColumnHelper<any>();
-
-const createColumns = (data: any[]) => {
-  if (!data.length) return [];
-
-  console.log("Creating columns from sample data keys:", Object.keys(data[0]));
-
-  return Object.keys(data[0]).map((key) =>
-    columnHelper.accessor(key, {
-      header: key,
-      cell: (info) => info.getValue(),
-    }),
-  );
-};
-
-export function NewMain({ data }: NewMainProps) {
+export function NewMain<TData extends object>({ data }: { data: TData[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
+
+  const createColumns = (data: TData[]): ColumnDef<TData>[] => {
+    if (!data.length) return [];
+
+    console.log("Creating columns from sample data keys:", Object.keys(data[0]));
+
+    return Object.keys(data[0]).map((key) => ({
+      accessorKey: key,
+      header: key,
+      cell: (info) => {
+        const value = info.getValue();
+        if (value instanceof Date) {
+          return value.toLocaleString();
+        }
+        return value;
+      },
+    }));
+  };
 
   console.log("NewMain render with data:", {
     dataLength: data.length,
