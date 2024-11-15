@@ -1,16 +1,16 @@
 // app/db/schema/function-calls/schema.ts
+
 import { relations } from "drizzle-orm";
 import { type AnyPgColumn, integer, jsonb, pgTable, serial, timestamp } from "drizzle-orm/pg-core";
 
 import { apps } from "../apps/schema";
 import { debugLogs } from "../debug-logs/schema";
-import { functionCallStatusEnum } from "../enums";
+import { FunctionCallStatus, functionCallStatusEnum } from "../enums";
 import { objects } from "../objects/schema";
 import { requestErrors } from "../request-errors/schema";
 import { requests } from "../requests/schema";
 import { serverFunctions } from "../server-functions/schema";
 import { sessions } from "../sessions/schema";
-import { FunctionCallStatus } from "../types";
 import { users } from "../users/schema";
 
 export const functionCalls = pgTable("function_calls", {
@@ -29,9 +29,11 @@ export const functionCalls = pgTable("function_calls", {
   result: jsonb("result"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
 export type FunctionCall = typeof functionCalls.$inferSelect & {
   action?: typeof serverFunctions.$inferSelect;
 };
+
 export const functionCallsRelations = relations(functionCalls, ({ one, many }) => ({
   request: one(requests, {
     fields: [functionCalls.requestId],
