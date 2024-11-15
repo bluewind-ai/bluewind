@@ -13,15 +13,15 @@
 // }
 
 // async function main() {
-//   const TEST_ACTION_PATH = path.join(process.cwd(), "app/actions/test-action.server.ts");
-//   const GENERATED_FILE_PATH = path.join(process.cwd(), "app/lib/generated/actions.ts");
+//   const TEST_ACTION_PATH = path.join(process.cwd(), "app/serverFunctions/test-action.server.ts");
+//   const GENERATED_FILE_PATH = path.join(process.cwd(), "app/lib/generated/serverFunctions.ts");
 
 //   console.log("Starting test...");
 
 //   try {
 //     // Create the test action file
 //     const actionContent =
-//       '// app/actions/test-action.server.ts\n\nexport async function testAction() {\n    return { message: "test action" };\n}\n';
+//       '// app/serverFunctions/test-action.server.ts\n\nexport async function testAction() {\n    return { message: "test action" };\n}\n';
 //     await fs.writeFile(TEST_ACTION_PATH, actionContent);
 //     console.log("Created test action file");
 
@@ -34,7 +34,7 @@
 //     console.log("Generated file exists?", !!generatedExists);
 
 //     if (!generatedExists) {
-//       throw new Error("Vite did not generate the actions mapping file!");
+//       throw new Error("Vite did not generate the serverFunctions mapping file!");
 //     }
 
 //     const content = await fs.readFile(GENERATED_FILE_PATH, "utf-8");

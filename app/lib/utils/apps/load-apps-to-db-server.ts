@@ -43,7 +43,7 @@ export async function loadAppsToDB() {
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
-      actionId: thisAction.id,
+      serverFunctionId: thisAction.id,
       requestId: request.id,
       status: FunctionCallStatus.COMPLETED,
       result: {

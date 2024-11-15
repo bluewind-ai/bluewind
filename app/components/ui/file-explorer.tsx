@@ -13,7 +13,7 @@ type FileNode = BaseNode & {
   type: "file" | "folder";
 };
 type ActionCallNode = BaseNode & {
-  actionName: string;
+  serverFunctionName: string;
   status: string;
 };
 type NodeProps = {
@@ -54,7 +54,7 @@ function ExplorerNode({ node, level = 0, type }: NodeProps) {
         </>
       ) : (
         <>
-          <span className="mr-2">{node.actionName}</span>
+          <span className="mr-2">{node.serverFunctionName}</span>
           <span className="text-sm text-gray-500">({node.status})</span>
         </>
       )}

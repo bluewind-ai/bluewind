@@ -6,11 +6,10 @@ import {
   serverFunctions,
   ServerFunctionType,
 } from "~/db/schema";
-import { createAction } from "~/lib/action-builder.server";
 import { apps as appsData } from "~/lib/generated/apps";
 import { db } from "~/middleware";
 
-export const loadAppsToDb = createAction("load-apps-to-db", async () => {
+export const loadAppsToDb = async () => {
   for (const app of appsData) {
     await db
       .insert(appsTable)
@@ -56,7 +55,7 @@ export const loadAppsToDb = createAction("load-apps-to-db", async () => {
     .insert(functionCalls)
     .values({
       requestId: request.id,
-      actionId: thisAction!.id, // Add non-null assertion since we know it exists
+      serverFunctionId: thisAction!.id, // Add non-null assertion since we know it exists
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,
@@ -65,4 +64,4 @@ export const loadAppsToDb = createAction("load-apps-to-db", async () => {
     })
     .returning();
   return functionCall;
-});
+};

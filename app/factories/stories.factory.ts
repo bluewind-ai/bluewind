@@ -1,8 +1,7 @@
 // app/factories/stories.factory.ts
-import type { ActionRecord } from "~/types/action-record";
 
 export const STORIES = {
-  actionRecords: {
+  serverFunctionRecords: {
     basic: [
       {
         id: 1,
@@ -44,6 +43,6 @@ export const STORIES = {
         lastRunAt: null,
         totalCalls: 0,
       },
-    ] satisfies ActionRecord[],
+    ],
   },
 };

@@ -2,7 +2,7 @@
 export const TableModel = {
   USERS: "users",
   SESSIONS: "sessions",
-  ACTIONS: "actions",
+  SERVER_FUNCTIONS: "server-functions",
   FUNCTION_CALLS: "function-calls",
   REQUEST_ERRORS: "request-errors",
   DEBUG_LOGS: "debug-logs",
@@ -22,9 +22,9 @@ export const TABLES: Record<string, TableConfig> = {
     displayName: "Sessions",
     urlName: TableModel.SESSIONS,
   },
-  actions: {
-    displayName: "Actions",
-    urlName: TableModel.ACTIONS,
+  serverFunctions: {
+    displayName: "Server Functions",
+    urlName: TableModel.SERVER_FUNCTIONS,
   },
   functionCalls: {
     displayName: "Function Calls",

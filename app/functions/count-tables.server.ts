@@ -1,4 +1,5 @@
 // app/functions/count-tables.server.ts
+
 import { sql } from "drizzle-orm";
 import { type PgTable } from "drizzle-orm/pg-core";
 
@@ -8,7 +9,7 @@ import {
   objects,
   requestErrors,
   requests,
-  serverFunctions as actions,
+  serverFunctions,
   sessions,
   TABLES,
   users,
@@ -18,7 +19,7 @@ import type { DbClient } from "~/middleware";
 export async function countTables(trx: DbClient) {
   const tableMap: Record<string, PgTable<any>> = {
     functionCalls,
-    actions,
+    serverFunctions,
     requestErrors,
     debugLogs,
     sessions,

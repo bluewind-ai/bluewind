@@ -32,7 +32,7 @@ export const serverFunctionTypeEnum = pgEnum("server_function_type", [
 export const modelEnum = pgEnum("model", [
   TableModel.USERS,
   TableModel.SESSIONS,
-  TableModel.ACTIONS,
+  TableModel.SERVER_FUNCTIONS,
   TableModel.FUNCTION_CALLS,
   TableModel.REQUEST_ERRORS,
   TableModel.DEBUG_LOGS,

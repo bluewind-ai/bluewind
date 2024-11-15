@@ -2,7 +2,6 @@
 import { eq } from "drizzle-orm";
 
 import { functionCalls } from "~/db/schema";
-import { createAction } from "~/lib/action-builder.server";
 import { db } from "~/middleware";
 
 interface FunctionCallTree {
@@ -12,10 +11,10 @@ interface FunctionCallTree {
   actionName: string;
   children: FunctionCallTree[];
 }
-export const getFunctionCallTree = createAction("get-function-call-tree", async () => {
+export const getFunctionCallTree = async () => {
   const allCalls = await db.query.functionCalls.findMany({
     with: {
-      action: true,
+      serverFunction: true,
     },
     orderBy: (functionCalls, { asc }) => [asc(functionCalls.id)],
   });
@@ -29,7 +28,7 @@ export const getFunctionCallTree = createAction("get-function-call-tree", async 
     const parent = await db.query.functionCalls.findFirst({
       where: eq(functionCalls.id, currentParentId),
       with: {
-        action: true,
+        serverFunction: true,
       },
     });
     if (!parent) break;
@@ -38,7 +37,7 @@ export const getFunctionCallTree = createAction("get-function-call-tree", async 
   }
   function buildTree(rootId: number): FunctionCallTree | null {
     const call = allCalls.find((c) => c.id === rootId);
-    if (!call || !call.action) return null;
+    if (!call || !call.serverFunction) return null;
     const children = allCalls
       .filter((c) => c.parentId === call.id)
       .map((child) => buildTree(child.id))
@@ -47,7 +46,7 @@ export const getFunctionCallTree = createAction("get-function-call-tree", async 
       id: call.id,
       parentId: call.parentId,
       status: call.status,
-      actionName: call.action.name,
+      actionName: call.serverFunction.name,
       children,
     };
   }
@@ -59,4 +58,4 @@ export const getFunctionCallTree = createAction("get-function-call-tree", async 
     tree,
     currentId: lastCall.id,
   };
-});
+};

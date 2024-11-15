@@ -9,7 +9,7 @@ export async function goNext() {
   const readyFunctionCalls = await db.query.functionCalls.findMany({
     where: eq(functionCalls.status, FunctionCallStatus.READY_FOR_APPROVAL),
     with: {
-      action: true,
+      serverFunction: true,
     },
   });
   // this should be removed by YOU when you rewrite the filed;

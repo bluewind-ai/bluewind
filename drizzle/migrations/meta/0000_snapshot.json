@@ -1,11 +1,11 @@
 {
-  "id": "999d8578-2f5b-41fd-aef8-d10d94ee39a9",
+  "id": "983d9e09-69f6-47fd-8239-127a096ce262",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.action_calls": {
-      "name": "action_calls",
+    "public.apps": {
+      "name": "apps",
       "schema": "",
       "columns": {
         "id": {
@@ -14,8 +14,127 @@
           "primaryKey": true,
           "notNull": true
         },
-        "action_id": {
-          "name": "action_id",
+        "value": {
+          "name": "value",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon_key": {
+          "name": "icon_key",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "function_call_id": {
+          "name": "function_call_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "apps_function_call_id_function_calls_id_fk": {
+          "name": "apps_function_call_id_function_calls_id_fk",
+          "tableFrom": "apps",
+          "tableTo": "function_calls",
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "apps_value_unique": {
+          "name": "apps_value_unique",
+          "nullsNotDistinct": false,
+          "columns": ["value"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.debug_logs": {
+      "name": "debug_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "function_call_id": {
+          "name": "function_call_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "debug_logs_function_call_id_function_calls_id_fk": {
+          "name": "debug_logs_function_call_id_function_calls_id_fk",
+          "tableFrom": "debug_logs",
+          "tableTo": "function_calls",
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.function_calls": {
+      "name": "function_calls",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "server_function_id": {
+          "name": "server_function_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "request_id": {
+          "name": "request_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -28,27 +147,56 @@
         },
         "status": {
           "name": "status",
-          "type": "varchar(256)",
+          "type": "function_call_status",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'ready_for_approval'"
+          "default": "'READY_FOR_APPROVAL'"
+        },
+        "args": {
+          "name": "args",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "action_calls_action_id_actions_id_fk": {
-          "name": "action_calls_action_id_actions_id_fk",
-          "tableFrom": "action_calls",
-          "tableTo": "actions",
-          "columnsFrom": ["action_id"],
+        "function_calls_server_function_id_server_functions_id_fk": {
+          "name": "function_calls_server_function_id_server_functions_id_fk",
+          "tableFrom": "function_calls",
+          "tableTo": "server_functions",
+          "columnsFrom": ["server_function_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "action_calls_parent_id_action_calls_id_fk": {
-          "name": "action_calls_parent_id_action_calls_id_fk",
-          "tableFrom": "action_calls",
-          "tableTo": "action_calls",
+        "function_calls_request_id_requests_id_fk": {
+          "name": "function_calls_request_id_requests_id_fk",
+          "tableFrom": "function_calls",
+          "tableTo": "requests",
+          "columnsFrom": ["request_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "function_calls_parent_id_function_calls_id_fk": {
+          "name": "function_calls_parent_id_function_calls_id_fk",
+          "tableFrom": "function_calls",
+          "tableTo": "function_calls",
           "columnsFrom": ["parent_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
@@ -61,33 +209,40 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.actions": {
-      "name": "actions",
+    "public.objects": {
+      "name": "objects",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
-        "name": {
-          "name": "name",
-          "type": "varchar(256)",
+        "model": {
+          "name": "model",
+          "type": "model",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
+        },
+        "record_id": {
+          "name": "record_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "function_call_id": {
+          "name": "function_call_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "actions_name_unique": {
-          "name": "actions_name_unique",
-          "nullsNotDistinct": false,
-          "columns": ["name"]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -144,6 +299,41 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "function_call_id": {
+          "name": "function_call_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "request_errors_function_call_id_function_calls_id_fk": {
+          "name": "request_errors_function_call_id_function_calls_id_fk",
+          "tableFrom": "request_errors",
+          "tableTo": "function_calls",
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.requests": {
+      "name": "requests",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
         }
       },
       "indexes": {},
@@ -153,9 +343,241 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.server_functions": {
+      "name": "server_functions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "server_function_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "request_id": {
+          "name": "request_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "function_call_id": {
+          "name": "function_call_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "server_functions_request_id_requests_id_fk": {
+          "name": "server_functions_request_id_requests_id_fk",
+          "tableFrom": "server_functions",
+          "tableTo": "requests",
+          "columnsFrom": ["request_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "server_functions_function_call_id_function_calls_id_fk": {
+          "name": "server_functions_function_call_id_function_calls_id_fk",
+          "tableFrom": "server_functions",
+          "tableTo": "function_calls",
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "server_functions_name_unique": {
+          "name": "server_functions_name_unique",
+          "nullsNotDistinct": false,
+          "columns": ["name"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sessions": {
+      "name": "sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "session_token": {
+          "name": "session_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "csrf_token": {
+          "name": "csrf_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "messages": {
+          "name": "messages",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "function_call_id": {
+          "name": "function_call_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sessions_user_id_users_id_fk": {
+          "name": "sessions_user_id_users_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sessions_function_call_id_function_calls_id_fk": {
+          "name": "sessions_function_call_id_function_calls_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "function_calls",
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "sessions_session_token_unique": {
+          "name": "sessions_session_token_unique",
+          "nullsNotDistinct": false,
+          "columns": ["session_token"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "function_call_id": {
+          "name": "function_call_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "users_function_call_id_function_calls_id_fk": {
+          "name": "users_function_call_id_function_calls_id_fk",
+          "tableFrom": "users",
+          "tableTo": "function_calls",
+          "columnsFrom": ["function_call_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.function_call_status": {
+      "name": "function_call_status",
+      "schema": "public",
+      "values": [
+        "READY_FOR_APPROVAL",
+        "APPROVED",
+        "REJECTED",
+        "RUNNING",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "FAILED"
+      ]
+    },
+    "public.model": {
+      "name": "model",
+      "schema": "public",
+      "values": [
+        "users",
+        "sessions",
+        "server-functions",
+        "function-calls",
+        "request-errors",
+        "debug-logs",
+        "objects",
+        "requests"
+      ]
+    },
+    "public.server_function_type": {
+      "name": "server_function_type",
+      "schema": "public",
+      "values": ["SYSTEM", "USER"]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

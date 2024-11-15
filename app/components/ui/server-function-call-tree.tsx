@@ -1,15 +1,16 @@
-// app/components/ui/action-call-tree.tsx
+// app/components/ui/server-function-call-tree.tsx
+
 import { useState } from "react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 
 export type TreeNode = {
   id: number;
-  actionName: string;
+  serverFunctionName: string;
   status: string;
   children: TreeNode[];
 };
-function ActionCallNode({ node, level = 0 }: { node: TreeNode; level?: number }) {
+function FunctionCallNode({ node, level = 0 }: { node: TreeNode; level?: number }) {
   const [isOpen, setIsOpen] = useState(true);
   const paddingLeft = `${level * 20}px`;
   return (
@@ -42,13 +43,13 @@ function ActionCallNode({ node, level = 0 }: { node: TreeNode; level?: number })
                   <path d="M9 6l6 6-6 6" />
                 </svg>
               ))}
-            <span className="mr-2">{node.actionName}</span>
+            <span className="mr-2">{node.serverFunctionName}</span>
             <span className="text-sm text-gray-500">({node.status})</span>
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent>
           {node.children.map((child) => (
-            <ActionCallNode key={child.id} node={child} level={level + 1} />
+            <FunctionCallNode key={child.id} node={child} level={level + 1} />
           ))}
         </CollapsibleContent>
       </Collapsible>
@@ -59,7 +60,7 @@ export function FunctionCallTree({ initialTreeData }: { initialTreeData: TreeNod
   return (
     <div className="w-64 border-r h-[calc(100vh-64px)] overflow-y-auto bg-white">
       <div className="p-4">
-        <ActionCallNode node={initialTreeData} />
+        <FunctionCallNode node={initialTreeData} />
       </div>
     </div>
   );

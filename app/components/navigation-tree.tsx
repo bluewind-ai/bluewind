@@ -24,7 +24,7 @@ function getIcon(node: NavigationNode) {
       return <img src="/favicon.ico" alt={`${node.name} icon`} className="h-5 w-5" />;
     case "database":
       return <Network className="h-5 w-5" />;
-    case TABLES.actions.urlName:
+    case TABLES.serverFunctions.urlName:
       return <Play className="h-5 w-5" />;
     case "selectors":
       return <Filter className="h-5 w-5" />;

@@ -1,9 +1,10 @@
-// app/components/action-buttons.tsx
+// app/components/server-functions-buttons.tsx
+
 import { useFetcher } from "@remix-run/react";
 
 import { Button } from "./ui/button";
 
-export function ActionButtons() {
+export function ServerFunctionsButtons() {
   const goNextFetcher = useFetcher();
   const loadFilesFetcher = useFetcher();
   const resetFetcher = useFetcher();

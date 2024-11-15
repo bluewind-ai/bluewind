@@ -23,7 +23,7 @@ async function _loader({ params }: LoaderFunctionArgs) {
     case TABLES.sessions.urlName:
       data = await db.query.sessions.findMany();
       break;
-    case TABLES.actions.urlName:
+    case TABLES.serverFunctions.urlName:
       data = await db.query.serverFunctions.findMany();
       break;
     case TABLES.functionCalls.urlName:
@@ -48,7 +48,7 @@ export default function TableRoute() {
   const fetcher = useFetcher();
   const extraColumns = [
     {
-      id: TABLES.actions.urlName,
+      id: TABLES.serverFunctions.urlName,
       header: "Actions",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cell: (row: any) => (

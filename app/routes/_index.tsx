@@ -17,13 +17,13 @@ async function _loader(args: LoaderFunctionArgs) {
   }
   return redirect(path.to.agents(masterAction.id));
   // const masterFunctionCall = await db.query.functionCalls.findFirst({
-  //   where: and(eq(functionCalls.actionId, masterAction.id), isNull(functionCalls.parentId)),
+  //   where: and(eq(functionCalls.serverFunctionId, masterAction.id), isNull(functionCalls.parentId)),
   // });
   // if (!masterFunctionCall) {
   //   const [newFunctionCall] = await db
   //     .insert(functionCalls)
   //     .values({
-  //       actionId: masterAction.id,
+  //       serverFunctionId: masterAction.id,
   //       status: FunctionCallStatus.READY_FOR_APPROVAL,
   //     })
   //     .returning();

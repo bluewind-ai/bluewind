@@ -23,7 +23,7 @@ export async function executeGenerateApps() {
     .insert(functionCalls)
     .values({
       requestId: request.id,
-      actionId: thisAction.id,
+      serverFunctionId: thisAction.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,

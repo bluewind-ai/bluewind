@@ -9,7 +9,7 @@ import {
   objects,
   requestErrors,
   requests,
-  serverFunctions as actions,
+  serverFunctions as serverFunctions,
   sessions,
   TABLES,
   users,
@@ -22,7 +22,7 @@ async function _loader(args: LoaderFunctionArgs) {
   const trx = context.trx as DbClient;
   const tableMap: Record<string, PgTable<any>> = {
     functionCalls,
-    actions,
+    serverFunctions,
     requestErrors,
     debugLogs,
     sessions,

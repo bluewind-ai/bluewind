@@ -31,7 +31,7 @@ export const apps = ${JSON.stringify(appsData, null, 2)} as const;
     .insert(functionCalls)
     .values({
       requestId: request.id,
-      actionId: thisAction.id,
+      serverFunctionId: thisAction.id,
       status: FunctionCallStatus.COMPLETED,
       result: {
         success: true,

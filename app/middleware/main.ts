@@ -101,7 +101,7 @@ function getTableModelFromTable(table: string): (typeof TableModel)[keyof typeof
   const mapping: Record<string, (typeof TableModel)[keyof typeof TableModel]> = {
     users: TableModel.USERS,
     sessions: TableModel.SESSIONS,
-    actions: TableModel.ACTIONS,
+    serverFunctions: TableModel.SERVER_FUNCTIONS,
     functionCalls: TableModel.FUNCTION_CALLS,
     requestErrors: TableModel.REQUEST_ERRORS,
     debugLogs: TableModel.DEBUG_LOGS,

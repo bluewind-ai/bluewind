@@ -7,9 +7,9 @@ const TABLES = {
     displayName: "Sessions",
     urlName: "sessions",
   },
-  actions: {
-    displayName: "Actions",
-    urlName: "actions",
+  serverFunctions: {
+    displayName: "Server Functions",
+    urlName: "server-functions",
   },
   functionCalls: {
     displayName: "Function Calls",

@@ -7,7 +7,7 @@ import { STORIES } from "~/factories/stories.factory";
 
 export async function loader(_args: LoaderFunctionArgs) {
   return {
-    data: STORIES.actionRecords.basic,
+    data: STORIES.serverFunctionRecords.basic,
   };
 }
 export default function TableShowcase() {

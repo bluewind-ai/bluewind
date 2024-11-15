@@ -14,7 +14,7 @@ import { users } from "../users/schema";
 
 export const functionCalls = pgTable("function_calls", {
   id: serial("id").primaryKey(),
-  actionId: integer("action_id")
+  serverFunctionId: integer("server_function_id")
     .references(() => serverFunctions.id, { onDelete: "cascade" })
     .notNull(),
   requestId: integer("request_id")
@@ -29,15 +29,15 @@ export const functionCalls = pgTable("function_calls", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 export type FunctionCall = typeof functionCalls.$inferSelect & {
-  action?: typeof serverFunctions.$inferSelect;
+  serverFunction?: typeof serverFunctions.$inferSelect;
 };
 export const functionCallsRelations = relations(functionCalls, ({ one, many }) => ({
   request: one(requests, {
     fields: [functionCalls.requestId],
     references: [requests.id],
   }),
-  action: one(serverFunctions, {
-    fields: [functionCalls.actionId],
+  serverFunction: one(serverFunctions, {
+    fields: [functionCalls.serverFunctionId],
     references: [serverFunctions.id],
   }),
   parent: one(functionCalls, {

@@ -1,1 +1,0 @@
-ALTER TABLE "action_calls" ADD COLUMN "result" jsonb;

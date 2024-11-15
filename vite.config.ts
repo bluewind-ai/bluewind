@@ -9,7 +9,7 @@ import { defineConfig } from "vite";
 import { denyImports, envOnlyMacros } from "vite-env-only";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-// import { actionsPlugin } from "./vite-plugins/generate-actions";
+// import { serverFunctionsPlugin } from "./vite-plugins/generate-serverFunctions";
 import { requestLoggerPlugin } from "./vite-plugins/request-logger";
 
 declare module "@remix-run/node" {
@@ -37,7 +37,7 @@ export default defineConfig({
       },
     }),
     tsconfigPaths(),
-    // actionsPlugin(),
+    // serverFunctionsPlugin(),
     // appsPlugin(),
     requestLoggerPlugin(),
   ],

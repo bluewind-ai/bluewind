@@ -1,1 +1,0 @@
-ALTER TABLE "actions" ALTER COLUMN "type" DROP DEFAULT;

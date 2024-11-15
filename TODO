@@ -70,9 +70,9 @@ always use lazy loa
 foreign key relationships always lazily loaded and always like that "file_watchers.FileWatcher"
 all the empty files given by startapp should be removed
 incident:
-corrective actions: take actions and implement processes to fix incident
-preventive actions: take actions and implement processes to prevent incident
-monitoring actions: take actions and implement processes to detect incidents of this type
+corrective serverFunctions: take serverFunctions and implement processes to fix incident
+preventive serverFunctions: take serverFunctions and implement processes to prevent incident
+monitoring serverFunctions: take serverFunctions and implement processes to detect incidents of this type
 default logging between common functions: CREATE SAVE DELETE (maybe list?) and maybe after_save and flows with a buffer size if stuff too big
 never see or have to fill workspace_id, same for user, same for created_at update_at
 created_at update_at by default on all models
@@ -149,12 +149,12 @@ oh actually it's fine, somehow the files in admin_autoregister are not being wat
 
 idea: find the people who need help on the web and the people who provide a service who could help them
 
-I forgot to commit my code before working on a new task. I need to create corrective, preventive and monitor actions for this.
+I forgot to commit my code before working on a new task. I need to create corrective, preventive and monitor serverFunctions for this.
 
 edit of previous message:
-I forgot to commit my code before working on a new task. I need to create preventive and monitor actions for this.
+I forgot to commit my code before working on a new task. I need to create preventive and monitor serverFunctions for this.
 
-Because there is no point creating corrective actions. Corrective actions inspire preventive and monitoring ones, but they''re not really part of the improvement process ( in fact they should be avoided )
+Because there is no point creating corrective serverFunctions. Corrective serverFunctions inspire preventive and monitoring ones, but they''re not really part of the improvement process ( in fact they should be avoided )
 
 Things are getting very meta with the logs as you can see above. Talking about the logs in the logs. I have done a lot of meta things recently.
 Should I push the todos/logs in DB only? DB + file system?
