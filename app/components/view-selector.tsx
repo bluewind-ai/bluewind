@@ -13,7 +13,7 @@ import {
   CommandList,
 } from "~/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
-import { type apps } from "~/db/schema";
+import { type apps, TABLES } from "~/db/schema";
 import { cn } from "~/lib/utils";
 
 type ViewSelectorProps = {
@@ -23,7 +23,7 @@ export function ViewSelector({ apps }: ViewSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
   const [value, setValue] = React.useState(
-    location.pathname.startsWith("/back-office") ? "back-office" : "objects",
+    location.pathname.startsWith("/back-office") ? "back-office" : TABLES.objects.urlName,
   );
   const navigate = useNavigate();
   const selectedView = apps.find((view) => view.value === value);

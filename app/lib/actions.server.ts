@@ -1,7 +1,12 @@
 // app/lib/actions.server.ts
 import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 
-import { ActionType, functionCalls, FunctionCallStatus, serverFunctions } from "~/db/schema";
+import {
+  functionCalls,
+  FunctionCallStatus,
+  serverFunctions,
+  ServerFunctionType,
+} from "~/db/schema";
 import { db } from "~/middleware";
 
 import { createAction, suspend } from "./action-builder.server";
@@ -40,7 +45,7 @@ export async function findNextOrCreateMaster() {
     (
       await db
         .insert(serverFunctions)
-        .values({ requestId: request.id, name: "master", type: ActionType.SYSTEM })
+        .values({ requestId: request.id, name: "master", type: ServerFunctionType.SYSTEM })
         .returning()
     )[0];
   const [newActionCall] = await db

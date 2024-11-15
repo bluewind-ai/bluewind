@@ -3,7 +3,7 @@
 import { sql } from "drizzle-orm";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
 
-import { objects, requests } from "~/db/schema";
+import { objects, requests, TableModel } from "~/db/schema";
 import { countTables } from "~/functions/count-tables.server";
 
 import { createDbProxy, db, DrizzleQuery } from ".";
@@ -30,14 +30,15 @@ export function main(): any {
 
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
+      console.log("SQL Insert incoming!", { model: TableModel.REQUESTS });
       const [result] = await db.execute<{ request_id: number }>(sql`
         WITH request_insert AS (
           INSERT INTO ${requests} DEFAULT VALUES
           RETURNING id
         ),
         object_insert AS (
-          INSERT INTO ${objects} (model, record_id)
-          SELECT 'Request', id FROM request_insert
+          INSERT INTO ${objects} (id, model, record_id)
+          SELECT id, ${TableModel.REQUESTS}, id FROM request_insert
           RETURNING *
         )
         SELECT request_insert.id as request_id
@@ -60,24 +61,9 @@ export function main(): any {
               next();
               res.on("finish", resolve);
             });
-            // dd(context.queries);
-            console.log("FINISHED REQUEST", context.queries);
-            // dd(
-            //   context.queries.map((q) => ({
-            //     model: q.table,
-            //     request_id: context.requestId,
-            //   })),
-            // );
-            // db.insert(objects).values(
-            //   dd(
-            //     context.queries.map((q) => ({
-            //       model: q.table,
-            //       request_id: context.requestId,
-            //     })),
-            //   ),
-            // );
 
-            // dd(context.queries);
+            console.log("FINISHED REQUEST", context.queries);
+
             const formattedQueries = context.queries.map((q) => {
               const ids = Array.isArray(q.result) ? q.result.map((r) => r.id) : null;
               return {
@@ -108,15 +94,17 @@ export function main(): any {
               .flatMap((q) => {
                 const results = Array.isArray(q.result) ? q.result : [q.result];
                 return results.map((r) => ({
-                  model: q.table,
+                  id: r.id,
+                  model: getTableModelFromTable(q.table),
                   recordId: r.id,
+                  functionCallId: null,
                 }));
               });
 
             if (objectsToInsert.length > 0) {
+              console.log("Drizzle Insert incoming!", JSON.stringify(objectsToInsert, null, 2));
               await trx.insert(objects).values(objectsToInsert);
             }
-            // throw new Error("test");
 
             await countTables(trx);
           },
@@ -143,4 +131,19 @@ export function main(): any {
       next(error);
     }
   };
+}
+
+function getTableModelFromTable(table: string): (typeof TableModel)[keyof typeof TableModel] {
+  const mapping: Record<string, (typeof TableModel)[keyof typeof TableModel]> = {
+    users: TableModel.USERS,
+    sessions: TableModel.SESSIONS,
+    actions: TableModel.ACTIONS,
+    functionCalls: TableModel.FUNCTION_CALLS,
+    requestErrors: TableModel.REQUEST_ERRORS,
+    debugLogs: TableModel.DEBUG_LOGS,
+    objects: TableModel.OBJECTS,
+    requests: TableModel.REQUESTS,
+  };
+
+  return mapping[table] || TableModel.OBJECTS;
 }

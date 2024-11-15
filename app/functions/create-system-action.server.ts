@@ -1,8 +1,9 @@
 // app/functions/create-system-action.server.ts
+
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { and, eq } from "drizzle-orm";
 
-import { ActionType, objects, serverFunctions } from "~/db/schema";
+import { objects, serverFunctions, ServerFunctionType, TableModel } from "~/db/schema";
 
 export async function createSystemAction(
   args: LoaderFunctionArgs,
@@ -14,12 +15,13 @@ export async function createSystemAction(
     .insert(serverFunctions)
     .values({
       name,
-      type: ActionType.SYSTEM,
+      type: ServerFunctionType.SYSTEM,
       requestId: request!.id,
     })
     .returning();
   const objectRecord = await db.query.objects.findFirst({
-    where: () => and(eq(objects.model, "actions"), eq(objects.recordId, insertedAction.id)),
+    where: () =>
+      and(eq(objects.model, TableModel.ACTIONS), eq(objects.recordId, insertedAction.id)),
   });
   return {
     success: true,

@@ -4,7 +4,7 @@ import { Filter, Network, Play, Table } from "lucide-react";
 import { useState } from "react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { type apps } from "~/db/schema";
+import { type apps, TABLES } from "~/db/schema";
 import { cn } from "~/lib/utils";
 
 import { ViewSelector } from "./view-selector";
@@ -24,7 +24,7 @@ function getIcon(node: NavigationNode) {
       return <img src="/favicon.ico" alt={`${node.name} icon`} className="h-5 w-5" />;
     case "database":
       return <Network className="h-5 w-5" />;
-    case "actions":
+    case TABLES.actions.urlName:
       return <Play className="h-5 w-5" />;
     case "selectors":
       return <Filter className="h-5 w-5" />;

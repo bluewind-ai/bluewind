@@ -9,56 +9,5 @@ export * from "./schema/request-errors/schema";
 export * from "./schema/requests/schema";
 export * from "./schema/server-functions/schema";
 export * from "./schema/sessions/schema";
+export * from "./schema/table-models";
 export * from "./schema/users/schema";
-
-// Table metadata
-export type TableConfig = {
-  displayName: string;
-  urlName: string;
-};
-
-export const TABLES: Record<string, TableConfig> = {
-  users: {
-    displayName: "Users",
-    urlName: "users",
-  },
-  sessions: {
-    displayName: "Sessions",
-    urlName: "sessions",
-  },
-  actions: {
-    displayName: "Actions",
-    urlName: "actions",
-  },
-  functionCalls: {
-    displayName: "Function Calls",
-    urlName: "function-calls",
-  },
-  requestErrors: {
-    displayName: "Request Errors",
-    urlName: "request-errors",
-  },
-  debugLogs: {
-    displayName: "Debug Logs",
-    urlName: "debug-logs",
-  },
-  objects: {
-    displayName: "Objects",
-    urlName: "objects",
-  },
-  requests: {
-    displayName: "Requests",
-    urlName: "requests",
-  },
-};
-
-export interface TableMetadata extends TableConfig {
-  name: string;
-}
-
-export function getTableMetadata(): TableMetadata[] {
-  return Object.entries(TABLES).map(([key, config]) => ({
-    name: key,
-    ...config,
-  }));
-}

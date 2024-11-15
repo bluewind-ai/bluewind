@@ -10,7 +10,6 @@ import { loadFiles } from "~/functions/load-files.server";
 import { master } from "~/functions/master.server";
 import { resetAll } from "~/functions/reset-all.server";
 import { testDrizzleProxy } from "~/functions/test-drizzle-proxy.server";
-import { testObjects } from "~/functions/test-objects.server";
 
 export const actions = {
   "create-system-action": createSystemAction,
@@ -23,5 +22,4 @@ export const actions = {
   master: master,
   "reset-all": resetAll,
   "test-drizzle-proxy": testDrizzleProxy,
-  "test-objects": testObjects,
 } as const;

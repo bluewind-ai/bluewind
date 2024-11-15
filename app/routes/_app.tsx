@@ -4,7 +4,7 @@ import { useLoaderData } from "@remix-run/react";
 
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { NewMain } from "~/components/new-main";
-import { apps } from "~/db/schema";
+import { apps, TABLES } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
 
 export type ViewData = {
@@ -12,9 +12,10 @@ export type ViewData = {
   label: string;
   iconKey: string;
 };
+
 export const views: ViewData[] = [
   {
-    value: "objects",
+    value: TABLES.objects.urlName,
     label: "Database",
     iconKey: "database",
   },

@@ -28,7 +28,7 @@ export async function countTables(trx: DbClient) {
   const counts: Record<string, number> = {};
   let totalCount = 0;
   for (const tableName in TABLES) {
-    if (tableName === "objects") continue;
+    if (tableName === TABLES.objects.urlName) continue;
     const result = await trx.select({ count: sql<number>`count(*)` }).from(tableMap[tableName]);
     counts[tableName] = Number(result[0].count);
     totalCount += counts[tableName];

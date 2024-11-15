@@ -1,4 +1,5 @@
 // app/routes/back-office+/$name.tsx
+
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 
@@ -17,25 +18,22 @@ async function _loader({ params }: LoaderFunctionArgs) {
   const [key] = tableEntry;
   let data;
   switch (key) {
-    case "users":
+    case TABLES.users.urlName:
       data = await db.query.users.findMany();
       break;
-    case "sessions":
+    case TABLES.sessions.urlName:
       data = await db.query.sessions.findMany();
       break;
-    case "actions":
+    case TABLES.actions.urlName:
       data = await db.query.serverFunctions.findMany();
       break;
-    case "functionCalls":
+    case TABLES.functionCalls.urlName:
       data = await db.query.functionCalls.findMany();
       break;
-    case "requestErrors":
-      data = await db.query.requestErrors.findMany();
-      break;
-    case "debugLogs":
+    case TABLES.debugLogs.urlName:
       data = await db.query.debugLogs.findMany();
       break;
-    case "objects":
+    case TABLES.objects.urlName:
       data = await db.query.objects.findMany();
       break;
     default:
@@ -43,15 +41,17 @@ async function _loader({ params }: LoaderFunctionArgs) {
   }
   return { data };
 }
+
 export async function loader(args: LoaderFunctionArgs) {
   return await loaderMiddleware(args, () => _loader(args));
 }
+
 export default function TableRoute() {
   const { data } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
   const extraColumns = [
     {
-      id: "actions",
+      id: TABLES.actions.urlName,
       header: "Actions",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cell: (row: any) => (

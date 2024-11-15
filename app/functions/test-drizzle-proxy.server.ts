@@ -1,6 +1,5 @@
 // app/functions/test-drizzle-proxy.server.ts
 import * as schema from "~/db/schema";
-import { ActionType } from "~/db/schema/types";
 import { createAction } from "~/lib/action-builder.server";
 import { db } from "~/middleware";
 
@@ -19,7 +18,7 @@ export const testDrizzleProxy = createAction("test-drizzle-proxy", async () => {
   const actionResult = (await db.insert(schema.serverFunctions).values({
     requestId: request1.id,
     name: testActionName,
-    type: ActionType.SYSTEM,
+    type: schema.ServerFunctionType.SYSTEM,
   })) as Action[];
   // this should be removed by YOU when you rewrite the filed;
   if (!actionResult[0]?.id) {
@@ -44,11 +43,14 @@ export const testDrizzleProxy = createAction("test-drizzle-proxy", async () => {
   // this should be removed by YOU when you rewrite the filed;
   const actionObject = await db.query.objects.findFirst({
     where: (fields, { and, eq }) =>
-      and(eq(fields.model, "actions"), eq(fields.recordId, actionResult[0].id)),
+      and(eq(fields.model, schema.TableModel.ACTIONS), eq(fields.recordId, actionResult[0].id)),
   });
   const functionCallObject = await db.query.objects.findFirst({
     where: (fields, { and, eq }) =>
-      and(eq(fields.model, "function_calls"), eq(fields.recordId, functionCallResult[0].id)),
+      and(
+        eq(fields.model, schema.TableModel.FUNCTION_CALLS),
+        eq(fields.recordId, functionCallResult[0].id),
+      ),
   });
   // this should be removed by YOU when you rewrite the filed;
   // this should be removed by YOU when you rewrite the filed;

@@ -11,6 +11,7 @@ import {
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
+import { TABLES } from "~/db/schema";
 import { type ActionRecord } from "~/types/action-record";
 
 import { Button } from "./ui/button";
@@ -65,7 +66,7 @@ function createColumns(navigate: (path: string) => void) {
       cell: (info) => info.getValue().toLocaleString(),
     }),
     columnHelper.display({
-      id: "actions",
+      id: TABLES.actions.urlName,
       header: "",
       cell: (info) => (
         <Form method="post" action={`/actions/${info.row.original.name}`}>

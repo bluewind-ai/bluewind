@@ -1,10 +1,10 @@
 // app/functions/load-apps-to-db.server.ts
 import {
-  ActionType,
   apps as appsTable,
   functionCalls,
   FunctionCallStatus,
   serverFunctions,
+  ServerFunctionType,
 } from "~/db/schema";
 import { createAction } from "~/lib/action-builder.server";
 import { apps as appsData } from "~/lib/generated/apps";
@@ -44,7 +44,7 @@ export const loadAppsToDb = createAction("load-apps-to-db", async () => {
       .values({
         requestId: request.id,
         name: "load-apps-to-db",
-        type: ActionType.SYSTEM,
+        type: ServerFunctionType.SYSTEM,
         functionCallId: 1,
       })
       .returning();

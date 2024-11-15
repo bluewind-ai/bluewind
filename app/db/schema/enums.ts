@@ -2,10 +2,7 @@
 
 import { pgEnum } from "drizzle-orm/pg-core";
 
-export enum ActionType {
-  USER = "USER",
-  SYSTEM = "SYSTEM",
-}
+import { TableModel } from "./table-models";
 
 export enum FunctionCallStatus {
   READY_FOR_APPROVAL = "READY_FOR_APPROVAL",
@@ -22,18 +19,6 @@ export enum ServerFunctionType {
   USER = "USER",
 }
 
-export const TableModel = {
-  USERS: "Users",
-  SESSIONS: "Sessions",
-  ACTIONS: "Actions",
-  FUNCTION_CALLS: "Function Calls",
-  REQUEST_ERRORS: "Request Errors",
-  DEBUG_LOGS: "Debug Logs",
-  OBJECTS: "Objects",
-  REQUESTS: "Requests",
-} as const;
-
-// Create Drizzle enums with at least one value
 export const functionCallStatusEnum = pgEnum("function_call_status", [
   FunctionCallStatus.READY_FOR_APPROVAL,
   FunctionCallStatus.APPROVED,
