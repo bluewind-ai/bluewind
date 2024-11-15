@@ -11,7 +11,6 @@ import {
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
-
 interface NewMainProps {
   data: any[];
 }
