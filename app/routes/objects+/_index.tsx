@@ -1,12 +1,14 @@
 // app/routes/objects+/_index.tsx
+
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
 
 import { BackOfficeTree } from "~/components/back-office-tree";
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
+import { NewMain } from "~/components/new-main";
 import { Button } from "~/components/ui/button";
-import { apps, functionCalls, getTableMetadata, serverFunctions } from "~/db/schema";
+import { apps, functionCalls, getTableMetadata, objects, serverFunctions } from "~/db/schema";
 import type { FunctionCall } from "~/db/schema/function-calls/schema";
 
 type FunctionCallWithRelations = FunctionCall & {
@@ -19,6 +21,22 @@ type FunctionCallWithRelations = FunctionCall & {
 };
 async function _loader(args: LoaderFunctionArgs) {
   const { db } = args.context;
+
+  // Add this query to get all objects
+  const allObjects = await db.query.objects.findMany({
+    orderBy: objects.id,
+  });
+
+  // Transform objects to ActionRecord format
+  const transformedObjects = allObjects.map((obj) => ({
+    id: obj.id,
+    name: obj.model,
+    displayName: `${obj.model} #${obj.recordId}`,
+    lastCallStatus: obj.functionCallId ? "completed" : "never_run",
+    lastRunAt: null,
+    totalCalls: 0,
+  }));
+
   const masterAction = await db.query.serverFunctions.findFirst({
     where: eq(serverFunctions.name, "master"),
   });
@@ -46,6 +64,7 @@ async function _loader(args: LoaderFunctionArgs) {
         })),
       } as NavigationNode,
       apps: [],
+      objects: transformedObjects,
     };
   }
   const functionCallsData = await db.query.functionCalls.findMany({
@@ -90,13 +109,14 @@ async function _loader(args: LoaderFunctionArgs) {
     navigationData,
     backOfficeData,
     apps: appsData,
+    objects: transformedObjects,
   };
 }
 export async function loader(args: LoaderFunctionArgs) {
   return await _loader(args);
 }
 export default function Objects() {
-  const { navigationData, backOfficeData, apps } = useLoaderData<typeof loader>();
+  const { navigationData, backOfficeData, apps, objects } = useLoaderData<typeof loader>();
   const goNextFetcher = useFetcher();
   const loadFilesFetcher = useFetcher();
   const resetFetcher = useFetcher();
@@ -142,6 +162,7 @@ export default function Objects() {
             </Button>
           </bootstrapFetcher.Form>
         </div>
+        <NewMain data={objects} />
         <Outlet />
       </div>
       <BackOfficeTree data={backOfficeData} apps={apps} />
