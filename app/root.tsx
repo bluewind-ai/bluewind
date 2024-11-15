@@ -14,6 +14,11 @@ import {
   useRouteError,
 } from "@remix-run/react";
 
+import { BackOfficeTree } from "./components/back-office-tree";
+import { NavigationNode, NavigationTree } from "./components/navigation-tree";
+import { functionCalls } from "./db/schema";
+import { createNavigationTrees } from "./functions/create-navigation-trees.server";
+
 function Document({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
@@ -103,19 +108,76 @@ export function ErrorBoundary() {
 }
 
 export default function App() {
-  const data = useLoaderData();
+  const { navigationData, apps, backOfficeData } = useLoaderData<typeof loader>();
   return (
     <Document>
-      <div className="h-full overflow-hidden">
-        <div>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
+      <div className="flex h-full overflow-hidden">
+        <NavigationTree data={navigationData} apps={apps} />
+        <div className="flex-1">
+          {/* <ServerFunctionsButtons />
+        <NewMain data={mainData} /> */}
+          <Outlet />
         </div>
-        <Outlet />
+        <BackOfficeTree data={backOfficeData} apps={apps} />
+
+        {/* <BackOfficeTree data={backOfficeData} apps={apps} /> */}
       </div>
+      {/*
+      <div className="h-full overflow-hidden">
+        <NavigationTree data={navigationData} apps={apps} />
+        <Outlet />
+      </div> */}
     </Document>
   );
 }
 
-export async function loader({ context }: LoaderFunctionArgs) {
-  return { message: context.sayHello?.() };
+export async function loader(args: LoaderFunctionArgs) {
+  const { db } = args.context;
+  const url = new URL(args.request.url);
+  const parentId = url.searchParams.get("parent-id") || undefined;
+
+  console.log("Loading function calls with parentId:", parentId);
+
+  const { backOfficeData, apps } = await createNavigationTrees(db, {
+    navigationName: "Objects",
+  });
+
+  const functionCallsData = await db.query.functionCalls.findMany({
+    with: {
+      serverFunction: true,
+    },
+    orderBy: functionCalls.createdAt,
+  });
+
+  const renderableFunctionCalls = functionCallsData.map((call) => ({
+    id: call.id,
+    serverFunctionId: call.serverFunctionId,
+    requestId: call.requestId,
+    parentId: call.parentId,
+    status: call.status,
+    createdAt: call.createdAt.toISOString(),
+    args: call.args ? JSON.stringify(call.args) : null,
+    result: call.result ? JSON.stringify(call.result) : null,
+    serverFunctionName: call.serverFunction?.name || "Unknown",
+  }));
+
+  const navigationData: NavigationNode = {
+    id: 0,
+    name: "Function Calls",
+    type: "root" as const,
+    iconKey: "database",
+    children: renderableFunctionCalls.map((functionCall, index: number) => ({
+      id: index + 1,
+      name: `Call ${functionCall.id}`,
+      to: `/function-calls/${functionCall.id}`,
+      type: "file" as const,
+      children: [] as NavigationNode[],
+    })),
+  };
+
+  return {
+    navigationData,
+    apps,
+    backOfficeData,
+  };
 }
