@@ -14,19 +14,19 @@ async function _action(args: ActionFunctionArgs) {
   if (!request) {
     throw new Error("No request found");
   }
-  // const [masterAction] = await db
-  //   .insert(serverFunctions)
-  //   .values({
-  //     requestId: request.id,
-  //     name: "master",
-  //     type: ActionType.SYSTEM,
-  //   })
-  //   .returning();
+  const [masterAction] = await db
+    .insert(schema.serverFunctions)
+    .values({
+      requestId: request.id,
+      name: "master",
+      type: schema.ActionType.SYSTEM,
+    })
+    .returning();
   await db
     .insert(functionCalls)
     .values({
       requestId: request.id,
-      actionId: 3,
+      actionId: masterAction.id,
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })
     .returning();

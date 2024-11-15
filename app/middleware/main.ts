@@ -46,8 +46,6 @@ export function main(): any {
 
       context.requestId = result.request_id;
 
-      const nextCalled = false;
-
       const runTransaction = async () => {
         await dbWithProxy.transaction(
           async (trx) => {
@@ -104,6 +102,22 @@ export function main(): any {
             if (!context.requestId) {
               throw new Error("Could not create request record");
             }
+
+            const objectsToInsert = context.queries
+              .filter((q) => q.result)
+              .flatMap((q) => {
+                const results = Array.isArray(q.result) ? q.result : [q.result];
+                return results.map((r) => ({
+                  model: q.table,
+                  recordId: r.id,
+                }));
+              });
+
+            if (objectsToInsert.length > 0) {
+              await trx.insert(objects).values(objectsToInsert);
+            }
+            // throw new Error("test");
+
             await countTables(trx);
           },
           {
