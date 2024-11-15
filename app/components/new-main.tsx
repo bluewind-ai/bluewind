@@ -1,89 +1,47 @@
 // app/components/new-main.tsx
-import { Form, useNavigate } from "@remix-run/react";
+
+import type { SortingState } from "@tanstack/react-table";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
-import { TABLES } from "~/db/schema";
-import { type ActionRecord } from "~/types/action-record";
-
-import { Button } from "./ui/button";
 
 interface NewMainProps {
-  data: ActionRecord[];
+  data: any[];
 }
-const columnHelper = createColumnHelper<ActionRecord>();
-const STATUS_COLORS = {
-  completed: "text-green-600 bg-green-50",
-  running: "text-blue-600 bg-blue-50",
-  ready_for_approval: "text-yellow-600 bg-yellow-50",
-  failed: "text-red-600 bg-red-50",
-  never_run: "text-gray-500 bg-gray-50",
-} as const;
-function createColumns(navigate: (path: string) => void) {
-  return [
-    columnHelper.accessor("displayName", {
-      header: "Action",
-      cell: (info) => (
-        <button
-          onClick={() => navigate(`/actions/${info.row.original.name}`)}
-          className="hover:underline font-medium text-left"
-        >
-          {info.getValue()}
-        </button>
-      ),
+
+const columnHelper = createColumnHelper<any>();
+
+const createColumns = (data: any[]) => {
+  if (!data.length) return [];
+
+  console.log("Creating columns from sample data keys:", Object.keys(data[0]));
+
+  return Object.keys(data[0]).map((key) =>
+    columnHelper.accessor(key, {
+      header: key,
+      cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor("lastCallStatus", {
-      header: "Status",
-      cell: (info) => {
-        const status = info.getValue();
-        return (
-          <span
-            className={`px-2 py-1 rounded-full text-sm ${STATUS_COLORS[status as keyof typeof STATUS_COLORS] || ""}`}
-          >
-            {status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-          </span>
-        );
-      },
-    }),
-    columnHelper.accessor("lastRunAt", {
-      header: "Last Run",
-      cell: (info) => {
-        const date = info.getValue();
-        if (!date) return "Never";
-        return new Date(date).toLocaleString();
-      },
-    }),
-    columnHelper.accessor("totalCalls", {
-      header: "Total Runs",
-      cell: (info) => info.getValue().toLocaleString(),
-    }),
-    columnHelper.display({
-      id: TABLES.actions.urlName,
-      header: "",
-      cell: (info) => (
-        <Form method="post" action={`/actions/${info.row.original.name}`}>
-          <Button type="submit" variant="outline" size="sm">
-            Run
-          </Button>
-        </Form>
-      ),
-    }),
-  ];
-}
+  );
+};
+
 export function NewMain({ data }: NewMainProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const navigate = useNavigate();
+
+  console.log("NewMain render with data:", {
+    dataLength: data.length,
+    firstRow: data[0],
+  });
+
   const table = useReactTable({
     data,
-    columns: createColumns(navigate),
+    columns: createColumns(data),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     state: {
@@ -91,6 +49,7 @@ export function NewMain({ data }: NewMainProps) {
     },
     onSortingChange: setSorting,
   });
+
   return (
     <div className="p-4">
       <table className="min-w-full border-collapse border border-slate-200">
