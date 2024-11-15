@@ -16,6 +16,7 @@ import {
 
 import { BackOfficeTree } from "./components/back-office-tree";
 import { NavigationNode, NavigationTree } from "./components/navigation-tree";
+import { ServerFunctionsButtons } from "./components/server-functions-buttons";
 import { functionCalls } from "./db/schema";
 import { createNavigationTrees } from "./functions/create-navigation-trees.server";
 
@@ -113,9 +114,10 @@ export default function App() {
     <Document>
       <div className="flex h-full overflow-hidden">
         <NavigationTree data={navigationData} apps={apps} />
+
         <div className="flex-1">
-          {/* <ServerFunctionsButtons />
-        <NewMain data={mainData} /> */}
+          <ServerFunctionsButtons />
+
           <Outlet />
         </div>
         <BackOfficeTree data={backOfficeData} apps={apps} />
