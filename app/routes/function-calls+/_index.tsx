@@ -2,14 +2,13 @@
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
-import { eq } from "drizzle-orm";
 
 import { BackOfficeTree } from "~/components/back-office-tree";
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { NewMain } from "~/components/new-main";
 import { ServerFunctionsButtons } from "~/components/server-functions-buttons";
-import { apps, functionCalls, serverFunctions } from "~/db/schema";
-import { getTableMetadata } from "~/db/schema/table-models";
+import { functionCalls } from "~/db/schema";
+import { createNavigationTrees } from "~/functions/create-navigation-trees.server";
 
 async function _loader(args: LoaderFunctionArgs) {
   const { db } = args.context;
@@ -18,36 +17,9 @@ async function _loader(args: LoaderFunctionArgs) {
 
   console.log("Loading function calls with parentId:", parentId);
 
-  const masterAction = await db.query.serverFunctions.findFirst({
-    where: eq(serverFunctions.name, "master"),
+  const { backOfficeData, apps } = await createNavigationTrees(db, {
+    navigationName: "Function Calls",
   });
-
-  if (!masterAction) {
-    return {
-      navigationData: {
-        id: 0,
-        name: "Function Calls",
-        type: "root" as const,
-        iconKey: "database",
-        children: [],
-      } as NavigationNode,
-      backOfficeData: {
-        id: 0,
-        name: "Database",
-        type: "root" as const,
-        iconKey: "database",
-        children: getTableMetadata().map((table, index) => ({
-          id: index + 1,
-          name: table.displayName,
-          to: `/${table.urlName}`,
-          type: "file" as const,
-          children: [] as NavigationNode[],
-        })),
-      } as NavigationNode,
-      apps: [],
-      functionCalls: [],
-    };
-  }
 
   const functionCallsData = await db.query.functionCalls.findMany({
     with: {
@@ -56,7 +28,6 @@ async function _loader(args: LoaderFunctionArgs) {
     orderBy: functionCalls.createdAt,
   });
 
-  // Transform function calls into a renderable format
   const renderableFunctionCalls = functionCallsData.map((call) => ({
     id: call.id,
     serverFunctionId: call.serverFunctionId,
@@ -83,32 +54,10 @@ async function _loader(args: LoaderFunctionArgs) {
     })),
   };
 
-  const appsData = await db.select().from(apps).orderBy(apps.order);
-
-  console.log("Getting table metadata for BackOfficeTree");
-  const tables = getTableMetadata();
-  console.log("Table metadata:", tables);
-
-  const backOfficeData: NavigationNode = {
-    id: 0,
-    name: "Database",
-    type: "root" as const,
-    iconKey: "database",
-    children: tables.map((table, index) => ({
-      id: index + 1,
-      name: table.displayName,
-      to: `/${table.urlName}`,
-      type: "file" as const,
-      children: [] as NavigationNode[],
-    })),
-  };
-
-  console.log("Created BackOfficeTree data:", backOfficeData);
-
   return {
     navigationData,
     backOfficeData,
-    apps: appsData,
+    apps,
     functionCalls: renderableFunctionCalls,
   };
 }
