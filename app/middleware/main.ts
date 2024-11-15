@@ -1,4 +1,5 @@
 // app/middleware/main.ts
+
 import { sql } from "drizzle-orm";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
 
@@ -6,6 +7,30 @@ import { objects, requests, TableModel } from "~/db/schema";
 import { countTables } from "~/functions/count-tables.server";
 
 import { createDbProxy, db, DrizzleQuery } from ".";
+
+function createObjectsFromQueries(queries: DrizzleQuery[]) {
+  console.log("\n[Objects Creation]");
+  console.log("Processing queries:", JSON.stringify(queries, null, 2));
+
+  const objectsToInsert = queries
+    .filter((q) => q.result)
+    .flatMap((q, queryIndex) => {
+      const results = Array.isArray(q.result) ? q.result : [q.result];
+      const model = getTableModelFromTable(q.table);
+
+      return results.map((r) => ({
+        id: r.id + queryIndex * 1000, // Use an offset based on query index to ensure unique IDs
+        model,
+        recordId: r.id,
+        functionCallId: null,
+      }));
+    });
+
+  console.log("Created objects:", JSON.stringify(objectsToInsert, null, 2));
+  console.log("[Objects Creation End]\n");
+
+  return objectsToInsert;
+}
 
 export function main(): any {
   return async (req: ExpressRequest, res: Response, next: NextFunction) => {
@@ -58,17 +83,9 @@ export function main(): any {
             if (!context.requestId) {
               throw new Error("Could not create request record");
             }
-            const objectsToInsert = context.queries
-              .filter((q) => q.result)
-              .flatMap((q) => {
-                const results = Array.isArray(q.result) ? q.result : [q.result];
-                return results.map((r) => ({
-                  id: r.id,
-                  model: getTableModelFromTable(q.table),
-                  recordId: r.id,
-                  functionCallId: null,
-                }));
-              });
+
+            const objectsToInsert = createObjectsFromQueries(context.queries);
+
             if (objectsToInsert.length > 0) {
               await trx.insert(objects).values(objectsToInsert);
             }
@@ -97,6 +114,7 @@ export function main(): any {
     }
   };
 }
+
 function getTableModelFromTable(table: string): (typeof TableModel)[keyof typeof TableModel] {
   const mapping: Record<string, (typeof TableModel)[keyof typeof TableModel]> = {
     users: TableModel.USERS,
