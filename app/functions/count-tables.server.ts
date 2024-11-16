@@ -1,5 +1,4 @@
 // app/functions/count-tables.server.ts
-
 import { sql } from "drizzle-orm";
 import { type PgTable } from "drizzle-orm/pg-core";
 
@@ -28,11 +27,9 @@ const schemaMap: Record<keyof typeof TABLES, PgTable<any>> = {
   requests,
   models,
 };
-
 export async function countTables(trx: DbClient) {
   const counts: Record<string, number> = {};
   let totalCount = 0;
-
   for (const [key, config] of Object.entries(TABLES)) {
     if (config.urlName === TABLES.objects.urlName) continue;
     const result = await trx
@@ -41,7 +38,6 @@ export async function countTables(trx: DbClient) {
     counts[key] = Number(result[0].count);
     totalCount += counts[key];
   }
-
   const objectsResult = await trx.select({ count: sql<number>`count(*)` }).from(objects);
   const objectsCount = Number(objectsResult[0].count);
   if (totalCount !== objectsCount) {

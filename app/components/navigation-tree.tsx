@@ -1,5 +1,4 @@
 // app/components/navigation-tree.tsx
-
 import { Link } from "@remix-run/react";
 import { Filter, Network, Play, Table } from "lucide-react";
 import { useState } from "react";
@@ -20,7 +19,6 @@ export type NavigationNode = {
   children: NavigationNode[];
   counts?: Record<string, number>;
 };
-
 function getIcon(node: NavigationNode) {
   if (!node.iconKey) return null;
   switch (node.iconKey) {
@@ -36,7 +34,6 @@ function getIcon(node: NavigationNode) {
       return <Table className="h-5 w-5" />;
   }
 }
-
 function NavigationItem({
   node,
   rootCounts,
@@ -51,18 +48,8 @@ function NavigationItem({
   const hasChildren = node.children.length > 0;
   const isRoot = node.type === "root";
   const isApp = node.type === "app";
-
   const counts = node.counts || rootCounts;
   const count = node.to && counts ? counts[node.to.slice(1)] : undefined;
-
-  console.log("NavigationItem render:", {
-    name: node.name,
-    to: node.to,
-    counts,
-    extractedCount: count,
-    level,
-  });
-
   const content = (
     <div className="flex items-center gap-2 justify-between w-full">
       <div className="flex items-center gap-2">
@@ -85,14 +72,12 @@ function NavigationItem({
       )}
     </div>
   );
-
   const itemClasses = cn(
     "flex items-center gap-2 p-2 rounded-md w-full",
     "hover:bg-accent hover:text-accent-foreground transition-colors",
     isRoot && "h-12",
     isApp && "pl-4",
   );
-
   if (!hasChildren && node.to) {
     return (
       <Link to={node.to} className={itemClasses} data-discover="true">
@@ -100,7 +85,6 @@ function NavigationItem({
       </Link>
     );
   }
-
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className={itemClasses}>{content}</CollapsibleTrigger>
@@ -114,12 +98,10 @@ function NavigationItem({
     </Collapsible>
   );
 }
-
 interface NavigationTreeProps {
   data: NavigationNode;
   apps: (typeof apps.$inferSelect)[];
 }
-
 export function NavigationTree({ data, apps }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">

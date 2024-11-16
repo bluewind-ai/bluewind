@@ -1,5 +1,4 @@
 // app/factories/stories.factory.ts
-
 export const STORIES = {
   serverFunctionRecords: {
     basic: [

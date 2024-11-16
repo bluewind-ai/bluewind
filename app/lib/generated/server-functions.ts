@@ -1,5 +1,4 @@
 // app/lib/generated/server-functions.ts
-
 import { getFunctionCallTree } from "~/functions/get-function-call-tree.server";
 import { getTables } from "~/functions/get-tables.server";
 import { goNext } from "~/functions/go-next.server";

@@ -1,5 +1,4 @@
 // app/root-error-boundary.tsx
-
 import {
   isRouteErrorResponse,
   Links,
@@ -26,7 +25,6 @@ function Document({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
-
 export function ErrorBoundary() {
   const error = useRouteError();
   let errorOutput = "";

@@ -1,5 +1,4 @@
 // app/db/schema/index.ts
-
 export * from "./apps/schema";
 export * from "./debug-logs/schema";
 export * from "./enums";

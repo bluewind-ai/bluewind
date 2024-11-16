@@ -1,5 +1,4 @@
 // app/db/schema/models/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text } from "drizzle-orm/pg-core";
 
@@ -12,7 +11,6 @@ export const models = pgTable(TableModel.MODELS, {
   pluralName: text("plural_name").notNull(),
   singularName: text("singular_name").notNull(),
 });
-
 export const modelsRelations = relations(models, ({ one }) => ({
   request: one(requests, {
     fields: [models.requestId],

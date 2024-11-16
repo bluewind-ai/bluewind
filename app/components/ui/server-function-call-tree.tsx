@@ -1,5 +1,4 @@
 // app/components/ui/server-function-call-tree.tsx
-
 import { useState } from "react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";

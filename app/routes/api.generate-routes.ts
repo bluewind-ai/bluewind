@@ -1,5 +1,4 @@
 // app/routes/api.generate-routes.ts
-
 import fs from "node:fs";
 import path from "node:path";
 
@@ -36,26 +35,17 @@ export default function ${routeName}() {
   return <NewMain data={tableObjects} />;
 }
 `;
-
 export async function loader() {
   const routesDir = path.join(process.cwd(), "app", "routes");
   const generatedRoutes = [];
-
   for (const [tableName, config] of Object.entries(TABLES)) {
-    console.log(`Generating route for ${tableName}`);
-
     const routeFile = path.join(routesDir, `${config.urlName}+/_index.tsx`);
-
     fs.mkdirSync(path.dirname(routeFile), { recursive: true });
     fs.writeFileSync(routeFile, routeTemplate(tableName, config.displayName.replace(" ", "")));
-
     generatedRoutes.push({
       tableName,
       path: routeFile,
     });
-
-    console.log(`Generated route file at: ${routeFile}`);
   }
-
   return { success: true, generatedRoutes };
 }

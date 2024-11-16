@@ -1,5 +1,4 @@
 // app/functions/create-navigation-trees.server.ts
-
 import { eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
@@ -19,7 +18,6 @@ export async function createNavigationTrees(
   const masterAction = await db.query.serverFunctions.findFirst({
     where: eq(serverFunctions.name, "master"),
   });
-
   if (!masterAction) {
     return {
       navigationData: {
@@ -47,13 +45,8 @@ export async function createNavigationTrees(
       apps: [],
     };
   }
-
   const appsData = await db.select().from(apps).orderBy(apps.order);
-
-  console.log("Getting table metadata for BackOfficeTree");
   const tables = getTableMetadata();
-  console.log("Table metadata:", tables);
-
   const backOfficeData: NavigationNode = {
     id: 0,
     name: "Database",
@@ -68,7 +61,6 @@ export async function createNavigationTrees(
       children: [] as NavigationNode[],
     })),
   };
-
   return {
     backOfficeData,
     apps: appsData,

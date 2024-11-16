@@ -1,5 +1,4 @@
 // app/middleware/main.ts
-
 import { sql } from "drizzle-orm";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
 
@@ -26,15 +25,12 @@ export function main(): any {
         .map((line) => `    at ${line.substring(line.indexOf("/app/"))}`)
         .reverse()
         .join("\n");
-
       // eslint-disable-next-line no-console
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
-
       const [requestModel] = await db
         .select({ id: models.id })
         .from(models)
         .where(sql`${models.pluralName} = 'requests'`);
-
       const [result] = await db.execute<{
         request_id: number;
       }>(sql`
@@ -51,7 +47,6 @@ export function main(): any {
         FROM request_insert, object_insert;
       `);
       context.requestId = result.request_id;
-
       const runTransaction = async () => {
         await dbWithProxy.transaction(
           async (trx) => {
@@ -64,13 +59,10 @@ export function main(): any {
               next();
               res.on("finish", resolve);
             });
-
             if (!context.requestId) {
               throw new Error("Could not create request record");
             }
-
             const objectsToInsert = await countObjectsForQueries(trx, context.queries);
-
             if (objectsToInsert.length > 0) {
               await trx.insert(objects).values(objectsToInsert);
             }
@@ -81,7 +73,6 @@ export function main(): any {
           },
         );
       };
-
       let retries = 3;
       while (retries > 0) {
         try {

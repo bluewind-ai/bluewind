@@ -1,5 +1,4 @@
 // app/root.tsx
-
 import "./tailwind.css";
 
 import { LoaderFunctionArgs } from "@remix-run/node";
@@ -27,9 +26,7 @@ function Document({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
-
 export { ErrorBoundary } from "./root-error-boundary";
-
 export default function App() {
   const { navigationData, apps, backOfficeData } = useLoaderData<typeof loader>();
   return (
@@ -45,7 +42,6 @@ export default function App() {
     </Document>
   );
 }
-
 export async function loader(args: LoaderFunctionArgs) {
   return loadNavigationData(args);
 }

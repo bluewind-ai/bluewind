@@ -1,5 +1,4 @@
 // app/db/schema/table-models.ts
-
 export const TableModel = {
   USERS: "users",
   SESSIONS: "sessions",
@@ -11,13 +10,11 @@ export const TableModel = {
   REQUESTS: "requests",
   MODELS: "models",
 } as const;
-
 export type TableConfig = {
   displayName: string;
   urlName: string;
   modelName: string;
 };
-
 export const TABLES: Record<string, TableConfig> = {
   users: {
     displayName: "Users",
@@ -65,11 +62,9 @@ export const TABLES: Record<string, TableConfig> = {
     modelName: "models",
   },
 };
-
 export interface TableMetadata extends TableConfig {
   name: string;
 }
-
 export function getTableMetadata(): TableMetadata[] {
   return Object.entries(TABLES).map(([key, config]) => ({
     name: key,

@@ -1,5 +1,4 @@
 // app/routes/request-errors+/_index.tsx
-
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
@@ -11,18 +10,11 @@ export async function loader(args: LoaderFunctionArgs) {
   const tableObjects = await db.query.requestErrors.findMany({
     orderBy: requestErrors.id,
   });
-
-  console.log("Loader data:", tableObjects);
-
   return {
     tableObjects,
   };
 }
-
 export default function RequestErrors() {
   const { tableObjects } = useLoaderData<typeof loader>();
-
-  console.log("Component data:", tableObjects);
-
   return <NewMain data={tableObjects} />;
 }

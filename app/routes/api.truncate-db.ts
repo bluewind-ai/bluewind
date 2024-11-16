@@ -1,5 +1,4 @@
 // app/routes/api.truncate-db.ts
-
 import { type ActionFunctionArgs, redirect } from "@remix-run/node";
 import { type PgTable } from "drizzle-orm/pg-core";
 
@@ -35,7 +34,6 @@ async function _action(args: ActionFunctionArgs) {
   await new Promise((resolve) => setTimeout(resolve, 0));
   return redirect("/");
 }
-
 export async function action(args: ActionFunctionArgs) {
   return await _action(args);
 }
