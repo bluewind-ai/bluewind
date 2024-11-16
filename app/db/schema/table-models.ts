@@ -9,6 +9,7 @@ export const TableModel = {
   DEBUG_LOGS: "debug-logs",
   OBJECTS: "objects",
   REQUESTS: "requests",
+  MODELS: "models",
 } as const;
 
 export type TableConfig = {
@@ -57,6 +58,11 @@ export const TABLES: Record<string, TableConfig> = {
     displayName: "Requests",
     urlName: TableModel.REQUESTS,
     modelName: "requests",
+  },
+  models: {
+    displayName: "Models",
+    urlName: TableModel.MODELS,
+    modelName: "models",
   },
 };
 

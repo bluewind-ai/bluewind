@@ -125,6 +125,7 @@ function getTableModelFromTable(table: string): (typeof TableModel)[keyof typeof
     debugLogs: TableModel.DEBUG_LOGS,
     objects: TableModel.OBJECTS,
     requests: TableModel.REQUESTS,
+    models: TableModel.MODELS,
   };
   return mapping[table] || TableModel.OBJECTS;
 }

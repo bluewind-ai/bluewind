@@ -15,6 +15,20 @@
       "when": 1731702617484,
       "tag": "0001_common_eternals",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1731726884536,
+      "tag": "0002_ambiguous_cable",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1731727367975,
+      "tag": "0003_left_secret_warriors",
+      "breakpoints": true
     }
   ]
 }

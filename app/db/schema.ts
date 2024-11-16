@@ -3,6 +3,7 @@ export * from "./schema/apps/schema";
 export * from "./schema/debug-logs/schema";
 export * from "./schema/enums";
 export * from "./schema/function-calls/schema";
+export * from "./schema/models/schema";
 export * from "./schema/objects/schema";
 export * from "./schema/request-errors/schema";
 export * from "./schema/requests/schema";

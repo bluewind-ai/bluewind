@@ -1,4 +1,5 @@
 // app/db/schema/enums.ts
+
 import { pgEnum } from "drizzle-orm/pg-core";
 
 import { TableModel } from "./table-models";
@@ -12,10 +13,12 @@ export enum FunctionCallStatus {
   COMPLETED = "COMPLETED",
   FAILED = "FAILED",
 }
+
 export enum ServerFunctionType {
   SYSTEM = "SYSTEM",
   USER = "USER",
 }
+
 export const functionCallStatusEnum = pgEnum("function_call_status", [
   FunctionCallStatus.READY_FOR_APPROVAL,
   FunctionCallStatus.APPROVED,
@@ -25,10 +28,12 @@ export const functionCallStatusEnum = pgEnum("function_call_status", [
   FunctionCallStatus.COMPLETED,
   FunctionCallStatus.FAILED,
 ]);
+
 export const serverFunctionTypeEnum = pgEnum("server_function_type", [
   ServerFunctionType.SYSTEM,
   ServerFunctionType.USER,
 ]);
+
 export const modelEnum = pgEnum("model", [
   TableModel.USERS,
   TableModel.SESSIONS,
@@ -38,4 +43,5 @@ export const modelEnum = pgEnum("model", [
   TableModel.DEBUG_LOGS,
   TableModel.OBJECTS,
   TableModel.REQUESTS,
+  TableModel.MODELS, // Added this line
 ]);
