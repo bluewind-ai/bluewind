@@ -6,7 +6,7 @@ import { GenericTableView } from "~/components/generic-table-view";
 import { Button } from "~/components/ui/button";
 import { TABLES } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
-import { db } from "~/middleware";
+import { db } from "~/middleware/main";
 
 async function _loader({ params }: LoaderFunctionArgs) {
   const { name } = params;

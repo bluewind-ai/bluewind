@@ -1,6 +1,6 @@
 // app/lib/utils/apps/execute-generate-apps.ts
 import { functionCalls, FunctionCallStatus } from "~/db/schema";
-import { db } from "~/middleware";
+import { db } from "~/middleware/main";
 
 import { generateApps } from "./generate-apps";
 import { loadAppsToDB } from "./load-apps-to-db-server";

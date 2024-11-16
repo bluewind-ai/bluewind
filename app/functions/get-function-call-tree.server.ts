@@ -2,7 +2,7 @@
 import { eq } from "drizzle-orm";
 
 import { functionCalls } from "~/db/schema";
-import { db } from "~/middleware";
+import { db } from "~/middleware/main";
 
 interface FunctionCallTree {
   id: number;

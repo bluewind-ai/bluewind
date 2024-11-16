@@ -5,7 +5,7 @@ import { Outlet, useLoaderData } from "@remix-run/react";
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
 import { apps, getTableMetadata } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
-import { db } from "~/middleware";
+import { db } from "~/middleware/main";
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {

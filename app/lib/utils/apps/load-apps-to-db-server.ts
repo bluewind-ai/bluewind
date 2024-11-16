@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 import { apps, functionCalls, FunctionCallStatus } from "~/db/schema";
-import { db } from "~/middleware";
+import { db } from "~/middleware/main";
 
 export async function loadAppsToDB() {
   // this should be removed by YOU when you rewrite the filed;
