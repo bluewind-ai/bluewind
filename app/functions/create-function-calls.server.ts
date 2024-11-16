@@ -5,12 +5,12 @@ import type { RequestExtensions } from "~/middleware";
 import { bootstrap } from "./bootstrap.server";
 import { truncateDb } from "./truncate-db.server";
 
-const serverFunctionMap = {
-  bootstrap,
+const serverFunctions = {
   truncateDb,
+  bootstrap,
 } as const;
 
-type ServerFunctionName = keyof typeof serverFunctionMap;
+type ServerFunctionName = keyof typeof serverFunctions;
 
 export async function createFunctionCalls(request: Request, context: RequestExtensions) {
   console.log("createFunctionCalls called");
@@ -20,10 +20,10 @@ export async function createFunctionCalls(request: Request, context: RequestExte
   const functionName = formData.get("function") as ServerFunctionName;
   console.log("functionName:", functionName);
 
-  if (!functionName || !(functionName in serverFunctionMap)) {
-    throw new Error("Invalid function name");
+  if (!functionName || !(functionName in serverFunctions)) {
+    throw new Error(`Invalid function name: ${functionName}`);
   }
 
-  await serverFunctionMap[functionName](context);
-  return { success: true };
+  await serverFunctions[functionName](context);
+  return null;
 }
