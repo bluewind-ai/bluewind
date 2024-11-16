@@ -18,18 +18,8 @@ export type NavigationNode = {
   iconKey?: string;
   type: "root" | "app" | "file";
   children: NavigationNode[];
+  counts?: Record<string, number>;
 };
-
-const HARDCODED_COUNTS = {
-  [TABLES.users.urlName]: 42,
-  [TABLES.sessions.urlName]: 156,
-  [TABLES.serverFunctions.urlName]: 23,
-  [TABLES.functionCalls.urlName]: 89,
-  [TABLES.requestErrors.urlName]: 7,
-  [TABLES.debugLogs.urlName]: 234,
-  [TABLES.objects.urlName]: 167,
-  [TABLES.requests.urlName]: 45,
-} as const;
 
 function getIcon(node: NavigationNode) {
   if (!node.iconKey) return null;
@@ -47,14 +37,31 @@ function getIcon(node: NavigationNode) {
   }
 }
 
-function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: number }) {
+function NavigationItem({
+  node,
+  rootCounts,
+  level = 0,
+}: {
+  node: NavigationNode;
+  rootCounts?: Record<string, number>;
+  level?: number;
+}) {
   const [isOpen, setIsOpen] = useState(true);
   const icon = getIcon(node);
   const hasChildren = node.children.length > 0;
   const isRoot = node.type === "root";
   const isApp = node.type === "app";
 
-  const count = node.to ? HARDCODED_COUNTS[node.to.slice(1)] : undefined;
+  const counts = node.counts || rootCounts;
+  const count = node.to && counts ? counts[node.to.slice(1)] : undefined;
+
+  console.log("NavigationItem render:", {
+    name: node.name,
+    to: node.to,
+    counts,
+    extractedCount: count,
+    level,
+  });
 
   const content = (
     <div className="flex items-center gap-2 justify-between w-full">
@@ -100,7 +107,7 @@ function NavigationItem({ node, level = 0 }: { node: NavigationNode; level?: num
       <CollapsibleContent>
         <div className={cn("flex flex-col gap-1 mt-1", isApp && "pl-2")}>
           {node.children.map((child) => (
-            <NavigationItem key={child.id} node={child} level={level + 1} />
+            <NavigationItem key={child.id} node={child} rootCounts={counts} level={level + 1} />
           ))}
         </div>
       </CollapsibleContent>

@@ -13,6 +13,7 @@ export async function createNavigationTrees(
   options: {
     navigationName: string;
     navigationIconKey?: string;
+    counts?: Record<string, number>;
   },
 ) {
   const masterAction = await db.query.serverFunctions.findFirst({
@@ -27,12 +28,14 @@ export async function createNavigationTrees(
         type: "root" as const,
         iconKey: options.navigationIconKey || "database",
         children: [],
+        counts: options.counts,
       } as NavigationNode,
       backOfficeData: {
         id: 0,
         name: "Database",
         type: "root" as const,
         iconKey: "database",
+        counts: options.counts,
         children: getTableMetadata().map((table, index) => ({
           id: index + 1,
           name: table.displayName,
@@ -56,6 +59,7 @@ export async function createNavigationTrees(
     name: "Database",
     type: "root" as const,
     iconKey: "database",
+    counts: options.counts,
     children: tables.map((table, index) => ({
       id: index + 1,
       name: table.displayName,
