@@ -6,34 +6,42 @@ import { type PgTable } from "drizzle-orm/pg-core";
 import {
   debugLogs,
   functionCalls,
+  models,
   objects,
   requestErrors,
   requests,
   serverFunctions,
   sessions,
-  TABLES,
   users,
 } from "~/db/schema";
+import { TABLES } from "~/db/schema/table-models";
 import type { DbClient } from "~/middleware";
 
+const schemaMap: Record<keyof typeof TABLES, PgTable<any>> = {
+  users,
+  sessions,
+  serverFunctions,
+  functionCalls,
+  requestErrors,
+  debugLogs,
+  objects,
+  requests,
+  models,
+};
+
 export async function countTables(trx: DbClient) {
-  const tableMap: Record<string, PgTable<any>> = {
-    functionCalls,
-    serverFunctions,
-    requestErrors,
-    debugLogs,
-    sessions,
-    users,
-    requests,
-  };
   const counts: Record<string, number> = {};
   let totalCount = 0;
-  for (const tableName in TABLES) {
-    if (tableName === TABLES.objects.urlName || tableName === "models") continue;
-    const result = await trx.select({ count: sql<number>`count(*)` }).from(tableMap[tableName]);
-    counts[tableName] = Number(result[0].count);
-    totalCount += counts[tableName];
+
+  for (const [key, config] of Object.entries(TABLES)) {
+    if (config.urlName === TABLES.objects.urlName) continue;
+    const result = await trx
+      .select({ count: sql<number>`count(*)` })
+      .from(schemaMap[key as keyof typeof TABLES]);
+    counts[key] = Number(result[0].count);
+    totalCount += counts[key];
   }
+
   const objectsResult = await trx.select({ count: sql<number>`count(*)` }).from(objects);
   const objectsCount = Number(objectsResult[0].count);
   if (totalCount !== objectsCount) {

@@ -1,6 +1,6 @@
 {
-  "id": "3609c76c-9bb2-4ab4-a450-d5553c8ea733",
-  "prevId": "75268f26-e363-4c75-a4c8-30c026c2008b",
+  "id": "d98b3295-16f8-47fb-b53f-5eaa67148f42",
+  "prevId": "3609c76c-9bb2-4ab4-a450-d5553c8ea733",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -274,10 +274,26 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "objects_model_id_models_id_fk": {
+          "name": "objects_model_id_models_id_fk",
+          "tableFrom": "objects",
+          "tableTo": "models",
+          "columnsFrom": ["model_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

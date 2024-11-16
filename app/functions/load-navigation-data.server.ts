@@ -21,16 +21,18 @@ export async function loadNavigationData(args: LoaderFunctionArgs) {
 
   const tableCounts = await db
     .select({
-      model: schema.objects.model,
+      modelId: schema.objects.modelId,
+      pluralName: schema.models.pluralName,
       count: sql<number>`count(*)`.as("count"),
     })
     .from(schema.objects)
-    .groupBy(schema.objects.model);
+    .leftJoin(schema.models, sql`${schema.objects.modelId} = ${schema.models.id}`)
+    .groupBy(schema.objects.modelId, schema.models.pluralName);
 
   console.log("Table counts raw:", tableCounts);
 
   Object.entries(schema.TABLES).forEach(([key, config]) => {
-    const count = tableCounts.find((t) => t.model === config.modelName)?.count;
+    const count = tableCounts.find((t) => t.pluralName === config.modelName)?.count;
     console.log(`Mapping ${key}:`, {
       key,
       searchingFor: config.modelName,
@@ -44,7 +46,7 @@ export async function loadNavigationData(args: LoaderFunctionArgs) {
       const count =
         config.urlName === TableModel.OBJECTS
           ? tableCounts.reduce((acc, curr) => acc + Number(curr.count), 0)
-          : (tableCounts.find((t) => t.model === config.modelName)?.count ?? 0);
+          : (tableCounts.find((t) => t.pluralName === config.modelName)?.count ?? 0);
 
       console.log(`Final count for ${config.urlName}:`, count);
       return [config.urlName, count];

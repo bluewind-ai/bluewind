@@ -7,7 +7,6 @@ import { loadAppsToDb } from "~/functions/load-apps-to-db.server";
 import { loadCsvData } from "~/functions/load-csv-data.server";
 import { master } from "~/functions/master.server";
 import { resetAll } from "~/functions/reset-all.server";
-import { testDrizzleProxy } from "~/functions/test-drizzle-proxy.server";
 
 export const serverFunctions = {
   "get-function-call-tree": getFunctionCallTree,
@@ -17,5 +16,4 @@ export const serverFunctions = {
   "load-csv-data": loadCsvData,
   master: master,
   "reset-all": resetAll,
-  "test-drizzle-proxy": testDrizzleProxy,
 } as const;

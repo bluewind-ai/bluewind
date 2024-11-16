@@ -29,6 +29,20 @@
       "when": 1731727367975,
       "tag": "0003_left_secret_warriors",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1731727583418,
+      "tag": "0004_majestic_mastermind",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1731727893596,
+      "tag": "0005_unusual_quasar",
+      "breakpoints": true
     }
   ]
 }
