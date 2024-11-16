@@ -1,10 +1,8 @@
 // app/middleware/index.ts
 import type { AppLoadContext } from "@remix-run/node";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { drizzle } from "drizzle-orm/postgres-js";
 import type { Request as ExpressRequest } from "express";
 import morgan from "morgan";
-import postgres from "postgres";
 
 import * as schema from "~/db/schema";
 
@@ -85,9 +83,7 @@ export function createDbProxy<
     },
   });
 }
-const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-const baseDb = drizzle(postgres(connectionString), { schema });
-export const db = baseDb;
+
 export function configureMiddleware(app: any) {
   app.use(morgan("tiny"));
   app.use(main());

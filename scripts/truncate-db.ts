@@ -1,7 +1,5 @@
 // scripts/truncate-db.ts
 
-import { db } from "~/middleware";
-
 async function truncateAllTables() {
   // Execute the truncate command
   const command = `

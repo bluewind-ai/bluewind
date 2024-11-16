@@ -1,12 +1,20 @@
 // app/middleware/main.ts
 import { sql } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/postgres-js";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
+import postgres from "postgres";
 
 import { models, objects, requests } from "~/db/schema";
+import * as schema from "~/db/schema";
 import { countTables } from "~/functions/count-tables.server";
 
-import { createDbProxy, db, DrizzleQuery, RequestExtensions } from ".";
+import { createDbProxy, DrizzleQuery, RequestExtensions } from ".";
 import { countObjectsForQueries } from "./functions";
+
+const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+
+const baseDb = drizzle(postgres(connectionString), { schema });
+const db = baseDb;
 
 type EnhancedRequest = ExpressRequest & RequestExtensions;
 export function main(): any {
