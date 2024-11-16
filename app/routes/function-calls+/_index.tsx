@@ -1,5 +1,4 @@
 // app/routes/function-calls+/_index.tsx
-
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
@@ -17,13 +16,11 @@ export async function loader(args: LoaderFunctionArgs) {
     tableObjects,
   };
 }
-
 export async function action(args: ActionFunctionArgs) {
   const { request, context } = args;
   await createFunctionCalls(request, context as RequestExtensions);
   return null;
 }
-
 export default function FunctionCalls() {
   const { tableObjects } = useLoaderData<typeof loader>();
   return <NewMain data={tableObjects} />;

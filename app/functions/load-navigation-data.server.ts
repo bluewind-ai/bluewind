@@ -23,7 +23,6 @@ export async function loadNavigationData(args: LoaderFunctionArgs) {
     .from(schema.objects)
     .leftJoin(schema.models, sql`${schema.objects.modelId} = ${schema.models.id}`)
     .groupBy(schema.objects.modelId, schema.models.pluralName);
-
   const counts = Object.fromEntries(
     Object.entries(schema.TABLES).map(([_key, config]) => {
       const count =

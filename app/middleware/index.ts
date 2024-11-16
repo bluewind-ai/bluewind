@@ -1,5 +1,4 @@
 // app/middleware/index.ts
-
 import type { AppLoadContext } from "@remix-run/node";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
@@ -19,12 +18,10 @@ export interface DrizzleQuery {
 }
 export type DbClient = PostgresJsDatabase<typeof schema>;
 type DbInsertFunction = (...args: any[]) => any;
-
 export interface RequestExtensions {
   db: DbClient;
   queries: DrizzleQuery[];
 }
-
 export function createDbProxy<
   T extends {
     insert: DbInsertFunction;
@@ -98,11 +95,9 @@ export function configureMiddleware(app: any) {
 export function getLoadContext(req: ExpressRequest & RequestExtensions): AppLoadContext {
   return req as unknown as AppLoadContext;
 }
-
 declare module "express" {
   interface Request extends RequestExtensions {}
 }
-
 declare module "@remix-run/node" {
   interface AppLoadContext extends RequestExtensions {}
 }

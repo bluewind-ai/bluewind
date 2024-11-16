@@ -1,5 +1,4 @@
 // app/routes/api.bootstrap.ts
-
 import { redirect } from "@remix-run/node";
 
 import { bootstrap } from "~/functions/bootstrap.server";

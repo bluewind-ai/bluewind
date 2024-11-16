@@ -1,5 +1,4 @@
 // app/middleware/main.ts
-
 import { sql } from "drizzle-orm";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
 
@@ -10,7 +9,6 @@ import { createDbProxy, db, DrizzleQuery, RequestExtensions } from ".";
 import { countObjectsForQueries } from "./functions";
 
 type EnhancedRequest = ExpressRequest & RequestExtensions;
-
 export function main(): any {
   return async (req: ExpressRequest, res: Response, next: NextFunction) => {
     try {
@@ -45,7 +43,6 @@ export function main(): any {
       const runTransaction = async () => {
         const queries = [] as DrizzleQuery[];
         const dbWithProxy = createDbProxy(db, queries);
-
         await dbWithProxy.transaction(
           async (trx) => {
             (req as EnhancedRequest).db = trx;
