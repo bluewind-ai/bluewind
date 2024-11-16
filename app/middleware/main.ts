@@ -1,22 +1,18 @@
 // app/middleware/main.ts
+
 import { sql } from "drizzle-orm";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
 
 import { models, objects, requests } from "~/db/schema";
 import { countTables } from "~/functions/count-tables.server";
 
-import { createDbProxy, db, DrizzleQuery } from ".";
+import { createDbProxy, db, DrizzleQuery, RequestExtensions } from ".";
 import { countObjectsForQueries } from "./functions";
+
+type EnhancedRequest = ExpressRequest & RequestExtensions;
 
 export function main(): any {
   return async (req: ExpressRequest, res: Response, next: NextFunction) => {
-    const context = {
-      queries: [] as DrizzleQuery[],
-      db: db,
-      requestId: undefined as number | undefined,
-      trx: undefined as unknown,
-    };
-    const dbWithProxy = createDbProxy(db, context);
     try {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const stack = new Error().stack
@@ -31,7 +27,7 @@ export function main(): any {
         .select({ id: models.id })
         .from(models)
         .where(sql`${models.pluralName} = 'requests'`);
-      const [result] = await db.execute<{
+      await db.execute<{
         request_id: number;
       }>(sql`
         WITH request_insert AS (
@@ -46,23 +42,19 @@ export function main(): any {
         SELECT request_insert.id as request_id
         FROM request_insert, object_insert;
       `);
-      context.requestId = result.request_id;
       const runTransaction = async () => {
+        const queries = [] as DrizzleQuery[];
+        const dbWithProxy = createDbProxy(db, queries);
+
         await dbWithProxy.transaction(
           async (trx) => {
-            const proxiedTrx = createDbProxy(trx, context);
-            context.trx = proxiedTrx;
-            (req as any).requestId = context.requestId;
-            (req as any).trx = proxiedTrx;
-            (req as any).context = context;
+            (req as EnhancedRequest).db = trx;
+            (req as EnhancedRequest).queries = [];
             await new Promise<void>((resolve) => {
               next();
               res.on("finish", resolve);
             });
-            if (!context.requestId) {
-              throw new Error("Could not create request record");
-            }
-            const objectsToInsert = await countObjectsForQueries(trx, context.queries);
+            const objectsToInsert = await countObjectsForQueries(trx, req.queries);
             if (objectsToInsert.length > 0) {
               await trx.insert(objects).values(objectsToInsert);
             }

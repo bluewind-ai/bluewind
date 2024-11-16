@@ -1,4 +1,5 @@
 // app/middleware/index.ts
+
 import type { AppLoadContext } from "@remix-run/node";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
@@ -7,7 +8,6 @@ import morgan from "morgan";
 import postgres from "postgres";
 
 import * as schema from "~/db/schema";
-import { sayHello } from "~/hello.server";
 
 import { main } from "./main";
 
@@ -19,16 +19,17 @@ export interface DrizzleQuery {
 }
 export type DbClient = PostgresJsDatabase<typeof schema>;
 type DbInsertFunction = (...args: any[]) => any;
+
+export interface RequestExtensions {
+  db: DbClient;
+  queries: DrizzleQuery[];
+}
+
 export function createDbProxy<
   T extends {
     insert: DbInsertFunction;
   },
->(
-  db: T,
-  context: {
-    queries: DrizzleQuery[];
-  },
-) {
+>(db: T, queries: DrizzleQuery[]) {
   return new Proxy(db, {
     get(target, prop) {
       const value = Reflect.get(target, prop);
@@ -56,7 +57,7 @@ export function createDbProxy<
                             return async function (...args: unknown[]) {
                               try {
                                 const result = await returningValue.apply(target, args);
-                                context.queries.push({
+                                queries.push({
                                   type: "insert",
                                   table: tableName,
                                   query: args[0],
@@ -94,29 +95,14 @@ export function configureMiddleware(app: any) {
   app.use(morgan("tiny"));
   app.use(main());
 }
-export function getLoadContext(req: ExpressRequest): AppLoadContext {
-  const context = (req as any).context;
-  if (!context)
-    return {
-      db,
-      queries: [], // Needs this
-      sayHello, // Needs this
-    };
-  const dbWithProxy = createDbProxy(db, context);
-  return {
-    db: context.trx ? createDbProxy(context.trx, context) : dbWithProxy,
-    requestId: context.requestId,
-    trx: context.trx,
-    queries: context.queries,
-    sayHello,
-  };
+export function getLoadContext(req: ExpressRequest & RequestExtensions): AppLoadContext {
+  return req as unknown as AppLoadContext;
 }
+
+declare module "express" {
+  interface Request extends RequestExtensions {}
+}
+
 declare module "@remix-run/node" {
-  interface AppLoadContext {
-    db: DbClient;
-    requestId?: number;
-    trx?: DbClient;
-    queries: DrizzleQuery[];
-    sayHello: () => string;
-  }
+  interface AppLoadContext extends RequestExtensions {}
 }

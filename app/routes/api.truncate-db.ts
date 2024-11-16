@@ -1,5 +1,5 @@
 // app/routes/api.truncate-db.ts
-import { type ActionFunctionArgs, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { type PgTable } from "drizzle-orm/pg-core";
 
 import {
@@ -13,11 +13,10 @@ import {
   TABLES,
   users,
 } from "~/db/schema";
-import { DbClient } from "~/middleware";
+import { RequestExtensions } from "~/middleware";
 
-async function _action(args: ActionFunctionArgs) {
-  const { trx } = args.context;
-  const db = trx as DbClient;
+export async function action({ context: request }: { context: RequestExtensions }) {
+  const db = request.db;
   const tableMap: Record<string, PgTable<any>> = {
     functionCalls,
     serverFunctions,
@@ -34,6 +33,6 @@ async function _action(args: ActionFunctionArgs) {
   await new Promise((resolve) => setTimeout(resolve, 0));
   return redirect("/");
 }
-export async function action(args: ActionFunctionArgs) {
-  return await _action(args);
-}
+// export async function action(args: ActionFunctionArgs) {
+//   return await _action(args);
+// }

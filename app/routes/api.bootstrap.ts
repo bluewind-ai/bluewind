@@ -1,22 +1,21 @@
 // app/routes/api.bootstrap.ts
-import { type ActionFunctionArgs, redirect } from "@remix-run/node";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+
+import { redirect } from "@remix-run/node";
 
 import * as schema from "~/db/schema";
 import { functionCalls, FunctionCallStatus } from "~/db/schema";
+import type { RequestExtensions } from "~/middleware";
 
-type DbClient = PostgresJsDatabase<typeof schema>;
-async function _action(args: ActionFunctionArgs) {
-  const { trx } = args.context;
-  const db = trx as DbClient;
-  const request = await db.query.requests.findFirst();
-  if (!request) {
+export async function action({ context: request }: { context: RequestExtensions }) {
+  const db = request.db;
+  const foundRequest = await db.query.requests.findFirst();
+  if (!foundRequest) {
     throw new Error("No request found");
   }
   const [masterAction] = await db
     .insert(schema.serverFunctions)
     .values({
-      requestId: request.id,
+      requestId: foundRequest.id,
       name: "master",
       type: schema.ServerFunctionType.SYSTEM,
     })
@@ -24,15 +23,11 @@ async function _action(args: ActionFunctionArgs) {
   await db
     .insert(functionCalls)
     .values({
-      requestId: request.id,
+      requestId: foundRequest.id,
       serverFunctionId: masterAction.id,
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })
     .returning();
   await new Promise((resolve) => setTimeout(resolve, 1));
   return redirect("/");
-}
-export async function action(args: ActionFunctionArgs) {
-  const response = await _action(args);
-  return response;
 }
