@@ -16,6 +16,8 @@ import {
 } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 
+import { seedModels } from "./seed-models.server";
+
 export async function truncateDb(request: RequestExtensions) {
   console.log("truncateDb called with request:", request);
   const db = request.db;
@@ -35,7 +37,7 @@ export async function truncateDb(request: RequestExtensions) {
 
   console.log("Processing tables:", Object.keys(TABLES));
 
-  for (const tableName of Object.keys(TABLES)) {
+  for (const tableName of Object.keys(tableMap)) {
     console.log(`Truncating table: ${tableName}`);
     const table = tableMap[tableName];
     if (!table) {
@@ -44,4 +46,7 @@ export async function truncateDb(request: RequestExtensions) {
     }
     await db.delete(table).returning();
   }
+
+  // Reseed models
+  await seedModels(request);
 }
