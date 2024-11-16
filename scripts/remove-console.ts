@@ -43,7 +43,7 @@ function hasNoQaComment(node: ts.Node, sourceFile: ts.SourceFile): boolean {
   if (lineStart <= 0) return false;
 
   const prevLine = sourceFile.text.split("\n")[lineStart - 1];
-  return prevLine.trim().includes("// no-qa");
+  return prevLine.trim().includes("// eslint-disable-next-line");
 }
 
 function transformer(sourceFile: ts.SourceFile): ts.TransformerFactory<ts.SourceFile> {

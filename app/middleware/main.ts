@@ -27,6 +27,7 @@ export function main(): any {
         .reverse()
         .join("\n");
 
+      // eslint-disable-next-line no-console
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
       const [requestModel] = await db
