@@ -8,17 +8,17 @@ import type { RequestExtensions } from "~/middleware";
 export async function getModels(request: RequestExtensions, url: string) {
   console.log("getmodels called with URL:", url);
 
-  const functionCallId = url.split("function-call-id=")[1];
-  console.log("Parsed functionCallId:", functionCallId);
+  const requestId = url.split("request-id=")[1];
+  console.log("Parsed requestId:", requestId);
 
   let query = request.db.query.models.findMany({
     orderBy: models.id,
   });
 
-  if (functionCallId) {
-    console.log("Filtering by functionCallId:", parseInt(functionCallId, 10));
+  if (requestId) {
+    console.log("Filtering by requestId:", parseInt(requestId, 10));
     query = request.db.query.models.findMany({
-      where: sql`${models.functionCallId} = ${parseInt(functionCallId, 10)}`,
+      where: sql`${models.requestId} = ${parseInt(requestId, 10)}`,
       orderBy: models.id,
     });
   }
