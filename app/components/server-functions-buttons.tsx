@@ -7,13 +7,12 @@ import { SERVER_FUNCTIONS, type ServerFunctionName } from "~/lib/server-function
 import { Button } from "./ui/button";
 
 export function ServerFunctionsButtons() {
-  const fetchers = Object.keys(SERVER_FUNCTIONS).reduce(
-    (acc, name) => ({
-      ...acc,
-      [name]: useFetcher(),
-    }),
-    {} as Record<ServerFunctionName, ReturnType<typeof useFetcher>>,
-  );
+  // Create individual fetchers for each function
+  const fetchers = {
+    truncateDb: useFetcher(),
+    bootstrap: useFetcher(),
+    updateFiles: useFetcher(),
+  };
 
   return (
     <div className="flex gap-2 p-4 flex-wrap">
