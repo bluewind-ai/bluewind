@@ -2,48 +2,22 @@
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { z } from "zod";
 
-import { models, objects, requests, schema } from "~/db/schema";
+import { schema } from "~/db/schema";
+import { CreateModel, models, ModelSchema } from "~/db/schema/models/schema";
+import { objects, ObjectSchema } from "~/db/schema/objects/schema";
+import { CreateRequest, requests, RequestSchema } from "~/db/schema/requests/schema";
 import { TABLES } from "~/db/schema/table-models";
 
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
 
-class ValidatedModel {
-  id: number;
-  pluralName: string;
-  singularName: string;
-
-  constructor(id: number, pluralName: string, singularName: string) {
-    this.id = id;
-    this.pluralName = pluralName;
-    this.singularName = singularName;
-  }
-}
-
-const objectSchema = z.object({
-  modelId: z.number(),
-  recordId: z.number(),
-  requestId: z.number(),
-});
-
-class ValidatedObject {
-  modelId: number;
-  recordId: number;
-  requestId: number;
-
-  constructor(modelId: unknown, recordId: unknown, requestId: unknown) {
-    const validated = objectSchema.parse({ modelId, recordId, requestId });
-    this.modelId = validated.modelId;
-    this.recordId = validated.recordId;
-    this.requestId = validated.requestId;
-  }
-}
-
-function generateModelsToInsert() {
-  return MODEL_NAMES.map(
-    (name, index) =>
-      new ValidatedModel(index + 1, TABLES[name].modelName, TABLES[name].modelName.slice(0, -1)),
+function generateModelsToInsert(): CreateModel[] {
+  return MODEL_NAMES.map((name, index) =>
+    ModelSchema.parse({
+      id: index + 1,
+      pluralName: TABLES[name].modelName,
+      singularName: TABLES[name].modelName.slice(0, -1),
+    }),
   );
 }
 
@@ -68,16 +42,27 @@ async function main() {
 
   // Create one request
   console.log("Creating request...");
-  const insertedRequest = await db.insert(requests).values({ id: 1 }).returning();
+  const requestToInsert: CreateRequest = RequestSchema.parse({ id: 1 });
+  const insertedRequest = await db.insert(requests).values(requestToInsert).returning();
   console.log("Inserted request:", insertedRequest);
 
   // Create objects for models AND request
   console.log("Creating objects...");
   const objectsToInsert = [
     // Objects for models
-    ...insertedModels.map((model) => new ValidatedObject(model.id, model.id, 1)),
+    ...insertedModels.map((model) =>
+      ObjectSchema.parse({
+        modelId: model.id,
+        recordId: model.id,
+        requestId: 1,
+      }),
+    ),
     // Object for the request itself
-    new ValidatedObject("6csdcdscsd", 1, 1), // This should fail with a nice Zod error!
+    ObjectSchema.parse({
+      modelId: "6csdcdscsd", // This will fail validation
+      recordId: 1,
+      requestId: 1,
+    }),
   ];
 
   const insertedObjects = await db.insert(objects).values(objectsToInsert).returning();
