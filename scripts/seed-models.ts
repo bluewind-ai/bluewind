@@ -51,7 +51,7 @@ async function main() {
     })),
     // Object for the request itself
     {
-      modelId: 6, // ID of the 'requests' model
+      modelId: "6csdcdscsd", // ID of the 'requests' model
       recordId: 1, // ID of the request we just created
       requestId: 1,
     },
