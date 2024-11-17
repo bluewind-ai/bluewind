@@ -2,11 +2,8 @@
 import { relations } from "drizzle-orm";
 import { type AnyPgColumn, integer, jsonb, pgTable, serial, timestamp } from "drizzle-orm/pg-core";
 
-import { apps } from "../apps/schema";
-import { debugLogs } from "../debug-logs/schema";
 import { FunctionCallStatus, functionCallStatusEnum } from "../enums";
 import { objects } from "../objects/schema";
-import { requestErrors } from "../request-errors/schema";
 import { requests } from "../requests/schema";
 import { serverFunctions } from "../server-functions/schema";
 import { sessions } from "../sessions/schema";
@@ -45,9 +42,6 @@ export const functionCallsRelations = relations(functionCalls, ({ one, many }) =
     references: [functionCalls.id],
   }),
   objects: many(objects),
-  apps: many(apps),
   users: many(users),
   sessions: many(sessions),
-  requestErrors: many(requestErrors),
-  debugLogs: many(debugLogs),
 }));

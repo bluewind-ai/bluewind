@@ -7,6 +7,7 @@ import postgres from "postgres";
 
 import { models, objects, requests } from "~/db/schema";
 import * as schema from "~/db/schema";
+import { TABLES } from "~/db/schema/table-models";
 import { countTables } from "~/functions/count-tables.server";
 
 import { createDbProxy, DrizzleQuery, RequestExtensions } from ".";
@@ -30,10 +31,24 @@ export function main(): any {
         .join("\n");
       // eslint-disable-next-line no-console
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
-      const [requestModel] = await db
-        .select({ id: models.id })
-        .from(models)
-        .where(sql`${models.pluralName} = 'requests'`);
+
+      // Check if models table is populated and get request model
+      const allModels = await db
+        .select({ id: models.id, pluralName: models.pluralName })
+        .from(models);
+
+      if (allModels.length === 0) {
+        throw new Error("Models table is empty. Please run seed-models script first.");
+      }
+
+      const requestModel = allModels.find(
+        (model) => model.pluralName === TABLES.requests.modelName,
+      );
+
+      if (!requestModel) {
+        throw new Error("Request model not found. Please check models table data.");
+      }
+
       const [{ request_id }] = await db.execute<{
         request_id: number;
       }>(sql`
@@ -42,8 +57,8 @@ export function main(): any {
           RETURNING id
         ),
         object_insert AS (
-          INSERT INTO ${objects} (id, model_id, record_id)
-          SELECT id, ${requestModel.id}, id FROM request_insert
+          INSERT INTO ${objects} (model_id, record_id, request_id)
+          SELECT ${requestModel.id}, id, id FROM request_insert
           RETURNING *
         )
         SELECT request_insert.id as request_id
@@ -64,7 +79,7 @@ export function main(): any {
               res.on("finish", resolve);
             });
             console.log("Transaction queries:", queries); // Debug log
-            const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries);
+            const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries, request_id);
             if (objectsToInsert.length > 0) {
               await proxiedTrx.insert(objects).values(objectsToInsert);
             }

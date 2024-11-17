@@ -5,10 +5,8 @@ import { useState } from "react";
 
 import { Badge } from "~/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { type apps, TABLES } from "~/db/schema";
+import { TABLES } from "~/db/schema";
 import { cn } from "~/lib/utils";
-
-import { ViewSelector } from "./view-selector";
 
 export type NavigationNode = {
   id: number;
@@ -100,12 +98,10 @@ function NavigationItem({
 }
 interface NavigationTreeProps {
   data: NavigationNode;
-  apps: (typeof apps.$inferSelect)[];
 }
-export function NavigationTree({ data, apps }: NavigationTreeProps) {
+export function NavigationTree({ data }: NavigationTreeProps) {
   return (
     <div className="flex flex-col gap-1 p-2 bg-background border-r">
-      <ViewSelector apps={apps} />
       <NavigationItem node={data} />
     </div>
   );

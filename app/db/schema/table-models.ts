@@ -36,16 +36,6 @@ export const TABLES: Record<string, TableConfig> = {
     urlName: TableModel.FUNCTION_CALLS,
     modelName: "function_calls",
   },
-  requestErrors: {
-    displayName: "Request Errors",
-    urlName: TableModel.REQUEST_ERRORS,
-    modelName: "request_errors",
-  },
-  debugLogs: {
-    displayName: "Debug Logs",
-    urlName: TableModel.DEBUG_LOGS,
-    modelName: "debug_logs",
-  },
   objects: {
     displayName: "Objects",
     urlName: TableModel.OBJECTS,

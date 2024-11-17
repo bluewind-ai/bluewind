@@ -3,11 +3,9 @@ import { sql } from "drizzle-orm";
 import { type PgTable } from "drizzle-orm/pg-core";
 
 import {
-  debugLogs,
   functionCalls,
   models,
   objects,
-  requestErrors,
   requests,
   serverFunctions,
   sessions,
@@ -21,8 +19,6 @@ const schemaMap: Record<keyof typeof TABLES, PgTable<any>> = {
   sessions,
   serverFunctions,
   functionCalls,
-  requestErrors,
-  debugLogs,
   objects,
   requests,
   models,

@@ -2,11 +2,9 @@
 import { type PgTable } from "drizzle-orm/pg-core";
 
 import {
-  debugLogs,
   functionCalls,
   models,
   objects,
-  requestErrors,
   requests,
   serverFunctions,
   sessions,
@@ -24,8 +22,6 @@ export async function truncateDb(request: RequestExtensions) {
     sessions,
     serverFunctions,
     functionCalls,
-    requestErrors,
-    debugLogs,
     objects,
     requests,
     models,

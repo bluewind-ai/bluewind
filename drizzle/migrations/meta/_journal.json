@@ -43,6 +43,13 @@
       "when": 1731727893596,
       "tag": "0005_unusual_quasar",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1731877666232,
+      "tag": "0006_blue_bullseye",
+      "breakpoints": true
     }
   ]
 }

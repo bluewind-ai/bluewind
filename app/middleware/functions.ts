@@ -1,9 +1,14 @@
 // app/middleware/functions.ts
+
 import { models } from "~/db/schema";
 
 import type { DbClient, DrizzleQuery } from ".";
 
-export async function countObjectsForQueries(db: DbClient, queries: DrizzleQuery[]) {
+export async function countObjectsForQueries(
+  db: DbClient,
+  queries: DrizzleQuery[],
+  requestId: number,
+) {
   // Get all models and their IDs in one query
   const modelsQuery = await db
     .select({
@@ -28,6 +33,7 @@ export async function countObjectsForQueries(db: DbClient, queries: DrizzleQuery
         modelId,
         recordId: r.id,
         functionCallId: null,
+        requestId: requestId,
       }));
     });
   const countsByTable = new Map<string, number>();

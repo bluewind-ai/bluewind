@@ -29,9 +29,6 @@ async function _loader({ params }: LoaderFunctionArgs) {
     case TABLES.functionCalls.urlName:
       data = await db.query.functionCalls.findMany();
       break;
-    case TABLES.debugLogs.urlName:
-      data = await db.query.debugLogs.findMany();
-      break;
     case TABLES.objects.urlName:
       data = await db.query.objects.findMany();
       break;

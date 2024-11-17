@@ -1,35 +1,37 @@
 // app/functions/seed-models.server.ts
+
 import { models, objects, requests } from "~/db/schema";
 import { TABLES } from "~/db/schema/table-models";
-import type { RequestExtensions } from "~/middleware";
+import { type RequestExtensions } from "~/middleware";
+
+const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
+
+function generateModelsToInsert() {
+  return MODEL_NAMES.map((name, index) => ({
+    id: index + 1,
+    pluralName: TABLES[name].modelName,
+    singularName: TABLES[name].modelName.slice(0, -1),
+  }));
+}
 
 export async function seedModels(request: RequestExtensions) {
-  const { db } = request;
-  // Create a request first
-  const [firstRequest] = await db.insert(requests).values({}).returning();
-  // Create all models in order so we know their IDs
-  const modelEntries = Object.entries(TABLES);
-  const modelData = modelEntries.map(([_key, config]) => ({
-    requestId: firstRequest.id,
-    pluralName: config.modelName,
-    singularName: config.modelName.endsWith("s") ? config.modelName.slice(0, -1) : config.modelName,
+  const db = request.db;
+
+  const modelsToInsert = generateModelsToInsert();
+  console.log("Inserting models:", modelsToInsert);
+  const insertedModels = await db.insert(models).values(modelsToInsert).returning();
+  console.log("Inserted models:", insertedModels);
+
+  // First, insert a request to get a request ID (needed for objects)
+  const [{ id: requestId }] = await db.insert(requests).values({}).returning();
+  console.log("Created request with ID:", requestId);
+
+  const objectsToInsert = insertedModels.map((model) => ({
+    modelId: model.id,
+    recordId: model.id,
+    requestId,
   }));
-  // Insert new records
-  const insertedModels = await db.insert(models).values(modelData).returning();
-  // Get the model IDs - they'll be in the same order as TABLES entries
-  const requestsModelId = insertedModels[Object.keys(TABLES).indexOf(TABLES.requests.urlName)].id;
-  const modelsModelId = insertedModels[Object.keys(TABLES).indexOf(TABLES.models.urlName)].id;
-  const objectsToInsert = [
-    // Object for the request itself
-    {
-      modelId: requestsModelId,
-      recordId: firstRequest.id,
-    },
-    // Objects for the models themselves
-    ...insertedModels.map((model) => ({
-      modelId: modelsModelId,
-      recordId: model.id,
-    })),
-  ];
+
+  console.log("Inserting objects:", objectsToInsert);
   await db.insert(objects).values(objectsToInsert).returning();
 }

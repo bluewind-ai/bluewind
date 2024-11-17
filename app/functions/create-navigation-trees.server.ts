@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { type NavigationNode } from "~/components/navigation-tree";
-import { apps, serverFunctions } from "~/db/schema";
+import { serverFunctions } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { getTableMetadata } from "~/db/schema/table-models";
 
@@ -45,7 +45,6 @@ export async function createNavigationTrees(
       apps: [],
     };
   }
-  const appsData = await db.select().from(apps).orderBy(apps.order);
   const tables = getTableMetadata();
   const backOfficeData: NavigationNode = {
     id: 0,
@@ -63,6 +62,5 @@ export async function createNavigationTrees(
   };
   return {
     backOfficeData,
-    apps: appsData,
   };
 }

@@ -3,9 +3,8 @@ import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 
 import { type NavigationNode, NavigationTree } from "~/components/navigation-tree";
-import { apps, getTableMetadata } from "~/db/schema";
+import { getTableMetadata } from "~/db/schema";
 import { loaderMiddleware } from "~/lib/middleware";
-import { db } from "~/middleware/main";
 // eslint-disable-next-line unused-imports/no-unused-vars
 async function _loader(args: LoaderFunctionArgs) {
   const navigationData: NavigationNode = {
@@ -21,20 +20,18 @@ async function _loader(args: LoaderFunctionArgs) {
       children: [] as NavigationNode[],
     })),
   };
-  const appsData = await db.select().from(apps).orderBy(apps.order);
   return {
     navigationData,
-    apps: appsData,
   };
 }
 export async function loader(args: LoaderFunctionArgs) {
   return await loaderMiddleware(args, () => _loader(args));
 }
 export default function ObjectsRoot() {
-  const { navigationData, apps } = useLoaderData<typeof loader>();
+  const { navigationData } = useLoaderData<typeof loader>();
   return (
     <div className="flex h-full">
-      <NavigationTree data={navigationData as NavigationNode} apps={apps} />
+      <NavigationTree data={navigationData as NavigationNode} />
       <div className="flex-1">
         <Outlet />
       </div>

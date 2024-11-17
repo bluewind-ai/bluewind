@@ -28,16 +28,16 @@ function Document({ children }: { children: React.ReactNode }) {
 }
 export { ErrorBoundary } from "./root-error-boundary";
 export default function App() {
-  const { navigationData, apps, backOfficeData } = useLoaderData<typeof loader>();
+  const { navigationData, backOfficeData } = useLoaderData<typeof loader>();
   return (
     <Document>
       <div className="flex h-full overflow-hidden">
-        <NavigationTree data={navigationData} apps={apps} />
+        <NavigationTree data={navigationData} />
         <div className="flex-1">
           <ServerFunctionsButtons />
           <Outlet />
         </div>
-        <BackOfficeTree data={backOfficeData} apps={apps} />
+        <BackOfficeTree data={backOfficeData} />
       </div>
     </Document>
   );
