@@ -4,19 +4,13 @@ import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { NewMain } from "~/components/new-main";
-import { functionCalls } from "~/db/schema";
+import { getFunctionCalls } from "~/functions/get-function-calls.server";
 
 export async function loader(args: LoaderFunctionArgs) {
-  const { db } = args.context;
-  const tableObjects = await db.query.functionCalls.findMany({
-    orderBy: functionCalls.id,
-  });
-  return {
-    tableObjects,
-  };
+  return getFunctionCalls(args.context, args.request.url);
 }
 
 export default function FunctionCalls() {
-  const { tableObjects } = useLoaderData<typeof loader>();
+  const tableObjects = useLoaderData<typeof loader>();
   return <NewMain data={tableObjects} />;
 }

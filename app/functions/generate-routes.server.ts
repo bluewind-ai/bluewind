@@ -5,6 +5,37 @@ import path from "node:path";
 
 import { TABLES } from "~/db/schema/table-models";
 
+const serverFunctionTemplate = (
+  tableName: keyof typeof TABLES,
+) => `// app/functions/get-${TABLES[tableName].urlName}.server.ts
+
+import { sql } from "drizzle-orm";
+import { ${tableName} } from "~/db/schema";
+import type { RequestExtensions } from "~/middleware";
+
+export async function get${tableName[0].toUpperCase() + tableName.slice(1)}(request: RequestExtensions, url: string) {
+  console.log("get${tableName} called with URL:", url);
+
+  const functionCallId = url.split("function-call-id=")[1];
+  console.log("Parsed functionCallId:", functionCallId);
+
+  let query = request.db.query.${tableName}.findMany({
+    orderBy: ${tableName}.id,
+  });
+
+  if (functionCallId) {
+    console.log("Filtering by functionCallId:", parseInt(functionCallId, 10));
+    query = request.db.query.${tableName}.findMany({
+      where: sql\`\${${tableName}.functionCallId} = \${parseInt(functionCallId, 10)}\`,
+      orderBy: ${tableName}.id,
+    });
+  }
+
+  const result = await query;
+  console.log("Query result:", result);
+  return result;
+}`;
+
 const routeTemplate = (
   tableName: keyof typeof TABLES,
   routeName: string,
@@ -12,44 +43,43 @@ const routeTemplate = (
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { ${tableName} } from "~/db/schema";
 import { NewMain } from "~/components/new-main";
+import { get${tableName[0].toUpperCase() + tableName.slice(1)} } from "~/functions/get-${TABLES[tableName].urlName}.server";
 
 export async function loader(args: LoaderFunctionArgs) {
-  const { db } = args.context;
-  const tableObjects = await db.query.${tableName}.findMany({
-    orderBy: ${tableName}.id,
-  });
-
-  console.log("Loader data:", tableObjects);
-
-  return {
-    tableObjects,
-  };
+  return get${tableName[0].toUpperCase() + tableName.slice(1)}(args.context, args.request.url);
 }
 
 export default function ${routeName}() {
-  const { tableObjects } = useLoaderData<typeof loader>();
-
-  console.log("Component data:", tableObjects);
-
+  const tableObjects = useLoaderData<typeof loader>();
   return <NewMain data={tableObjects} />;
-}
-`;
+}`;
 
 export async function generateRoutes() {
   const routesDir = path.join(process.cwd(), "app", "routes");
-  const generatedRoutes = [];
+  const functionsDir = path.join(process.cwd(), "app", "functions");
+  const generatedFiles = [];
 
   for (const [tableName, config] of Object.entries(TABLES)) {
+    // Generate server function file
+    const functionFile = path.join(functionsDir, `get-${config.urlName}.server.ts`);
+    fs.writeFileSync(functionFile, serverFunctionTemplate(tableName));
+    generatedFiles.push({
+      type: "function",
+      tableName,
+      path: functionFile,
+    });
+
+    // Generate route file
     const routeFile = path.join(routesDir, `${config.urlName}+/_index.tsx`);
     fs.mkdirSync(path.dirname(routeFile), { recursive: true });
     fs.writeFileSync(routeFile, routeTemplate(tableName, config.displayName.replace(" ", "")));
-    generatedRoutes.push({
+    generatedFiles.push({
+      type: "route",
       tableName,
       path: routeFile,
     });
   }
 
-  return generatedRoutes;
+  return generatedFiles;
 }

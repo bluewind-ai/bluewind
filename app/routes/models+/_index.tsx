@@ -1,20 +1,16 @@
 // app/routes/models+/_index.tsx
+
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { NewMain } from "~/components/new-main";
-import { models } from "~/db/schema";
+import { getModels } from "~/functions/get-models.server";
 
 export async function loader(args: LoaderFunctionArgs) {
-  const { db } = args.context;
-  const tableObjects = await db.query.models.findMany({
-    orderBy: models.id,
-  });
-  return {
-    tableObjects,
-  };
+  return getModels(args.context, args.request.url);
 }
+
 export default function Models() {
-  const { tableObjects } = useLoaderData<typeof loader>();
+  const tableObjects = useLoaderData<typeof loader>();
   return <NewMain data={tableObjects} />;
 }
