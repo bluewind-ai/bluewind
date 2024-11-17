@@ -1,7 +1,6 @@
 // app/functions/get-sessions.server.ts
 
 import { sql } from "drizzle-orm";
-
 import { sessions } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 

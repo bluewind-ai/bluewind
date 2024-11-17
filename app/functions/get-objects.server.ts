@@ -1,7 +1,6 @@
 // app/functions/get-objects.server.ts
 
 import { sql } from "drizzle-orm";
-
 import { objects } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 

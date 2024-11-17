@@ -1,7 +1,6 @@
 // app/functions/get-request-errors.server.ts
 
 import { sql } from "drizzle-orm";
-
 import { requestErrors } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 

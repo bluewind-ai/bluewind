@@ -3,11 +3,12 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { TABLES } from "~/db/schema/table-models";
+import { TableModel, TABLES } from "~/db/schema/table-models";
 
-const serverFunctionTemplate = (
-  tableName: keyof typeof TABLES,
-) => `// app/functions/get-${TABLES[tableName].urlName}.server.ts
+const serverFunctionTemplate = (tableName: keyof typeof TABLES) => {
+  const isRequestsTable = TABLES[tableName].modelName === TableModel.REQUESTS;
+
+  return `// app/functions/get-${TABLES[tableName].urlName}.server.ts
 
 import { sql } from "drizzle-orm";
 import { ${tableName} } from "~/db/schema";
@@ -16,25 +17,34 @@ import type { RequestExtensions } from "~/middleware";
 export async function get${tableName[0].toUpperCase() + tableName.slice(1)}(request: RequestExtensions, url: string) {
   console.log("get${tableName} called with URL:", url);
 
-  const requestId = url.split("request-id=")[1];
-  console.log("Parsed requestId:", requestId);
+  ${
+    !isRequestsTable
+      ? `const requestId = url.split("request-id=")[1];
+  console.log("Parsed requestId:", requestId);`
+      : ""
+  }
 
   let query = request.db.query.${tableName}.findMany({
     orderBy: ${tableName}.id,
   });
 
-  if (requestId) {
+  ${
+    !isRequestsTable
+      ? `if (requestId) {
     console.log("Filtering by requestId:", parseInt(requestId, 10));
     query = request.db.query.${tableName}.findMany({
       where: sql\`\${${tableName}.requestId} = \${parseInt(requestId, 10)}\`,
       orderBy: ${tableName}.id,
     });
+  }`
+      : ""
   }
 
   const result = await query;
   console.log("Query result:", result);
   return result;
 }`;
+};
 
 const routeTemplate = (
   tableName: keyof typeof TABLES,

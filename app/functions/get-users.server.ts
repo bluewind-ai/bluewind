@@ -1,7 +1,6 @@
 // app/functions/get-users.server.ts
 
 import { sql } from "drizzle-orm";
-
 import { users } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 

@@ -2,7 +2,6 @@
 
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-
 import { NewMain } from "~/components/new-main";
 import { getObjects } from "~/functions/get-objects.server";
 

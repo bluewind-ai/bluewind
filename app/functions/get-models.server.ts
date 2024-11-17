@@ -1,7 +1,6 @@
 // app/functions/get-models.server.ts
 
 import { sql } from "drizzle-orm";
-
 import { models } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 

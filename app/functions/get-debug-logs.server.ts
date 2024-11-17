@@ -1,7 +1,6 @@
 // app/functions/get-debug-logs.server.ts
 
 import { sql } from "drizzle-orm";
-
 import { debugLogs } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 
