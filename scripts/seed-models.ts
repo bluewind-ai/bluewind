@@ -2,18 +2,49 @@
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { z } from "zod";
 
 import { models, objects, requests, schema } from "~/db/schema";
 import { TABLES } from "~/db/schema/table-models";
 
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
 
+class ValidatedModel {
+  id: number;
+  pluralName: string;
+  singularName: string;
+
+  constructor(id: number, pluralName: string, singularName: string) {
+    this.id = id;
+    this.pluralName = pluralName;
+    this.singularName = singularName;
+  }
+}
+
+const objectSchema = z.object({
+  modelId: z.number(),
+  recordId: z.number(),
+  requestId: z.number(),
+});
+
+class ValidatedObject {
+  modelId: number;
+  recordId: number;
+  requestId: number;
+
+  constructor(modelId: unknown, recordId: unknown, requestId: unknown) {
+    const validated = objectSchema.parse({ modelId, recordId, requestId });
+    this.modelId = validated.modelId;
+    this.recordId = validated.recordId;
+    this.requestId = validated.requestId;
+  }
+}
+
 function generateModelsToInsert() {
-  return MODEL_NAMES.map((name, index) => ({
-    id: index + 1,
-    pluralName: TABLES[name].modelName,
-    singularName: TABLES[name].modelName.slice(0, -1),
-  }));
+  return MODEL_NAMES.map(
+    (name, index) =>
+      new ValidatedModel(index + 1, TABLES[name].modelName, TABLES[name].modelName.slice(0, -1)),
+  );
 }
 
 async function main() {
@@ -44,17 +75,9 @@ async function main() {
   console.log("Creating objects...");
   const objectsToInsert = [
     // Objects for models
-    ...insertedModels.map((model) => ({
-      modelId: model.id,
-      recordId: model.id,
-      requestId: 1,
-    })),
+    ...insertedModels.map((model) => new ValidatedObject(model.id, model.id, 1)),
     // Object for the request itself
-    {
-      modelId: "6csdcdscsd", // ID of the 'requests' model
-      recordId: 1, // ID of the request we just created
-      requestId: 1,
-    },
+    new ValidatedObject("6csdcdscsd", 1, 1), // This should fail with a nice Zod error!
   ];
 
   const insertedObjects = await db.insert(objects).values(objectsToInsert).returning();
