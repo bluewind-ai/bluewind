@@ -1,4 +1,5 @@
 // app/routes/function-calls+/_root.tsx
+
 import { type ActionFunctionArgs } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
 
@@ -7,9 +8,9 @@ import type { RequestExtensions } from "~/middleware";
 
 export async function action(args: ActionFunctionArgs) {
   const { request, context } = args;
-  await createFunctionCalls(request, context as RequestExtensions);
-  return null;
+  return createFunctionCalls(request, context as RequestExtensions);
 }
+
 export default function FunctionCallsLayout() {
   return <Outlet />;
 }

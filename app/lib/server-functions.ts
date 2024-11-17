@@ -3,23 +3,17 @@
 import { bootstrap } from "~/functions/bootstrap.server";
 import { truncateDb } from "~/functions/truncate-db.server";
 import { updateFiles } from "~/functions/update-files.server";
+import type { RequestExtensions } from "~/middleware";
 
-export const SERVER_FUNCTIONS = {
-  truncateDb: {
-    label: "Truncate DB",
-    variant: "destructive" as const,
-    handler: truncateDb,
-  },
-  bootstrap: {
-    label: "Bootstrap DB",
-    variant: "outline" as const,
-    handler: bootstrap,
-  },
-  updateFiles: {
-    label: "Update Files",
-    variant: "outline" as const,
-    handler: updateFiles,
-  },
-} as const;
+import type { ServerFunctionName } from "./server-functions-types";
 
-export type ServerFunctionName = keyof typeof SERVER_FUNCTIONS;
+export const SERVER_FUNCTIONS_HANDLERS: Record<
+  ServerFunctionName,
+  {
+    handler: (context: RequestExtensions) => Promise<void>;
+  }
+> = {
+  truncateDb: { handler: truncateDb },
+  bootstrap: { handler: bootstrap },
+  updateFiles: { handler: updateFiles },
+};

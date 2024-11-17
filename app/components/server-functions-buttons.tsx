@@ -2,12 +2,11 @@
 
 import { useFetcher } from "@remix-run/react";
 
-import { SERVER_FUNCTIONS, type ServerFunctionName } from "~/lib/server-functions";
+import { SERVER_FUNCTIONS, type ServerFunctionName } from "~/lib/server-functions-types";
 
 import { Button } from "./ui/button";
 
 export function ServerFunctionsButtons() {
-  // Create individual fetchers for each function
   const fetchers = {
     truncateDb: useFetcher(),
     bootstrap: useFetcher(),
