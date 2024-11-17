@@ -1,13 +1,21 @@
 // app/functions/create-function-calls.server.ts
 
 import { redirect } from "@remix-run/node";
-import { functionCalls, FunctionCallStatus } from "~/db/schema";
-import { serverFunctions, ServerFunctionType } from "~/db/schema";
+
+import {
+  functionCalls,
+  FunctionCallStatus,
+  serverFunctions,
+  ServerFunctionType,
+} from "~/db/schema";
 import { SERVER_FUNCTIONS_HANDLERS } from "~/lib/server-functions";
 import type { ServerFunctionName } from "~/lib/server-functions-types";
 import type { RequestExtensions } from "~/middleware";
 
-export async function createFunctionCalls(request: RequestExtensions, functionName: ServerFunctionName) {
+export async function createFunctionCalls(
+  request: RequestExtensions,
+  functionName: ServerFunctionName,
+) {
   console.log("createFunctionCalls called");
   console.log("functionName:", functionName);
 
@@ -30,7 +38,7 @@ export async function createFunctionCalls(request: RequestExtensions, functionNa
       type: ServerFunctionType.SYSTEM,
     })
     .returning({
-      id: serverFunctions.id,  // Explicitly specify what to return
+      id: serverFunctions.id, // Explicitly specify what to return
     });
 
   console.log("After server function creation - queries:", request.queries);
@@ -45,7 +53,7 @@ export async function createFunctionCalls(request: RequestExtensions, functionNa
       result: null,
     })
     .returning({
-      id: functionCalls.id,  // Explicitly specify what to return
+      id: functionCalls.id, // Explicitly specify what to return
     });
 
   console.log("After function call creation - queries:", request.queries);

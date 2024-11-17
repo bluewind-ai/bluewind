@@ -1,4 +1,5 @@
 // app/middleware/main.ts
+
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
@@ -53,17 +54,20 @@ export function main(): any {
         const dbWithProxy = createDbProxy(db, queries);
         await dbWithProxy.transaction(
           async (trx) => {
-            (req as EnhancedRequest).db = trx;
-            (req as EnhancedRequest).queries = [];
+            // Create a new proxy for the transaction client
+            const proxiedTrx = createDbProxy(trx, queries);
+            (req as EnhancedRequest).db = proxiedTrx;
+            (req as EnhancedRequest).queries = queries; // Use same queries array
             await new Promise<void>((resolve) => {
               next();
               res.on("finish", resolve);
             });
-            const objectsToInsert = await countObjectsForQueries(trx, req.queries);
+            console.log("Transaction queries:", queries); // Debug log
+            const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries);
             if (objectsToInsert.length > 0) {
-              await trx.insert(objects).values(objectsToInsert);
+              await proxiedTrx.insert(objects).values(objectsToInsert);
             }
-            await countTables(trx);
+            await countTables(proxiedTrx);
           },
           {
             isolationLevel: "serializable",
