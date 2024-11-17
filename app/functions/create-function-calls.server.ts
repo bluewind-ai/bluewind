@@ -24,11 +24,6 @@ export async function createFunctionCalls(
     throw new Error(`Invalid function name: ${functionName}`);
   }
 
-  const foundRequest = await request.db.query.requests.findFirst();
-  if (!foundRequest) {
-    throw new Error("No request found");
-  }
-
   // First try to find existing server function
   let serverFunction = await request.db.query.serverFunctions.findFirst({
     where: sql`${serverFunctions.name} = ${functionName}`,
@@ -46,7 +41,7 @@ export async function createFunctionCalls(
     const [newServerFunction] = await request.db
       .insert(serverFunctions)
       .values({
-        requestId: foundRequest.id,
+        requestId: request.requestId,
         name: functionName,
         type: ServerFunctionType.SYSTEM,
       })
@@ -66,7 +61,7 @@ export async function createFunctionCalls(
     .insert(functionCalls)
     .values({
       serverFunctionId: serverFunction.id,
-      requestId: foundRequest.id,
+      requestId: request.requestId,
       status: FunctionCallStatus.READY_FOR_APPROVAL,
       args: null,
       result: null,
@@ -74,6 +69,9 @@ export async function createFunctionCalls(
     .returning({
       id: functionCalls.id,
     });
+
+  // Just set the function call ID on the request
+  request.functionCallId = functionCall.id;
 
   console.log("After function call creation - queries:", request.queries);
 
@@ -86,7 +84,6 @@ export async function createFunctionCalls(
       .set({ status: FunctionCallStatus.COMPLETED })
       .where(sql`${functionCalls.id} = ${functionCall.id}`);
   } catch (error) {
-    // Optionally mark as failed if there's an error
     await request.db
       .update(functionCalls)
       .set({ status: FunctionCallStatus.FAILED })

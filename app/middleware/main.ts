@@ -34,7 +34,7 @@ export function main(): any {
         .select({ id: models.id })
         .from(models)
         .where(sql`${models.pluralName} = 'requests'`);
-      await db.execute<{
+      const [{ request_id }] = await db.execute<{
         request_id: number;
       }>(sql`
         WITH request_insert AS (
@@ -58,6 +58,7 @@ export function main(): any {
             const proxiedTrx = createDbProxy(trx, queries);
             (req as EnhancedRequest).db = proxiedTrx;
             (req as EnhancedRequest).queries = queries; // Use same queries array
+            (req as EnhancedRequest).requestId = request_id; // Set the request ID
             await new Promise<void>((resolve) => {
               next();
               res.on("finish", resolve);

@@ -20,6 +20,8 @@ type DbInsertFunction = (...args: any[]) => any;
 export interface RequestExtensions {
   db: DbClient;
   queries: DrizzleQuery[];
+  requestId: number;
+  functionCallId?: number;
 }
 export function createDbProxy<
   T extends {
