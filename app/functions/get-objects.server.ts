@@ -8,7 +8,7 @@ import type { RequestExtensions } from "~/middleware";
 export async function getObjects(request: RequestExtensions, url: string) {
   console.log("getObjects called with URL:", url);
 
-  const functionCallId = url.split('function-call-id=')[1];
+  const functionCallId = url.split("function-call-id=")[1];
   console.log("Parsed functionCallId:", functionCallId);
 
   let query = request.db.query.objects.findMany({

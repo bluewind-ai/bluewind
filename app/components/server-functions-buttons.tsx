@@ -11,6 +11,7 @@ export function ServerFunctionsButtons() {
     truncateDb: useFetcher(),
     bootstrap: useFetcher(),
     updateFiles: useFetcher(),
+    generateRoutes: useFetcher(),
   };
 
   return (
