@@ -1,5 +1,4 @@
 // app/middleware/functions.ts
-
 import { models } from "~/db/schema";
 
 import type { DbClient, DrizzleQuery } from ".";

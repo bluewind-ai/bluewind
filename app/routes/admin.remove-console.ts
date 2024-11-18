@@ -18,7 +18,6 @@ export type ActionResponse =
       error: string;
       stack?: string;
     };
-
 // eslint-disable-next-line unused-imports/no-unused-vars
 export async function action(args: ActionFunctionArgs) {
   const appPath = path.join(process.cwd(), "app");
