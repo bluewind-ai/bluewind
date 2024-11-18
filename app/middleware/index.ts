@@ -56,13 +56,7 @@ export interface RequestExtensions {
   requestId: number;
   functionCallId?: number;
 }
-interface InvokeContext {
-  path?: string[];
-  fnPath?: {
-    name: string;
-    args: unknown[];
-  }[];
-}
+
 export function createDbProxy<
   T extends {
     insert: DbInsertFunction;
