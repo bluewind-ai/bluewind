@@ -24,6 +24,11 @@ export interface RequestExtensions {
   functionCallId?: number;
 }
 
+interface InvokeContext {
+  path?: string[];
+  fnPath?: { name: string; args: unknown[] }[];
+}
+
 export function createDbProxy<
   T extends {
     insert: DbInsertFunction;
@@ -31,52 +36,121 @@ export function createDbProxy<
 >(db: T, queries: DrizzleQuery[]) {
   return new Proxy(db, {
     get(target, prop) {
+      console.log("Proxy get:", prop);
       const value = Reflect.get(target, prop);
       if (typeof value !== "function") return value;
 
       return function (this: unknown, ...args: unknown[]) {
         const callStack = new Error().stack;
 
-        // For regular function calls (insert, select, update, delete)
-        const originalResult = value.apply(this || target, args);
-
-        // If it's a promise, wrap it to capture errors
-        if (originalResult instanceof Promise) {
-          return originalResult.catch((e: any) => {
-            const error = new Error(e.message);
-            error.stack = `${e.message}\nApplication Stack:\n${callStack}\nDatabase Stack:\n${e.stack}`;
-            Object.assign(error, e);
-            throw error;
-          });
+        if (prop === "insert") {
+          console.log("Insert called with args:", args);
+          const tableArg = args[0];
+          if (tableArg && typeof tableArg === "object") {
+            const symbols = Object.getOwnPropertySymbols(tableArg);
+            console.log("Table symbols:", symbols);
+            const drizzleNameSymbol = symbols.find((s) => s.description === "drizzle:Name");
+            if (drizzleNameSymbol) {
+              const tableName = (tableArg as any)[drizzleNameSymbol];
+              console.log("Found table name:", tableName);
+              const query = value.apply(this || target, args);
+              return new Proxy(query, {
+                get(target, prop) {
+                  console.log("Query proxy get:", prop);
+                  const chainValue = Reflect.get(target, prop);
+                  if (prop === "values") {
+                    return function (...args: unknown[]) {
+                      console.log("Values called with:", args);
+                      const valuesQuery = chainValue.apply(target, args);
+                      return new Proxy(valuesQuery, {
+                        get(target, prop) {
+                          console.log("Values query proxy get:", prop);
+                          const returningValue = Reflect.get(target, prop);
+                          if (prop === "returning") {
+                            return async function (...args: unknown[]) {
+                              console.log("Returning called with:", args);
+                              try {
+                                const result = await returningValue.apply(target, args);
+                                console.log("Got result:", result);
+                                queries.push({
+                                  type: "insert",
+                                  table: tableName,
+                                  query: args[0],
+                                  result,
+                                });
+                                console.log("Current queries array:", queries);
+                                return result;
+                              } catch (e: any) {
+                                const error = new Error(e.message);
+                                error.stack = `${e.message}\nApplication Stack:\n${callStack}\nDatabase Stack:\n${e.stack}`;
+                                Object.assign(error, e);
+                                throw error;
+                              }
+                            };
+                          }
+                          return returningValue;
+                        },
+                      });
+                    };
+                  }
+                  return chainValue;
+                },
+              });
+            }
+          }
         }
 
-        // For chainable methods, create a proxy for the result
-        if (originalResult && typeof originalResult === "object") {
-          return new Proxy(originalResult, {
-            get(target, prop) {
-              const chainValue = Reflect.get(target, prop);
-              if (typeof chainValue !== "function") return chainValue;
+        // Wrap all database operations with error stack handling
+        try {
+          const result = value.apply(this || target, args);
 
-              return function (this: unknown, ...args: unknown[]) {
-                const result = chainValue.apply(this || target, args);
+          // If it's a promise, wrap it
+          if (result instanceof Promise) {
+            return result.catch((e: any) => {
+              const error = new Error(e.message);
+              error.stack = `${e.message}\nApplication Stack:\n${callStack}\nDatabase Stack:\n${e.stack}`;
+              Object.assign(error, e);
+              throw error;
+            });
+          }
 
-                // Handle promises in the chain
-                if (result instanceof Promise) {
-                  return result.catch((e: any) => {
+          // For chainable methods, wrap their results too
+          if (result && typeof result === "object") {
+            return new Proxy(result, {
+              get(target, chainProp) {
+                const chainValue = Reflect.get(target, chainProp);
+                if (typeof chainValue !== "function") return chainValue;
+
+                return function (this: unknown, ...chainArgs: unknown[]) {
+                  try {
+                    const chainResult = chainValue.apply(this || target, chainArgs);
+                    if (chainResult instanceof Promise) {
+                      return chainResult.catch((e: any) => {
+                        const error = new Error(e.message);
+                        error.stack = `${e.message}\nApplication Stack:\n${callStack}\nDatabase Stack:\n${e.stack}`;
+                        Object.assign(error, e);
+                        throw error;
+                      });
+                    }
+                    return chainResult;
+                  } catch (e: any) {
                     const error = new Error(e.message);
                     error.stack = `${e.message}\nApplication Stack:\n${callStack}\nDatabase Stack:\n${e.stack}`;
                     Object.assign(error, e);
                     throw error;
-                  });
-                }
+                  }
+                };
+              },
+            });
+          }
 
-                return result;
-              };
-            },
-          });
+          return result;
+        } catch (e: any) {
+          const error = new Error(e.message);
+          error.stack = `${e.message}\nApplication Stack:\n${callStack}\nDatabase Stack:\n${e.stack}`;
+          Object.assign(error, e);
+          throw error;
         }
-
-        return originalResult;
       };
     },
   });
