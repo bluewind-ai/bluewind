@@ -5,8 +5,6 @@ import fs from "fs/promises";
 import { glob } from "glob";
 import path from "path";
 
-import { actionMiddleware } from "~/lib/middleware";
-
 export type ActionResponse =
   | {
       success: true;
@@ -20,8 +18,9 @@ export type ActionResponse =
       error: string;
       stack?: string;
     };
+
 // eslint-disable-next-line unused-imports/no-unused-vars
-async function _action(args: ActionFunctionArgs) {
+export async function action(args: ActionFunctionArgs) {
   const appPath = path.join(process.cwd(), "app");
   // no-qa
   // this should be removed by YOU when you rewrite the filed;
@@ -65,7 +64,4 @@ async function _action(args: ActionFunctionArgs) {
     modifiedFilePaths,
     message: `Removed ${totalRemoved} console calls from ${modifiedFiles} files`,
   };
-}
-export async function action(args: ActionFunctionArgs) {
-  return await actionMiddleware(args, () => _action(args));
 }
