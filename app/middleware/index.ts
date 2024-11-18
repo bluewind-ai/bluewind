@@ -64,6 +64,7 @@ export function createDbProxy<
 >(db: T, queries: DrizzleQuery[]) {
   return new Proxy(db, {
     get(target, prop) {
+      dd(prop);
       const value = Reflect.get(target, prop);
       if (typeof value !== "function") return value;
       return function (this: unknown, ...args: unknown[]) {
