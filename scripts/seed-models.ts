@@ -59,7 +59,7 @@ async function main() {
     ),
     // Object for the request itself
     ObjectSchema.parse({
-      modelId: "6csdcdscsd", // This will fail validation
+      modelId: 6,
       recordId: 1,
       requestId: 1,
     }),
