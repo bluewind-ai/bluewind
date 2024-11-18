@@ -48,8 +48,9 @@ export function main(): any {
       if (!requestModel) {
         throw new Error("Request model not found. Please check models table data.");
       }
-
-      const [{ request_id }] = await db.execute<{
+      const queries = [] as DrizzleQuery[];
+      const dbWithProxy = createDbProxy(db, queries);
+      const [{ request_id }] = await dbWithProxy.execute<{
         request_id: number;
       }>(sql`
         WITH request_insert AS (
@@ -65,8 +66,6 @@ export function main(): any {
         FROM request_insert, object_insert;
       `);
       const runTransaction = async () => {
-        const queries = [] as DrizzleQuery[];
-        const dbWithProxy = createDbProxy(db, queries);
         await dbWithProxy.transaction(
           async (trx) => {
             // Create a new proxy for the transaction client
