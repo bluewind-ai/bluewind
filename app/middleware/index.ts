@@ -1,10 +1,19 @@
 // app/middleware/index.ts
 
+import type { AppLoadContext } from "@remix-run/node";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import type { Request as ExpressRequest } from "express";
+import morgan from "morgan";
+
+import * as schema from "~/db/schema";
+
+import { main } from "./main";
+
 const originalConsoleLog = console.log;
 
-console.log = function(...args) {
-  const sanitizedArgs = args.map(arg => {
-    if (typeof arg === 'string' && arg.length > 1000) {
+console.log = function (...args) {
+  const sanitizedArgs = args.map((arg) => {
+    if (typeof arg === "string" && arg.length > 1000) {
       return `[String Too Long - ${arg.length} chars]`;
     }
     if (arg?.query && arg?.dialect) {
@@ -18,9 +27,9 @@ console.log = function(...args) {
       // Handle circular references
       const seen = new WeakSet();
       const str = JSON.stringify(arg, (key, value) => {
-        if (typeof value === 'object' && value !== null) {
+        if (typeof value === "object" && value !== null) {
           if (seen.has(value)) {
-            return '[Circular Reference]';
+            return "[Circular Reference]";
           }
           seen.add(value);
         }
@@ -32,20 +41,11 @@ console.log = function(...args) {
       }
       return arg;
     } catch {
-      return arg?.toString?.() || '[Unstringifiable Object]';
+      return arg?.toString?.() || "[Unstringifiable Object]";
     }
   });
   originalConsoleLog.apply(console, sanitizedArgs);
 };
-
-import type { AppLoadContext } from "@remix-run/node";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import type { Request as ExpressRequest } from "express";
-import morgan from "morgan";
-
-import * as schema from "~/db/schema";
-
-import { main } from "./main";
 
 export interface DrizzleQuery {
   type: "insert" | "select" | "update" | "delete";
@@ -60,11 +60,6 @@ export interface RequestExtensions {
   queries: DrizzleQuery[];
   requestId: number;
   functionCallId?: number;
-}
-
-interface InvokeContext {
-  path?: string[];
-  fnPath?: { name: string; args: unknown[] }[];
 }
 
 export function createDbProxy<
@@ -144,7 +139,7 @@ export function createDbProxy<
           });
         }
 
-        if (result && typeof result === 'object') {
+        if (result && typeof result === "object") {
           console.log(`${String(prop)} returned:`, result);
           return new Proxy(result, {
             get(target, chainProp) {
@@ -166,7 +161,7 @@ export function createDbProxy<
                 console.log(`Chain method ${String(chainProp)} returned:`, chainResult);
                 return chainResult;
               };
-            }
+            },
           });
         }
 

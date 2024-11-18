@@ -1,6 +1,7 @@
 // app/functions/get-function-calls.server.ts
 
 import { sql } from "drizzle-orm";
+
 import { functionCalls } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 

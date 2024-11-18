@@ -1,7 +1,8 @@
 // app/functions/get-models.server.ts
 
 import { sql } from "drizzle-orm";
-import { models } from "~/db/schema";
+
+import { models, objects } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 
 export async function getModels(request: RequestExtensions, url: string) {
@@ -17,7 +18,11 @@ export async function getModels(request: RequestExtensions, url: string) {
   if (requestId) {
     console.log("Filtering by requestId:", parseInt(requestId, 10));
     query = request.db.query.models.findMany({
-      where: sql`${models.requestId} = ${parseInt(requestId, 10)}`,
+      where: sql`${models.id} IN (
+        SELECT ${objects.modelId}
+        FROM ${objects}
+        WHERE ${objects.requestId} = ${parseInt(requestId, 10)}
+      )`,
       orderBy: models.id,
     });
   }
