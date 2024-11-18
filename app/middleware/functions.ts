@@ -1,4 +1,5 @@
 // app/middleware/functions.ts
+
 import { models } from "~/db/schema";
 
 import type { DbClient, DrizzleQuery } from ".";
@@ -21,14 +22,13 @@ export async function countObjectsForQueries(
   // Process queries and count objects
   const objectsToInsert = queries
     .filter((q) => q.result)
-    .flatMap((q, queryIndex) => {
+    .flatMap((q) => {
       const results = Array.isArray(q.result) ? q.result : [q.result];
       const modelId = modelMap.get(q.table);
       if (!modelId) {
         return [];
       }
       return results.map((r) => ({
-        id: r.id + queryIndex * 1000,
         modelId,
         recordId: r.id,
         functionCallId: null,
