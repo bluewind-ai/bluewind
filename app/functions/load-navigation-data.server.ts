@@ -14,24 +14,25 @@ export async function loadNavigationData(args: LoaderFunctionArgs) {
   const { db } = args.context as {
     db: DbClient;
   };
-  const tableCounts = await db
-    .select({
-      modelId: schema.objects.modelId,
-      pluralName: schema.models.pluralName,
-      count: sql<number>`count(*)`.as("count"),
-    })
-    .from(schema.objects)
-    .leftJoin(schema.models, sql`${schema.objects.modelId} = ${schema.models.id}`)
-    .groupBy(schema.objects.modelId, schema.models.pluralName);
-  const counts = Object.fromEntries(
-    Object.entries(schema.TABLES).map(([_key, config]) => {
-      const count =
-        config.urlName === TableModel.OBJECTS
-          ? tableCounts.reduce((acc, curr) => acc + Number(curr.count), 0)
-          : (tableCounts.find((t) => t.pluralName === config.modelName)?.count ?? 0);
-      return [config.urlName, count];
-    }),
-  );
+  const [users, sessions, serverFunctions, functionCalls, objects, requests, models] =
+    await Promise.all([
+      db.select({ count: sql<number>`count(*)` }).from(schema.users),
+      db.select({ count: sql<number>`count(*)` }).from(schema.sessions),
+      db.select({ count: sql<number>`count(*)` }).from(schema.serverFunctions),
+      db.select({ count: sql<number>`count(*)` }).from(schema.functionCalls),
+      db.select({ count: sql<number>`count(*)` }).from(schema.objects),
+      db.select({ count: sql<number>`count(*)` }).from(schema.requests),
+      db.select({ count: sql<number>`count(*)` }).from(schema.models),
+    ]);
+  const counts = {
+    [TableModel.USERS]: users[0].count,
+    [TableModel.SESSIONS]: sessions[0].count,
+    [TableModel.SERVER_FUNCTIONS]: serverFunctions[0].count,
+    [TableModel.FUNCTION_CALLS]: functionCalls[0].count,
+    [TableModel.OBJECTS]: objects[0].count,
+    [TableModel.REQUESTS]: requests[0].count,
+    [TableModel.MODELS]: models[0].count,
+  };
   const { backOfficeData, apps } = await createNavigationTrees(db, {
     navigationName: "Objects",
     counts,
