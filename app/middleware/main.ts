@@ -1,5 +1,4 @@
 // app/middleware/main.ts
-
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { NextFunction, Request as ExpressRequest, Response } from "express";
@@ -14,10 +13,8 @@ import { createDbProxy, DrizzleQuery, RequestExtensions } from ".";
 import { countObjectsForQueries } from "./functions";
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-
 const baseDb = drizzle(postgres(connectionString), { schema });
 export const db = baseDb;
-
 type EnhancedRequest = ExpressRequest & RequestExtensions;
 export function main(): any {
   return async (req: ExpressRequest, res: Response, next: NextFunction) => {
@@ -31,20 +28,16 @@ export function main(): any {
         .join("\n");
       // eslint-disable-next-line no-console
       console.log(`${req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
-
       // Check if models table is populated and get request model
       const allModels = await db
         .select({ id: models.id, pluralName: models.pluralName })
         .from(models);
-
       if (allModels.length === 0) {
         throw new Error("Models table is empty. Please run seed-models script first.");
       }
-
       const requestModel = allModels.find(
         (model) => model.pluralName === TABLES.requests.modelName,
       );
-
       if (!requestModel) {
         throw new Error("Request model not found. Please check models table data.");
       }
@@ -77,7 +70,6 @@ export function main(): any {
               next();
               res.on("finish", resolve);
             });
-            console.log("Transaction queries:", queries); // Debug log
             const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries, request_id);
             if (objectsToInsert.length > 0) {
               await proxiedTrx.insert(objects).values(objectsToInsert);

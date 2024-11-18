@@ -2,7 +2,6 @@
 // import { useLocation, useNavigate } from "@remix-run/react";
 // import { Check, ChevronsUpDown } from "lucide-react";
 // import * as React from "react";
-
 // import { Button } from "~/components/ui/button";
 // import {
 //   Command,
@@ -15,7 +14,6 @@
 // import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 // import { TABLES } from "~/db/schema";
 // import { cn } from "~/lib/utils";
-
 // type ViewSelectorProps = {
 //   apps: (typeof apps.$inferSelect)[];
 // };

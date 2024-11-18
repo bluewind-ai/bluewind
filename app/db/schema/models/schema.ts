@@ -1,5 +1,4 @@
 // app/db/schema/models/schema.ts
-
 import { pgTable, serial, text } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
@@ -10,11 +9,9 @@ export const models = pgTable(TableModel.MODELS, {
   pluralName: text("plural_name").notNull(),
   singularName: text("singular_name").notNull(),
 });
-
 export const ModelSchema = z.object({
   id: z.number(),
   pluralName: z.string(),
   singularName: z.string(),
 });
-
 export type CreateModel = z.infer<typeof ModelSchema>;

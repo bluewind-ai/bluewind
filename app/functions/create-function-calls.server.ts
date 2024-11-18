@@ -1,5 +1,4 @@
 // app/functions/create-function-calls.server.ts
-
 import { redirect } from "@remix-run/node";
 import { sql } from "drizzle-orm";
 
@@ -17,13 +16,9 @@ export async function createFunctionCalls(
   request: RequestExtensions,
   functionName: ServerFunctionName,
 ) {
-  console.log("createFunctionCalls called");
-  console.log("functionName:", functionName);
-
   if (!functionName || !(functionName in SERVER_FUNCTIONS_HANDLERS)) {
     throw new Error(`Invalid function name: ${functionName}`);
   }
-
   // First try to find existing server function
   let serverFunction = await request.db.query.serverFunctions.findFirst({
     where: sql`${serverFunctions.name} = ${functionName}`,
@@ -35,7 +30,6 @@ export async function createFunctionCalls(
       functionCallId: true,
     },
   });
-
   // If it doesn't exist, create it
   if (!serverFunction) {
     const [newServerFunction] = await request.db
@@ -54,9 +48,6 @@ export async function createFunctionCalls(
       });
     serverFunction = newServerFunction;
   }
-
-  console.log("After server function creation - queries:", request.queries);
-
   const [functionCall] = await request.db
     .insert(functionCalls)
     .values({
@@ -69,15 +60,10 @@ export async function createFunctionCalls(
     .returning({
       id: functionCalls.id,
     });
-
   // Just set the function call ID on the request
   request.functionCallId = functionCall.id;
-
-  console.log("After function call creation - queries:", request.queries);
-
   try {
     await SERVER_FUNCTIONS_HANDLERS[functionName].handler(request);
-
     // Mark as completed after successful execution
     await request.db
       .update(functionCalls)
@@ -90,6 +76,5 @@ export async function createFunctionCalls(
       .where(sql`${functionCalls.id} = ${functionCall.id}`);
     throw error;
   }
-
   return redirect(`/objects?function-call-id=${functionCall.id}`);
 }

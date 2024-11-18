@@ -1,5 +1,4 @@
 // app/routes/api.generate-routes.ts
-
 import { generateRoutes } from "~/functions/generate-routes.server";
 
 export async function loader() {

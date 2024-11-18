@@ -1,5 +1,4 @@
 // app/functions/generate-routes.server.ts
-
 import fs from "node:fs";
 import path from "node:path";
 
@@ -7,7 +6,6 @@ import { TableModel, TABLES } from "~/db/schema/table-models";
 
 const serverFunctionTemplate = (tableName: keyof typeof TABLES) => {
   const isRequestsTable = TABLES[tableName].modelName === TableModel.REQUESTS;
-
   return `// app/functions/get-${TABLES[tableName].urlName}.server.ts
 
 import { sql } from "drizzle-orm";
@@ -45,7 +43,6 @@ export async function get${tableName[0].toUpperCase() + tableName.slice(1)}(requ
   return result;
 }`;
 };
-
 const routeTemplate = (
   tableName: keyof typeof TABLES,
   routeName: string,
@@ -64,12 +61,10 @@ export default function ${routeName}() {
   const tableObjects = useLoaderData<typeof loader>();
   return <NewMain data={tableObjects} />;
 }`;
-
 export async function generateRoutes() {
   const routesDir = path.join(process.cwd(), "app", "routes");
   const functionsDir = path.join(process.cwd(), "app", "functions");
   const generatedFiles = [];
-
   for (const [tableName, config] of Object.entries(TABLES)) {
     // Generate server function file
     const functionFile = path.join(functionsDir, `get-${config.urlName}.server.ts`);
@@ -79,7 +74,6 @@ export async function generateRoutes() {
       tableName,
       path: functionFile,
     });
-
     // Generate route file
     const routeFile = path.join(routesDir, `${config.urlName}+/_index.tsx`);
     fs.mkdirSync(path.dirname(routeFile), { recursive: true });
@@ -90,6 +84,5 @@ export async function generateRoutes() {
       path: routeFile,
     });
   }
-
   return generatedFiles;
 }
