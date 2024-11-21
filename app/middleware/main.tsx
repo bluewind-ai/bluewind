@@ -1,4 +1,4 @@
-// app/middleware/main.ts
+// app/middleware/main.tsx
 
 import { sql } from "drizzle-orm";
 import type { PgTransaction } from "drizzle-orm/pg-core";
@@ -28,6 +28,7 @@ export type ExtendedContext = Context & {
 };
 
 export async function mainMiddleware(c: Context, next: () => Promise<void>) {
+  console.log("🚀 Starting mainMiddleware");
   const url = new URL(c.req.url);
   const stack = new Error().stack
     ?.split("\n")
@@ -53,6 +54,7 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
   const queries: DrizzleQuery[] = [];
   const dbWithProxy = createDbProxy(db, queries);
 
+  console.log("📊 Starting transaction");
   const [{ request_id }] = await dbWithProxy.execute<{
     request_id: number;
   }>(sql`
@@ -71,6 +73,7 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
 
   await dbWithProxy.transaction(
     async (trx) => {
+      console.log("💫 Inside transaction");
       const proxiedTrx = createDbProxy(trx, queries);
       (c as ExtendedContext).db = proxiedTrx;
       (c as ExtendedContext).queries = queries;
@@ -83,8 +86,9 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
         await proxiedTrx.insert(objects).values(objectsToInsert);
       }
 
-      // Let this error propagate up
+      console.log("🔍 About to run countTables");
       await countTables(proxiedTrx);
+      console.log("✅ countTables passed");
     },
     {
       isolationLevel: "serializable",

@@ -8,10 +8,18 @@ import { RemixServer } from "@remix-run/react";
 import type { Context } from "hono";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+import * as ReactDOMServer from "react-dom/server";
 import { createHonoServer } from "react-router-hono-server/node";
 
-import type { db,ExtendedContext  } from "./middleware/main";
+import { StaticErrorPage } from "./components/static-error-page";
+import type { db, ExtendedContext } from "./middleware/main";
 import { mainMiddleware } from "./middleware/main";
+
+declare module "hono" {
+  interface ContextVariableMap {
+    error: Error;
+  }
+}
 
 const ABORT_DELAY = 5_000;
 
@@ -115,18 +123,17 @@ export default function handleRequest(
 
 export const server = await createHonoServer({
   configure: (server) => {
-    // Error handling middleware
-    server.use("*", async (c, next) => {
-      try {
-        // Call next first to let the error bubble up
-        await next();
-      } catch (error) {
-        console.error("Error caught in top-level handler:", error);
-        return new Response((error as Error).message, { status: 500 });
+    // Set up error handler first
+    server.onError((err, c) => {
+      console.log("🎯 Hono error handler caught:", err);
+      if (err instanceof Error) {
+        const html = ReactDOMServer.renderToString(<StaticErrorPage error={err} />);
+        return c.html(html, 500);
       }
+      return c.text("Internal Server Error", 500);
     });
 
-    // Our main middleware
+    // Main middleware
     server.use("*", mainMiddleware);
 
     // Logging middleware
@@ -137,13 +144,12 @@ export const server = await createHonoServer({
   },
   getLoadContext(c: Context, _options) {
     const ctx = c as ExtendedContext;
-    const context: AppLoadContext = {
+    return {
       requestTime: new Date().toISOString(),
       url: c.req.url,
       db: ctx.db as typeof db,
       queries: ctx.queries,
       requestId: ctx.requestId,
     };
-    return context;
   },
 });
