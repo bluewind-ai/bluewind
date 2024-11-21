@@ -1,98 +1,132 @@
 // app/entry.server.tsx
-import "./lib/debug";
-
 import { PassThrough } from "node:stream";
 
 import type { AppLoadContext, EntryContext } from "@remix-run/node";
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
-import type { Request as WebRequest } from "@remix-run/web-fetch";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
-import { createExpressApp } from "remix-create-express-app";
+import { createHonoServer } from "react-router-hono-server/node";
 
-import { configureMiddleware, getLoadContext } from "./middleware";
+// Declare the context type
+declare module "@remix-run/node" {
+  interface AppLoadContext {
+    requestTime: string;
+    url: string;
+  }
+}
 
-const ABORT_DELAY = 5000;
-export default function handleRequest(
-  request: WebRequest,
+const ABORT_DELAY = 5_000;
+
+function handleBotRequest(
+  request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
   remixContext: EntryContext,
-  _loadContext: AppLoadContext,
+) {
+  return new Promise((resolve, reject) => {
+    let shellRendered = false;
+    const { pipe, abort } = renderToPipeableStream(
+      <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
+      {
+        onAllReady() {
+          shellRendered = true;
+          const body = new PassThrough();
+          const stream = createReadableStreamFromReadable(body);
+
+          responseHeaders.set("Content-Type", "text/html");
+
+          resolve(
+            new Response(stream, {
+              headers: responseHeaders,
+              status: responseStatusCode,
+            }),
+          );
+
+          pipe(body);
+        },
+        onShellError(error: unknown) {
+          reject(error);
+        },
+        onError(error: unknown) {
+          responseStatusCode = 500;
+          if (shellRendered) {
+            console.error(error);
+          }
+        },
+      },
+    );
+
+    setTimeout(abort, ABORT_DELAY);
+  });
+}
+
+function handleBrowserRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext,
+) {
+  return new Promise((resolve, reject) => {
+    let shellRendered = false;
+    const { pipe, abort } = renderToPipeableStream(
+      <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
+      {
+        onShellReady() {
+          shellRendered = true;
+          const body = new PassThrough();
+          const stream = createReadableStreamFromReadable(body);
+
+          responseHeaders.set("Content-Type", "text/html");
+
+          resolve(
+            new Response(stream, {
+              headers: responseHeaders,
+              status: responseStatusCode,
+            }),
+          );
+
+          pipe(body);
+        },
+        onShellError(error: unknown) {
+          reject(error);
+        },
+        onError(error: unknown) {
+          responseStatusCode = 500;
+          if (shellRendered) {
+            console.error(error);
+          }
+        },
+      },
+    );
+
+    setTimeout(abort, ABORT_DELAY);
+  });
+}
+
+export default function handleRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext,
+  loadContext: AppLoadContext,
 ) {
   return isbot(request.headers.get("user-agent") || "")
     ? handleBotRequest(request, responseStatusCode, responseHeaders, remixContext)
     : handleBrowserRequest(request, responseStatusCode, responseHeaders, remixContext);
 }
-function handleBotRequest(
-  request: WebRequest,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  remixContext: EntryContext,
-) {
-  return new Promise((resolve, reject) => {
-    const { pipe, abort } = renderToPipeableStream(
-      <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
-      {
-        onAllReady() {
-          const body = new PassThrough();
-          const stream = createReadableStreamFromReadable(body);
-          responseHeaders.set("Content-Type", "text/html");
-          resolve(
-            new Response(stream, {
-              headers: responseHeaders,
-              status: responseStatusCode,
-            }),
-          );
-          pipe(body);
-        },
-        onShellError(error: unknown) {
-          reject(error);
-        },
-        onError(_error: unknown) {
-          responseStatusCode = 500;
-        },
-      },
-    );
-    setTimeout(abort, ABORT_DELAY);
-  });
-}
-function handleBrowserRequest(
-  request: WebRequest,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  remixContext: EntryContext,
-) {
-  return new Promise((resolve, reject) => {
-    const { pipe, abort } = renderToPipeableStream(
-      <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
-      {
-        onShellReady() {
-          const body = new PassThrough();
-          const stream = createReadableStreamFromReadable(body);
-          responseHeaders.set("Content-Type", "text/html");
-          resolve(
-            new Response(stream, {
-              headers: responseHeaders,
-              status: responseStatusCode,
-            }),
-          );
-          pipe(body);
-        },
-        onShellError(error: unknown) {
-          reject(error);
-        },
-        onError(_error: unknown) {
-          responseStatusCode = 500;
-        },
-      },
-    );
-    setTimeout(abort, ABORT_DELAY);
-  });
-}
-export const app = createExpressApp({
-  configure: configureMiddleware,
-  getLoadContext,
-  unstable_middleware: true,
+
+export const server = await createHonoServer({
+  configure: (server) => {
+    server.use("*", async (c, next) => {
+      console.log("🔍 Request to:", c.req.url);
+      await next();
+    });
+  },
+  getLoadContext(c) {
+    return {
+      requestTime: new Date().toISOString(),
+      url: c.req.url,
+    };
+  },
 });

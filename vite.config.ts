@@ -1,16 +1,17 @@
 // vite.config.ts
-
 import { vitePlugin as remix } from "@remix-run/dev";
+import { installGlobals } from "@remix-run/node"; // New
 import autoprefixer from "autoprefixer";
-import { expressDevServer } from "remix-express-dev-server";
+import { devServer } from "react-router-hono-server/dev"; // New
 import { flatRoutes } from "remix-flat-routes";
 import tailwindcss from "tailwindcss";
 import { defineConfig } from "vite";
 import { denyImports, envOnlyMacros } from "vite-env-only";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-// import { serverFunctionsPlugin } from "./vite-plugins/generate-serverFunctions";
 import { requestLoggerPlugin } from "./vite-plugins/request-logger";
+
+installGlobals(); // New
 
 declare module "@remix-run/node" {
   interface Future {
@@ -22,8 +23,11 @@ export default defineConfig({
   server: {
     hmr: false,
   },
+  build: {
+    target: "esnext", // New
+  },
   plugins: [
-    expressDevServer(),
+    devServer(), // Replace expressDevServer()
     denyImports({}),
     envOnlyMacros(),
     remix({
@@ -40,8 +44,6 @@ export default defineConfig({
       },
     }),
     tsconfigPaths(),
-    // serverFunctionsPlugin(),
-    // appsPlugin(),
     requestLoggerPlugin(),
   ],
   css: {
