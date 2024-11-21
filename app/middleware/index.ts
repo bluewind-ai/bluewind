@@ -1,13 +1,12 @@
 // app/middleware/index.ts
+
 import type { AppLoadContext } from "@remix-run/node";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import type { Request as ExpressRequest } from "express";
-import morgan from "morgan";
+import type { Context } from "hono";
 
 import * as schema from "~/db/schema";
 
-import { main } from "./main";
-
+// Keep original console.log override
 const originalConsoleLog = console.log;
 console.log = function (...args) {
   const sanitizedArgs = args.map((arg) => {
@@ -42,14 +41,17 @@ console.log = function (...args) {
   });
   originalConsoleLog.apply(console, sanitizedArgs);
 };
+
 export interface DrizzleQuery {
   type: "insert" | "select" | "update" | "delete";
   table: string;
   query: unknown;
   result?: unknown;
 }
+
 export type DbClient = PostgresJsDatabase<typeof schema>;
 type DbInsertFunction = (...args: any[]) => any;
+
 export interface RequestExtensions {
   db: DbClient;
   queries: DrizzleQuery[];
@@ -64,7 +66,6 @@ export function createDbProxy<
 >(db: T, queries: DrizzleQuery[]) {
   return new Proxy(db, {
     get(target, prop) {
-      dd(prop);
       const value = Reflect.get(target, prop);
       if (typeof value !== "function") return value;
       return function (this: unknown, ...args: unknown[]) {
@@ -143,16 +144,11 @@ export function createDbProxy<
     },
   });
 }
-export function configureMiddleware(app: any) {
-  app.use(morgan("tiny"));
-  app.use(main());
-}
-export function getLoadContext(req: ExpressRequest & RequestExtensions): AppLoadContext {
-  return req as unknown as AppLoadContext;
-}
-declare module "express" {
-  interface Request extends RequestExtensions {}
-}
+
+// Remove Express-specific middleware configuration
+export type ExtendedContext = Context & RequestExtensions;
+
+// Update type declarations for Remix context
 declare module "@remix-run/node" {
   interface AppLoadContext extends RequestExtensions {}
 }

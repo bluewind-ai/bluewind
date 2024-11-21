@@ -28,4 +28,4 @@ open -a "Google Chrome Dev" https://local.drizzle.studio/
 open -a "Google Chrome Dev" http://localhost:5173
 
 # Start Remix and wait for it
-npm run dev:remix
+npm run vite

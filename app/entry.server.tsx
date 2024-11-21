@@ -1,20 +1,17 @@
 // app/entry.server.tsx
+
 import { PassThrough } from "node:stream";
 
 import type { AppLoadContext, EntryContext } from "@remix-run/node";
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
+import type { Context } from "hono";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 import { createHonoServer } from "react-router-hono-server/node";
 
-// Declare the context type
-declare module "@remix-run/node" {
-  interface AppLoadContext {
-    requestTime: string;
-    url: string;
-  }
-}
+import type { ExtendedContext } from "./middleware/main";
+import { mainMiddleware } from "./middleware/main";
 
 const ABORT_DELAY = 5_000;
 
@@ -118,15 +115,20 @@ export default function handleRequest(
 
 export const server = await createHonoServer({
   configure: (server) => {
-    server.use("*", async (c, next) => {
+    server.use("*", mainMiddleware as any);
+
+    server.use("*", async (c: Context, next: () => Promise<void>) => {
       console.log("🔍 Request to:", c.req.url);
       await next();
     });
   },
-  getLoadContext(c) {
+  getLoadContext(c: Context) {
     return {
       requestTime: new Date().toISOString(),
       url: c.req.url,
+      db: (c as ExtendedContext).db,
+      queries: (c as ExtendedContext).queries,
+      requestId: (c as ExtendedContext).requestId,
     };
   },
 });
