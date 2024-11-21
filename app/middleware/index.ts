@@ -1,6 +1,5 @@
 // app/middleware/index.ts
 
-import type { AppLoadContext } from "@remix-run/node";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
 

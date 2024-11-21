@@ -10,7 +10,7 @@ import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 import { createHonoServer } from "react-router-hono-server/node";
 
-import type { ExtendedContext } from "./middleware/main";
+import type { db,ExtendedContext  } from "./middleware/main";
 import { mainMiddleware } from "./middleware/main";
 
 const ABORT_DELAY = 5_000;
@@ -106,7 +106,7 @@ export default function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   remixContext: EntryContext,
-  loadContext: AppLoadContext,
+  _loadContext: AppLoadContext,
 ) {
   return isbot(request.headers.get("user-agent") || "")
     ? handleBotRequest(request, responseStatusCode, responseHeaders, remixContext)
@@ -115,20 +115,35 @@ export default function handleRequest(
 
 export const server = await createHonoServer({
   configure: (server) => {
-    server.use("*", mainMiddleware as any);
+    // Error handling middleware
+    server.use("*", async (c, next) => {
+      try {
+        // Call next first to let the error bubble up
+        await next();
+      } catch (error) {
+        console.error("Error caught in top-level handler:", error);
+        return new Response((error as Error).message, { status: 500 });
+      }
+    });
 
+    // Our main middleware
+    server.use("*", mainMiddleware);
+
+    // Logging middleware
     server.use("*", async (c: Context, next: () => Promise<void>) => {
       console.log("🔍 Request to:", c.req.url);
       await next();
     });
   },
-  getLoadContext(c: Context) {
-    return {
+  getLoadContext(c: Context, _options) {
+    const ctx = c as ExtendedContext;
+    const context: AppLoadContext = {
       requestTime: new Date().toISOString(),
       url: c.req.url,
-      db: (c as ExtendedContext).db,
-      queries: (c as ExtendedContext).queries,
-      requestId: (c as ExtendedContext).requestId,
+      db: ctx.db as typeof db,
+      queries: ctx.queries,
+      requestId: ctx.requestId,
     };
+    return context;
   },
 });
