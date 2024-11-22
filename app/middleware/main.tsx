@@ -55,26 +55,29 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
   const dbWithProxy = createDbProxy(db, queries);
 
   console.log("📊 Starting transaction");
-  const [{ request_id }] = await dbWithProxy.execute<{
-    request_id: number;
-  }>(sql`
-    WITH request_insert AS (
-      INSERT INTO ${requests} DEFAULT VALUES
-      RETURNING id
-    ),
-    object_insert AS (
-      INSERT INTO ${objects} (model_id, record_id, request_id)
-      SELECT ${requestModel.id}, id, id FROM request_insert
-      RETURNING *
-    )
-    SELECT request_insert.id as request_id
-    FROM request_insert, object_insert;
-  `);
 
   await dbWithProxy.transaction(
     async (trx) => {
       console.log("💫 Inside transaction");
       const proxiedTrx = createDbProxy(trx, queries);
+
+      // First create the request and its object
+      const [{ request_id }] = await proxiedTrx.execute<{
+        request_id: number;
+      }>(sql`
+        WITH request_insert AS (
+          INSERT INTO ${requests} DEFAULT VALUES
+          RETURNING id
+        ),
+        object_insert AS (
+          INSERT INTO ${objects} (model_id, record_id, request_id)
+          SELECT ${requestModel.id}, id, id FROM request_insert
+          RETURNING *
+        )
+        SELECT request_insert.id as request_id
+        FROM request_insert, object_insert;
+      `);
+
       (c as ExtendedContext).db = proxiedTrx;
       (c as ExtendedContext).queries = queries;
       (c as ExtendedContext).requestId = request_id;
@@ -82,9 +85,22 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
       await next();
 
       const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries, request_id);
+
+      // Debug what we're about to insert
+      console.log("🔍 Current queries state:", queries);
+      console.log("🔍 Objects to insert:", objectsToInsert);
+
+      // Debug the current state of objects table
+      const beforeCount = await proxiedTrx.select({ count: sql<number>`count(*)` }).from(objects);
+      console.log("📊 Objects count before insert:", Number(beforeCount[0].count));
+
       if (objectsToInsert.length > 0) {
-        await proxiedTrx.insert(objects).values(objectsToInsert);
+        await proxiedTrx.insert(objects).values(objectsToInsert).returning();
       }
+
+      // Debug after insert
+      const afterCount = await proxiedTrx.select({ count: sql<number>`count(*)` }).from(objects);
+      console.log("📊 Objects count after insert:", Number(afterCount[0].count));
 
       console.log("🔍 About to run countTables");
       await countTables(proxiedTrx);

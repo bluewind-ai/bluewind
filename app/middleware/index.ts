@@ -63,38 +63,57 @@ export function createDbProxy<
     insert: DbInsertFunction;
   },
 >(db: T, queries: DrizzleQuery[]) {
+  console.log("🔄 Creating DB Proxy. Initial queries length:", queries.length);
+
   return new Proxy(db, {
     get(target, prop) {
+      console.log("🎯 DB Proxy intercepted property:", String(prop));
+
       const value = Reflect.get(target, prop);
       if (typeof value !== "function") return value;
+
       return function (this: unknown, ...args: unknown[]) {
         const callStack = new Error().stack;
+
         if (prop === "insert") {
+          console.log("⚡ Insert operation detected");
           const tableArg = args[0];
           if (tableArg && typeof tableArg === "object") {
             const symbols = Object.getOwnPropertySymbols(tableArg);
+            console.log(
+              "📌 Found symbols:",
+              symbols.map((s) => s.description),
+            );
+
             const drizzleNameSymbol = symbols.find((s) => s.description === "drizzle:Name");
             if (drizzleNameSymbol) {
               const tableName = (tableArg as any)[drizzleNameSymbol];
+              console.log("📝 Inserting into table:", tableName);
+
               const query = value.apply(this || target, args);
               return new Proxy(query, {
                 get(target, prop) {
+                  console.log("🔗 Chaining method:", String(prop));
                   const chainValue = Reflect.get(target, prop);
                   if (prop === "values") {
                     return function (...args: unknown[]) {
+                      console.log("📊 Values method called for table:", tableName);
                       const valuesQuery = chainValue.apply(target, args);
                       return new Proxy(valuesQuery, {
                         get(target, prop) {
+                          console.log("🔄 Final chain method:", String(prop));
                           const returningValue = Reflect.get(target, prop);
                           if (prop === "returning") {
                             return async function (...args: unknown[]) {
                               const result = await returningValue.apply(target, args);
+                              console.log("✅ Insert completed for table:", tableName);
                               queries.push({
                                 type: "insert",
                                 table: tableName,
                                 query: args[0],
                                 result,
                               });
+                              console.log("📚 Updated queries length:", queries.length);
                               return result;
                             };
                           }
@@ -109,9 +128,11 @@ export function createDbProxy<
             }
           }
         }
+
         const result = value.apply(this || target, args);
         if (result instanceof Promise) {
           return result.catch((e: any) => {
+            console.error("❌ Database error:", e);
             const error = new Error(e.message);
             error.stack = `${e.message}\nApplication Stack:\n${callStack}\nDatabase Stack:\n${e.stack}`;
             Object.assign(error, e);
@@ -127,6 +148,7 @@ export function createDbProxy<
                 const chainResult = chainValue.apply(this || target, chainArgs);
                 if (chainResult instanceof Promise) {
                   return chainResult.catch((e: any) => {
+                    console.error("❌ Chain operation error:", e);
                     const error = new Error(e.message);
                     error.stack = `${e.message}\nApplication Stack:\n${callStack}\nDatabase Stack:\n${e.stack}`;
                     Object.assign(error, e);
