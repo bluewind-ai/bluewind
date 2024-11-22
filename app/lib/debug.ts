@@ -51,7 +51,7 @@ function stringifyWithCircularRefs(
                   ? JSON.parse(stringifyWithCircularRefs(value[k], space, currentDepth + 1))
                   : value[k];
             });
-          return { ...limited, _truncated: `[${Object.keys(value).length - MAX_KEYS} more...]` };
+          return { ...limited, truncated: `[${Object.keys(value).length - MAX_KEYS} more...]` };
         }
         const processed: Record<string, unknown> = {};
         Object.keys(value).forEach((k) => {

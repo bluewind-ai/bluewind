@@ -1,5 +1,7 @@
 // app/entry.server.tsx
 
+import "./lib/debug";
+
 import { PassThrough } from "node:stream";
 
 import type { AppLoadContext, EntryContext } from "@remix-run/node";
@@ -10,8 +12,10 @@ import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 import * as ReactDOMServer from "react-dom/server";
 import { createHonoServer } from "react-router-hono-server/node";
+import { encode } from "turbo-stream";
 
-import { StaticErrorPage } from "./components/static-error-page";
+import { StaticErrorPage } from "~/utils/error-utils";
+
 import type { db, ExtendedContext } from "./middleware/main";
 import { mainMiddleware } from "./middleware/main";
 
@@ -125,12 +129,49 @@ export const server = await createHonoServer({
   configure: (server) => {
     // Set up error handler first
     server.onError((err, c) => {
-      console.log("🎯 Hono error handler caught:", err);
-      if (err instanceof Error) {
-        const html = ReactDOMServer.renderToString(<StaticErrorPage error={err} />);
-        return c.html(html, 500);
+      console.error("🔥 Hono error handler caught:", err);
+      const error = err instanceof Error ? err : new Error(String(err));
+
+      if (c.req.url.endsWith(".data")) {
+        const encoded = encode(
+          {
+            error: {
+              data: {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+              },
+              status: 500,
+              statusText: "Internal Server Error",
+            },
+          },
+          {
+            plugins: [
+              (value: unknown) => {
+                if (value && typeof value === "object" && "data" in value && "status" in value) {
+                  return [
+                    "ErrorResponse",
+                    (value as any).data,
+                    (value as any).status,
+                    (value as any).statusText,
+                  ];
+                }
+              },
+            ],
+          },
+        );
+
+        return c.body(encoded, {
+          headers: {
+            "Content-Type": "text/vnd.turbo-stream.html",
+          },
+          status: 500,
+        });
       }
-      return c.text("Internal Server Error", 500);
+
+      console.error("Stack trace:", error.stack);
+      const html = ReactDOMServer.renderToString(<StaticErrorPage error={error} />);
+      return c.html(html, 500);
     });
 
     // Main middleware

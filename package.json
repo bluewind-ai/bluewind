@@ -4,12 +4,12 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "NODE_ENV=production remix vite:build",
+    "build": ". .env && NODE_ENV=production remix vite:build",
     "dev:remix": "remix vite:dev",
     "dev": "sh dev.sh",
     "vite": "vite --host",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint . --fix",
-    "start": "NODE_ENV=production node ./build/server/index.js",
+    "start": "sh start.sh",
     "typecheck": "tsc",
     "makemigrations": "drizzle-kit generate",
     "migrate": "drizzle-kit push",
@@ -58,6 +58,7 @@
     "tailwindcss-animate": "^1.0.7",
     "ts-morph": "^24.0.0",
     "tsx": "^4.19.2",
+    "turbo-stream": "^2.4.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

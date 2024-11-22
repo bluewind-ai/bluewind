@@ -62,6 +62,7 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
       const proxiedTrx = createDbProxy(trx, queries);
 
       // First create the request and its object
+      // dd(c);
       const [{ request_id }] = await proxiedTrx.execute<{
         request_id: number;
       }>(sql`
@@ -81,7 +82,6 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
       (c as ExtendedContext).db = proxiedTrx;
       (c as ExtendedContext).queries = queries;
       (c as ExtendedContext).requestId = request_id;
-
       await next();
 
       const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries, request_id);
