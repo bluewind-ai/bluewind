@@ -4,12 +4,48 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import { schema } from "~/db/schema";
+import { ServerFunctionType } from "~/db/schema/enums";
 import { CreateModel, models, ModelSchema } from "~/db/schema/models/schema";
 import { objects, ObjectSchema } from "~/db/schema/objects/schema";
 import { CreateRequest, requests, RequestSchema } from "~/db/schema/requests/schema";
+import { serverFunctions } from "~/db/schema/server-functions/schema";
 import { TABLES } from "~/db/schema/table-models";
+import type { ButtonVariant } from "~/lib/server-functions-types";
 
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
+
+const CORE_SERVER_FUNCTIONS = [
+  {
+    name: "truncateDb",
+    label: "Truncate DB",
+    variant: "destructive" as ButtonVariant,
+    type: ServerFunctionType.SYSTEM,
+  },
+  {
+    name: "bootstrap",
+    label: "Bootstrap",
+    variant: "default" as ButtonVariant,
+    type: ServerFunctionType.SYSTEM,
+  },
+  {
+    name: "updateFiles",
+    label: "Update Files",
+    variant: "default" as ButtonVariant,
+    type: ServerFunctionType.SYSTEM,
+  },
+  {
+    name: "generateRoutes",
+    label: "Generate Routes",
+    variant: "default" as ButtonVariant,
+    type: ServerFunctionType.SYSTEM,
+  },
+  {
+    name: "loadNavigationData",
+    label: "Load Navigation Data",
+    variant: "default" as ButtonVariant,
+    type: ServerFunctionType.SYSTEM,
+  },
+] as const;
 
 function generateModelsToInsert(): CreateModel[] {
   return MODEL_NAMES.map((name, index) =>
@@ -67,6 +103,40 @@ async function main() {
 
   const insertedObjects = await db.insert(objects).values(objectsToInsert).returning();
   console.log("Inserted objects:", insertedObjects);
+
+  // Insert server functions
+  console.log("Creating server functions...");
+  const serverFunctionsToInsert = CORE_SERVER_FUNCTIONS.map((fn) => ({
+    name: fn.name,
+    type: fn.type,
+    requestId: 1,
+    metadata: {
+      label: fn.label,
+      variant: fn.variant,
+    },
+  }));
+
+  const insertedServerFunctions = await db
+    .insert(serverFunctions)
+    .values(serverFunctionsToInsert)
+    .returning();
+  console.log("Inserted server functions:", insertedServerFunctions);
+
+  // Create objects for server functions
+  console.log("Creating objects for server functions...");
+  const serverFunctionObjects = insertedServerFunctions.map((fn) =>
+    ObjectSchema.parse({
+      modelId: 3, // server_functions model ID
+      recordId: fn.id,
+      requestId: 1,
+    }),
+  );
+
+  const insertedServerFunctionObjects = await db
+    .insert(objects)
+    .values(serverFunctionObjects)
+    .returning();
+  console.log("Inserted server function objects:", insertedServerFunctionObjects);
 
   console.log("Models seeding completed successfully");
   await sql.end();

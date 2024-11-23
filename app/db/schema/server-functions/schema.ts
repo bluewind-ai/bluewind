@@ -1,6 +1,7 @@
 // app/db/schema/server-functions/schema.ts
+
 import { relations } from "drizzle-orm";
-import { type AnyPgColumn, integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+import { type AnyPgColumn, integer, jsonb, pgTable, serial, varchar } from "drizzle-orm/pg-core";
 
 import { serverFunctionTypeEnum } from "../enums";
 import { functionCalls } from "../function-calls/schema";
@@ -16,10 +17,13 @@ export const serverFunctions = pgTable("server_functions", {
   functionCallId: integer("function_call_id").references((): AnyPgColumn => functionCalls.id, {
     onDelete: "cascade",
   }),
+  metadata: jsonb("metadata"),
 });
+
 export type ServerFunction = typeof serverFunctions.$inferSelect & {
   displayName: string;
 };
+
 export function enrichServerFunction(
   serverFunction: typeof serverFunctions.$inferSelect,
 ): ServerFunction {
@@ -31,6 +35,7 @@ export function enrichServerFunction(
       .join(" "),
   };
 }
+
 export const serverFunctionsRelations = relations(serverFunctions, ({ one, many }) => ({
   request: one(requests, {
     fields: [serverFunctions.requestId],

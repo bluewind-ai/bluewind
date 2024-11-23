@@ -13,6 +13,8 @@ import {
   useNavigation,
 } from "@remix-run/react";
 
+import * as schema from "~/db/schema";
+import { TableModel } from "~/db/schema/table-models";
 import { RequestExtensions } from "~/middleware";
 
 import { BackOfficeTree } from "./components/back-office-tree";
@@ -40,10 +42,19 @@ function Document({ children }: { children: React.ReactNode }) {
 
 export { RemixErrorBoundary as ErrorBoundary } from "~/utils/error-utils";
 
-interface LoaderData {
+export interface LoaderData {
   navigationData: NavigationNode;
   backOfficeData: NavigationNode;
   apps: NavigationNode[];
+  [TableModel.SERVER_FUNCTIONS]: Array<{
+    id: number;
+    name: string;
+    type: string;
+    metadata: {
+      label: string;
+      variant: string;
+    };
+  }>;
 }
 
 export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
@@ -56,7 +67,12 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
   request.queries = args.context.queries;
   request.requestId = args.context.requestId;
 
-  const data = await loadNavigationData(request);
+  const [data, serverFunctions] = await Promise.all([
+    loadNavigationData(request),
+    request.db.query.serverFunctions.findMany({
+      orderBy: [schema.serverFunctions.name],
+    }),
+  ]);
 
   if (!data?.navigationData || !data?.backOfficeData) {
     throw new Response(JSON.stringify({ message: "Failed to load navigation data" }), {
@@ -68,6 +84,8 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
     navigationData: data.navigationData,
     backOfficeData: data.backOfficeData,
     apps: data.apps || [],
+    [TableModel.SERVER_FUNCTIONS]:
+      serverFunctions as LoaderData[typeof TableModel.SERVER_FUNCTIONS],
   };
 }
 
@@ -84,7 +102,9 @@ function AppContent({ data }: { data: LoaderData }) {
     <div className="flex h-full overflow-hidden">
       <NavigationTree data={data.navigationData} />
       <div className="flex-1">
-        <ServerFunctionsButtons />
+        <ServerFunctionsButtons
+          {...{ [TableModel.SERVER_FUNCTIONS]: data[TableModel.SERVER_FUNCTIONS] }}
+        />
         <Outlet />
       </div>
       <BackOfficeTree data={data.backOfficeData} />

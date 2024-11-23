@@ -1,0 +1,1 @@
+ALTER TABLE "server_functions" ADD COLUMN "metadata" jsonb;
