@@ -13,6 +13,8 @@ import {
   useNavigation,
 } from "@remix-run/react";
 
+import { RequestExtensions } from "~/middleware";
+
 import { BackOfficeTree } from "./components/back-office-tree";
 import { type NavigationNode, NavigationTree } from "./components/navigation-tree";
 import { ServerFunctionsButtons } from "./components/server-functions-buttons";
@@ -49,7 +51,13 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
     throw args.context.error;
   }
 
-  const data = await loadNavigationData(args);
+  const request = args.request as unknown as RequestExtensions;
+  request.db = args.context.db;
+  request.queries = args.context.queries;
+  request.requestId = args.context.requestId;
+
+  const data = await loadNavigationData(request);
+
   if (!data?.navigationData || !data?.backOfficeData) {
     throw new Response(JSON.stringify({ message: "Failed to load navigation data" }), {
       status: 500,

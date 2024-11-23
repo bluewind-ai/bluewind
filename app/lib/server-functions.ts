@@ -1,6 +1,7 @@
 // app/lib/server-functions.ts
 import { bootstrap } from "~/functions/bootstrap.server";
 import { generateRoutes } from "~/functions/generate-routes.server";
+import { loadNavigationData } from "~/functions/load-navigation-data.server";
 import { truncateDb } from "~/functions/truncate-db.server";
 import { updateFiles } from "~/functions/update-files.server";
 import type { RequestExtensions } from "~/middleware";
@@ -25,6 +26,11 @@ export const SERVER_FUNCTIONS_HANDLERS: Record<
   generateRoutes: {
     handler: async (_request: RequestExtensions) => {
       await generateRoutes();
+    },
+  },
+  loadNavigationData: {
+    handler: async (request: RequestExtensions) => {
+      await loadNavigationData(request);
     },
   },
 };

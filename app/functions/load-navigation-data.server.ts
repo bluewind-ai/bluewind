@@ -1,28 +1,28 @@
 // app/functions/load-navigation-data.server.ts
-import { type LoaderFunctionArgs } from "@remix-run/node";
+
 import { sql } from "drizzle-orm";
-import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { type NavigationNode } from "~/components/navigation-tree";
 import * as schema from "~/db/schema";
 import { TableModel } from "~/db/schema/table-models";
+import { RequestExtensions } from "~/middleware";
 
 import { createNavigationTrees } from "./create-navigation-trees.server";
 
-type DbClient = PostgresJsDatabase<typeof schema>;
-export async function loadNavigationData(args: LoaderFunctionArgs) {
-  const { db } = args.context as {
-    db: DbClient;
-  };
+export async function loadNavigationData(request: RequestExtensions) {
+  if (!request.db) {
+    throw new Error("Database connection not available on request object");
+  }
+
   const [users, sessions, serverFunctions, functionCalls, objects, requests, models] =
     await Promise.all([
-      db.select({ count: sql<number>`count(*)` }).from(schema.users),
-      db.select({ count: sql<number>`count(*)` }).from(schema.sessions),
-      db.select({ count: sql<number>`count(*)` }).from(schema.serverFunctions),
-      db.select({ count: sql<number>`count(*)` }).from(schema.functionCalls),
-      db.select({ count: sql<number>`count(*)` }).from(schema.objects),
-      db.select({ count: sql<number>`count(*)` }).from(schema.requests),
-      db.select({ count: sql<number>`count(*)` }).from(schema.models),
+      request.db.select({ count: sql<number>`count(*)` }).from(schema.users),
+      request.db.select({ count: sql<number>`count(*)` }).from(schema.sessions),
+      request.db.select({ count: sql<number>`count(*)` }).from(schema.serverFunctions),
+      request.db.select({ count: sql<number>`count(*)` }).from(schema.functionCalls),
+      request.db.select({ count: sql<number>`count(*)` }).from(schema.objects),
+      request.db.select({ count: sql<number>`count(*)` }).from(schema.requests),
+      request.db.select({ count: sql<number>`count(*)` }).from(schema.models),
     ]);
   const counts = {
     [TableModel.USERS]: users[0].count,
@@ -33,11 +33,11 @@ export async function loadNavigationData(args: LoaderFunctionArgs) {
     [TableModel.REQUESTS]: requests[0].count,
     [TableModel.MODELS]: models[0].count,
   };
-  const { backOfficeData, apps } = await createNavigationTrees(db, {
+  const { backOfficeData, apps } = await createNavigationTrees(request.db, {
     navigationName: "Objects",
     counts,
   });
-  const functionCallsData = await db.query.functionCalls.findMany({
+  const functionCallsData = await request.db.query.functionCalls.findMany({
     with: {
       serverFunction: true,
     },
