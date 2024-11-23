@@ -5,6 +5,8 @@ import type { Context } from "hono";
 
 import * as schema from "~/db/schema";
 
+import { insertMiddleware } from "./insert";
+
 // Keep original console.log override
 const originalConsoleLog = console.log;
 console.log = function (...args) {
@@ -89,42 +91,7 @@ export function createDbProxy<
             if (drizzleNameSymbol) {
               const tableName = (tableArg as any)[drizzleNameSymbol];
               console.log("📝 Inserting into table:", tableName);
-
-              const query = value.apply(this || target, args);
-              return new Proxy(query, {
-                get(target, prop) {
-                  console.log("🔗 Chaining method:", String(prop));
-                  const chainValue = Reflect.get(target, prop);
-                  if (prop === "values") {
-                    return function (...args: unknown[]) {
-                      console.log("📊 Values method called for table:", tableName);
-                      const valuesQuery = chainValue.apply(target, args);
-                      return new Proxy(valuesQuery, {
-                        get(target, prop) {
-                          console.log("🔄 Final chain method:", String(prop));
-                          const returningValue = Reflect.get(target, prop);
-                          if (prop === "returning") {
-                            return async function (...args: unknown[]) {
-                              const result = await returningValue.apply(target, args);
-                              console.log("✅ Insert completed for table:", tableName);
-                              queries.push({
-                                type: "insert",
-                                table: tableName,
-                                query: args[0],
-                                result,
-                              });
-                              console.log("📚 Updated queries length:", queries.length);
-                              return result;
-                            };
-                          }
-                          return returningValue;
-                        },
-                      });
-                    };
-                  }
-                  return chainValue;
-                },
-              });
+              return insertMiddleware(this || target, value as any, tableName, queries, args);
             }
           }
         }
@@ -166,10 +133,8 @@ export function createDbProxy<
   });
 }
 
-// Remove Express-specific middleware configuration
 export type ExtendedContext = Context & RequestExtensions;
 
-// Update type declarations for Remix context
 declare module "@remix-run/node" {
   interface AppLoadContext extends RequestExtensions {}
 }
