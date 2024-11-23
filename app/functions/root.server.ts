@@ -9,6 +9,7 @@ import { serverFunctions, ServerFunctionType } from "~/db/schema/server-function
 import { TABLES } from "~/db/schema/table-models";
 import type { ButtonVariant } from "~/lib/server-functions-types";
 import type { RequestExtensions } from "~/middleware";
+import { createDbProxy, DrizzleQuery } from "~/middleware";
 
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
 
@@ -31,6 +32,9 @@ function generateModelsToInsert(): CreateModel[] {
 export async function root(extensions: RequestExtensions) {
   console.log("Starting root seeding...");
 
+  const queries: DrizzleQuery[] = [];
+  const dbWithProxy = createDbProxy(extensions.db, queries);
+
   // Create one request first since everything references it
   console.log("Creating request...");
   const requestToInsert: CreateRequest = RequestSchema.parse({
@@ -38,12 +42,12 @@ export async function root(extensions: RequestExtensions) {
     requestId: BOOTSTRAP_REQUEST_ID, // Points to itself as it's the root request
     functionCallId: BOOTSTRAP_FUNCTION_CALL_ID, // Points to the first function call we'll create
   });
-  const insertedRequest = await extensions.db.insert(requests).values(requestToInsert).returning();
+  const insertedRequest = await dbWithProxy.insert(requests).values(requestToInsert).returning();
   console.log("Inserted request:", insertedRequest);
 
   // Insert root function next
   console.log("Creating root function...");
-  const [rootFunction] = await extensions.db
+  const [rootFunction] = await dbWithProxy
     .insert(serverFunctions)
     .values({
       name: "root",
@@ -59,7 +63,7 @@ export async function root(extensions: RequestExtensions) {
   console.log("Inserted root function:", rootFunction);
 
   // Create a function call
-  const [functionCall] = await extensions.db
+  const [functionCall] = await dbWithProxy
     .insert(functionCalls)
     .values({
       serverFunctionId: rootFunction.id,
@@ -74,7 +78,7 @@ export async function root(extensions: RequestExtensions) {
   // Now we can create models
   const modelsToInsert = generateModelsToInsert();
   console.log("Inserting models:", modelsToInsert);
-  const insertedModels = await extensions.db.insert(models).values(modelsToInsert).returning();
+  const insertedModels = await dbWithProxy.insert(models).values(modelsToInsert).returning();
   console.log("Inserted models:", insertedModels);
 
   // Create objects for models AND request
@@ -112,8 +116,9 @@ export async function root(extensions: RequestExtensions) {
     }),
   ];
 
-  const insertedObjects = await extensions.db.insert(objects).values(objectsToInsert).returning();
+  const insertedObjects = await dbWithProxy.insert(objects).values(objectsToInsert).returning();
   console.log("Inserted objects:", insertedObjects);
+  console.log("Total queries tracked:", queries.length);
 
   console.log("Root seeding completed successfully");
 }
