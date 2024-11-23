@@ -1,4 +1,5 @@
 // app/components/new-main.tsx
+
 import { type ColumnDef, type SortingState } from "@tanstack/react-table";
 import {
   flexRender,
@@ -11,6 +12,7 @@ import { useState } from "react";
 
 export function NewMain<TData extends object>({ data }: { data: TData[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
+
   const createColumns = (data: TData[]): ColumnDef<TData>[] => {
     if (!data.length) return [];
     return Object.keys(data[0]).map((key) => ({
@@ -18,13 +20,19 @@ export function NewMain<TData extends object>({ data }: { data: TData[] }) {
       header: key,
       cell: (info) => {
         const value = info.getValue();
+        if (value === null) return "null";
+        if (value === undefined) return "undefined";
         if (value instanceof Date) {
           return value.toLocaleString();
+        }
+        if (typeof value === "object") {
+          return JSON.stringify(value);
         }
         return value;
       },
     }));
   };
+
   const table = useReactTable({
     data,
     columns: createColumns(data),
@@ -35,6 +43,7 @@ export function NewMain<TData extends object>({ data }: { data: TData[] }) {
     },
     onSortingChange: setSorting,
   });
+
   return (
     <div className="p-4">
       <table className="min-w-full border-collapse border border-slate-200">
