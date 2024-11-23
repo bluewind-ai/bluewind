@@ -86,6 +86,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "expect-type": "^1.1.0",
     "morgan": "^1.10.0",
     "postcss": "^8.4.38",
     "prettier": "^3.3.3",
