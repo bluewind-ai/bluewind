@@ -1,7 +1,7 @@
 // app/db/schema.ts
+
 import * as tables from "./schema/index";
 
-export * from "./schema/enums";
 export * from "./schema/function-calls/schema";
 export * from "./schema/models/schema";
 export * from "./schema/objects/schema";
