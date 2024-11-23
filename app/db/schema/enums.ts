@@ -4,16 +4,6 @@ import { pgEnum } from "drizzle-orm/pg-core";
 
 import { TableModel } from "./table-models";
 
-export enum ServerFunctionType {
-  SYSTEM = "SYSTEM",
-  USER = "USER",
-}
-
-export const serverFunctionTypeEnum = pgEnum("server_function_type", [
-  ServerFunctionType.SYSTEM,
-  ServerFunctionType.USER,
-]);
-
 export const modelEnum = pgEnum("model", [
   TableModel.USERS,
   TableModel.SESSIONS,

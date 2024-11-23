@@ -1,11 +1,29 @@
 // app/db/schema/server-functions/schema.ts
 
 import { relations } from "drizzle-orm";
-import { type AnyPgColumn, integer, jsonb, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+import {
+  type AnyPgColumn,
+  integer,
+  jsonb,
+  pgEnum,
+  pgTable,
+  serial,
+  varchar,
+} from "drizzle-orm/pg-core";
 
-import { serverFunctionTypeEnum } from "../enums";
 import { functionCalls } from "../function-calls/schema";
 import { requests } from "../requests/schema";
+
+// Moving the enum and its pg definition here
+export enum ServerFunctionType {
+  SYSTEM = "SYSTEM",
+  USER = "USER",
+}
+
+export const serverFunctionTypeEnum = pgEnum("server_function_type", [
+  ServerFunctionType.SYSTEM,
+  ServerFunctionType.USER,
+]);
 
 export const serverFunctions = pgTable("server_functions", {
   id: serial("id").primaryKey(),

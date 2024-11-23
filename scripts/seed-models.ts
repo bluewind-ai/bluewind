@@ -4,11 +4,10 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import { schema } from "~/db/schema";
-import { ServerFunctionType } from "~/db/schema/enums";
 import { CreateModel, models, ModelSchema } from "~/db/schema/models/schema";
 import { objects, ObjectSchema } from "~/db/schema/objects/schema";
 import { CreateRequest, requests, RequestSchema } from "~/db/schema/requests/schema";
-import { serverFunctions } from "~/db/schema/server-functions/schema";
+import { serverFunctions, ServerFunctionType } from "~/db/schema/server-functions/schema";
 import { TABLES } from "~/db/schema/table-models";
 import type { ButtonVariant } from "~/lib/server-functions-types";
 

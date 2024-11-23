@@ -1,7 +1,7 @@
 // app/functions/load-server-functions.server.ts
 
 import * as schema from "~/db/schema";
-import { ServerFunctionType } from "~/db/schema/enums";
+import { ServerFunctionType } from "~/db/schema/server-functions/schema";
 import type { RequestExtensions } from "~/middleware";
 
 const CORE_SERVER_FUNCTIONS = [
