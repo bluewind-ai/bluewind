@@ -14,12 +14,18 @@ import type { ButtonVariant } from "~/lib/server-functions-types";
 
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
 
+// First create the function call that owns all bootstrapping
+const BOOTSTRAP_REQUEST_ID = 1;
+const BOOTSTRAP_FUNCTION_CALL_ID = 1;
+
 function generateModelsToInsert(): CreateModel[] {
   return MODEL_NAMES.map((name, index) =>
     ModelSchema.parse({
       id: index + 1,
       pluralName: TABLES[name].modelName,
       singularName: TABLES[name].modelName.slice(0, -1),
+      requestId: BOOTSTRAP_REQUEST_ID,
+      functionCallId: BOOTSTRAP_FUNCTION_CALL_ID,
     }),
   );
 }
@@ -38,22 +44,17 @@ async function main() {
 
   console.log("Starting models seeder...");
 
-  const modelsToInsert = generateModelsToInsert();
-  console.log("Inserting models:", modelsToInsert);
-  const insertedModels = await db.insert(models).values(modelsToInsert).returning();
-  console.log("Inserted models:", insertedModels);
-
-  // Create one request
+  // Create one request first since everything references it
   console.log("Creating request...");
   const requestToInsert: CreateRequest = RequestSchema.parse({
-    id: 1,
-    requestId: 1, // Points to itself as it's the root request
-    functionCallId: 1, // Points to the first function call we'll create
+    id: BOOTSTRAP_REQUEST_ID,
+    requestId: BOOTSTRAP_REQUEST_ID, // Points to itself as it's the root request
+    functionCallId: BOOTSTRAP_FUNCTION_CALL_ID, // Points to the first function call we'll create
   });
   const insertedRequest = await db.insert(requests).values(requestToInsert).returning();
   console.log("Inserted request:", insertedRequest);
 
-  // Insert just the bootstrap function
+  // Insert bootstrap function next
   console.log("Creating bootstrap function...");
   const [bootstrapFunction] = await db
     .insert(serverFunctions)
@@ -76,11 +77,17 @@ async function main() {
       serverFunctionId: bootstrapFunction.id,
       requestId: insertedRequest[0].id,
       status: FunctionCallStatus.COMPLETED,
-      functionCallId: 1, // Root function call points to itself
+      functionCallId: BOOTSTRAP_FUNCTION_CALL_ID, // Root function call points to itself
       args: null,
       result: null,
     })
     .returning();
+
+  // Now we can create models
+  const modelsToInsert = generateModelsToInsert();
+  console.log("Inserting models:", modelsToInsert);
+  const insertedModels = await db.insert(models).values(modelsToInsert).returning();
+  console.log("Inserted models:", insertedModels);
 
   // Create objects for models AND request
   console.log("Creating objects...");

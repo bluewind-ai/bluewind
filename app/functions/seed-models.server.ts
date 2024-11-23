@@ -7,40 +7,45 @@ import { type RequestExtensions } from "~/middleware";
 
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
 
-function generateModelsToInsert() {
+function generateModelsToInsert(requestId: number, functionCallId: number) {
   return MODEL_NAMES.map((name, index) => ({
     id: index + 1,
     pluralName: TABLES[name].modelName,
     singularName: TABLES[name].modelName.slice(0, -1),
+    requestId,
+    functionCallId,
   }));
 }
 
 export async function seedModels(request: RequestExtensions) {
   const db = request.db;
-  const modelsToInsert = generateModelsToInsert();
-  const insertedModels = await db.insert(models).values(modelsToInsert).returning();
 
-  // First, insert a request to get a request ID
-  const [{ id: requestId }] = await db
-    .insert(requests)
-    .values({
-      requestId: 1, // Root request points to itself
-      functionCallId: 1, // Points to first function call we'll create
-    })
-    .returning();
-
-  // Create a function call for this seeding operation
+  // First, create a function call that will own everything
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
       serverFunctionId: 1, // Assuming this exists
-      requestId,
+      requestId: 1, // Points to request we'll create next
       functionCallId: 1, // Root seeding function call
       status: FunctionCallStatus.COMPLETED,
       args: null,
       result: null,
     })
     .returning();
+
+  // Next create the request with its final IDs
+  const [{ id: requestId }] = await db
+    .insert(requests)
+    .values({
+      id: 1,
+      requestId: 1, // Root request points to itself
+      functionCallId: functionCall.id,
+    })
+    .returning();
+
+  // Now we can create models knowing both IDs
+  const modelsToInsert = generateModelsToInsert(requestId, functionCall.id);
+  const insertedModels = await db.insert(models).values(modelsToInsert).returning();
 
   // Create objects for all models with the request_id and function_call_id
   const objectsToInsert = insertedModels.map((model) => ({
