@@ -1,6 +1,6 @@
 // app/db/schema/function-calls/schema.ts
 
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   type AnyPgColumn,
   integer,
@@ -46,9 +46,12 @@ export const functionCalls = pgTable("function_calls", {
   requestId: integer("request_id")
     .references(() => requests.id, { onDelete: "cascade" })
     .notNull(),
-  parentId: integer("parent_id").references((): AnyPgColumn => functionCalls.id, {
-    onDelete: "cascade",
-  }),
+  parentId: integer("parent_id")
+    .references((): AnyPgColumn => functionCalls.id, {
+      onDelete: "cascade",
+    })
+    .notNull()
+    .default(sql`CURRVAL('function_calls_id_seq')`),
   status: functionCallStatusEnum("status").notNull().default(FunctionCallStatus.READY_FOR_APPROVAL),
   args: jsonb("args"),
   result: jsonb("result"),

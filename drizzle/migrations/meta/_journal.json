@@ -71,6 +71,13 @@
       "when": 1732390925392,
       "tag": "0009_first_xavin",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1732393654623,
+      "tag": "0010_pale_vampiro",
+      "breakpoints": true
     }
   ]
 }
