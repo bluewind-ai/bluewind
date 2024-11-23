@@ -6,8 +6,9 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
 import postgres from "postgres";
 
-import { models, objects, requests } from "~/db/schema";
+import { functionCalls, models, objects, requests, serverFunctions } from "~/db/schema";
 import * as schema from "~/db/schema";
+import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { TABLES } from "~/db/schema/table-models";
 import { checkDataIntegrity } from "~/functions/check-data-integrity.server";
 
@@ -51,6 +52,16 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
     throw new Error("Request model not found. Please check models table data.");
   }
 
+  // Get a valid server function ID
+  const [serverFunction] = await db
+    .select({ id: serverFunctions.id })
+    .from(serverFunctions)
+    .limit(1);
+
+  if (!serverFunction) {
+    throw new Error("No server functions found. Please seed the database first.");
+  }
+
   const queries: DrizzleQuery[] = [];
   const dbWithProxy = createDbProxy(db, queries);
 
@@ -62,21 +73,31 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
       const proxiedTrx = createDbProxy(trx, queries);
 
       // First create the request and its object
-      // dd(c);
-      const [{ request_id }] = await proxiedTrx.execute<{
+      const [{ request_id, function_call_id }] = await proxiedTrx.execute<{
         request_id: number;
+        function_call_id: number;
       }>(sql`
         WITH request_insert AS (
           INSERT INTO ${requests} DEFAULT VALUES
           RETURNING id
         ),
+        function_call_insert AS (
+          INSERT INTO ${functionCalls} (server_function_id, request_id, status)
+          SELECT ${serverFunction.id}, id, ${FunctionCallStatus.COMPLETED}
+          FROM request_insert
+          RETURNING id
+        ),
         object_insert AS (
-          INSERT INTO ${objects} (model_id, record_id, request_id)
-          SELECT ${requestModel.id}, id, id FROM request_insert
+          INSERT INTO ${objects} (model_id, record_id, request_id, function_call_id)
+          SELECT ${requestModel.id}, r.id, r.id, fc.id
+          FROM request_insert r
+          CROSS JOIN function_call_insert fc
           RETURNING *
         )
-        SELECT request_insert.id as request_id
-        FROM request_insert, object_insert;
+        SELECT
+          request_insert.id as request_id,
+          function_call_insert.id as function_call_id
+        FROM request_insert, function_call_insert, object_insert;
       `);
 
       (c as ExtendedContext).db = proxiedTrx;
@@ -95,12 +116,26 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
       console.log("📊 Objects count before insert:", Number(beforeCount[0].count));
 
       if (objectsToInsert.length > 0) {
-        // Ensure all objects have the current request_id
-        const objectsWithRequestId = objectsToInsert.map((obj) => ({
+        // Create a function call for these objects
+        const [functionCall] = await proxiedTrx
+          .insert(functionCalls)
+          .values({
+            serverFunctionId: serverFunction.id,
+            requestId: request_id,
+            status: FunctionCallStatus.COMPLETED,
+            args: null,
+            result: null,
+          })
+          .returning();
+
+        // Ensure all objects have both request_id and function_call_id
+        const objectsWithIds = objectsToInsert.map((obj) => ({
           ...obj,
           requestId: request_id,
+          functionCallId: functionCall.id,
         }));
-        await proxiedTrx.insert(objects).values(objectsWithRequestId).returning();
+
+        await proxiedTrx.insert(objects).values(objectsWithIds).returning();
       }
 
       // Debug after insert

@@ -15,7 +15,9 @@ export const objects = pgTable(TableModel.OBJECTS, {
     .notNull()
     .references(() => models.id),
   recordId: integer("record_id").notNull(),
-  functionCallId: integer("function_call_id"),
+  functionCallId: integer("function_call_id")
+    .notNull()
+    .references(() => functionCalls.id, { onDelete: "cascade" }),
   requestId: integer("request_id")
     .notNull()
     .references(() => requests.id, { onDelete: "cascade" }),
@@ -25,7 +27,7 @@ export const ObjectSchema = z.object({
   modelId: z.number(),
   recordId: z.number(),
   requestId: z.number(),
-  functionCallId: z.number().optional(),
+  functionCallId: z.number(), // Made mandatory by removing optional()
 });
 
 export type CreateObject = z.infer<typeof ObjectSchema>;

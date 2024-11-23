@@ -3,7 +3,8 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import { schema } from "~/db/schema";
+import { functionCalls, schema } from "~/db/schema";
+import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { CreateModel, models, ModelSchema } from "~/db/schema/models/schema";
 import { objects, ObjectSchema } from "~/db/schema/objects/schema";
 import { CreateRequest, requests, RequestSchema } from "~/db/schema/requests/schema";
@@ -12,45 +13,6 @@ import { TABLES } from "~/db/schema/table-models";
 import type { ButtonVariant } from "~/lib/server-functions-types";
 
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
-
-const CORE_SERVER_FUNCTIONS = [
-  {
-    name: "truncateDb",
-    label: "Truncate DB",
-    variant: "destructive" as ButtonVariant,
-    type: ServerFunctionType.SYSTEM,
-  },
-  {
-    name: "bootstrap",
-    label: "Bootstrap",
-    variant: "default" as ButtonVariant,
-    type: ServerFunctionType.SYSTEM,
-  },
-  {
-    name: "updateFiles",
-    label: "Update Files",
-    variant: "default" as ButtonVariant,
-    type: ServerFunctionType.SYSTEM,
-  },
-  {
-    name: "generateRoutes",
-    label: "Generate Routes",
-    variant: "default" as ButtonVariant,
-    type: ServerFunctionType.SYSTEM,
-  },
-  {
-    name: "loadNavigationData",
-    label: "Load Navigation Data",
-    variant: "default" as ButtonVariant,
-    type: ServerFunctionType.SYSTEM,
-  },
-  {
-    name: "goNext",
-    label: "Go Next",
-    variant: "default" as ButtonVariant,
-    type: ServerFunctionType.SYSTEM,
-  },
-] as const;
 
 function generateModelsToInsert(): CreateModel[] {
   return MODEL_NAMES.map((name, index) =>
@@ -87,61 +49,71 @@ async function main() {
   const insertedRequest = await db.insert(requests).values(requestToInsert).returning();
   console.log("Inserted request:", insertedRequest);
 
+  // Insert just the bootstrap function
+  console.log("Creating bootstrap function...");
+  const [bootstrapFunction] = await db
+    .insert(serverFunctions)
+    .values({
+      name: "bootstrap",
+      type: ServerFunctionType.SYSTEM,
+      requestId: insertedRequest[0].id,
+      metadata: {
+        label: "Bootstrap",
+        variant: "default" as ButtonVariant,
+      },
+    })
+    .returning();
+  console.log("Inserted bootstrap function:", bootstrapFunction);
+
+  // Create a function call
+  const [functionCall] = await db
+    .insert(functionCalls)
+    .values({
+      serverFunctionId: bootstrapFunction.id,
+      requestId: insertedRequest[0].id,
+      status: FunctionCallStatus.COMPLETED,
+      args: null,
+      result: null,
+    })
+    .returning();
+
   // Create objects for models AND request
   console.log("Creating objects...");
   const objectsToInsert = [
-    // Root object with requestId 1
-    ObjectSchema.parse({
-      modelId: 1,
-      recordId: 1,
-      requestId: 1,
-    }),
-    // Objects for models
+    // Objects for the model records in the models table
     ...insertedModels.map((model) =>
       ObjectSchema.parse({
-        modelId: model.id,
+        modelId: 7, // models model ID
         recordId: model.id,
         requestId: insertedRequest[0].id,
+        functionCallId: functionCall.id,
       }),
     ),
+    // Object for the request itself
+    ObjectSchema.parse({
+      modelId: 6, // requests model ID
+      recordId: insertedRequest[0].id,
+      requestId: insertedRequest[0].id,
+      functionCallId: functionCall.id,
+    }),
+    // Object for bootstrap function
+    ObjectSchema.parse({
+      modelId: 3, // server_functions model ID
+      recordId: bootstrapFunction.id,
+      requestId: insertedRequest[0].id,
+      functionCallId: functionCall.id,
+    }),
+    // Object for function call
+    ObjectSchema.parse({
+      modelId: 4, // function_calls model ID
+      recordId: functionCall.id,
+      requestId: insertedRequest[0].id,
+      functionCallId: functionCall.id,
+    }),
   ];
 
   const insertedObjects = await db.insert(objects).values(objectsToInsert).returning();
   console.log("Inserted objects:", insertedObjects);
-
-  // Insert server functions
-  console.log("Creating server functions...");
-  const serverFunctionsToInsert = CORE_SERVER_FUNCTIONS.map((fn) => ({
-    name: fn.name,
-    type: fn.type,
-    requestId: 1,
-    metadata: {
-      label: fn.label,
-      variant: fn.variant,
-    },
-  }));
-
-  const insertedServerFunctions = await db
-    .insert(serverFunctions)
-    .values(serverFunctionsToInsert)
-    .returning();
-  console.log("Inserted server functions:", insertedServerFunctions);
-
-  // Create objects for server functions
-  console.log("Creating objects for server functions...");
-  const serverFunctionObjects = insertedServerFunctions.map((fn) =>
-    ObjectSchema.parse({
-      modelId: 3, // server_functions model ID
-      recordId: fn.id,
-      requestId: 1,
-    }),
-  );
-
-  const insertedServerFunctionObjects = await db
-    .insert(objects)
-    .values(serverFunctionObjects)
-    .returning();
-  console.log("Inserted server function objects:", insertedServerFunctionObjects);
 
   console.log("Models seeding completed successfully");
   await sql.end();
