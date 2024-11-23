@@ -1,4 +1,5 @@
 // app/functions/create-function-calls.server.ts
+
 import { redirect } from "@remix-run/node";
 import { sql } from "drizzle-orm";
 
@@ -53,6 +54,7 @@ export async function createFunctionCalls(
     .values({
       serverFunctionId: serverFunction.id,
       requestId: request.requestId,
+      functionCallId: request.functionCallId || 1, // Use parent's id if available, otherwise root
       status: FunctionCallStatus.READY_FOR_APPROVAL,
       args: null,
       result: null,

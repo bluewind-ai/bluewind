@@ -13,6 +13,7 @@ async function getRandomObjectsToInsert() {
     .values({
       serverFunctionId: 1, // Make sure this exists
       requestId: 1,
+      functionCallId: 1, // Root function call points to itself
       status: FunctionCallStatus.COMPLETED,
       args: null,
       result: null,

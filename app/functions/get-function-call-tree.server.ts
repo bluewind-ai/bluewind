@@ -8,7 +8,7 @@ import { db } from "~/middleware/main";
 
 interface FunctionCallTree {
   id: number;
-  parentId: number | null;
+  functionCallId: number;
   status: string;
   actionName: string;
   children: FunctionCallTree[];
@@ -28,7 +28,7 @@ export const getFunctionCallTree = async () => {
   }
 
   let rootId = lastCall.id;
-  let currentParentId: number | null = lastCall.parentId;
+  let currentParentId: number | null = lastCall.functionCallId;
 
   while (currentParentId) {
     const parent: FunctionCall | undefined = await db.query.functionCalls.findFirst({
@@ -39,19 +39,19 @@ export const getFunctionCallTree = async () => {
     });
     if (!parent) break;
     rootId = parent.id;
-    currentParentId = parent.parentId;
+    currentParentId = parent.functionCallId;
   }
 
   function buildTree(rootId: number): FunctionCallTree | null {
     const call = allCalls.find((c) => c.id === rootId);
     if (!call || !call.serverFunction) return null;
     const children = allCalls
-      .filter((c) => c.parentId === call.id)
+      .filter((c) => c.functionCallId === call.id)
       .map((child) => buildTree(child.id))
       .filter((child): child is FunctionCallTree => child !== null);
     return {
       id: call.id,
-      parentId: call.parentId,
+      functionCallId: call.functionCallId,
       status: call.status,
       actionName: call.serverFunction.name,
       children,

@@ -29,6 +29,7 @@ export async function seedModels(request: RequestExtensions) {
     .values({
       serverFunctionId: 1, // Assuming this exists
       requestId,
+      functionCallId: 1, // Root seeding function call
       status: FunctionCallStatus.COMPLETED,
       args: null,
       result: null,

@@ -47,7 +47,7 @@ export async function loadNavigationData(request: RequestExtensions) {
     id: call.id,
     serverFunctionId: call.serverFunctionId,
     requestId: call.requestId,
-    parentId: call.parentId,
+    functionCallId: call.functionCallId,
     status: call.status,
     createdAt: call.createdAt.toISOString(),
     args: call.args ? JSON.stringify(call.args) : null,

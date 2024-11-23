@@ -72,6 +72,7 @@ async function main() {
       serverFunctionId: bootstrapFunction.id,
       requestId: insertedRequest[0].id,
       status: FunctionCallStatus.COMPLETED,
+      functionCallId: 1, // Root function call points to itself
       args: null,
       result: null,
     })

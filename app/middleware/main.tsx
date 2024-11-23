@@ -115,6 +115,7 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
           .values({
             serverFunctionId: serverFunction.id,
             requestId: request_id,
+            functionCallId: (c as ExtendedContext).functionCallId, // Use the function call ID from context
             status: FunctionCallStatus.COMPLETED,
             args: null,
             result: null,

@@ -1,0 +1,1 @@
+ALTER TABLE "function_calls" ADD COLUMN "function_call_id" integer DEFAULT COALESCE(CURRENT_SETTING('app.function_call_id', true), CURRVAL('function_calls_id_seq')) NOT NULL;

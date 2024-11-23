@@ -23,6 +23,7 @@ export async function bootstrap(extensions: RequestExtensions) {
     .values({
       requestId: extensions.requestId,
       serverFunctionId: masterAction.id,
+      functionCallId: 1, // First function call is root
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })
     .returning();

@@ -1,15 +1,7 @@
 // app/db/schema/function-calls/schema.ts
 
-import { relations, sql } from "drizzle-orm";
-import {
-  type AnyPgColumn,
-  integer,
-  jsonb,
-  pgEnum,
-  pgTable,
-  serial,
-  timestamp,
-} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { integer, jsonb, pgEnum, pgTable, serial, timestamp } from "drizzle-orm/pg-core";
 
 import { objects } from "../objects/schema";
 import { requests } from "../requests/schema";
@@ -17,7 +9,6 @@ import { serverFunctions } from "../server-functions/schema";
 import { sessions } from "../sessions/schema";
 import { users } from "../users/schema";
 
-// Moving the enum and its pg definition here
 export enum FunctionCallStatus {
   READY_FOR_APPROVAL = "READY_FOR_APPROVAL",
   APPROVED = "APPROVED",
@@ -46,12 +37,7 @@ export const functionCalls = pgTable("function_calls", {
   requestId: integer("request_id")
     .references(() => requests.id, { onDelete: "cascade" })
     .notNull(),
-  parentId: integer("parent_id")
-    .references((): AnyPgColumn => functionCalls.id, {
-      onDelete: "cascade",
-    })
-    .notNull()
-    .default(sql`CURRVAL('function_calls_id_seq')`),
+  functionCallId: integer("function_call_id").notNull(),
   status: functionCallStatusEnum("status").notNull().default(FunctionCallStatus.READY_FOR_APPROVAL),
   args: jsonb("args"),
   result: jsonb("result"),
@@ -72,7 +58,7 @@ export const functionCallsRelations = relations(functionCalls, ({ one, many }) =
     references: [serverFunctions.id],
   }),
   parent: one(functionCalls, {
-    fields: [functionCalls.parentId],
+    fields: [functionCalls.functionCallId],
     references: [functionCalls.id],
   }),
   objects: many(objects),
