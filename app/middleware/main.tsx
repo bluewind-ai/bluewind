@@ -95,7 +95,12 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
       console.log("📊 Objects count before insert:", Number(beforeCount[0].count));
 
       if (objectsToInsert.length > 0) {
-        await proxiedTrx.insert(objects).values(objectsToInsert).returning();
+        // Ensure all objects have the current request_id
+        const objectsWithRequestId = objectsToInsert.map((obj) => ({
+          ...obj,
+          requestId: request_id,
+        }));
+        await proxiedTrx.insert(objects).values(objectsWithRequestId).returning();
       }
 
       // Debug after insert

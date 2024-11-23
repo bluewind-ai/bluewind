@@ -6,12 +6,14 @@ import { objects } from "~/db/schema";
 import { db } from "~/middleware/main";
 
 function getRandomObjectsToInsert() {
-  return Array.from({ length: 10 }).map((_, index) => ({
-    modelId: 1,
-    recordId: index + 1,
-    functionCallId: null,
-    requestId: 1, // Add this field with a default request ID of 1
-  }));
+  return [
+    {
+      modelId: 1,
+      recordId: 1,
+      functionCallId: null,
+      requestId: 1, // We'll use requestId 1 for now since null isn't allowed in the type
+    },
+  ];
 }
 
 async function main() {
@@ -19,9 +21,9 @@ async function main() {
 
   try {
     const objectsToInsert = getRandomObjectsToInsert();
-    console.log("Inserting objects:", objectsToInsert);
+    console.log("Inserting root object:", objectsToInsert);
     await db.insert(objects).values(objectsToInsert);
-    console.log("Objects inserted successfully");
+    console.log("Root object inserted successfully");
   } catch (error) {
     console.error("Error seeding objects:", error);
   } finally {

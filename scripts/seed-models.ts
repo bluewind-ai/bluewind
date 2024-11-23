@@ -90,20 +90,20 @@ async function main() {
   // Create objects for models AND request
   console.log("Creating objects...");
   const objectsToInsert = [
+    // Root object with requestId 1
+    ObjectSchema.parse({
+      modelId: 1,
+      recordId: 1,
+      requestId: 1,
+    }),
     // Objects for models
     ...insertedModels.map((model) =>
       ObjectSchema.parse({
         modelId: model.id,
         recordId: model.id,
-        requestId: 1,
+        requestId: insertedRequest[0].id,
       }),
     ),
-    // Object for the request itself
-    ObjectSchema.parse({
-      modelId: 6,
-      recordId: 1,
-      requestId: 1,
-    }),
   ];
 
   const insertedObjects = await db.insert(objects).values(objectsToInsert).returning();
