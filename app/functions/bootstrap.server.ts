@@ -1,34 +1,31 @@
 // app/functions/bootstrap.server.ts
-import * as schema from "~/db/schema";
-import { functionCalls, FunctionCallStatus } from "~/db/schema";
+
+import {
+  functionCalls,
+  FunctionCallStatus,
+  serverFunctions,
+  ServerFunctionType,
+} from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 
-import { truncateDb } from "./truncate-db.server";
-
-export async function bootstrap(request: RequestExtensions) {
-  const db = request.db;
-  // First truncate everything and reseed models
-  await truncateDb(request);
-  // Now we can be sure we have a request from the seedModels
-  const foundRequest = await db.query.requests.findFirst();
-  if (!foundRequest) {
-    throw new Error("No request found");
-  }
-  const [masterAction] = await db
-    .insert(schema.serverFunctions)
+export async function bootstrap(extensions: RequestExtensions) {
+  const [masterAction] = await extensions.db
+    .insert(serverFunctions)
     .values({
-      requestId: foundRequest.id,
+      requestId: extensions.requestId,
       name: "master",
-      type: schema.ServerFunctionType.SYSTEM,
+      type: ServerFunctionType.SYSTEM,
     })
     .returning();
-  await db
+
+  const [functionCall] = await extensions.db
     .insert(functionCalls)
     .values({
-      requestId: foundRequest.id,
+      requestId: extensions.requestId,
       serverFunctionId: masterAction.id,
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })
     .returning();
-  await new Promise((resolve) => setTimeout(resolve, 1));
+
+  console.log("📊 Queries after inserts:", extensions.queries);
 }
