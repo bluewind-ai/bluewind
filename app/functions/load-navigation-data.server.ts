@@ -61,7 +61,7 @@ export async function loadNavigationData(request: RequestExtensions) {
     iconKey: "database",
     children: renderableFunctionCalls.map((functionCall, index: number) => ({
       id: index + 1,
-      name: `Call ${functionCall.id}`,
+      name: `${functionCall.serverFunctionName} (${functionCall.id})`,
       to: `/function-calls/${functionCall.id}`,
       type: "file",
       children: [],
