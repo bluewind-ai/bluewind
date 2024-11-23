@@ -2,7 +2,7 @@
 
 import { sql } from "drizzle-orm";
 
-import {objects } from "~/db/schema";
+import { objects } from "~/db/schema";
 import type { RequestExtensions } from "~/middleware";
 
 export async function getObjects(request: RequestExtensions, url: string) {

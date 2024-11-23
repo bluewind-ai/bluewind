@@ -9,7 +9,7 @@ import postgres from "postgres";
 import { models, objects, requests } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { TABLES } from "~/db/schema/table-models";
-import { countTables } from "~/functions/count-tables.server";
+import { checkDataIntegrity } from "~/functions/check-data-integrity.server";
 
 import { createDbProxy, DrizzleQuery } from ".";
 import { countObjectsForQueries } from "./functions";
@@ -102,9 +102,9 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
       const afterCount = await proxiedTrx.select({ count: sql<number>`count(*)` }).from(objects);
       console.log("📊 Objects count after insert:", Number(afterCount[0].count));
 
-      console.log("🔍 About to run countTables");
-      await countTables(proxiedTrx);
-      console.log("✅ countTables passed");
+      console.log("🔍 About to run data integrity check");
+      await checkDataIntegrity(proxiedTrx);
+      console.log("✅ Data integrity check passed");
     },
     {
       isolationLevel: "serializable",
