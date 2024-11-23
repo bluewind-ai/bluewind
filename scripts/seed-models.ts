@@ -44,6 +44,12 @@ const CORE_SERVER_FUNCTIONS = [
     variant: "default" as ButtonVariant,
     type: ServerFunctionType.SYSTEM,
   },
+  {
+    name: "goNext",
+    label: "Go Next",
+    variant: "default" as ButtonVariant,
+    type: ServerFunctionType.SYSTEM,
+  },
 ] as const;
 
 function generateModelsToInsert(): CreateModel[] {

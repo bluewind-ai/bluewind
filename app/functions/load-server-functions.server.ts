@@ -35,6 +35,12 @@ const CORE_SERVER_FUNCTIONS = [
     variant: "default",
     type: ServerFunctionType.SYSTEM,
   },
+  {
+    name: "goNext",
+    label: "Go Next",
+    variant: "default",
+    type: ServerFunctionType.SYSTEM,
+  },
 ] as const;
 
 export async function loadServerFunctions(request: RequestExtensions) {
