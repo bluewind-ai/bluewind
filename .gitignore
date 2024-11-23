@@ -1,0 +1,15 @@
+node_modules
+
+/.cache
+/build
+.env
+
+.vscode/chrome-debug-profile
+
+.chrome
+
+claude-answer.txt
+.tsbuildinfo
+outreach.txt
+
+data
