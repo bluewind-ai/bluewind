@@ -21,7 +21,13 @@ export async function seedModels(request: RequestExtensions) {
   const insertedModels = await db.insert(models).values(modelsToInsert).returning();
 
   // First, insert a request to get a request ID
-  const [{ id: requestId }] = await db.insert(requests).values({}).returning();
+  const [{ id: requestId }] = await db
+    .insert(requests)
+    .values({
+      requestId: 1, // Root request points to itself
+      functionCallId: 1, // Points to first function call we'll create
+    })
+    .returning();
 
   // Create a function call for this seeding operation
   const [functionCall] = await db

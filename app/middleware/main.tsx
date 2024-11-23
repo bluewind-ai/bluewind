@@ -78,7 +78,8 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
         request_id: number;
       }>(sql`
         WITH request_insert AS (
-          INSERT INTO ${requests} DEFAULT VALUES
+          INSERT INTO ${requests} (request_id, function_call_id)
+          VALUES (1, 1)  -- root request points to itself and first function call
           RETURNING id
         ),
         object_insert AS (

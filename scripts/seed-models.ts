@@ -45,7 +45,11 @@ async function main() {
 
   // Create one request
   console.log("Creating request...");
-  const requestToInsert: CreateRequest = RequestSchema.parse({ id: 1 });
+  const requestToInsert: CreateRequest = RequestSchema.parse({
+    id: 1,
+    requestId: 1, // Points to itself as it's the root request
+    functionCallId: 1, // Points to the first function call we'll create
+  });
   const insertedRequest = await db.insert(requests).values(requestToInsert).returning();
   console.log("Inserted request:", insertedRequest);
 
