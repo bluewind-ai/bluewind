@@ -39,6 +39,7 @@ export async function createFunctionCalls(
         requestId: request.requestId,
         name: functionName,
         type: ServerFunctionType.SYSTEM,
+        functionCallId: request.functionCallId || 1, // Added - use parent's functionCallId or root
       })
       .returning({
         id: serverFunctions.id,

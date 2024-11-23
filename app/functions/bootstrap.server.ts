@@ -15,6 +15,7 @@ export async function bootstrap(extensions: RequestExtensions) {
       requestId: extensions.requestId,
       name: "master",
       type: ServerFunctionType.SYSTEM,
+      functionCallId: 1, // Added this required field - root server function
     })
     .returning();
 

@@ -62,6 +62,7 @@ async function main() {
       name: "bootstrap",
       type: ServerFunctionType.SYSTEM,
       requestId: insertedRequest[0].id,
+      functionCallId: BOOTSTRAP_FUNCTION_CALL_ID, // Added this required field
       metadata: {
         label: "Bootstrap",
         variant: "default" as ButtonVariant,
