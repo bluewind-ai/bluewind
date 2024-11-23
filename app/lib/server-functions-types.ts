@@ -1,5 +1,10 @@
 // app/lib/server-functions-types.ts
-export type ServerFunctionName = "truncateDb" | "bootstrap" | "updateFiles" | "generateRoutes";
+export type ServerFunctionName =
+  | "truncateDb"
+  | "bootstrap"
+  | "updateFiles"
+  | "generateRoutes"
+  | "loadNavigationData";
 // Import the variant type from your button component or define it inline
 export type ButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 export interface ServerFunction {
@@ -21,6 +26,10 @@ export const SERVER_FUNCTIONS: Record<ServerFunctionName, ServerFunction> = {
   },
   generateRoutes: {
     label: "Generate Routes",
+    variant: "default",
+  },
+  loadNavigationData: {
+    label: "Load Navigation Data",
     variant: "default",
   },
 };

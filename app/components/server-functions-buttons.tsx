@@ -11,6 +11,7 @@ export function ServerFunctionsButtons() {
     bootstrap: useFetcher(),
     updateFiles: useFetcher(),
     generateRoutes: useFetcher(),
+    loadNavigationData: useFetcher(),
   };
   return (
     <div className="flex gap-2 p-4 flex-wrap">
