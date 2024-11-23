@@ -1,6 +1,27 @@
 // app/middleware/insert.ts
 
+import { z } from "zod";
+
 import type { DrizzleQuery } from ".";
+
+const tableSchemas = {
+  function_calls: z.object({
+    serverFunctionId: z.number(),
+    functionCallId: z.number(),
+    status: z.string(),
+    args: z.any().nullable(),
+    result: z.any().nullable(),
+    requestId: z.number(),
+  }),
+  models: z.object({
+    id: z.number(),
+    pluralName: z.string(),
+    singularName: z.string(),
+    requestId: z.number(),
+    functionCallId: z.number(),
+  }),
+  // Add other table schemas as needed
+} as const;
 
 type FunctionWithApply = {
   (...args: unknown[]): unknown;
@@ -20,9 +41,23 @@ export function insertMiddleware(
       console.log("🔗 Chaining method:", String(prop));
       const chainValue = Reflect.get(target, prop);
       if (prop === "values") {
-        return function (...args: unknown[]) {
+        return function (values: Record<string, unknown>) {
           console.log("📊 Values method called for table:", tableName);
-          const valuesQuery = chainValue.apply(target as object, args);
+
+          // First enrich the values
+          let enrichedValues = {
+            ...values,
+            requestId: 1, // Always set to bootstrap request
+          };
+          console.log("📝 Enriched values:", enrichedValues);
+
+          // Then run schema validation if a schema exists
+          if (tableName in tableSchemas) {
+            enrichedValues =
+              tableSchemas[tableName as keyof typeof tableSchemas].parse(enrichedValues);
+          }
+
+          const valuesQuery = chainValue.apply(target as object, [enrichedValues]);
           return new Proxy(valuesQuery as object, {
             get(target: object, prop) {
               console.log("🔄 Final chain method:", String(prop));
@@ -34,7 +69,7 @@ export function insertMiddleware(
                   queries.push({
                     type: "insert",
                     table: tableName,
-                    query: args[0],
+                    query: enrichedValues,
                     result,
                   });
                   console.log("📚 Updated queries length:", queries.length);
