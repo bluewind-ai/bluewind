@@ -11,6 +11,7 @@ import * as schema from "~/db/schema";
 import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { TABLES } from "~/db/schema/table-models";
 import { checkDataIntegrity } from "~/functions/check-data-integrity.server";
+import { root } from "~/functions/root.server";
 
 import { createDbProxy, DrizzleQuery } from ".";
 import { countObjectsForQueries } from "./functions";
@@ -40,6 +41,18 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
     .join("\n");
 
   console.log(`${c.req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
+
+  // Check if any function calls exist
+  const firstFunctionCall = await db.select().from(functionCalls).limit(1);
+  if (firstFunctionCall.length === 0) {
+    console.log("🌱 No function calls found, bootstrapping with root function...");
+    await root({
+      db,
+      queries: [],
+      requestId: 1,
+      functionCallId: 1,
+    });
+  }
 
   const allModels = await db.select({ id: models.id, pluralName: models.pluralName }).from(models);
 

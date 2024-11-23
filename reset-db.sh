@@ -66,6 +66,5 @@ echo "Drizzle directory structure created."
 npm run makemigrations
 npm run migrate
 
-source .env && tsx scripts/seed-models.ts
 
 echo "Script completed successfully."
