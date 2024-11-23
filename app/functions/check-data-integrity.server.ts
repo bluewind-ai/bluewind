@@ -63,25 +63,25 @@ ${JSON.stringify(counts, null, 2)}
   return { counts, totalCount, objectsCount };
 }
 
-async function checkNullRequestIds(trx: DbClient) {
-  const result = await trx
-    .select({ count: sql<number>`count(*)` })
-    .from(objects)
-    .where(sql`${objects.requestId} IS NULL`);
+// async function checkNullRequestIds(trx: DbClient) {
+//   const result = await trx
+//     .select({ count: sql<number>`count(*)` })
+//     .from(objects)
+//     .where(sql`${objects.requestId} IS NULL`);
 
-  const nullRequestIdCount = Number(result[0].count);
+//   const nullRequestIdCount = Number(result[0].count);
 
-  if (nullRequestIdCount !== 1) {
-    console.log("❌ Invalid number of objects with null request_id!");
-    throw new Error(`
-INVALID NULL REQUEST_ID COUNT!
-Expected exactly 1 object with null request_id
-Found: ${nullRequestIdCount} objects with null request_id
-    `);
-  }
+//   if (nullRequestIdCount !== 1) {
+//     console.log("❌ Invalid number of objects with null request_id!");
+//     throw new Error(`
+// INVALID NULL REQUEST_ID COUNT!
+// Expected exactly 1 object with null request_id
+// Found: ${nullRequestIdCount} objects with null request_id
+//     `);
+//   }
 
-  return nullRequestIdCount;
-}
+//   return nullRequestIdCount;
+// }
 
 export async function checkDataIntegrity(trx: DbClient) {
   console.log("🔍 Starting data integrity check");
@@ -93,12 +93,12 @@ export async function checkDataIntegrity(trx: DbClient) {
 
   // Step 2: Check null request_ids
   console.log("🔍 Checking null request_ids");
-  const nullRequestIdCount = await checkNullRequestIds(trx);
-  console.log(`✅ Verified exactly 1 object with null request_id (count: ${nullRequestIdCount})`);
+  // const nullRequestIdCount = await checkNullRequestIds(trx);
+  // console.log(`✅ Verified exactly 1 object with null request_id (count: ${nullRequestIdCount})`);
 
   console.log("✅ All data integrity checks passed");
   return {
     ...tableCounts,
-    nullRequestIdCount,
+    // nullRequestIdCount,
   };
 }

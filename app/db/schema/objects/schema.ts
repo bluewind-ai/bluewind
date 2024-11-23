@@ -1,4 +1,5 @@
 // app/db/schema/objects/schema.ts
+
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial } from "drizzle-orm/pg-core";
 import { z } from "zod";
@@ -16,16 +17,19 @@ export const objects = pgTable(TableModel.OBJECTS, {
   recordId: integer("record_id").notNull(),
   functionCallId: integer("function_call_id"),
   requestId: integer("request_id")
-    .references(() => requests.id, { onDelete: "cascade" })
-    .notNull(),
+    .notNull()
+    .references(() => requests.id, { onDelete: "cascade" }),
 });
+
 export const ObjectSchema = z.object({
   modelId: z.number(),
   recordId: z.number(),
   requestId: z.number(),
   functionCallId: z.number().optional(),
 });
+
 export type CreateObject = z.infer<typeof ObjectSchema>;
+
 export const objectsRelations = relations(objects, ({ one }) => ({
   functionCall: one(functionCalls, {
     fields: [objects.functionCallId],
