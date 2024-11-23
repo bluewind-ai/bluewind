@@ -26,6 +26,7 @@ export type ExtendedContext = Context & {
   db: DbType | TrxType;
   queries: DrizzleQuery[];
   requestId: number;
+  functionCallId: number;
 };
 
 export async function mainMiddleware(c: Context, next: () => Promise<void>) {
@@ -73,36 +74,28 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
       const proxiedTrx = createDbProxy(trx, queries);
 
       // First create the request and its object
-      const [{ request_id, function_call_id }] = await proxiedTrx.execute<{
+      const [{ request_id }] = await proxiedTrx.execute<{
         request_id: number;
-        function_call_id: number;
       }>(sql`
         WITH request_insert AS (
           INSERT INTO ${requests} DEFAULT VALUES
           RETURNING id
         ),
-        function_call_insert AS (
-          INSERT INTO ${functionCalls} (server_function_id, request_id, status)
-          SELECT ${serverFunction.id}, id, ${FunctionCallStatus.COMPLETED}
-          FROM request_insert
-          RETURNING id
-        ),
         object_insert AS (
           INSERT INTO ${objects} (model_id, record_id, request_id, function_call_id)
-          SELECT ${requestModel.id}, r.id, r.id, fc.id
+          SELECT ${requestModel.id}, r.id, r.id, 1
           FROM request_insert r
-          CROSS JOIN function_call_insert fc
           RETURNING *
         )
         SELECT
-          request_insert.id as request_id,
-          function_call_insert.id as function_call_id
-        FROM request_insert, function_call_insert, object_insert;
+          request_insert.id as request_id
+        FROM request_insert, object_insert;
       `);
 
       (c as ExtendedContext).db = proxiedTrx;
       (c as ExtendedContext).queries = queries;
       (c as ExtendedContext).requestId = request_id;
+      (c as ExtendedContext).functionCallId = 1;
       await next();
 
       const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries, request_id);
