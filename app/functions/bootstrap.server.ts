@@ -18,7 +18,7 @@ export async function bootstrap(extensions: RequestExtensions) {
     })
     .returning();
 
-  const [functionCall] = await extensions.db
+  await extensions.db
     .insert(functionCalls)
     .values({
       requestId: extensions.requestId,
