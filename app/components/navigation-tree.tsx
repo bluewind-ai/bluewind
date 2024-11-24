@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { Badge } from "~/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { TABLES } from "~/db/schema";
+import { TABLES } from "~/db/schema/table-models";
 import { cn } from "~/lib/utils";
 
 export type NavigationNode = {
