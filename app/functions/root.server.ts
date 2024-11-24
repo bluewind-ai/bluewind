@@ -1,5 +1,7 @@
 // app/functions/root.server.ts
 
+import { sql } from "drizzle-orm";
+
 import { functionCalls } from "~/db/schema";
 import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { models } from "~/db/schema/models/schema";
@@ -14,7 +16,6 @@ import { createDbProxy, DrizzleQuery } from "~/middleware";
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
 
 // First create the function call that owns all bootstrapping
-const BOOTSTRAP_REQUEST_ID = 1;
 const BOOTSTRAP_FUNCTION_CALL_ID = 1;
 
 function generateModelsToInsert() {
@@ -32,24 +33,33 @@ export async function root(extensions: RequestExtensions) {
   const queries: DrizzleQuery[] = [];
   const dbWithProxy = createDbProxy(extensions.db, queries);
 
-  // Create one request first since everything references it
+  // Create request
   console.log("Creating request...");
-  const requestToInsert = {
-    id: BOOTSTRAP_REQUEST_ID,
-    requestId: BOOTSTRAP_REQUEST_ID, // Points to itself as it's the root request
-    functionCallId: BOOTSTRAP_FUNCTION_CALL_ID,
-  };
-  const insertedRequest = await dbWithProxy.insert(requests).values(requestToInsert).returning();
+  const [insertedRequest] = await dbWithProxy
+    .insert(requests)
+    .values({
+      requestId: 0, // Temporary value
+      functionCallId: BOOTSTRAP_FUNCTION_CALL_ID,
+    })
+    .returning();
+
+  // Update request to point to itself
+  await dbWithProxy
+    .update(requests)
+    .set({ requestId: insertedRequest.id })
+    .where(sql`${requests.id} = ${insertedRequest.id}`);
   console.log("Inserted request:", insertedRequest);
 
-  // Insert root function next
+  // Insert root function with explicit ID
   console.log("Creating root function...");
   const [rootFunction] = await dbWithProxy
     .insert(serverFunctions)
     .values({
+      id: 1,
       name: "root",
       type: ServerFunctionType.SYSTEM,
       functionCallId: BOOTSTRAP_FUNCTION_CALL_ID,
+      requestId: insertedRequest.id,
       metadata: {
         label: "Root",
         variant: "default" as ButtonVariant,
@@ -58,50 +68,55 @@ export async function root(extensions: RequestExtensions) {
     .returning();
   console.log("Inserted root function:", rootFunction);
 
-  // Create a function call
+  // Create function call with explicit ID
   const [functionCall] = await dbWithProxy
     .insert(functionCalls)
     .values({
+      id: BOOTSTRAP_FUNCTION_CALL_ID,
       serverFunctionId: rootFunction.id,
       status: FunctionCallStatus.COMPLETED,
-      functionCallId: BOOTSTRAP_FUNCTION_CALL_ID, // Root function call points to itself
+      functionCallId: BOOTSTRAP_FUNCTION_CALL_ID,
+      requestId: insertedRequest.id,
       args: null,
       result: null,
     })
     .returning();
 
-  // Now we can create models
-  const modelsToInsert = generateModelsToInsert();
+  // Create models with explicit IDs
+  const modelsToInsert = generateModelsToInsert().map((model) => ({
+    ...model,
+    requestId: insertedRequest.id,
+  }));
   console.log("Inserting models:", modelsToInsert);
   const insertedModels = await dbWithProxy.insert(models).values(modelsToInsert).returning();
   console.log("Inserted models:", insertedModels);
 
-  // Create objects for models AND request
+  // Create objects without explicit IDs
   console.log("Creating objects...");
   const objectsToInsert = [
-    // Objects for the model records in the models table
     ...insertedModels.map((model) => ({
-      modelId: 7, // models model ID
+      modelId: 7,
       recordId: model.id,
       functionCallId: functionCall.id,
+      requestId: insertedRequest.id,
     })),
-    // Object for the request itself
     {
-      modelId: 6, // requests model ID
-      recordId: insertedRequest[0].id,
+      modelId: 6,
+      recordId: insertedRequest.id,
       functionCallId: functionCall.id,
+      requestId: insertedRequest.id,
     },
-    // Object for root function
     {
-      modelId: 3, // server_functions model ID
+      modelId: 3,
       recordId: rootFunction.id,
       functionCallId: functionCall.id,
+      requestId: insertedRequest.id,
     },
-    // Object for function call
     {
-      modelId: 4, // function_calls model ID
+      modelId: 4,
       recordId: functionCall.id,
       functionCallId: functionCall.id,
+      requestId: insertedRequest.id,
     },
   ];
 

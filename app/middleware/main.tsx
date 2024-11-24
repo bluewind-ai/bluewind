@@ -8,7 +8,6 @@ import postgres from "postgres";
 
 import { functionCalls, models, objects, requests, serverFunctions } from "~/db/schema";
 import * as schema from "~/db/schema";
-import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { TABLES } from "~/db/schema/table-models";
 import { checkDataIntegrity } from "~/functions/check-data-integrity.server";
 import { root } from "~/functions/root.server";
@@ -86,67 +85,75 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
       console.log("💫 Inside transaction");
       const proxiedTrx = createDbProxy(trx, queries);
 
-      // First create the request and its object
-      const [{ request_id }] = await proxiedTrx.execute<{
-        request_id: number;
-      }>(sql`
-        WITH request_insert AS (
-          INSERT INTO ${requests} (request_id, function_call_id)
-          VALUES (1, 1)  -- root request points to itself and first function call
-          RETURNING id
-        ),
-        object_insert AS (
-          INSERT INTO ${objects} (model_id, record_id, request_id, function_call_id)
-          SELECT ${requestModel.id}, r.id, r.id, 1
-          FROM request_insert r
-          RETURNING *
-        )
-        SELECT
-          request_insert.id as request_id
-        FROM request_insert, object_insert;
-      `);
+      // Create request using the first function call ID (which always exists thanks to root)
+      const [request] = await proxiedTrx
+        .insert(requests)
+        .values({
+          functionCallId: 1,
+          requestId: 0, // Temporary value
+        })
+        .returning();
+
+      // Update request to point to itself
+      await proxiedTrx
+        .update(requests)
+        .set({ requestId: request.id })
+        .where(sql`${requests.id} = ${request.id}`);
 
       (c as ExtendedContext).db = proxiedTrx;
       (c as ExtendedContext).queries = queries;
-      (c as ExtendedContext).requestId = request_id;
+      (c as ExtendedContext).requestId = request.id;
       (c as ExtendedContext).functionCallId = 1;
       await next();
 
-      const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries, request_id);
+      const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries, request.id);
 
-      // Debug what we're about to insert
       console.log("🔍 Current queries state:", queries);
       console.log("🔍 Objects to insert:", objectsToInsert);
 
-      // Debug the current state of objects table
       const beforeCount = await proxiedTrx.select({ count: sql<number>`count(*)` }).from(objects);
       console.log("📊 Objects count before insert:", Number(beforeCount[0].count));
 
       if (objectsToInsert.length > 0) {
-        // Create a function call for these objects
-        const [functionCall] = await proxiedTrx
-          .insert(functionCalls)
+        // Add the request object to the objects we're about to insert
+        const requestObject = {
+          modelId: requestModel.id,
+          recordId: request.id,
+          requestId: request.id,
+          functionCallId: 1,
+        };
+
+        // Remove any duplicates based on modelId and recordId
+        const seen = new Set();
+        const allObjects = [
+          requestObject,
+          ...objectsToInsert.map((obj) => ({
+            ...obj,
+            functionCallId: 1,
+            requestId: request.id,
+          })),
+        ].filter((obj) => {
+          const key = `${obj.modelId}-${obj.recordId}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
+        // Create all objects in one batch
+        await proxiedTrx.insert(objects).values(allObjects).returning();
+      } else {
+        // If no other objects, just create the request object
+        await proxiedTrx
+          .insert(objects)
           .values({
-            serverFunctionId: serverFunction.id,
-            requestId: request_id,
-            functionCallId: (c as ExtendedContext).functionCallId, // Use the function call ID from context
-            status: FunctionCallStatus.COMPLETED,
-            args: null,
-            result: null,
+            modelId: requestModel.id,
+            recordId: request.id,
+            requestId: request.id,
+            functionCallId: 1,
           })
           .returning();
-
-        // Ensure all objects have both request_id and function_call_id
-        const objectsWithIds = objectsToInsert.map((obj) => ({
-          ...obj,
-          requestId: request_id,
-          functionCallId: functionCall.id,
-        }));
-
-        await proxiedTrx.insert(objects).values(objectsWithIds).returning();
       }
 
-      // Debug after insert
       const afterCount = await proxiedTrx.select({ count: sql<number>`count(*)` }).from(objects);
       console.log("📊 Objects count after insert:", Number(afterCount[0].count));
 

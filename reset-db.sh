@@ -66,5 +66,19 @@ echo "Drizzle directory structure created."
 npm run makemigrations
 npm run migrate
 
+# Reset all sequences
+psql -d $DB_NAME << EOF
+DO \$\$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT schemaname, tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+        EXECUTE 'ALTER SEQUENCE IF EXISTS ' || quote_ident(r.schemaname) || '.' || quote_ident(r.tablename) || '_id_seq RESTART WITH 1';
+    END LOOP;
+END
+\$\$;
+EOF
+
+echo "All sequences reset to 1."
 
 echo "Script completed successfully."
