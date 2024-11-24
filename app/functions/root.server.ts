@@ -1,6 +1,7 @@
 // app/functions/root.server.ts
 
-import { functionCalls, FunctionCallStatus } from "~/db/schema/function-calls/schema";
+import { functionCalls } from "~/db/schema";
+import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { models } from "~/db/schema/models/schema";
 import { objects } from "~/db/schema/objects/schema";
 import { requests } from "~/db/schema/requests/schema";
@@ -48,6 +49,7 @@ export async function root(extensions: RequestExtensions) {
     .values({
       name: "root",
       type: ServerFunctionType.SYSTEM,
+      functionCallId: BOOTSTRAP_FUNCTION_CALL_ID,
       metadata: {
         label: "Root",
         variant: "default" as ButtonVariant,

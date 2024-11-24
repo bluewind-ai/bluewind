@@ -18,45 +18,24 @@ export const serverFunctionTypeEnum = pgEnum("server_function_type", [
   ServerFunctionType.API,
 ]);
 
-// This is for Drizzle migrations - exports a proper pgTable
-export const serverFunctionsTableDefinition = pgTable("server_functions", {
+export const serverFunctions = pgTable("server_functions", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   type: serverFunctionTypeEnum("type").notNull(),
   requestId: integer("request_id")
     .references(() => requests.id, { onDelete: "cascade" })
-    .notNull()
-    .$defaultFn(() => 0),
-  functionCallId: integer("function_call_id")
-    .notNull()
-    .$defaultFn(() => 0),
+    .notNull(),
+  functionCallId: integer("function_call_id").notNull(), // Added this
   metadata: jsonb("metadata").$type<{
     label: string;
     variant: ButtonVariant;
   }>(),
 });
 
-type ServerFunctionInsert = {
-  name: string;
-  type: ServerFunctionType;
-  metadata?: {
-    label: string;
-    variant: ButtonVariant;
-  };
-};
-
-export const serverFunctions = {
-  ...serverFunctionsTableDefinition,
-  $inferInsert: {} as ServerFunctionInsert,
-};
-
-export const serverFunctionsRelations = relations(
-  serverFunctionsTableDefinition,
-  ({ one, many }) => ({
-    request: one(requests, {
-      fields: [serverFunctionsTableDefinition.requestId],
-      references: [requests.id],
-    }),
-    functionCalls: many(functionCalls),
+export const serverFunctionsRelations = relations(serverFunctions, ({ one, many }) => ({
+  request: one(requests, {
+    fields: [serverFunctions.requestId],
+    references: [requests.id],
   }),
-);
+  functionCalls: many(functionCalls),
+}));
