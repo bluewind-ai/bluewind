@@ -20,7 +20,7 @@ const tableSchemas = {
     requestId: z.number(),
     functionCallId: z.number(),
   }),
-  // Add other table schemas as needed
+  // Add other schemas...
 } as const;
 
 type FunctionWithApply = {
@@ -41,20 +41,25 @@ export function insertMiddleware(
       console.log("🔗 Chaining method:", String(prop));
       const chainValue = Reflect.get(target, prop);
       if (prop === "values") {
-        return function (values: Record<string, unknown>) {
+        return function (values: Record<string, unknown> | Record<string, unknown>[]) {
           console.log("📊 Values method called for table:", tableName);
 
-          // First enrich the values
-          let enrichedValues = {
-            ...values,
-            requestId: 1, // Always set to bootstrap request
-          };
+          // Handle both single objects and arrays
+          const enrichedValues = Array.isArray(values)
+            ? values.map((v) => ({ ...v, requestId: 1 }))
+            : { ...values, requestId: 1 };
+
           console.log("📝 Enriched values:", enrichedValues);
 
-          // Then run schema validation if a schema exists
+          // Validate each item if it's an array, or just the single object
           if (tableName in tableSchemas) {
-            enrichedValues =
+            if (Array.isArray(enrichedValues)) {
+              enrichedValues.forEach((item) => {
+                tableSchemas[tableName as keyof typeof tableSchemas].parse(item);
+              });
+            } else {
               tableSchemas[tableName as keyof typeof tableSchemas].parse(enrichedValues);
+            }
           }
 
           const valuesQuery = chainValue.apply(target as object, [enrichedValues]);
