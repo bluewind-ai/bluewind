@@ -9,6 +9,18 @@ import { serverFunctions } from "../server-functions/schema";
 import { sessions } from "../sessions/schema";
 import { users } from "../users/schema";
 
+// First, define the enum VALUES (these will be used to create the type in postgres)
+export const functionCallStatusEnum = pgEnum("function_call_status", [
+  "READY_FOR_APPROVAL",
+  "APPROVED",
+  "REJECTED",
+  "RUNNING",
+  "IN_PROGRESS",
+  "COMPLETED",
+  "FAILED",
+]);
+
+// Then TypeScript enum for type checking
 export enum FunctionCallStatus {
   READY_FOR_APPROVAL = "READY_FOR_APPROVAL",
   APPROVED = "APPROVED",
@@ -19,16 +31,6 @@ export enum FunctionCallStatus {
   FAILED = "FAILED",
 }
 
-export const functionCallStatusEnum = pgEnum("function_call_status", [
-  FunctionCallStatus.READY_FOR_APPROVAL,
-  FunctionCallStatus.APPROVED,
-  FunctionCallStatus.REJECTED,
-  FunctionCallStatus.RUNNING,
-  FunctionCallStatus.IN_PROGRESS,
-  FunctionCallStatus.COMPLETED,
-  FunctionCallStatus.FAILED,
-]);
-
 export const functionCalls = pgTable("function_calls", {
   id: serial("id").primaryKey(),
   serverFunctionId: integer("server_function_id")
@@ -38,7 +40,7 @@ export const functionCalls = pgTable("function_calls", {
     .references(() => requests.id, { onDelete: "cascade" })
     .notNull(),
   functionCallId: integer("function_call_id").notNull(),
-  status: functionCallStatusEnum("status").notNull().default(FunctionCallStatus.READY_FOR_APPROVAL),
+  status: functionCallStatusEnum("status").notNull().default("READY_FOR_APPROVAL"),
   args: jsonb("args"),
   result: jsonb("result"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

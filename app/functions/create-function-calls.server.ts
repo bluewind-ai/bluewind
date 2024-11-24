@@ -3,12 +3,9 @@
 import { redirect } from "@remix-run/node";
 import { sql } from "drizzle-orm";
 
-import {
-  functionCalls,
-  FunctionCallStatus,
-  serverFunctions,
-  ServerFunctionType,
-} from "~/db/schema";
+import { functionCalls, serverFunctions } from "~/db/schema";
+import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
+import { ServerFunctionType } from "~/db/schema/server-functions/schema";
 import { SERVER_FUNCTIONS_HANDLERS } from "~/lib/server-functions";
 import type { ServerFunctionName } from "~/lib/server-functions-types";
 import type { RequestExtensions } from "~/middleware";

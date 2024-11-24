@@ -1,11 +1,8 @@
 // app/functions/bootstrap.server.ts
 
-import {
-  functionCalls,
-  FunctionCallStatus,
-  serverFunctions,
-  ServerFunctionType,
-} from "~/db/schema";
+import { functionCalls, serverFunctions } from "~/db/schema";
+import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
+import { ServerFunctionType } from "~/db/schema/server-functions/schema";
 import type { RequestExtensions } from "~/middleware";
 
 export async function bootstrap(extensions: RequestExtensions) {
