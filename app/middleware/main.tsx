@@ -4,14 +4,13 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
 import postgres from "postgres";
 
-import { functionCalls, models, objects, requests, serverFunctions } from "~/db/schema";
+import { functionCalls, models, requests, serverFunctions } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { TABLES } from "~/db/schema/table-models";
-import { checkDataIntegrity } from "~/functions/check-data-integrity.server";
+import { insertRequestObjects } from "~/functions/insert-request-objects.server";
 import { root } from "~/functions/root.server";
 
 import { createDbProxy, ExtendedContext } from ".";
-import { countObjectsForQueries } from "./functions";
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 // Create a custom logger
@@ -87,49 +86,7 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
 
       await next();
 
-      const objectsToInsert = await countObjectsForQueries(
-        proxiedTrx,
-        (c as ExtendedContext).queries,
-        request.id,
-      );
-
-      if (objectsToInsert.length > 0) {
-        const requestObject = {
-          modelId: requestModel.id,
-          recordId: request.id,
-          requestId: request.id,
-          functionCallId: 1,
-        };
-
-        const seen = new Set();
-        const allObjects = [
-          requestObject,
-          ...objectsToInsert.map((obj) => ({
-            ...obj,
-            functionCallId: 1,
-            requestId: request.id,
-          })),
-        ].filter((obj) => {
-          const key = `${obj.modelId}-${obj.recordId}`;
-          if (seen.has(key)) return false;
-          seen.add(key);
-          return true;
-        });
-
-        await proxiedTrx.insert(objects).values(allObjects).returning();
-      } else {
-        await proxiedTrx
-          .insert(objects)
-          .values({
-            modelId: requestModel.id,
-            recordId: request.id,
-            requestId: request.id,
-            functionCallId: 1,
-          })
-          .returning();
-      }
-
-      await checkDataIntegrity(proxiedTrx);
+      await insertRequestObjects(c as ExtendedContext);
     },
     {
       isolationLevel: "serializable",
