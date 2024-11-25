@@ -7,7 +7,7 @@ import type { LoadCsvType } from "~/routes/load-csv";
 export async function master(c: ExtendedContext) {
   try {
     console.log("[master] Starting data load...");
-    const client = hc<LoadCsvType>("/");
+    const client = hc<LoadCsvType>("http://localhost:5173"); // Use your dev server URL
     const response = await client["run-route"]["load-csv"].$post();
 
     if (!response.ok) {
