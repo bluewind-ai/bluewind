@@ -59,7 +59,6 @@ export async function root(extensions: RequestExtensions) {
       name: "root",
       type: ServerFunctionType.SYSTEM,
       functionCallId: BOOTSTRAP_FUNCTION_CALL_ID,
-      requestId: insertedRequest.id,
       metadata: {
         label: "Root",
         variant: "default" as ButtonVariant,

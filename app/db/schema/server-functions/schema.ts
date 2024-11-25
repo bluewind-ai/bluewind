@@ -30,7 +30,7 @@ export const serverFunctions = pgTable("server_functions", {
     label: string;
     variant: ButtonVariant;
   }>(),
-});
+}) as any;
 
 export const serverFunctionsRelations = relations(serverFunctions, ({ one, many }) => ({
   request: one(requests, {
