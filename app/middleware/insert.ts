@@ -39,7 +39,7 @@ export function insertMiddleware(
   target: any,
   value: FunctionWithApply,
   tableName: string,
-  context: Context,
+  c: Context,
   args: unknown[],
 ) {
   console.log("🔍 Insert middleware called for table:", tableName);
@@ -98,14 +98,14 @@ export function insertMiddleware(
                   console.log("⚡ Executing query with args:", args);
                   const result = await returningValue.apply(target as object, args);
                   console.log("✅ Insert completed for table:", tableName);
-                  (context as any).queries = (context as any).queries || [];
-                  (context as any).queries.push({
+                  (c as any).queries = (c as any).queries || [];
+                  (c as any).queries.push({
                     type: "insert",
                     table: tableName,
                     query: enrichedValues,
                     result,
                   });
-                  console.log("📚 Updated queries length:", (context as any).queries.length);
+                  console.log("📚 Updated queries length:", (c as any).queries.length);
                   return result;
                 };
               }
