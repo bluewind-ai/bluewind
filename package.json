@@ -21,7 +21,7 @@
     "clean-all": "rm -rf build && rm -rf .drizzle && rm -rf .drizzle-kit && rm -rf node_modules && rm -rf .eslintcache && rm -rf .prettiercache",
     "reset-db": "sh reset-db.sh",
     "restart": "npm run reset-db && npm run dev",
-    "truncate-db": "tsx scripts/truncate-db.ts",
+    "truncate-db": "sh truncate-db.sh",
     "remove-console": "tsx scripts/remove-console.ts",
     "instructions": "tsx scripts/generate-instructions.ts",
     "tree": "tsx scripts/generate-tree.ts",
