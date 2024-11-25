@@ -1,10 +1,10 @@
 // app/middleware/main.tsx
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
 import postgres from "postgres";
 
-import { functionCalls, models, requests, serverFunctions } from "~/db/schema";
+import { functionCalls, models, objects, requests, serverFunctions } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { TABLES } from "~/db/schema/table-models";
 import { insertRequestObjects } from "~/functions/insert-request-objects.server";
@@ -13,83 +13,124 @@ import { root } from "~/functions/root.server";
 import { createDbProxy, ExtendedContext } from ".";
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-// Create a custom logger
-// class CustomLogger extends DefaultLogger {
-//   logQuery(query: string, params: unknown[]): void {
-//     // Get the current stack trace
-//     const stack = new Error().stack
-//       ?.split("\n")
-//       .slice(1)
-//       .map((line) => line.trim())
-//       .join("\n");
-//   }
-// }
+
 const baseDb = drizzle(postgres(connectionString), {
   schema,
-  // logger: new CustomLogger(),
 });
 export const db = baseDb;
-export async function mainMiddleware(c: Context, next: () => Promise<void>) {
+export async function mainMiddleware(context: Context, next: () => Promise<void>) {
+  console.log("[mainMiddleware] Starting...");
+  const c = context as unknown as ExtendedContext;
   // Initialize the queries array in the context
-  (c as ExtendedContext).queries = [];
+  c.queries = [];
 
-  // Check if any function calls exist
-  const firstFunctionCall = await db.select().from(functionCalls).limit(1);
-  if (firstFunctionCall.length === 0) {
-    await root(c as ExtendedContext);
+  try {
+    // Check if any function calls exist
+    console.log("[mainMiddleware] Checking function calls...");
+    const firstFunctionCall = await db.select().from(functionCalls).limit(1);
+    if (firstFunctionCall.length === 0) {
+      console.log("[mainMiddleware] No function calls found, running root...");
+      await root(c);
+    }
+
+    // Get request model first
+    console.log("[mainMiddleware] Getting request model...");
+    const [requestModel] = await db
+      .select()
+      .from(models)
+      .where(eq(models.pluralName, TABLES.requests.modelName));
+
+    if (!requestModel) {
+      throw new Error("Request model not found");
+    }
+    console.log("[mainMiddleware] Found request model:", requestModel);
+
+    // Create request and its object in one transaction
+    console.log("[mainMiddleware] Creating request and object...");
+    const [request] = await db.transaction(async (trx) => {
+      console.log("[mainMiddleware] Starting transaction...");
+
+      // Create request
+      const [newRequest] = await trx
+        .insert(requests)
+        .values({
+          functionCallId: 1,
+          requestId: 0, // Temporary value
+        })
+        .returning();
+      console.log("[mainMiddleware] Created request:", newRequest);
+
+      // Update request to point to itself
+      await trx
+        .update(requests)
+        .set({ requestId: newRequest.id })
+        .where(sql`${requests.id} = ${newRequest.id}`);
+      console.log("[mainMiddleware] Updated request with self-reference");
+
+      // Create the request object right away
+      const [requestObject] = await trx
+        .insert(objects)
+        .values({
+          modelId: requestModel.id,
+          recordId: newRequest.id,
+          requestId: newRequest.id,
+          functionCallId: 1,
+        })
+        .returning();
+      console.log("[mainMiddleware] Created request object:", requestObject);
+
+      return [newRequest];
+    });
+
+    console.log("[mainMiddleware] Transaction completed, request:", request);
+
+    // Set request context
+    c.requestId = request.id;
+    c.functionCallId = 1;
+
+    // Now do the rest of the middleware operations with proxied db
+    console.log("[mainMiddleware] Checking models...");
+    const allModels = await db
+      .select({ id: models.id, pluralName: models.pluralName })
+      .from(models);
+    if (allModels.length === 0) {
+      throw new Error("Models table is empty. Please run seed-models script first.");
+    }
+    console.log("[mainMiddleware] Found models count:", allModels.length);
+
+    // Get a valid server function ID
+    console.log("[mainMiddleware] Checking server functions...");
+    const [serverFunction] = await db
+      .select({ id: serverFunctions.id })
+      .from(serverFunctions)
+      .limit(1);
+    if (!serverFunction) {
+      throw new Error("No server functions found. Please seed the database first.");
+    }
+    console.log("[mainMiddleware] Found server function:", serverFunction);
+
+    const dbWithProxy = createDbProxy(db, c);
+    console.log("[mainMiddleware] Starting main transaction...");
+    await dbWithProxy.transaction(
+      async (trx) => {
+        const proxiedTrx = createDbProxy(trx, c);
+        c.db = proxiedTrx;
+
+        try {
+          console.log("[mainMiddleware] Executing next middleware...");
+          await next();
+        } finally {
+          console.log("[mainMiddleware] Running insertRequestObjects...");
+          await insertRequestObjects(c);
+        }
+      },
+      {
+        isolationLevel: "serializable",
+      },
+    );
+    console.log("[mainMiddleware] Main transaction completed");
+  } catch (error) {
+    console.error("[mainMiddleware] Error:", error);
+    throw error;
   }
-
-  // Create request first using raw db
-  const [request] = await db
-    .insert(requests)
-    .values({
-      functionCallId: 1,
-      requestId: 0, // Temporary value
-    })
-    .returning();
-
-  // Update request to point to itself
-  await db
-    .update(requests)
-    .set({ requestId: request.id })
-    .where(sql`${requests.id} = ${request.id}`);
-
-  // Set request context
-  (c as ExtendedContext).requestId = request.id;
-  (c as ExtendedContext).functionCallId = 1;
-
-  // Now do the rest of the middleware operations with proxied db
-  const allModels = await db.select({ id: models.id, pluralName: models.pluralName }).from(models);
-  if (allModels.length === 0) {
-    throw new Error("Models table is empty. Please run seed-models script first.");
-  }
-
-  const requestModel = allModels.find((model) => model.pluralName === TABLES.requests.modelName);
-  if (!requestModel) {
-    throw new Error("Request model not found. Please check models table data.");
-  }
-
-  // Get a valid server function ID
-  const [serverFunction] = await db
-    .select({ id: serverFunctions.id })
-    .from(serverFunctions)
-    .limit(1);
-  if (!serverFunction) {
-    throw new Error("No server functions found. Please seed the database first.");
-  }
-
-  const dbWithProxy = createDbProxy(db, c as ExtendedContext);
-  await dbWithProxy.transaction(
-    async (trx) => {
-      const proxiedTrx = createDbProxy(trx, c as ExtendedContext);
-      (c as ExtendedContext).db = proxiedTrx;
-
-      await next();
-
-      await insertRequestObjects(c as ExtendedContext);
-    },
-    {
-      isolationLevel: "serializable",
-    },
-  );
 }

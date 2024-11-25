@@ -1,9 +1,6 @@
 // app/functions/insert-request-objects.server.ts
 
-import { eq } from "drizzle-orm";
-
-import { models, objects } from "~/db/schema";
-import { TABLES } from "~/db/schema/table-models";
+import { objects } from "~/db/schema";
 import type { ExtendedContext } from "~/middleware";
 import { countObjectsForQueries } from "~/middleware/functions";
 
@@ -12,53 +9,52 @@ import { checkDataIntegrity } from "./check-data-integrity.server";
 export async function insertRequestObjects(c: ExtendedContext) {
   const { db, queries, requestId } = c;
 
-  // Get request model
-  const [requestModel] = await db
-    .select()
-    .from(models)
-    .where(eq(models.pluralName, TABLES.requests.modelName));
-
-  if (!requestModel) {
-    throw new Error("Request model not found");
-  }
+  console.log("[insertRequestObjects] Starting with requestId:", requestId);
+  console.log("[insertRequestObjects] Number of queries:", queries.length);
 
   const objectsToInsert = await countObjectsForQueries(db, queries, requestId);
+  console.log("[insertRequestObjects] objectsToInsert length:", objectsToInsert.length);
 
   if (objectsToInsert.length > 0) {
-    const requestObject = {
-      modelId: requestModel.id,
-      recordId: requestId,
-      requestId: requestId,
-      functionCallId: 1,
-    };
-
     const seen = new Set();
-    const allObjects = [
-      requestObject,
-      ...objectsToInsert.map((obj) => ({
+    const allObjects = objectsToInsert
+      .map((obj) => ({
         ...obj,
         functionCallId: 1,
         requestId: requestId,
-      })),
-    ].filter((obj) => {
-      const key = `${obj.modelId}-${obj.recordId}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+      }))
+      .filter((obj) => {
+        const key = `${obj.modelId}-${obj.recordId}`;
+        if (seen.has(key)) {
+          console.log("[insertRequestObjects] Duplicate found:", key);
+          return false;
+        }
+        seen.add(key);
+        return true;
+      });
 
-    await db.insert(objects).values(allObjects).returning();
+    console.log("[insertRequestObjects] Final allObjects length:", allObjects.length);
+    console.log(
+      "[insertRequestObjects] Objects to be inserted:",
+      allObjects.map((obj) => ({
+        modelId: obj.modelId,
+        recordId: obj.recordId,
+        key: `${obj.modelId}-${obj.recordId}`,
+      })),
+    );
+
+    const inserted = await db.insert(objects).values(allObjects).returning();
+    console.log("[insertRequestObjects] Number of objects inserted:", inserted.length);
   } else {
-    await db
-      .insert(objects)
-      .values({
-        modelId: requestModel.id,
-        recordId: requestId,
-        requestId: requestId,
-        functionCallId: 1,
-      })
-      .returning();
+    console.log("[insertRequestObjects] No objects to insert");
   }
 
-  await checkDataIntegrity(c.db);
+  console.log("[insertRequestObjects] Running data integrity check...");
+  try {
+    await checkDataIntegrity(c.db);
+    console.log("[insertRequestObjects] Data integrity check passed");
+  } catch (error) {
+    console.error("[insertRequestObjects] Data integrity check failed:", error);
+    throw error;
+  }
 }

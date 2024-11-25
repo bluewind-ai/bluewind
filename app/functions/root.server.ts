@@ -12,6 +12,8 @@ import type { ExtendedContext } from "~/middleware";
 import { createDbProxy } from "~/middleware";
 import { db } from "~/middleware/main";
 
+import { master } from "./master.server";
+
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
 // First create the function call that owns all bootstrapping
 const BOOTSTRAP_FUNCTION_CALL_ID = 1;
@@ -71,4 +73,5 @@ export async function root(c: ExtendedContext) {
     requestId: insertedRequest.id,
   }));
   await dbWithProxy.insert(models).values(modelsToInsert).returning();
+  await master(c);
 }
