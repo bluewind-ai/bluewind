@@ -36,7 +36,10 @@ export async function goNext(request: ExtendedContext) {
     .where(eq(schema.functionCalls.id, nextFunction.id));
   // Import and execute the function
   try {
-    const functionModule = await import(`./${nextFunction.serverFunctionName}.server`);
+    const functionModule = await import(
+      /* @vite-ignore */ `./${nextFunction.serverFunctionName}.server`
+    );
+
     const result = await functionModule[nextFunction.serverFunctionName](
       request,
       nextFunction.args,
