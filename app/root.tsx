@@ -54,6 +54,10 @@ export interface LoaderData {
   }>;
 }
 export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
+  const db = args.context.db;
+  if (!db) {
+    throw new Error("Database connection not available in loader context");
+  }
   if (args.context.error) {
     throw args.context.error;
   }
