@@ -1,6 +1,7 @@
 // app/middleware/main.tsx
 
 import { sql } from "drizzle-orm";
+import { DefaultLogger } from "drizzle-orm/logger";
 import type { PgTransaction } from "drizzle-orm/pg-core";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -16,7 +17,30 @@ import { createDbProxy, DrizzleQuery } from ".";
 import { countObjectsForQueries } from "./functions";
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-const baseDb = drizzle(postgres(connectionString), { schema });
+
+// Create a custom logger
+class CustomLogger extends DefaultLogger {
+  logQuery(query: string, params: unknown[]): void {
+    // Get the current stack trace
+    const stack = new Error().stack
+      ?.split("\n")
+      .slice(1)
+      .map((line) => line.trim())
+      .join("\n");
+
+    console.log("🔍 Executing SQL Query:", {
+      query,
+      params,
+      stack,
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
+
+const baseDb = drizzle(postgres(connectionString), {
+  schema,
+  logger: new CustomLogger(),
+});
 export const db = baseDb;
 
 type DbType = typeof db;
