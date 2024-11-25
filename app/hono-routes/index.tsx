@@ -55,8 +55,9 @@ export function configureHonoServer(server: Hono) {
   // Add middleware before routes
   server.use("*", mainMiddleware);
 
+  // The route registration needs to match the path in the handler
+  server.route("/run-route/root", rootRoute); // Changed this line
   server.route("/run-route", loadCsvRoute);
-  server.route("/run-route", rootRoute);
 
   server.use("*", async (c: Context, next: () => Promise<void>) => {
     await next();

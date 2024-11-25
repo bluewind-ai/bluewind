@@ -1,4 +1,5 @@
 // app/components/new-main.tsx
+
 import { type ColumnDef, type SortingState } from "@tanstack/react-table";
 import {
   flexRender,
@@ -9,11 +10,13 @@ import {
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
-export function NewMain<TData extends object>({ data }: { data: TData[] }) {
+export function NewMain<TData extends { name: string }>({ data }: { data: TData[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
+
   const createColumns = (data: TData[]): ColumnDef<TData>[] => {
     if (!data.length) return [];
-    return Object.keys(data[0]).map((key) => ({
+
+    const baseColumns = Object.keys(data[0]).map((key) => ({
       accessorKey: key,
       header: key,
       cell: (info) => {
@@ -29,7 +32,28 @@ export function NewMain<TData extends object>({ data }: { data: TData[] }) {
         return value;
       },
     }));
+
+    const actionColumn: ColumnDef<TData> = {
+      id: "action",
+      header: "Action",
+      cell: (info) => {
+        const name = info.row.original.name;
+        return (
+          <form method="post" action={`/run-route/${name}`}>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            >
+              Run
+            </button>
+          </form>
+        );
+      },
+    };
+
+    return [...baseColumns, actionColumn];
   };
+
   const table = useReactTable({
     data,
     columns: createColumns(data),
@@ -40,6 +64,7 @@ export function NewMain<TData extends object>({ data }: { data: TData[] }) {
     },
     onSortingChange: setSorting,
   });
+
   return (
     <div className="p-4">
       <table className="min-w-full border-collapse border border-slate-200">

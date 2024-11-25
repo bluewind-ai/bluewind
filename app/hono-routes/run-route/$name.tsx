@@ -1,4 +1,5 @@
 // app/hono-routes/run-route/$name.tsx
+
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 
@@ -22,7 +23,8 @@ function generateModelsToInsert() {
 
 const app = new Hono();
 
-app.post("/run-route/root", async (c) => {
+app.post("/", async (c) => {
+  // Changed this line - the base path is already provided in route registration
   console.log("[root route] Starting bootstrap...");
 
   // First create request
@@ -35,6 +37,7 @@ app.post("/run-route/root", async (c) => {
     })
     .returning();
 
+  // Rest of your code remains the same...
   // Update request to point to itself
   await db
     .update(requests)
