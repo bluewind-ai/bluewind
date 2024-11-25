@@ -1,6 +1,7 @@
 // app/middleware/insert.ts
-import type { Context } from "hono";
 import { z } from "zod";
+
+import { ExtendedContext } from ".";
 
 const tableSchemas = {
   function_calls: z.object({
@@ -36,9 +37,12 @@ export function insertMiddleware(
   target: any,
   value: FunctionWithApply,
   tableName: string,
-  c: Context,
+  c: ExtendedContext,
   args: unknown[],
 ) {
+  if (!c.requestId) {
+    throw new Error("Request ID is required");
+  }
   const query = value.apply(target, args);
   return new Proxy(query as object, {
     get(target: object, prop) {
