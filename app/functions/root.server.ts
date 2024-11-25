@@ -1,4 +1,5 @@
 // app/functions/root.server.ts
+
 import { sql } from "drizzle-orm";
 
 import { functionCalls, objects } from "~/db/schema";
@@ -29,6 +30,7 @@ export async function root(c: ExtendedContext) {
     .values({
       requestId: 0,
       functionCallId: 1,
+      pathname: new URL(c.req.url).pathname,
     })
     .returning();
 

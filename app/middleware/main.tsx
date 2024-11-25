@@ -1,4 +1,5 @@
 // app/middleware/main.tsx
+
 import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -56,6 +57,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         .values({
           functionCallId: 1,
           requestId: 0, // Temporary value
+          pathname: new URL(c.req.url).pathname,
         })
         .returning();
       console.log("[mainMiddleware] Created request:", newRequest);
