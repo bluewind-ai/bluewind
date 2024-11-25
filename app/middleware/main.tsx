@@ -33,19 +33,43 @@ export const db = baseDb;
 export async function mainMiddleware(c: Context, next: () => Promise<void>) {
   // Initialize the queries array in the context
   (c as ExtendedContext).queries = [];
+
   // Check if any function calls exist
   const firstFunctionCall = await db.select().from(functionCalls).limit(1);
   if (firstFunctionCall.length === 0) {
     await root(c as ExtendedContext);
   }
+
+  // Create request first using raw db
+  const [request] = await db
+    .insert(requests)
+    .values({
+      functionCallId: 1,
+      requestId: 0, // Temporary value
+    })
+    .returning();
+
+  // Update request to point to itself
+  await db
+    .update(requests)
+    .set({ requestId: request.id })
+    .where(sql`${requests.id} = ${request.id}`);
+
+  // Set request context
+  (c as ExtendedContext).requestId = request.id;
+  (c as ExtendedContext).functionCallId = 1;
+
+  // Now do the rest of the middleware operations with proxied db
   const allModels = await db.select({ id: models.id, pluralName: models.pluralName }).from(models);
   if (allModels.length === 0) {
     throw new Error("Models table is empty. Please run seed-models script first.");
   }
+
   const requestModel = allModels.find((model) => model.pluralName === TABLES.requests.modelName);
   if (!requestModel) {
     throw new Error("Request model not found. Please check models table data.");
   }
+
   // Get a valid server function ID
   const [serverFunction] = await db
     .select({ id: serverFunctions.id })
@@ -54,41 +78,29 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
   if (!serverFunction) {
     throw new Error("No server functions found. Please seed the database first.");
   }
-  const dbWithProxy = createDbProxy(db, c); // Pass context instead of queries array
+
+  const dbWithProxy = createDbProxy(db, c);
   await dbWithProxy.transaction(
     async (trx) => {
-      const proxiedTrx = createDbProxy(trx, c); // Pass context here too
-      // Create request using the first function call ID (which always exists thanks to root)
-      const [request] = await proxiedTrx
-        .insert(requests)
-        .values({
-          functionCallId: 1,
-          requestId: 0, // Temporary value
-        })
-        .returning();
-      // Update request to point to itself
-      await proxiedTrx
-        .update(requests)
-        .set({ requestId: request.id })
-        .where(sql`${requests.id} = ${request.id}`);
+      const proxiedTrx = createDbProxy(trx, c);
       (c as ExtendedContext).db = proxiedTrx;
-      (c as ExtendedContext).requestId = request.id;
-      (c as ExtendedContext).functionCallId = 1;
+
       await next();
+
       const objectsToInsert = await countObjectsForQueries(
         proxiedTrx,
         (c as ExtendedContext).queries,
         request.id,
       );
+
       if (objectsToInsert.length > 0) {
-        // Add the request object to the objects we're about to insert
         const requestObject = {
           modelId: requestModel.id,
           recordId: request.id,
           requestId: request.id,
           functionCallId: 1,
         };
-        // Remove any duplicates based on modelId and recordId
+
         const seen = new Set();
         const allObjects = [
           requestObject,
@@ -103,10 +115,9 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
           seen.add(key);
           return true;
         });
-        // Create all objects in one batch
+
         await proxiedTrx.insert(objects).values(allObjects).returning();
       } else {
-        // If no other objects, just create the request object
         await proxiedTrx
           .insert(objects)
           .values({
@@ -117,6 +128,7 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
           })
           .returning();
       }
+
       await checkDataIntegrity(proxiedTrx);
     },
     {

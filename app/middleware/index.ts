@@ -52,7 +52,7 @@ export function createDbProxy<
   T extends {
     insert: DbInsertFunction;
   },
->(db: T, context: Context): T {
+>(db: T, context: ExtendedContext): T {
   if (!("queries" in context)) {
     (context as any).queries = [];
   }

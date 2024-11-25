@@ -40,9 +40,9 @@ export function insertMiddleware(
   c: ExtendedContext,
   args: unknown[],
 ) {
-  if (!c.requestId) {
-    throw new Error("Request ID is required");
-  }
+  // if (!c.requestId) {
+  //   throw new Error("Request ID is required");
+  // }
   const query = value.apply(target, args);
   return new Proxy(query as object, {
     get(target: object, prop) {

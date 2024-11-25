@@ -70,31 +70,5 @@ export async function root(c: ExtendedContext) {
     ...model,
     requestId: insertedRequest.id,
   }));
-  const insertedModels = await dbWithProxy.insert(models).values(modelsToInsert).returning();
-  const objectsToInsert = [
-    ...insertedModels.map((model) => ({
-      modelId: 7,
-      recordId: model.id,
-      functionCallId: functionCall.id,
-      requestId: insertedRequest.id,
-    })),
-    {
-      modelId: 6,
-      recordId: insertedRequest.id,
-      functionCallId: functionCall.id,
-      requestId: insertedRequest.id,
-    },
-    {
-      modelId: 3,
-      recordId: rootFunction.id,
-      functionCallId: functionCall.id,
-      requestId: insertedRequest.id,
-    },
-    {
-      modelId: 4,
-      recordId: functionCall.id,
-      functionCallId: functionCall.id,
-      requestId: insertedRequest.id,
-    },
-  ];
+  await dbWithProxy.insert(models).values(modelsToInsert).returning();
 }
