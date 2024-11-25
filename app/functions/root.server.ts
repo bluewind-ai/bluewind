@@ -53,7 +53,7 @@ export async function root(c: ExtendedContext) {
     })
     .returning();
   // Create function call with explicit ID
-  const [functionCall] = await dbWithProxy
+  await dbWithProxy
     .insert(functionCalls)
     .values({
       id: BOOTSTRAP_FUNCTION_CALL_ID,

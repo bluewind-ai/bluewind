@@ -79,10 +79,10 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
     throw new Error("No server functions found. Please seed the database first.");
   }
 
-  const dbWithProxy = createDbProxy(db, c);
+  const dbWithProxy = createDbProxy(db, c as ExtendedContext);
   await dbWithProxy.transaction(
     async (trx) => {
-      const proxiedTrx = createDbProxy(trx, c);
+      const proxiedTrx = createDbProxy(trx, c as ExtendedContext);
       (c as ExtendedContext).db = proxiedTrx;
 
       await next();
