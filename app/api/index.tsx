@@ -1,4 +1,5 @@
 // app/api/index.tsx
+
 import type { Context, Hono } from "hono";
 import * as ReactDOMServer from "react-dom/server";
 import { encode } from "turbo-stream";
@@ -7,7 +8,7 @@ import { mainMiddleware } from "~/middleware/main";
 import loadCsvRoute from "~/routes/load-csv";
 import { StaticErrorPage } from "~/utils/error-utils";
 
-import rootRoute from "./run-route/root"; // Changed from "./run-route/$name"
+import routesRoute from "./routes";
 import truncateRoute from "./run-route/truncate";
 
 export function configureHonoServer(server: Hono) {
@@ -55,7 +56,7 @@ export function configureHonoServer(server: Hono) {
   // Add middleware before routes
   server.use("*", mainMiddleware);
 
-  server.route("/api/run-route/root", rootRoute);
+  server.route("/api/routes", routesRoute);
   server.route("/api/run-route/truncate", truncateRoute);
   server.route("/api/run-route", loadCsvRoute);
 
