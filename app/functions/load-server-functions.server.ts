@@ -1,5 +1,4 @@
 // app/functions/load-server-functions.server.ts
-
 import * as schema from "~/db/schema";
 import { ServerFunctionType } from "~/db/schema/server-functions/schema";
 import type { ExtendedContext } from "~/middleware";
@@ -42,7 +41,6 @@ const CORE_SERVER_FUNCTIONS = [
     type: ServerFunctionType.SYSTEM,
   },
 ] as const;
-
 export async function loadServerFunctions(request: ExtendedContext) {
   const insertPromises = CORE_SERVER_FUNCTIONS.map((fn) => {
     return request.db
@@ -68,9 +66,7 @@ export async function loadServerFunctions(request: ExtendedContext) {
         } as any,
       });
   });
-
   await Promise.all(insertPromises);
-
   return {
     status: "success",
     message: `Loaded ${CORE_SERVER_FUNCTIONS.length} server functions`,

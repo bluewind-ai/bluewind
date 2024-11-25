@@ -1,5 +1,4 @@
 // app/lib/server-functions.ts
-
 import { bootstrap } from "~/functions/bootstrap.server";
 import { generateRoutes } from "~/functions/generate-routes.server";
 import { goNext } from "~/functions/go-next.server";

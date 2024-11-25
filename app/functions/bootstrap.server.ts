@@ -1,5 +1,4 @@
 // app/functions/bootstrap.server.ts
-
 import { functionCalls, serverFunctions } from "~/db/schema";
 import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { ServerFunctionType } from "~/db/schema/server-functions/schema";
@@ -15,7 +14,6 @@ export async function bootstrap(extensions: ExtendedContext) {
       functionCallId: 1, // Added this required field - root server function
     })
     .returning();
-
   await extensions.db
     .insert(functionCalls)
     .values({
@@ -25,6 +23,4 @@ export async function bootstrap(extensions: ExtendedContext) {
       status: FunctionCallStatus.READY_FOR_APPROVAL,
     })
     .returning();
-
-  console.log("📊 Queries after inserts:", extensions.queries);
 }

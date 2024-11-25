@@ -1,5 +1,4 @@
 // app/functions/get-function-call-tree.server.ts
-
 import { eq } from "drizzle-orm";
 
 import { functionCalls } from "~/db/schema";
@@ -13,7 +12,6 @@ interface FunctionCallTree {
   actionName: string;
   children: FunctionCallTree[];
 }
-
 export const getFunctionCallTree = async () => {
   const allCalls = await db.query.functionCalls.findMany({
     with: {
@@ -21,15 +19,12 @@ export const getFunctionCallTree = async () => {
     },
     orderBy: (functionCalls, { asc }) => [asc(functionCalls.id)],
   });
-
   const lastCall = allCalls[allCalls.length - 1];
   if (!lastCall) {
     throw new Error("No function calls found");
   }
-
   let rootId = lastCall.id;
   let currentParentId: number | null = lastCall.functionCallId;
-
   while (currentParentId) {
     const parent: FunctionCall | undefined = await db.query.functionCalls.findFirst({
       where: eq(functionCalls.id, currentParentId),
@@ -41,7 +36,6 @@ export const getFunctionCallTree = async () => {
     rootId = parent.id;
     currentParentId = parent.functionCallId;
   }
-
   function buildTree(rootId: number): FunctionCallTree | null {
     const call = allCalls.find((c) => c.id === rootId);
     if (!call || !call.serverFunction) return null;
@@ -57,12 +51,10 @@ export const getFunctionCallTree = async () => {
       children,
     };
   }
-
   const tree = buildTree(rootId);
   if (!tree) {
     throw new Error("Could not build tree");
   }
-
   return {
     tree,
     currentId: lastCall.id,

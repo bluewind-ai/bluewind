@@ -1,5 +1,4 @@
 // app/lib/debug.ts
-
 function stringifyWithCircularRefs(
   obj: any,
   space: number | string = 2,
@@ -67,26 +66,20 @@ function stringifyWithCircularRefs(
     space,
   );
 }
-
 function dd(...args: any[]): never {
   // Initialize or increment count
   const count = parseInt(process.env.DD_COUNT || "0", 10);
   process.env.DD_COUNT = (count + 1).toString();
-
   // If we haven't reached SKIP yet, continue
   if (count < 0) {
     // You can change this number directly in the code
     return undefined as never;
   }
-
   // We've reached our target call, format args and throw
   const formattedArgs = args.map((arg) => stringifyWithCircularRefs(arg));
-
   // Reset counter before throwing
   process.env.DD_COUNT = "0";
-
   throw new Error(formattedArgs.join("\n"));
 }
-
 (global as any).dd = dd;
 export { dd };

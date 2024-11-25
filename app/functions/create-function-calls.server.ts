@@ -1,5 +1,4 @@
 // app/functions/create-function-calls.server.ts
-
 import { redirect } from "@remix-run/node";
 import { sql } from "drizzle-orm";
 

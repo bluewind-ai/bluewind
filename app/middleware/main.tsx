@@ -1,7 +1,5 @@
 // app/middleware/main.tsx
-
 import { sql } from "drizzle-orm";
-import { DefaultLogger } from "drizzle-orm/logger";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
 import postgres from "postgres";
@@ -16,85 +14,50 @@ import { createDbProxy, ExtendedContext } from ".";
 import { countObjectsForQueries } from "./functions";
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-
 // Create a custom logger
-class CustomLogger extends DefaultLogger {
-  logQuery(query: string, params: unknown[]): void {
-    // Get the current stack trace
-    const stack = new Error().stack
-      ?.split("\n")
-      .slice(1)
-      .map((line) => line.trim())
-      .join("\n");
-
-    console.log("🔍 Executing SQL Query:", {
-      query,
-      params,
-      stack,
-      timestamp: new Date().toISOString(),
-    });
-  }
-}
-
+// class CustomLogger extends DefaultLogger {
+//   logQuery(query: string, params: unknown[]): void {
+//     // Get the current stack trace
+//     const stack = new Error().stack
+//       ?.split("\n")
+//       .slice(1)
+//       .map((line) => line.trim())
+//       .join("\n");
+//   }
+// }
 const baseDb = drizzle(postgres(connectionString), {
   schema,
-  logger: new CustomLogger(),
+  // logger: new CustomLogger(),
 });
 export const db = baseDb;
-
 export async function mainMiddleware(c: Context, next: () => Promise<void>) {
-  console.log("🚀 Starting mainMiddleware");
-  const url = new URL(c.req.url);
-  const stack = new Error().stack
-    ?.split("\n")
-    .filter((line) => line.includes("/app/"))
-    .map((line) => `    at ${line.substring(line.indexOf("/app/"))}`)
-    .reverse()
-    .join("\n");
-
-  console.log(`${c.req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
-
   // Initialize the queries array in the context
   (c as ExtendedContext).queries = [];
-
   // Check if any function calls exist
   const firstFunctionCall = await db.select().from(functionCalls).limit(1);
   if (firstFunctionCall.length === 0) {
-    console.log("🌱 No function calls found, bootstrapping with root function...");
     await root(c as ExtendedContext);
   }
-
   const allModels = await db.select({ id: models.id, pluralName: models.pluralName }).from(models);
-
   if (allModels.length === 0) {
     throw new Error("Models table is empty. Please run seed-models script first.");
   }
-
   const requestModel = allModels.find((model) => model.pluralName === TABLES.requests.modelName);
-
   if (!requestModel) {
     throw new Error("Request model not found. Please check models table data.");
   }
-
   // Get a valid server function ID
   const [serverFunction] = await db
     .select({ id: serverFunctions.id })
     .from(serverFunctions)
     .limit(1);
-
   if (!serverFunction) {
     throw new Error("No server functions found. Please seed the database first.");
   }
-
   const dbWithProxy = createDbProxy(db, c); // Pass context instead of queries array
-
-  console.log("📊 Starting transaction");
-
   await dbWithProxy.transaction(
     async (trx) => {
-      console.log("💫 Inside transaction");
       const proxiedTrx = createDbProxy(trx, c); // Pass context here too
-
       // Create request using the first function call ID (which always exists thanks to root)
       const [request] = await proxiedTrx
         .insert(requests)
@@ -103,30 +66,20 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
           requestId: 0, // Temporary value
         })
         .returning();
-
       // Update request to point to itself
       await proxiedTrx
         .update(requests)
         .set({ requestId: request.id })
         .where(sql`${requests.id} = ${request.id}`);
-
       (c as ExtendedContext).db = proxiedTrx;
       (c as ExtendedContext).requestId = request.id;
       (c as ExtendedContext).functionCallId = 1;
       await next();
-
       const objectsToInsert = await countObjectsForQueries(
         proxiedTrx,
         (c as ExtendedContext).queries,
         request.id,
       );
-
-      console.log("🔍 Current queries state:", (c as ExtendedContext).queries);
-      console.log("🔍 Objects to insert:", objectsToInsert);
-
-      const beforeCount = await proxiedTrx.select({ count: sql<number>`count(*)` }).from(objects);
-      console.log("📊 Objects count before insert:", Number(beforeCount[0].count));
-
       if (objectsToInsert.length > 0) {
         // Add the request object to the objects we're about to insert
         const requestObject = {
@@ -135,7 +88,6 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
           requestId: request.id,
           functionCallId: 1,
         };
-
         // Remove any duplicates based on modelId and recordId
         const seen = new Set();
         const allObjects = [
@@ -151,7 +103,6 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
           seen.add(key);
           return true;
         });
-
         // Create all objects in one batch
         await proxiedTrx.insert(objects).values(allObjects).returning();
       } else {
@@ -166,13 +117,7 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
           })
           .returning();
       }
-
-      const afterCount = await proxiedTrx.select({ count: sql<number>`count(*)` }).from(objects);
-      console.log("📊 Objects count after insert:", Number(afterCount[0].count));
-
-      console.log("🔍 About to run data integrity check");
       await checkDataIntegrity(proxiedTrx);
-      console.log("✅ Data integrity check passed");
     },
     {
       isolationLevel: "serializable",

@@ -1,5 +1,4 @@
 // app/db/schema/models/schema.ts
-
 import { integer, pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
@@ -16,7 +15,6 @@ export const modelEnum = pgEnum("model", [
   TableModel.REQUESTS,
   TableModel.MODELS,
 ]);
-
 export const models = pgTable(TableModel.MODELS, {
   id: serial("id").primaryKey(),
   pluralName: text("plural_name").notNull(),
@@ -24,7 +22,6 @@ export const models = pgTable(TableModel.MODELS, {
   requestId: integer("request_id").notNull(),
   functionCallId: integer("function_call_id").notNull(),
 });
-
 export const ModelSchema = z.object({
   id: z.number(),
   pluralName: z.string(),
@@ -32,5 +29,4 @@ export const ModelSchema = z.object({
   requestId: z.number(),
   functionCallId: z.number(),
 });
-
 export type CreateModel = z.infer<typeof ModelSchema>;

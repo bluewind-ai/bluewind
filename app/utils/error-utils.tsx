@@ -1,5 +1,4 @@
 // app/utils/error-utils.tsx
-
 import {
   isRouteErrorResponse,
   Links,
@@ -29,7 +28,6 @@ function formatStack(stack: string) {
     .filter(Boolean)
     .join("\n");
 }
-
 function formatError(error: unknown) {
   if (error instanceof Error) {
     if (error.message.startsWith("DD_DEBUG_BREAK: ")) {
@@ -46,12 +44,10 @@ function formatError(error: unknown) {
   }
   return JSON.stringify(error, null, 2);
 }
-
 interface ErrorWrapperProps {
   children: React.ReactNode;
   includeRemixAssets?: boolean;
 }
-
 function ErrorWrapper({ children, includeRemixAssets = false }: ErrorWrapperProps) {
   return (
     <html lang="en" className="h-full">
@@ -78,16 +74,13 @@ function ErrorWrapper({ children, includeRemixAssets = false }: ErrorWrapperProp
     </html>
   );
 }
-
 function ErrorDisplay({ error }: { error: unknown }) {
   let errorOutput = "";
-
   if (isRouteErrorResponse(error)) {
     errorOutput = `${error.status} ${error.statusText}\n${JSON.stringify(error.data, null, 2)}`;
   } else {
     errorOutput = formatError(error);
   }
-
   return (
     <div className="p-4 font-mono">
       <div
@@ -97,18 +90,15 @@ function ErrorDisplay({ error }: { error: unknown }) {
     </div>
   );
 }
-
 // For Remix error boundary
 export function RemixErrorBoundary() {
   const error = useRouteError();
-
   return (
     <ErrorWrapper includeRemixAssets>
       <ErrorDisplay error={error} />
     </ErrorWrapper>
   );
 }
-
 // For Hono/static errors
 export function StaticErrorPage({ error }: { error: Error }) {
   return (

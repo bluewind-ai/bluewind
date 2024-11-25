@@ -1,5 +1,4 @@
 // app/functions/load-navigation-data.server.ts
-
 import { sql } from "drizzle-orm";
 
 import { type NavigationNode } from "~/components/navigation-tree";
@@ -13,7 +12,6 @@ export async function loadNavigationData(request: ExtendedContext) {
   if (!request.db) {
     throw new Error("Database connection not available on request object");
   }
-
   const [users, sessions, serverFunctions, functionCalls, objects, requests, models] =
     await Promise.all([
       request.db.select({ count: sql<number>`count(*)` }).from(schema.users),

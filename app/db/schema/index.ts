@@ -1,5 +1,4 @@
 // app/db/schema/index.ts
-
 // Function Calls
 import {
   functionCalls,
@@ -24,7 +23,6 @@ import {
 import { sessions, sessionsRelations } from "./sessions/schema";
 // Users
 import { users, usersRelations } from "./users/schema";
-
 // Tables, Enums, Relations
 export {
   functionCalls,
@@ -46,7 +44,6 @@ export {
   users,
   usersRelations,
 };
-
 // Combined schema object for convenience
 export const schema = {
   functionCalls,

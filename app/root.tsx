@@ -1,5 +1,4 @@
 // app/root.tsx
-
 import "./tailwind.css";
 
 import { LoaderFunctionArgs } from "@remix-run/node";
@@ -39,9 +38,7 @@ function Document({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
-
 export { RemixErrorBoundary as ErrorBoundary } from "~/utils/error-utils";
-
 export interface LoaderData {
   navigationData: NavigationNode;
   backOfficeData: NavigationNode;
@@ -56,30 +53,25 @@ export interface LoaderData {
     };
   }>;
 }
-
 export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
   if (args.context.error) {
     throw args.context.error;
   }
-
   const request = args.request as unknown as ExtendedContext;
   request.db = args.context.db;
   request.queries = args.context.queries;
   request.requestId = args.context.requestId;
-
   const [data, serverFunctions] = await Promise.all([
     loadNavigationData(request),
     request.db.query.serverFunctions.findMany({
       orderBy: [schema.serverFunctions.name],
     }),
   ]);
-
   if (!data?.navigationData || !data?.backOfficeData) {
     throw new Response(JSON.stringify({ message: "Failed to load navigation data" }), {
       status: 500,
     });
   }
-
   return {
     navigationData: data.navigationData,
     backOfficeData: data.backOfficeData,
@@ -88,7 +80,6 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
       serverFunctions as LoaderData[typeof TableModel.SERVER_FUNCTIONS],
   };
 }
-
 function LoadingUI() {
   return (
     <div className="flex h-full items-center justify-center">
@@ -96,7 +87,6 @@ function LoadingUI() {
     </div>
   );
 }
-
 function AppContent({ data }: { data: LoaderData }) {
   return (
     <div className="flex h-full overflow-hidden">
@@ -111,11 +101,9 @@ function AppContent({ data }: { data: LoaderData }) {
     </div>
   );
 }
-
 export default function App() {
   const data = useLoaderData<typeof loader>();
   const navigation = useNavigation();
-
   return (
     <Document>
       {navigation.state === "loading" || !data ? (

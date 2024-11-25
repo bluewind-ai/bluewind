@@ -1,5 +1,4 @@
 // app/entry.server.tsx
-
 import "./lib/debug";
 
 import { PassThrough } from "node:stream";
@@ -18,19 +17,15 @@ import { StaticErrorPage } from "~/utils/error-utils";
 
 import { ExtendedContext } from "./middleware";
 import { mainMiddleware } from "./middleware/main";
-
 // declare module "@remix-run/node" {
 //   interface ExtendedContext {
-
 // }
 declare module "hono" {
   interface ContextVariableMap {
     error: Error;
   }
 }
-
-const ABORT_DELAY = 5_000;
-
+const ABORT_DELAY = 5000;
 function handleBotRequest(
   request: Request,
   responseStatusCode: number,
@@ -38,42 +33,29 @@ function handleBotRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
-    let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(
       <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
       {
         onAllReady() {
-          shellRendered = true;
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
-
           responseHeaders.set("Content-Type", "text/html");
-
           resolve(
             new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
             }),
           );
-
           pipe(body);
         },
         onShellError(error: unknown) {
           reject(error);
         },
-        onError(error: unknown) {
-          responseStatusCode = 500;
-          if (shellRendered) {
-            console.error(error);
-          }
-        },
       },
     );
-
     setTimeout(abort, ABORT_DELAY);
   });
 }
-
 function handleBrowserRequest(
   request: Request,
   responseStatusCode: number,
@@ -81,42 +63,29 @@ function handleBrowserRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
-    let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(
       <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
       {
         onShellReady() {
-          shellRendered = true;
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
-
           responseHeaders.set("Content-Type", "text/html");
-
           resolve(
             new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
             }),
           );
-
           pipe(body);
         },
         onShellError(error: unknown) {
           reject(error);
         },
-        onError(error: unknown) {
-          responseStatusCode = 500;
-          if (shellRendered) {
-            console.error(error);
-          }
-        },
       },
     );
-
     setTimeout(abort, ABORT_DELAY);
   });
 }
-
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -128,13 +97,10 @@ export default function handleRequest(
     ? handleBotRequest(request, responseStatusCode, responseHeaders, remixContext)
     : handleBrowserRequest(request, responseStatusCode, responseHeaders, remixContext);
 }
-
 export const server = await createHonoServer({
   configure: (server) => {
     server.onError((err, c) => {
-      console.error("🔥 Hono error handler caught:", err);
       const error = err instanceof Error ? err : new Error(String(err));
-
       if (c.req.url.endsWith(".data")) {
         const encoded = encode(
           {
@@ -163,7 +129,6 @@ export const server = await createHonoServer({
             ],
           },
         );
-
         return c.body(encoded, {
           headers: {
             "Content-Type": "text/vnd.turbo-stream.html",
@@ -171,16 +136,11 @@ export const server = await createHonoServer({
           status: 500,
         });
       }
-
-      console.error("Stack trace:", error.stack);
       const html = ReactDOMServer.renderToString(<StaticErrorPage error={error} />);
       return c.html(html, 500);
     });
-
     server.use("*", mainMiddleware);
-
     server.use("*", async (c: Context, next: () => Promise<void>) => {
-      console.log("🔍 Request to:", c.req.url);
       await next();
     });
   },

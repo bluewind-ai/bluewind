@@ -1,5 +1,4 @@
 // app/db/schema/raw-data/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, json, pgTable, serial } from "drizzle-orm/pg-core";
 
@@ -12,9 +11,7 @@ export const rawData = pgTable("raw_data", {
     .references(() => requests.id, { onDelete: "cascade" })
     .notNull(),
 });
-
 export type RawData = typeof rawData.$inferSelect;
-
 export const rawDataRelations = relations(rawData, ({ one }) => ({
   request: one(requests, {
     fields: [rawData.requestId],

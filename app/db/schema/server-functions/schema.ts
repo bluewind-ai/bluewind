@@ -1,5 +1,4 @@
 // app/db/schema/server-functions/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, jsonb, pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
 
@@ -12,12 +11,10 @@ export enum ServerFunctionType {
   SYSTEM = "SYSTEM",
   API = "API",
 }
-
 export const serverFunctionTypeEnum = pgEnum("server_function_type", [
   ServerFunctionType.SYSTEM,
   ServerFunctionType.API,
 ]);
-
 export const serverFunctions = pgTable("server_functions", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -31,7 +28,6 @@ export const serverFunctions = pgTable("server_functions", {
     variant: ButtonVariant;
   }>(),
 }) satisfies any;
-
 export const serverFunctionsRelations = relations(serverFunctions, ({ one, many }) => ({
   request: one(requests, {
     fields: [serverFunctions.requestId],

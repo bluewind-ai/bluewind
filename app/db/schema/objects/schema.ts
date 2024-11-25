@@ -1,5 +1,4 @@
 // app/db/schema/objects/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial } from "drizzle-orm/pg-core";
 import { z } from "zod";
@@ -22,16 +21,13 @@ export const objects = pgTable(TableModel.OBJECTS, {
     .notNull()
     .references(() => requests.id, { onDelete: "cascade" }),
 });
-
 export const ObjectSchema = z.object({
   modelId: z.number(),
   recordId: z.number(),
   requestId: z.number(),
   functionCallId: z.number(), // Made mandatory by removing optional()
 });
-
 export type CreateObject = z.infer<typeof ObjectSchema>;
-
 export const objectsRelations = relations(objects, ({ one }) => ({
   functionCall: one(functionCalls, {
     fields: [objects.functionCallId],
