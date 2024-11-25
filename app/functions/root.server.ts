@@ -116,5 +116,7 @@ export async function root(c: ExtendedContext) {
   c.functionCallId = functionCall.id;
 
   // Only after everything is set up, call master
+  const response = await client["run-route"]["load-csv"].$post();
+
   await master(c);
 }

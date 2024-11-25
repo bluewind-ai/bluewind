@@ -1,4 +1,4 @@
-// app/hono-routes/run-route/$name.tsx
+// app/api/run-route/root.tsx
 
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -23,11 +23,9 @@ function generateModelsToInsert() {
 
 const app = new Hono();
 
-app.post("/", async (c) => {
-  // Changed this line - the base path is already provided in route registration
+app.post("/api/run-route/root", async (c) => {
   console.log("[root route] Starting bootstrap...");
 
-  // First create request
   const [insertedRequest] = await db
     .insert(requests)
     .values({
@@ -37,14 +35,11 @@ app.post("/", async (c) => {
     })
     .returning();
 
-  // Rest of your code remains the same...
-  // Update request to point to itself
   await db
     .update(requests)
     .set({ requestId: insertedRequest.id })
     .where(sql`${requests.id} = ${insertedRequest.id}`);
 
-  // Create server function
   const [rootFunction] = await db
     .insert(serverFunctions)
     .values({
@@ -59,7 +54,6 @@ app.post("/", async (c) => {
     })
     .returning();
 
-  // Create the actual function call
   const [functionCall] = await db
     .insert(functionCalls)
     .values({
@@ -73,7 +67,6 @@ app.post("/", async (c) => {
     })
     .returning();
 
-  // Create models
   const modelsToInsert = generateModelsToInsert().map((model) => ({
     ...model,
     requestId: insertedRequest.id,
@@ -81,30 +74,28 @@ app.post("/", async (c) => {
   }));
   const insertedModels = await db.insert(models).values(modelsToInsert).returning();
 
-  // Create objects for everything
   const allObjects = [
-    // Request object
     {
       modelId: insertedModels.find((m) => m.pluralName === "requests")!.id,
       recordId: insertedRequest.id,
       requestId: insertedRequest.id,
       functionCallId: functionCall.id,
     },
-    // Server function object
+
     {
       modelId: insertedModels.find((m) => m.pluralName === "server_functions")!.id,
       recordId: rootFunction.id,
       requestId: insertedRequest.id,
       functionCallId: functionCall.id,
     },
-    // Function call object
+
     {
       modelId: insertedModels.find((m) => m.pluralName === "function_calls")!.id,
       recordId: functionCall.id,
       requestId: insertedRequest.id,
       functionCallId: functionCall.id,
     },
-    // Model objects
+
     ...insertedModels.map((model) => ({
       modelId: insertedModels.find((m) => m.pluralName === "models")!.id,
       recordId: model.id,

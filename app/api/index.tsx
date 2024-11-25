@@ -1,5 +1,4 @@
-// app/hono-routes/index.tsx
-
+// app/api/index.tsx
 import type { Context, Hono } from "hono";
 import * as ReactDOMServer from "react-dom/server";
 import { encode } from "turbo-stream";
@@ -8,7 +7,8 @@ import { mainMiddleware } from "~/middleware/main";
 import loadCsvRoute from "~/routes/load-csv";
 import { StaticErrorPage } from "~/utils/error-utils";
 
-import rootRoute from "./run-route/$name";
+import rootRoute from "./run-route/root"; // Changed from "./run-route/$name"
+import truncateRoute from "./run-route/truncate";
 
 export function configureHonoServer(server: Hono) {
   server.onError((err, c) => {
@@ -55,9 +55,9 @@ export function configureHonoServer(server: Hono) {
   // Add middleware before routes
   server.use("*", mainMiddleware);
 
-  // The route registration needs to match the path in the handler
-  server.route("/run-route/root", rootRoute); // Changed this line
-  server.route("/run-route", loadCsvRoute);
+  server.route("/api/run-route/root", rootRoute);
+  server.route("/api/run-route/truncate", truncateRoute);
+  server.route("/api/run-route", loadCsvRoute);
 
   server.use("*", async (c: Context, next: () => Promise<void>) => {
     await next();
