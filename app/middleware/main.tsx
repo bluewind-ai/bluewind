@@ -65,13 +65,16 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
 
   console.log(`${c.req.method} ${url.pathname} from:\n${stack}\n\n\n\n`);
 
+  // Initialize the queries array in the context
+  (c as ExtendedContext).queries = [];
+
   // Check if any function calls exist
   const firstFunctionCall = await db.select().from(functionCalls).limit(1);
   if (firstFunctionCall.length === 0) {
     console.log("🌱 No function calls found, bootstrapping with root function...");
     await root({
       db,
-      queries: [],
+      queries: (c as ExtendedContext).queries, // Pass context queries
       requestId: 1,
       functionCallId: 1,
     });
@@ -99,15 +102,14 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
     throw new Error("No server functions found. Please seed the database first.");
   }
 
-  const queries: DrizzleQuery[] = [];
-  const dbWithProxy = createDbProxy(db, queries);
+  const dbWithProxy = createDbProxy(db, c); // Pass context instead of queries array
 
   console.log("📊 Starting transaction");
 
   await dbWithProxy.transaction(
     async (trx) => {
       console.log("💫 Inside transaction");
-      const proxiedTrx = createDbProxy(trx, queries);
+      const proxiedTrx = createDbProxy(trx, c); // Pass context here too
 
       // Create request using the first function call ID (which always exists thanks to root)
       const [request] = await proxiedTrx
@@ -125,14 +127,17 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
         .where(sql`${requests.id} = ${request.id}`);
 
       (c as ExtendedContext).db = proxiedTrx;
-      (c as ExtendedContext).queries = queries;
       (c as ExtendedContext).requestId = request.id;
       (c as ExtendedContext).functionCallId = 1;
       await next();
 
-      const objectsToInsert = await countObjectsForQueries(proxiedTrx, queries, request.id);
+      const objectsToInsert = await countObjectsForQueries(
+        proxiedTrx,
+        (c as ExtendedContext).queries,
+        request.id,
+      );
 
-      console.log("🔍 Current queries state:", queries);
+      console.log("🔍 Current queries state:", (c as ExtendedContext).queries);
       console.log("🔍 Objects to insert:", objectsToInsert);
 
       const beforeCount = await proxiedTrx.select({ count: sql<number>`count(*)` }).from(objects);

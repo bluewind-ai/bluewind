@@ -1,7 +1,7 @@
 // app/middleware/index.ts
 
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import type { Context } from "hono";
+import { Context } from "hono"; // Remove the 'type' import
 
 import * as schema from "~/db/schema";
 
@@ -60,12 +60,15 @@ export interface RequestExtensions {
   functionCallId?: number;
 }
 
-export function createDbProxy<
-  T extends {
-    insert: DbInsertFunction;
-  },
->(db: T, queries: DrizzleQuery[]) {
-  console.log("🔄 Creating DB Proxy. Initial queries length:", queries.length);
+export function createDbProxy<T extends { insert: DbInsertFunction }>(db: T, context: Context): T {
+  if (!("queries" in context)) {
+    (context as any).queries = [];
+  }
+
+  console.log(
+    "🔄 Creating DB Proxy. Initial queries length:",
+    (context as any).queries?.length ?? 0,
+  );
 
   return new Proxy(db, {
     get(target, prop) {
@@ -91,7 +94,7 @@ export function createDbProxy<
             if (drizzleNameSymbol) {
               const tableName = (tableArg as any)[drizzleNameSymbol];
               console.log("📝 Inserting into table:", tableName);
-              return insertMiddleware(this || target, value as any, tableName, queries, args);
+              return insertMiddleware(this || target, value as any, tableName, context, args);
             }
           }
         }
