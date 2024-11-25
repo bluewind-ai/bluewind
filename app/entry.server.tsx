@@ -1,9 +1,10 @@
 // app/entry.server.tsx
+
 import "./lib/debug";
 
 import { PassThrough } from "node:stream";
 
-import type { AppLoadContext, EntryContext } from "@remix-run/node"; // Added AppLoadContext import
+import type { AppLoadContext, EntryContext } from "@remix-run/node";
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import type { Context } from "hono";
@@ -13,19 +14,20 @@ import * as ReactDOMServer from "react-dom/server";
 import { createHonoServer } from "react-router-hono-server/node";
 import { encode } from "turbo-stream";
 
+import loadCsvRoute from "~/routes/load-csv";
 import { StaticErrorPage } from "~/utils/error-utils";
 
 import { ExtendedContext } from "./middleware";
 import { mainMiddleware } from "./middleware/main";
-// declare module "@remix-run/node" {
-//   interface ExtendedContext {
-// }
+
 declare module "hono" {
   interface ContextVariableMap {
     error: Error;
   }
 }
+
 const ABORT_DELAY = 5000;
+
 function handleBotRequest(
   request: Request,
   responseStatusCode: number,
@@ -56,6 +58,7 @@ function handleBotRequest(
     setTimeout(abort, ABORT_DELAY);
   });
 }
+
 function handleBrowserRequest(
   request: Request,
   responseStatusCode: number,
@@ -86,6 +89,7 @@ function handleBrowserRequest(
     setTimeout(abort, ABORT_DELAY);
   });
 }
+
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -97,6 +101,7 @@ export default function handleRequest(
     ? handleBotRequest(request, responseStatusCode, responseHeaders, remixContext)
     : handleBrowserRequest(request, responseStatusCode, responseHeaders, remixContext);
 }
+
 export const server = await createHonoServer({
   configure: (server) => {
     server.onError((err, c) => {
@@ -139,6 +144,8 @@ export const server = await createHonoServer({
       const html = ReactDOMServer.renderToString(<StaticErrorPage error={error} />);
       return c.html(html, 500);
     });
+
+    server.route("/run-route", loadCsvRoute);
     server.use("*", mainMiddleware);
     server.use("*", async (c: Context, next: () => Promise<void>) => {
       await next();

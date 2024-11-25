@@ -1,25 +1,23 @@
 // app/functions/master.server.ts
+import { hc } from "hono/client";
 
 import { ExtendedContext } from "~/middleware";
+import type { LoadCsvType } from "~/routes/load-csv";
 
 export async function master(c: ExtendedContext) {
-  // Load initial data into the database
   try {
     console.log("[master] Starting data load...");
-    await loadCsv();
-    console.log("[master] Data load completed");
+    const client = hc<LoadCsvType>("/");
+    const response = await client["run-route"]["load-csv"].$post();
+
+    if (!response.ok) {
+      throw new Error(`Failed to load CSV: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log("[master] Load CSV result:", result);
   } catch (error) {
     console.error("[master] Error during data load:", error);
     throw error;
   }
-}
-
-async function loadCsv() {
-  console.log("[loadCsv] Starting CSV load...");
-
-  // Implement your CSV loading logic here
-  // For now, we'll just return successfully without doing anything
-  // to allow the application to continue running
-
-  return Promise.resolve();
 }

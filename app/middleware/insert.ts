@@ -1,10 +1,12 @@
 // app/middleware/insert.ts
+
 import { z } from "zod";
 
 import { ExtendedContext } from ".";
 
 const tableSchemas = {
   function_calls: z.object({
+    id: z.number().optional(),
     serverFunctionId: z.number(),
     functionCallId: z.number(),
     status: z.string(),
@@ -13,14 +15,14 @@ const tableSchemas = {
     requestId: z.number(),
   }),
   models: z.object({
-    id: z.number(),
+    id: z.number().optional(),
     pluralName: z.string(),
     singularName: z.string(),
     requestId: z.number(),
     functionCallId: z.number(),
   }),
   server_functions: z.object({
-    id: z.number(),
+    id: z.number().optional(),
     name: z.string(),
     type: z.string(),
     functionCallId: z.number(),
@@ -29,10 +31,12 @@ const tableSchemas = {
   }),
   // Add other schemas...
 } as const;
+
 type FunctionWithApply = {
   (...args: unknown[]): unknown;
   apply(thisArg: any, argArray: unknown[]): unknown;
 };
+
 export function insertMiddleware(
   target: any,
   value: FunctionWithApply,
@@ -40,9 +44,10 @@ export function insertMiddleware(
   c: ExtendedContext,
   args: unknown[],
 ) {
-  // if (!c.requestId) {
-  //   throw new Error("Request ID is required");
-  // }
+  if (!c.requestId) {
+    throw new Error("Request ID is required in context for database operations");
+  }
+
   const query = value.apply(target, args);
   return new Proxy(query as object, {
     get(target: object, prop) {
@@ -54,7 +59,7 @@ export function insertMiddleware(
             const processServerFuncValues = (v: Record<string, unknown>) => {
               return {
                 ...v,
-                requestId: v.requestId || 1,
+                requestId: v.requestId || c.requestId,
               };
             };
             enrichedValues = Array.isArray(values)
@@ -62,8 +67,8 @@ export function insertMiddleware(
               : processServerFuncValues(values);
           } else {
             enrichedValues = Array.isArray(values)
-              ? values.map((v) => ({ ...v, requestId: 1 }))
-              : { ...values, requestId: 1 };
+              ? values.map((v) => ({ ...v, requestId: c.requestId }))
+              : { ...values, requestId: c.requestId };
           }
           // Validate each item if it's an array, or just the single object
           if (tableName in tableSchemas) {
