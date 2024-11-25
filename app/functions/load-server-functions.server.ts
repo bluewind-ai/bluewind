@@ -2,7 +2,7 @@
 
 import * as schema from "~/db/schema";
 import { ServerFunctionType } from "~/db/schema/server-functions/schema";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
 const CORE_SERVER_FUNCTIONS = [
   {
@@ -43,7 +43,7 @@ const CORE_SERVER_FUNCTIONS = [
   },
 ] as const;
 
-export async function loadServerFunctions(request: RequestExtensions) {
+export async function loadServerFunctions(request: ExtendedContext) {
   const insertPromises = CORE_SERVER_FUNCTIONS.map((fn) => {
     return request.db
       .insert(schema.serverFunctions)

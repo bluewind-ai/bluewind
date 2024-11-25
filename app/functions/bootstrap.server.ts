@@ -3,9 +3,9 @@
 import { functionCalls, serverFunctions } from "~/db/schema";
 import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { ServerFunctionType } from "~/db/schema/server-functions/schema";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
-export async function bootstrap(extensions: RequestExtensions) {
+export async function bootstrap(extensions: ExtendedContext) {
   const [masterAction] = await extensions.db
     .insert(serverFunctions)
     .values({

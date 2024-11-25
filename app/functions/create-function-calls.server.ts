@@ -8,10 +8,10 @@ import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { ServerFunctionType } from "~/db/schema/server-functions/schema";
 import { SERVER_FUNCTIONS_HANDLERS } from "~/lib/server-functions";
 import type { ServerFunctionName } from "~/lib/server-functions-types";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
 export async function createFunctionCalls(
-  request: RequestExtensions,
+  request: ExtendedContext,
   functionName: ServerFunctionName,
 ) {
   if (!functionName || !(functionName in SERVER_FUNCTIONS_HANDLERS)) {

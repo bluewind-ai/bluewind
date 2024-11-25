@@ -10,9 +10,9 @@ const serverFunctionTemplate = (tableName: keyof typeof TABLES) => {
 
 import { sql } from "drizzle-orm";
 import { ${tableName} } from "~/db/schema";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
-export async function get${tableName[0].toUpperCase() + tableName.slice(1)}(request: RequestExtensions, url: string) {
+export async function get${tableName[0].toUpperCase() + tableName.slice(1)}(request: ExtendedContext, url: string) {
   console.log("get${tableName} called with URL:", url);
 
   ${

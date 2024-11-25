@@ -2,7 +2,6 @@
 
 import { sql } from "drizzle-orm";
 import { DefaultLogger } from "drizzle-orm/logger";
-import type { PgTransaction } from "drizzle-orm/pg-core";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
 import postgres from "postgres";
@@ -13,7 +12,7 @@ import { TABLES } from "~/db/schema/table-models";
 import { checkDataIntegrity } from "~/functions/check-data-integrity.server";
 import { root } from "~/functions/root.server";
 
-import { createDbProxy, DrizzleQuery } from ".";
+import { createDbProxy, ExtendedContext } from ".";
 import { countObjectsForQueries } from "./functions";
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
@@ -43,16 +42,6 @@ const baseDb = drizzle(postgres(connectionString), {
 });
 export const db = baseDb;
 
-type DbType = typeof db;
-type TrxType = PgTransaction<any, typeof schema, any>;
-
-export type ExtendedContext = Context & {
-  db: DbType | TrxType;
-  queries: DrizzleQuery[];
-  requestId: number;
-  functionCallId: number;
-};
-
 export async function mainMiddleware(c: Context, next: () => Promise<void>) {
   console.log("🚀 Starting mainMiddleware");
   const url = new URL(c.req.url);
@@ -72,12 +61,7 @@ export async function mainMiddleware(c: Context, next: () => Promise<void>) {
   const firstFunctionCall = await db.select().from(functionCalls).limit(1);
   if (firstFunctionCall.length === 0) {
     console.log("🌱 No function calls found, bootstrapping with root function...");
-    await root({
-      db,
-      queries: (c as ExtendedContext).queries, // Pass context queries
-      requestId: 1,
-      functionCallId: 1,
-    });
+    await root(c as ExtendedContext);
   }
 
   const allModels = await db.select({ id: models.id, pluralName: models.pluralName }).from(models);

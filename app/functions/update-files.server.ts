@@ -2,7 +2,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
 interface CodeSnippet {
   filepath: string;
@@ -48,7 +48,7 @@ async function writeFiles(snippets: CodeSnippet[], baseDir: string = "."): Promi
   }
   return updatedFiles;
 }
-export async function updateFiles(_request: RequestExtensions) {
+export async function updateFiles(_request: ExtendedContext) {
   const text = fs.readFileSync("claude-answer.txt", "utf-8");
   const snippets = extractFileSnippets(text);
   await writeFiles(snippets);

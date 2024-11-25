@@ -4,9 +4,9 @@ import { eq } from "drizzle-orm";
 
 import * as schema from "~/db/schema";
 import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
-export async function goNext(request: RequestExtensions) {
+export async function goNext(request: ExtendedContext) {
   // (entire function implementation stays exactly the same)
   // Find the oldest function call that's ready for approval
   const [nextFunction] = await request.db

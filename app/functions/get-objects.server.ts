@@ -3,9 +3,9 @@
 import { sql } from "drizzle-orm";
 
 import { objects } from "~/db/schema";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
-export async function getObjects(request: RequestExtensions, url: string) {
+export async function getObjects(request: ExtendedContext, url: string) {
   const urlParams = new URL(url).searchParams;
   const requestId = urlParams.get("request-id");
   const functionCallId = urlParams.get("function-call-id");

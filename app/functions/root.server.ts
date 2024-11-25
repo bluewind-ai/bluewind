@@ -10,8 +10,9 @@ import { requests } from "~/db/schema/requests/schema";
 import { serverFunctions, ServerFunctionType } from "~/db/schema/server-functions/schema";
 import { TABLES } from "~/db/schema/table-models";
 import type { ButtonVariant } from "~/lib/server-functions-types";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 import { createDbProxy, DrizzleQuery } from "~/middleware";
+import { db } from "~/middleware/main";
 
 const MODEL_NAMES = Object.keys(TABLES) as (keyof typeof TABLES)[];
 
@@ -27,11 +28,11 @@ function generateModelsToInsert() {
   }));
 }
 
-export async function root(extensions: RequestExtensions) {
+export async function root(c: ExtendedContext) {
   console.log("Starting root seeding...");
 
   const queries: DrizzleQuery[] = [];
-  const dbWithProxy = createDbProxy(extensions.db, queries);
+  const dbWithProxy = createDbProxy(db, c);
 
   // Create request
   console.log("Creating request...");

@@ -2,9 +2,9 @@
 import { sql } from "drizzle-orm";
 
 import { models, objects } from "~/db/schema";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
-export async function getModels(request: RequestExtensions, url: string) {
+export async function getModels(request: ExtendedContext, url: string) {
   const requestId = url.split("request-id=")[1];
   let query = request.db.query.models.findMany({
     orderBy: models.id,

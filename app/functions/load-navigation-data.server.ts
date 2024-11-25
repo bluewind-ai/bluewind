@@ -5,11 +5,11 @@ import { sql } from "drizzle-orm";
 import { type NavigationNode } from "~/components/navigation-tree";
 import * as schema from "~/db/schema";
 import { TableModel } from "~/db/schema/table-models";
-import { RequestExtensions } from "~/middleware";
+import { ExtendedContext } from "~/middleware";
 
 import { createNavigationTrees } from "./create-navigation-trees.server";
 
-export async function loadNavigationData(request: RequestExtensions) {
+export async function loadNavigationData(request: ExtendedContext) {
   if (!request.db) {
     throw new Error("Database connection not available on request object");
   }

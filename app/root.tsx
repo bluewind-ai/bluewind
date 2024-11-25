@@ -15,7 +15,7 @@ import {
 
 import * as schema from "~/db/schema";
 import { TableModel } from "~/db/schema/table-models";
-import { RequestExtensions } from "~/middleware";
+import { ExtendedContext } from "~/middleware";
 
 import { BackOfficeTree } from "./components/back-office-tree";
 import { type NavigationNode, NavigationTree } from "./components/navigation-tree";
@@ -62,7 +62,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
     throw args.context.error;
   }
 
-  const request = args.request as unknown as RequestExtensions;
+  const request = args.request as unknown as ExtendedContext;
   request.db = args.context.db;
   request.queries = args.context.queries;
   request.requestId = args.context.requestId;

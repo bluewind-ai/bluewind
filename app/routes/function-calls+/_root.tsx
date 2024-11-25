@@ -4,7 +4,7 @@ import { Outlet } from "@remix-run/react";
 
 import { createFunctionCalls } from "~/functions/create-function-calls.server";
 import type { ServerFunctionName } from "~/lib/server-functions-types";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
 export async function action(args: ActionFunctionArgs) {
   const { request, context } = args;
@@ -13,7 +13,7 @@ export async function action(args: ActionFunctionArgs) {
   if (!functionName) {
     throw new Error("Function name is required");
   }
-  return createFunctionCalls(context as RequestExtensions, functionName);
+  return createFunctionCalls(context as ExtendedContext, functionName);
 }
 export default function FunctionCallsLayout() {
   return <Outlet />;

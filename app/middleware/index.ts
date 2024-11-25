@@ -53,13 +53,6 @@ export interface DrizzleQuery {
 export type DbClient = PostgresJsDatabase<typeof schema>;
 type DbInsertFunction = (...args: any[]) => any;
 
-export interface RequestExtensions {
-  db: DbClient;
-  queries: DrizzleQuery[];
-  requestId: number;
-  functionCallId?: number;
-}
-
 export function createDbProxy<T extends { insert: DbInsertFunction }>(db: T, context: Context): T {
   if (!("queries" in context)) {
     (context as any).queries = [];
@@ -136,8 +129,15 @@ export function createDbProxy<T extends { insert: DbInsertFunction }>(db: T, con
   });
 }
 
-export type ExtendedContext = Context & RequestExtensions;
+export type ExtendedContext = Context & {
+  db: DbClient;
+  queries: DrizzleQuery[];
+  requestId: number;
+  functionCallId?: number;
+  requestTime: string; // Added
+  url: string; // Added
+};
 
 declare module "@remix-run/node" {
-  interface AppLoadContext extends RequestExtensions {}
+  interface AppLoadContext extends ExtendedContext {}
 }

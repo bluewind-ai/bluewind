@@ -2,9 +2,9 @@
 import { sql } from "drizzle-orm";
 
 import { users } from "~/db/schema";
-import type { RequestExtensions } from "~/middleware";
+import type { ExtendedContext } from "~/middleware";
 
-export async function getUsers(request: RequestExtensions, url: string) {
+export async function getUsers(request: ExtendedContext, url: string) {
   const requestId = url.split("request-id=")[1];
   let query = request.db.query.users.findMany({
     orderBy: users.id,

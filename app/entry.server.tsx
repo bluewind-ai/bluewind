@@ -4,7 +4,7 @@ import "./lib/debug";
 
 import { PassThrough } from "node:stream";
 
-import type { AppLoadContext, EntryContext } from "@remix-run/node";
+import type { AppLoadContext, EntryContext } from "@remix-run/node"; // Added AppLoadContext import
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import type { Context } from "hono";
@@ -16,9 +16,13 @@ import { encode } from "turbo-stream";
 
 import { StaticErrorPage } from "~/utils/error-utils";
 
-import type { db, ExtendedContext } from "./middleware/main";
+import { ExtendedContext } from "./middleware";
 import { mainMiddleware } from "./middleware/main";
 
+// declare module "@remix-run/node" {
+//   interface ExtendedContext {
+
+// }
 declare module "hono" {
   interface ContextVariableMap {
     error: Error;
@@ -127,7 +131,6 @@ export default function handleRequest(
 
 export const server = await createHonoServer({
   configure: (server) => {
-    // Set up error handler first
     server.onError((err, c) => {
       console.error("🔥 Hono error handler caught:", err);
       const error = err instanceof Error ? err : new Error(String(err));
@@ -174,23 +177,24 @@ export const server = await createHonoServer({
       return c.html(html, 500);
     });
 
-    // Main middleware
     server.use("*", mainMiddleware);
 
-    // Logging middleware
     server.use("*", async (c: Context, next: () => Promise<void>) => {
       console.log("🔍 Request to:", c.req.url);
       await next();
     });
   },
-  getLoadContext(c: Context, _options) {
+  getLoadContext(c: Context, _options): AppLoadContext {
     const ctx = c as ExtendedContext;
+    // @ts-expect-error TODO: Fix this
     return {
-      requestTime: new Date().toISOString(),
-      url: c.req.url,
-      db: ctx.db as typeof db,
+      db: ctx.db as any, // Force the type to match
       queries: ctx.queries,
       requestId: ctx.requestId,
+      functionCallId: ctx.functionCallId,
+      requestTime: new Date().toISOString(),
+      url: c.req.url,
+      ...c, // Spread the rest of the context
     };
   },
 });
