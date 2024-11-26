@@ -35,8 +35,9 @@ app.post("/", async (c) => {
       cassette += `A "${result.model.singularName}" was created:\n`;
       cassette += `Record ID: ${result.object.recordId}\n`;
       cassette += `In Request: ${result.object.requestId}\n`;
+      cassette += `Created at location: ${result.object.createdLocation}\n`;
       if (result.model.singularName === "request" && result.request?.createdLocation) {
-        cassette += `Created at location: ${result.request.createdLocation}\n`;
+        cassette += `Request created at location: ${result.request.createdLocation}\n`;
       }
       cassette += `Object ID: ${result.object.id}\n`;
       cassette += "-----------------\n\n";
