@@ -1,6 +1,6 @@
 // app/middleware/main.tsx
 
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
 import postgres from "postgres";
@@ -35,6 +35,9 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       return response; // Return the redirect response from root
     }
 
+    const parentRequestId = c.req.header("X-Parent-Request-Id") || firstRequest[0].id.toString();
+    console.log("[mainMiddleware] Using Parent Request ID:", parentRequestId);
+
     // Get request model first
     console.log("[mainMiddleware] Getting request model...");
     const [requestModel] = await db
@@ -52,22 +55,15 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     const [request] = await db.transaction(async (trx) => {
       console.log("[mainMiddleware] Starting transaction...");
 
-      // Create request
+      // Create request with parent ID
       const [newRequest] = await trx
         .insert(requests)
         .values({
-          requestId: 0,
+          requestId: parseInt(parentRequestId),
           pathname: new URL(c.req.url).pathname,
         })
         .returning();
       console.log("[mainMiddleware] Created request:", newRequest);
-
-      // Update request to point to itself
-      await trx
-        .update(requests)
-        .set({ requestId: newRequest.id })
-        .where(sql`${requests.id} = ${newRequest.id}`);
-      console.log("[mainMiddleware] Updated request with self-reference");
 
       // Create the request object right away
       const [requestObject] = await trx
