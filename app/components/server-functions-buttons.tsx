@@ -29,11 +29,7 @@ export function ServerFunctionsButtons({
             ? (fn.metadata.variant as ButtonVariant)
             : "default";
         return (
-          <form
-            key={fn.name}
-            method="post"
-            action={`/run-route/${fn.name}`}
-          >
+          <form key={fn.name} method="post" action={`/run-route/${fn.name}`}>
             <input type="hidden" name="function" value={fn.name} />
             <Button type="submit" variant={variant}>
               {label}

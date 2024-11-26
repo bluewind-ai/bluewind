@@ -9,7 +9,6 @@ import { models, objects, requests, serverFunctions } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { TABLES } from "~/db/schema/table-models";
 import { insertRequestObjects } from "~/functions/insert-request-objects.server";
-import { root } from "~/functions/root.server";
 
 import { createDbProxy, ExtendedContext } from ".";
 
@@ -29,16 +28,29 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     // Check if any requests exist
     console.log("[mainMiddleware] Checking requests...");
     const firstRequest = await db.select().from(requests).limit(1);
-    const isApiRequest = new URL(c.req.url).pathname.startsWith('/api/');
+    const isApiRequest = new URL(c.req.url).pathname.startsWith("/api/");
 
     if (firstRequest.length === 0 && !isApiRequest) {
-      console.log("[mainMiddleware] No requests found, running root...");
-      return root(c);
+      console.log("[mainMiddleware] No requests found, calling root route...");
+      try {
+        const response = await fetch("http://localhost:5173/api/run-route/root", {
+          method: "POST",
+        });
+        if (!response.ok) {
+          throw new Error(`Root route failed: ${response.statusText}`);
+        }
+        // Instead of returning the JSON response, redirect to /
+        return c.redirect("/");
+      } catch (error) {
+        console.error("[mainMiddleware] Error calling root route:", error);
+        throw error;
+      }
     }
 
-    const parentRequestId = firstRequest.length > 0
-      ? (c.req.header("X-Parent-Request-Id") || firstRequest[0].id.toString())
-      : "0";
+    const parentRequestId =
+      firstRequest.length > 0
+        ? c.req.header("X-Parent-Request-Id") || firstRequest[0].id.toString()
+        : "0";
     console.log("[mainMiddleware] Using Parent Request ID:", parentRequestId);
 
     // Get request model first

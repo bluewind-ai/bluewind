@@ -1,6 +1,4 @@
-
-
-// app/api/routes/reset-factory.tsx
+// app/api/run-route/reset-factory.tsx
 
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -11,15 +9,12 @@ import { db } from "~/middleware/main";
 const app = new Hono();
 
 app.post("/", async (c) => {
-  
   console.log("[reset-factory route] Starting database truncate...");
 
   try {
     await db.transaction(async (tx) => {
-      
       await tx.execute(sql`SET CONSTRAINTS ALL DEFERRED`);
 
-      
       for (const [tableName, config] of Object.entries(TABLES)) {
         const truncateQuery = sql`TRUNCATE TABLE ${sql.identifier(config.modelName)} CASCADE`;
         const resetSequenceQuery = sql`
@@ -31,26 +26,15 @@ app.post("/", async (c) => {
         await tx.execute(resetSequenceQuery);
       }
 
-      
       await tx.execute(sql`SET CONSTRAINTS ALL IMMEDIATE`);
     });
 
     console.log("[reset-factory route] Database truncate completed successfully");
-    return c.json({
-      success: true,
-      message: "All tables truncated and sequences reset",
-    });
+    return c.redirect("/");
   } catch (error) {
     console.error("[reset-factory route] Error during truncate:", error);
-    return c.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error during truncate",
-      },
-      500,
-    );
+    throw error;
   }
 });
 
-export type ResetFactoryRouteType = typeof app;
 export default app;

@@ -9,6 +9,7 @@ import { StaticErrorPage } from "~/utils/error-utils";
 
 import routesRoute from "./routes";
 import resetFactoryRoute from "./run-route/reset-factory";
+import rootRoute from "./run-route/root";
 import truncateRoute from "./run-route/truncate";
 
 export function configureHonoServer(server: Hono) {
@@ -53,10 +54,13 @@ export function configureHonoServer(server: Hono) {
     return c.html(html, 500);
   });
 
-  // Add middleware before routes
+  // Root route must be before middleware
+  server.route("/api/run-route/root", rootRoute);
+
+  // Add middleware before other routes
   server.use("*", mainMiddleware);
 
-  // All routes under /api
+  // All other routes under /api
   server.route("/api/routes", routesRoute);
   server.route("/api/run-route/reset-factory", resetFactoryRoute);
   server.route("/api/run-route/truncate", truncateRoute);
