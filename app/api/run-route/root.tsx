@@ -76,6 +76,7 @@ app.post("/", async (c) => {
         description: "This is the root function that sets up the system",
         variant: "default",
       },
+      createdLocation: getCurrentLocation(),
     })
     .returning();
 
@@ -91,6 +92,7 @@ app.post("/", async (c) => {
     modelId: requestsModel.id,
     recordId: insertedRequest.id,
     requestId: insertedRequest.id,
+    createdLocation: getCurrentLocation(),
   });
 
   // Create object for server function
@@ -99,6 +101,7 @@ app.post("/", async (c) => {
     modelId: serverFunctionsModel.id,
     recordId: rootFunction.id,
     requestId: insertedRequest.id,
+    createdLocation: getCurrentLocation(),
   });
 
   // Create objects for models
@@ -109,6 +112,7 @@ app.post("/", async (c) => {
         modelId: modelsModel.id,
         recordId: model.id,
         requestId: insertedRequest.id,
+        createdLocation: getCurrentLocation(),
       }),
     ),
   );

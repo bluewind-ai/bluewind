@@ -4,6 +4,7 @@ import { Hono } from "hono";
 
 import { objects } from "~/db/schema";
 import { serverFunctions, ServerFunctionType } from "~/db/schema/server-functions/schema";
+import { getCurrentLocation } from "~/lib/location-tracker";
 import type { ButtonVariant } from "~/lib/server-functions-types";
 import { db } from "~/middleware/main";
 
@@ -36,6 +37,7 @@ app.post("/", async (c) => {
           type: ServerFunctionType.SYSTEM,
           requestId: currentRequest.id,
           functionCallId: currentRequest.functionCallId,
+          createdLocation: getCurrentLocation(),
           metadata: {
             label: "Factory Reset",
             description: "Reset the entire database to factory settings",
@@ -51,6 +53,7 @@ app.post("/", async (c) => {
         recordId: truncateFunction.id,
         requestId: currentRequest.id,
         functionCallId: currentRequest.functionCallId,
+        createdLocation: getCurrentLocation(),
       });
 
       console.log("[routes api endpoint] Created truncate function:", truncateFunction);

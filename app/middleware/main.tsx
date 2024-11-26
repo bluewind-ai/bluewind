@@ -83,6 +83,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
           modelId: requestModel.id,
           recordId: newRequest.id,
           requestId: newRequest.id,
+          createdLocation: getCurrentLocation(),
         })
         .returning();
       console.log("[mainMiddleware] Created request object:", requestObject);
@@ -103,15 +104,20 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     }
     console.log("[mainMiddleware] Found models count:", allModels.length);
 
-    console.log("[mainMiddleware] Checking server functions...");
-    const [serverFunction] = await db
-      .select({ id: serverFunctions.id })
-      .from(serverFunctions)
-      .limit(1);
-    if (!serverFunction) {
-      throw new Error("No server functions found. Please seed the database first.");
+    // Skip server function check for setup routes
+    const setupRoutes = ["/", "/api/run-route/root", "/api/run-route/reset-factory"];
+
+    if (!setupRoutes.includes(request.pathname)) {
+      console.log("[mainMiddleware] Checking server functions...");
+      const [serverFunction] = await db
+        .select({ id: serverFunctions.id })
+        .from(serverFunctions)
+        .limit(1);
+      if (!serverFunction) {
+        throw new Error("No server functions found. Please seed the database first.");
+      }
+      console.log("[mainMiddleware] Found server function:", serverFunction);
     }
-    console.log("[mainMiddleware] Found server function:", serverFunction);
 
     const dbWithProxy = createDbProxy(db, c);
     console.log("[mainMiddleware] Starting main transaction...");

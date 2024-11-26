@@ -1,0 +1,5 @@
+// Skip server function check if this is a setup route
+
+if (!request.pathname.includes("run-route")) {
+  // server function check here
+}

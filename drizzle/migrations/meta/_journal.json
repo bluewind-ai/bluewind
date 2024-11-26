@@ -169,6 +169,20 @@
       "when": 1732646496239,
       "tag": "0023_majestic_namor",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1732647110834,
+      "tag": "0024_tired_hannibal_king",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1732647474270,
+      "tag": "0025_slimy_madame_web",
+      "breakpoints": true
     }
   ]
 }

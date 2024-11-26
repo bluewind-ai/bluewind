@@ -1,0 +1,1 @@
+ALTER TABLE "objects" ADD COLUMN "created_location" text NOT NULL;

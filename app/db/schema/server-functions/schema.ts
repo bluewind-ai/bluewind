@@ -28,6 +28,7 @@ export const serverFunctions = pgTable("server_functions", {
     label: string;
     variant: ButtonVariant;
   }>(),
+  createdLocation: text("created_location").notNull(),
 }) satisfies any;
 
 export const serverFunctionsRelations = relations(serverFunctions, ({ one }) => ({
