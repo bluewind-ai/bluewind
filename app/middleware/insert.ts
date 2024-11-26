@@ -8,7 +8,6 @@ const tableSchemas = {
   function_calls: z.object({
     id: z.number().optional(),
     serverFunctionId: z.number(),
-    functionCallId: z.number(),
     status: z.string(),
     args: z.any().nullable(),
     result: z.any().nullable(),

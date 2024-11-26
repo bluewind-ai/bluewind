@@ -35,7 +35,7 @@ export const functionCalls = pgTable("function_calls", {
   requestId: integer("request_id")
     .references(() => requests.id, { onDelete: "cascade" })
     .notNull(),
-  functionCallId: integer("function_call_id").notNull(),
+  functionCallId: integer("function_call_id"),
   status: functionCallStatusEnum("status").notNull().default("READY_FOR_APPROVAL"),
   args: jsonb("args"),
   result: jsonb("result"),

@@ -9,6 +9,7 @@ import loadCsvRoute from "~/routes/load-csv";
 import { StaticErrorPage } from "~/utils/error-utils";
 
 import routesRoute from "./routes";
+import resetFactoryRoute from "./run-route/reset-factory";
 import truncateRoute from "./run-route/truncate";
 
 export function configureHonoServer(server: Hono) {
@@ -57,6 +58,7 @@ export function configureHonoServer(server: Hono) {
   server.use("*", mainMiddleware);
 
   server.route("/api/routes", routesRoute);
+  server.route("/run-route/reset-factory", resetFactoryRoute); // Changed this line
   server.route("/api/run-route/truncate", truncateRoute);
   server.route("/api/run-route", loadCsvRoute);
 

@@ -1,0 +1,1 @@
+ALTER TABLE "function_calls" ALTER COLUMN "function_call_id" DROP NOT NULL;
