@@ -28,6 +28,7 @@ app.post("/", async (c) => {
     pluralName: config.modelName,
     singularName: config.modelName.slice(0, -1),
     requestId: 0,
+    createdLocation: getCurrentLocation(),
   }));
   const insertedModels = await db.insert(models).values(modelsToInsert).returning();
 

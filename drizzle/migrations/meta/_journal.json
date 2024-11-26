@@ -162,6 +162,13 @@
       "when": 1732646144751,
       "tag": "0022_fuzzy_madrox",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1732646496239,
+      "tag": "0023_majestic_namor",
+      "breakpoints": true
     }
   ]
 }
