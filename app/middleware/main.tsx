@@ -5,7 +5,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
 import postgres from "postgres";
 
-import { functionCalls, models, objects, requests, serverFunctions } from "~/db/schema";
+import { models, objects, requests, serverFunctions } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { TABLES } from "~/db/schema/table-models";
 import { insertRequestObjects } from "~/functions/insert-request-objects.server";
@@ -26,11 +26,11 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   c.queries = [];
 
   try {
-    // Check if any function calls exist
-    console.log("[mainMiddleware] Checking function calls...");
-    const firstFunctionCall = await db.select().from(functionCalls).limit(1);
-    if (firstFunctionCall.length === 0) {
-      console.log("[mainMiddleware] No function calls found, running root...");
+    // Check if any requests exist
+    console.log("[mainMiddleware] Checking requests...");
+    const firstRequest = await db.select().from(requests).limit(1);
+    if (firstRequest.length === 0) {
+      console.log("[mainMiddleware] No requests found, running root...");
       const response = await root(c);
       return response; // Return the redirect response from root
     }
@@ -56,8 +56,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       const [newRequest] = await trx
         .insert(requests)
         .values({
-          functionCallId: 1,
-          requestId: 0, // Temporary value
+          requestId: 0,
           pathname: new URL(c.req.url).pathname,
         })
         .returning();
@@ -77,7 +76,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
           modelId: requestModel.id,
           recordId: newRequest.id,
           requestId: newRequest.id,
-          functionCallId: 1,
         })
         .returning();
       console.log("[mainMiddleware] Created request object:", requestObject);
@@ -89,7 +87,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
 
     // Set request context
     c.requestId = request.id;
-    c.functionCallId = 1;
 
     // Now do the rest of the middleware operations with proxied db
     console.log("[mainMiddleware] Checking models...");

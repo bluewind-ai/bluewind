@@ -9,14 +9,12 @@ import { serverFunctions } from "../server-functions/schema";
 export const requests = pgTable("requests", {
   id: serial("id").primaryKey(),
   requestId: integer("request_id").notNull(),
-  functionCallId: integer("function_call_id").notNull(),
-  pathname: text("pathname").notNull(), // Added pathname following web standards (window.location.pathname)
+  pathname: text("pathname").notNull(),
 });
 
 export const RequestSchema = z.object({
   id: z.number(),
   requestId: z.number(),
-  functionCallId: z.number(),
   pathname: z.string(),
 });
 
