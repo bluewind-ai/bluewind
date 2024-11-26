@@ -1,4 +1,6 @@
-// app/api/run-route/reset-factory.tsx
+
+
+// app/api/routes/reset-factory.tsx
 
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -9,15 +11,15 @@ import { db } from "~/middleware/main";
 const app = new Hono();
 
 app.post("/", async (c) => {
-  // Changed from "/api/run-route/reset-factory" to "/"
+  
   console.log("[reset-factory route] Starting database truncate...");
 
   try {
     await db.transaction(async (tx) => {
-      // First disable all foreign key constraints
+      
       await tx.execute(sql`SET CONSTRAINTS ALL DEFERRED`);
 
-      // Truncate each table and reset its sequence
+      
       for (const [tableName, config] of Object.entries(TABLES)) {
         const truncateQuery = sql`TRUNCATE TABLE ${sql.identifier(config.modelName)} CASCADE`;
         const resetSequenceQuery = sql`
@@ -29,7 +31,7 @@ app.post("/", async (c) => {
         await tx.execute(resetSequenceQuery);
       }
 
-      // Re-enable constraints
+      
       await tx.execute(sql`SET CONSTRAINTS ALL IMMEDIATE`);
     });
 

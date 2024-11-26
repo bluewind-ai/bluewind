@@ -1,23 +1,18 @@
 // app/routes/run-route.$.tsx
 
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { redirect, type ActionFunction } from "@remix-run/node";
 
 export const action: ActionFunction = async ({ request, params }) => {
-  // Forward request to the Hono route
-  const response = await fetch(`http://localhost:5173/run-route/${params["*"]}`, {
+  // Forward request to the API routes
+  await fetch(`http://localhost:5173/api/run-route/${params["*"]}`, {
     method: request.method,
     body: request.body,
     headers: request.headers,
   });
 
-  return response;
-};
+  if (params["*"] === "reset-factory") {
+    return redirect("/");
+  }
 
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const response = await fetch(`http://localhost:5173/run-route/${params["*"]}`, {
-    method: request.method,
-    headers: request.headers,
-  });
-
-  return response;
+  return new Response(null, { status: 200 });
 };

@@ -1,6 +1,6 @@
 // app/components/server-functions-buttons.tsx
 
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useNavigate } from "@remix-run/react";
 
 import { TableModel } from "~/db/schema/table-models";
 import type { ButtonVariant } from "~/lib/server-functions-types";
@@ -23,6 +23,25 @@ export function ServerFunctionsButtons({
   [TableModel.SERVER_FUNCTIONS]: serverFunctions,
 }: ServerFunctionsButtonsProps) {
   const fetcher = useFetcher();
+  const navigate = useNavigate();
+
+  const onReset = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    if (formData.get("function") === "reset-factory") {
+      await fetcher.submit(formData, {
+        method: "post",
+        action: "/run-route/reset-factory",
+      });
+      navigate("/");
+    } else {
+      fetcher.submit(formData, {
+        method: "post",
+        action: `/run-route/${formData.get("function")}`,
+      });
+    }
+  };
+
   return (
     <div className="flex gap-2 p-4 flex-wrap">
       {serverFunctions.map((fn) => {
@@ -34,7 +53,13 @@ export function ServerFunctionsButtons({
             ? (fn.metadata.variant as ButtonVariant)
             : "default";
         return (
-          <fetcher.Form key={fn.name} method="post" action={`/run-route/${fn.name}`}>
+          <fetcher.Form
+            key={fn.name}
+            method="post"
+            action={`/run-route/${fn.name}`}
+            onSubmit={onReset}
+          >
+            <input type="hidden" name="function" value={fn.name} />
             <Button type="submit" variant={variant} disabled={isLoading}>
               {isLoading ? "Running..." : label}
             </Button>

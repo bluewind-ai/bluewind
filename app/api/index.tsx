@@ -5,7 +5,6 @@ import * as ReactDOMServer from "react-dom/server";
 import { encode } from "turbo-stream";
 
 import { mainMiddleware } from "~/middleware/main";
-import loadCsvRoute from "~/routes/load-csv";
 import { StaticErrorPage } from "~/utils/error-utils";
 
 import routesRoute from "./routes";
@@ -57,10 +56,10 @@ export function configureHonoServer(server: Hono) {
   // Add middleware before routes
   server.use("*", mainMiddleware);
 
+  // All routes under /api
   server.route("/api/routes", routesRoute);
-  server.route("/run-route/reset-factory", resetFactoryRoute); // Changed this line
+  server.route("/api/run-route/reset-factory", resetFactoryRoute);
   server.route("/api/run-route/truncate", truncateRoute);
-  server.route("/api/run-route", loadCsvRoute);
 
   server.use("*", async (c: Context, next: () => Promise<void>) => {
     await next();
