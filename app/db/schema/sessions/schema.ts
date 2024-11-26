@@ -2,7 +2,6 @@
 import { relations } from "drizzle-orm";
 import { integer, jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
-import { functionCalls } from "../function-calls/schema";
 import { requests } from "../requests/schema";
 import { users } from "../users/schema";
 
@@ -17,9 +16,6 @@ export const sessions = pgTable("sessions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   expiresAt: timestamp("expires_at").notNull(),
-  functionCallId: integer("function_call_id")
-    .references(() => functionCalls.id, { onDelete: "cascade" })
-    .notNull(),
   requestId: integer("request_id")
     .references(() => requests.id, { onDelete: "cascade" })
     .notNull(),
@@ -29,10 +25,7 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
     fields: [sessions.userId],
     references: [users.id],
   }),
-  functionCall: one(functionCalls, {
-    fields: [sessions.functionCallId],
-    references: [functionCalls.id],
-  }),
+
   request: one(requests, {
     fields: [sessions.requestId],
     references: [requests.id],

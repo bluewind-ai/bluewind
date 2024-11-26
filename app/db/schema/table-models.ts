@@ -31,11 +31,7 @@ export const TABLES: Record<string, TableConfig> = {
     urlName: TableModel.SERVER_FUNCTIONS,
     modelName: "server_functions",
   },
-  functionCalls: {
-    displayName: "Function Calls",
-    urlName: TableModel.FUNCTION_CALLS,
-    modelName: "function_calls",
-  },
+
   objects: {
     displayName: "Objects",
     urlName: TableModel.OBJECTS,

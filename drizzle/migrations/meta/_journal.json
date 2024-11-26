@@ -148,6 +148,13 @@
       "when": 1732591669423,
       "tag": "0020_special_toro",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1732598034024,
+      "tag": "0021_glorious_darkhawk",
+      "breakpoints": true
     }
   ]
 }

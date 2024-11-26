@@ -1,10 +1,6 @@
 // app/db/schema/index.ts
 // Function Calls
-import {
-  functionCalls,
-  functionCallsRelations,
-  functionCallStatusEnum,
-} from "./function-calls/schema";
+
 // Models
 import { modelEnum, models } from "./models/schema";
 // Objects
@@ -25,9 +21,6 @@ import { sessions, sessionsRelations } from "./sessions/schema";
 import { users, usersRelations } from "./users/schema";
 // Tables, Enums, Relations
 export {
-  functionCalls,
-  functionCallsRelations,
-  functionCallStatusEnum,
   modelEnum,
   models,
   objects,
@@ -46,7 +39,6 @@ export {
 };
 // Combined schema object for convenience
 export const schema = {
-  functionCalls,
   models,
   objects,
   rawData,
@@ -55,7 +47,6 @@ export const schema = {
   sessions,
   users,
   relations: {
-    functionCalls: functionCallsRelations,
     objects: objectsRelations,
     rawData: rawDataRelations,
     requests: requestsRelations,
@@ -64,7 +55,6 @@ export const schema = {
     users: usersRelations,
   },
   enums: {
-    functionCallStatus: functionCallStatusEnum,
     model: modelEnum,
     serverFunctionType: serverFunctionTypeEnum,
   },
