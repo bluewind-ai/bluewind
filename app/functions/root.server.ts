@@ -1,5 +1,6 @@
 // app/functions/root.server.ts
 
+import { redirect } from "@remix-run/node";
 import { sql } from "drizzle-orm";
 import { hc } from "hono/client";
 
@@ -141,4 +142,7 @@ export async function root(c: ExtendedContext) {
   } catch (error) {
     console.error("Error calling routes endpoint:", error);
   }
+
+  // Redirect to the request's page
+  return redirect(`/requests/${insertedRequest.id}`);
 }

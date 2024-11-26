@@ -31,7 +31,8 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     const firstFunctionCall = await db.select().from(functionCalls).limit(1);
     if (firstFunctionCall.length === 0) {
       console.log("[mainMiddleware] No function calls found, running root...");
-      await root(c);
+      const response = await root(c);
+      return response; // Return the redirect response from root
     }
 
     // Get request model first
