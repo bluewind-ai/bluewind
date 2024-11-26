@@ -19,23 +19,26 @@ const baseDb = drizzle(postgres(connectionString), {
   schema,
 });
 export const db = baseDb;
+
 export async function mainMiddleware(context: Context, next: () => Promise<void>) {
   console.log("[mainMiddleware] Starting...");
   const c = context as unknown as ExtendedContext;
-  // Initialize the queries array in the context
   c.queries = [];
 
   try {
     // Check if any requests exist
     console.log("[mainMiddleware] Checking requests...");
     const firstRequest = await db.select().from(requests).limit(1);
-    if (firstRequest.length === 0) {
+    const isApiRequest = new URL(c.req.url).pathname.startsWith('/api/');
+
+    if (firstRequest.length === 0 && !isApiRequest) {
       console.log("[mainMiddleware] No requests found, running root...");
-      const response = await root(c);
-      return response; // Return the redirect response from root
+      return root(c);
     }
 
-    const parentRequestId = c.req.header("X-Parent-Request-Id") || firstRequest[0].id.toString();
+    const parentRequestId = firstRequest.length > 0
+      ? (c.req.header("X-Parent-Request-Id") || firstRequest[0].id.toString())
+      : "0";
     console.log("[mainMiddleware] Using Parent Request ID:", parentRequestId);
 
     // Get request model first

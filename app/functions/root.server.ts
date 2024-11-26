@@ -13,7 +13,7 @@ import { TABLES } from "~/db/schema/table-models";
 import type { ExtendedContext } from "~/middleware";
 import { db } from "~/middleware/main";
 
-const client = hc<RoutesRouteType>("http://localhost:5173/api");  // Changed this line to use /api prefix
+const client = hc<RoutesRouteType>("http://localhost:5173/api");
 
 export async function root(c: ExtendedContext) {
   // Create models first so we have their IDs
@@ -99,9 +99,11 @@ export async function root(c: ExtendedContext) {
 
   c.requestId = insertedRequest.id;
 
-  // Call the routes endpoint to create truncate function
+  // Call routes only after all DB operations are complete
+  await new Promise(resolve => setTimeout(resolve, 100)); // Small delay to ensure DB writes are visible
+
   try {
-    const response = await client.routes.$post({  // Changed this line - removed api. prefix since it's in the base URL
+    const response = await client.routes.$post({
       json: {
         prompt: "I need you to be able to perform a reset factory",
       },
@@ -114,6 +116,5 @@ export async function root(c: ExtendedContext) {
     console.error("Error calling routes endpoint:", error);
   }
 
-  // Redirect to the request's page
   return redirect(`/requests/${insertedRequest.id}`);
 }
