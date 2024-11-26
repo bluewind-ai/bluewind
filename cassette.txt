@@ -3,67 +3,65 @@ CASSETTE REPLAY
 
 REQUEST 1
 └─ Record ID: 1
-└─ Request ID: 1
-└─ Created at: api/run-route/root.tsx:71:49
-└─ Request created at: api/run-route/root.tsx:42:44
+└─ Parent ID: null
+└─ Created at: api/run-route/root.tsx:66:48
+└─ Request created at: api/run-route/root.tsx:32:46
 └─ Object ID: 1
 
    └─ SERVER_FUNCTION
       └─ Record ID: 1
       └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:71:49
+      └─ Created at: api/run-route/root.tsx:73:48
       └─ Object ID: 2
 
    └─ MODEL
       └─ Record ID: 1
       └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:71:49
+      └─ Created at: api/run-route/root.tsx:80:48
       └─ Object ID: 3
 
    └─ MODEL
       └─ Record ID: 2
       └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:71:49
+      └─ Created at: api/run-route/root.tsx:80:48
       └─ Object ID: 4
 
    └─ MODEL
       └─ Record ID: 3
       └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:71:49
+      └─ Created at: api/run-route/root.tsx:80:48
       └─ Object ID: 5
 
    └─ MODEL
       └─ Record ID: 4
       └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:71:49
+      └─ Created at: api/run-route/root.tsx:80:48
       └─ Object ID: 6
 
    └─ MODEL
       └─ Record ID: 5
       └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:71:49
+      └─ Created at: api/run-route/root.tsx:80:48
       └─ Object ID: 7
 
    └─ MODEL
       └─ Record ID: 6
       └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:71:49
+      └─ Created at: api/run-route/root.tsx:80:48
       └─ Object ID: 8
 
------------------
+   REQUEST 2
+   └─ Record ID: 2
+   └─ Parent ID: 1
+   └─ Created at: api/routes/index.tsx:49:48
+   └─ Request created at: middleware/main.tsx:64:48
+   └─ Object ID: 10
 
-REQUEST 2
-└─ Record ID: 2
-└─ Request ID: 2
-└─ Created at: middleware/main.tsx:71:48
-└─ Request created at: middleware/main.tsx:64:48
-└─ Object ID: 9
-
-   └─ SERVER_FUNCTION
-      └─ Record ID: 2
-      └─ Request ID: 2
-      └─ Created at: api/routes/index.tsx:49:48
-      └─ Object ID: 10
+      └─ SERVER_FUNCTION
+         └─ Record ID: 2
+         └─ Request ID: 2
+         └─ Created at: api/routes/index.tsx:49:48
+         └─ Object ID: 10
 
 -----------------
 

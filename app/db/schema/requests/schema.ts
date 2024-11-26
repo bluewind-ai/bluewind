@@ -8,14 +8,14 @@ import { serverFunctions } from "../server-functions/schema";
 
 export const requests = pgTable("requests", {
   id: serial("id").primaryKey(),
-  requestId: integer("request_id").notNull(),
+  parentId: integer("parent_id"), // Changed from requestId
   pathname: text("pathname").notNull(),
   createdLocation: text("created_location").notNull(),
 });
 
 export const RequestSchema = z.object({
   id: z.number(),
-  requestId: z.number(),
+  parentId: z.number().nullable(), // Changed from requestId
   pathname: z.string(),
   createdLocation: z.string(),
 });

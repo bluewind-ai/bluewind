@@ -46,10 +46,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       }
     }
 
-    const parentRequestId =
-      firstRequest.length > 0
-        ? c.req.header("X-Parent-Request-Id") || firstRequest[0].id.toString()
-        : "0";
+    const parentRequestId = c.req.header("X-Parent-Request-Id");
     console.log("[mainMiddleware] Using Parent Request ID:", parentRequestId);
 
     console.log("[mainMiddleware] Getting request model...");
@@ -70,7 +67,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       const [newRequest] = await trx
         .insert(requests)
         .values({
-          requestId: parseInt(parentRequestId),
+          parentId: parentRequestId ? parseInt(parentRequestId) : null,
           pathname: new URL(c.req.url).pathname,
           createdLocation: getCurrentLocation(),
         })
@@ -82,7 +79,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         .values({
           modelId: requestModel.id,
           recordId: newRequest.id,
-          requestId: newRequest.id,
+          requestId: parentRequestId ? parseInt(parentRequestId) : null,
           createdLocation: getCurrentLocation(),
         })
         .returning();

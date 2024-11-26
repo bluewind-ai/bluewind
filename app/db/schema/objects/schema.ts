@@ -14,9 +14,7 @@ export const objects = pgTable(TableModel.OBJECTS, {
     .notNull()
     .references(() => models.id),
   recordId: integer("record_id").notNull(),
-  requestId: integer("request_id")
-    .notNull()
-    .references(() => requests.id, { onDelete: "cascade" }),
+  requestId: integer("request_id").references(() => requests.id, { onDelete: "cascade" }), // Removed .notNull()
   createdAt: timestamp("created_at").defaultNow().notNull(),
   createdLocation: text("created_location").notNull(),
 });
@@ -24,7 +22,7 @@ export const objects = pgTable(TableModel.OBJECTS, {
 export const ObjectSchema = z.object({
   modelId: z.number(),
   recordId: z.number(),
-  requestId: z.number(),
+  requestId: z.number().nullable(), // Updated to allow null
   createdLocation: z.string(),
 });
 

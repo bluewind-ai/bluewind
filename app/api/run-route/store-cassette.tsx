@@ -13,67 +13,103 @@ import { db } from "~/middleware/main";
 const app = new Hono();
 
 app.post("/", async (c) => {
-  console.log("[store-cassette route] Starting...");
+  try {
+    console.log("[store-cassette route] Starting...");
 
-  console.log("[store-cassette route] Running database query...");
-  const results = await db
-    .select({
-      object: objects,
-      model: models,
-      request: requests,
-    })
-    .from(objects)
-    .leftJoin(models, sql`${objects.modelId} = ${models.id}`)
-    .leftJoin(requests, sql`${objects.requestId} = ${requests.id}`)
-    .orderBy(objects.createdAt);
-  console.log("[store-cassette route] Query results:", results?.length || 0, "records");
+    // Changed: start FROM requests instead of objects
+    const results = await db
+      .select({
+        object: objects,
+        model: models,
+        request: requests,
+      })
+      .from(requests)
+      .leftJoin(objects, sql`${objects.requestId} = ${requests.id}`)
+      .leftJoin(models, sql`${objects.modelId} = ${models.id}`);
 
-  let cassette = "CASSETTE REPLAY\n=================\n\n";
-  console.log("[store-cassette route] Building cassette...");
+    let cassette = "CASSETTE REPLAY\n=================\n\n";
 
-  const requestMap = new Map();
-  console.log("[store-cassette route] Grouping by request...");
-
-  for (const result of results) {
-    const requestId = result.object.requestId;
-    if (!requestMap.has(requestId)) {
-      requestMap.set(requestId, []);
+    // Get parent request ID from headers
+    const parentRequestId = c.req.header("X-Parent-Request-Id");
+    if (!parentRequestId) {
+      throw new Error("No parent request ID provided in headers");
     }
-    requestMap.get(requestId).push(result);
-  }
 
-  console.log("[store-cassette route] Processing", requestMap.size, "requests");
+    // Find root request (using parent request ID from headers)
+    const rootRequest = results.find((r) => r.request.id.toString() === parentRequestId);
 
-  for (const [requestId, items] of requestMap) {
-    console.log("[store-cassette route] Processing request", requestId);
-    const requestItem = items.find((item) => item.model.singularName === "request");
-    if (requestItem) {
-      cassette += `REQUEST ${requestId}\n`;
-      cassette += `└─ Record ID: ${requestItem.object.recordId}\n`;
-      cassette += `└─ Request ID: ${requestId}\n`;
-      cassette += `└─ Created at: ${requestItem.object.createdLocation}\n`;
-      cassette += `└─ Request created at: ${requestItem.request.createdLocation}\n`;
-      cassette += `└─ Object ID: ${requestItem.object.id}\n\n`;
+    if (!rootRequest) {
+      throw new Error(`Root request not found for ID ${parentRequestId}`);
+    }
 
-      const nestedItems = items.filter((item) => item.model.singularName !== "request");
-      for (const item of nestedItems) {
-        cassette += `   └─ ${item.model.singularName.toUpperCase()}\n`;
-        cassette += `      └─ Record ID: ${item.object.recordId}\n`;
-        cassette += `      └─ Request ID: ${requestId}\n`;
-        cassette += `      └─ Created at: ${item.object.createdLocation}\n`;
-        cassette += `      └─ Object ID: ${item.object.id}\n\n`;
+    // Render root request
+    cassette += `REQUEST ${rootRequest.request.id}\n`;
+    cassette += `└─ Record ID: ${rootRequest.object?.recordId || rootRequest.request.id}\n`;
+    cassette += `└─ Parent ID: ${rootRequest.request.parentId}\n`;
+    cassette += `└─ Created at: ${rootRequest.object?.createdLocation || rootRequest.request.createdLocation}\n`;
+    cassette += `└─ Request created at: ${rootRequest.request.createdLocation}\n`;
+    cassette += `└─ Object ID: ${rootRequest.object?.id || "N/A"}\n\n`;
+
+    // Get all objects that belong to root request
+    const rootObjects = results.filter(
+      (r) =>
+        r.object?.requestId === rootRequest.request.id &&
+        r.model?.singularName !== "request" &&
+        r.object != null &&
+        r.model != null,
+    );
+
+    // Render root request's objects
+    for (const obj of rootObjects) {
+      cassette += `   └─ ${obj.model.singularName.toUpperCase()}\n`;
+      cassette += `      └─ Record ID: ${obj.object.recordId}\n`;
+      cassette += `      └─ Request ID: ${obj.object.requestId}\n`;
+      cassette += `      └─ Created at: ${obj.object.createdLocation}\n`;
+      cassette += `      └─ Object ID: ${obj.object.id}\n\n`;
+    }
+
+    // Get all child requests - now checks for parentId
+    const childRequests = results.filter((r) => r.request.parentId === rootRequest.request.id);
+
+    // For each child request
+    for (const childRequest of childRequests) {
+      // Render child request
+      cassette += `   REQUEST ${childRequest.request.id}\n`;
+      cassette += `   └─ Record ID: ${childRequest.object?.recordId || childRequest.request.id}\n`;
+      cassette += `   └─ Parent ID: ${childRequest.request.parentId}\n`;
+      cassette += `   └─ Created at: ${childRequest.object?.createdLocation || childRequest.request.createdLocation}\n`;
+      cassette += `   └─ Request created at: ${childRequest.request.createdLocation}\n`;
+      cassette += `   └─ Object ID: ${childRequest.object?.id || "N/A"}\n\n`;
+
+      // Get objects belonging to this child request
+      const childObjects = results.filter(
+        (r) =>
+          r.object?.requestId === childRequest.request.id &&
+          r.model?.singularName !== "request" &&
+          r.object != null &&
+          r.model != null,
+      );
+
+      // Render child request's objects
+      for (const obj of childObjects) {
+        cassette += `      └─ ${obj.model.singularName.toUpperCase()}\n`;
+        cassette += `         └─ Record ID: ${obj.object.recordId}\n`;
+        cassette += `         └─ Request ID: ${obj.object.requestId}\n`;
+        cassette += `         └─ Created at: ${obj.object.createdLocation}\n`;
+        cassette += `         └─ Object ID: ${obj.object.id}\n\n`;
       }
-
-      cassette += "-----------------\n\n";
     }
+
+    cassette += "-----------------\n\n";
+
+    const filePath = join(process.cwd(), "cassette.txt");
+    await writeFile(filePath, cassette, "utf-8");
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("[store-cassette route] Error:", error);
+    return c.json({ error: String(error) }, 500);
   }
-
-  console.log("[store-cassette route] Writing file...");
-  const filePath = join(process.cwd(), "cassette.txt");
-  await writeFile(filePath, cassette, "utf-8");
-  console.log("[store-cassette route] File written successfully");
-
-  return c.json({ success: true });
 });
 
 export default app;
