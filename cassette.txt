@@ -1,0 +1,73 @@
+CASSETTE REPLAY
+=================
+
+Object created:
+Model ID: 5
+Record ID: 1
+Request ID: 1
+Object ID: 1
+-----------------
+
+Object created:
+Model ID: 3
+Record ID: 1
+Request ID: 1
+Object ID: 2
+-----------------
+
+Object created:
+Model ID: 6
+Record ID: 5
+Request ID: 1
+Object ID: 5
+-----------------
+
+Object created:
+Model ID: 6
+Record ID: 2
+Request ID: 1
+Object ID: 4
+-----------------
+
+Object created:
+Model ID: 6
+Record ID: 4
+Request ID: 1
+Object ID: 6
+-----------------
+
+Object created:
+Model ID: 6
+Record ID: 6
+Request ID: 1
+Object ID: 8
+-----------------
+
+Object created:
+Model ID: 6
+Record ID: 3
+Request ID: 1
+Object ID: 7
+-----------------
+
+Object created:
+Model ID: 6
+Record ID: 1
+Request ID: 1
+Object ID: 3
+-----------------
+
+Object created:
+Model ID: 5
+Record ID: 2
+Request ID: 2
+Object ID: 9
+-----------------
+
+Object created:
+Model ID: 3
+Record ID: 2
+Request ID: 2
+Object ID: 10
+-----------------
+

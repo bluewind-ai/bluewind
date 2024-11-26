@@ -111,6 +111,18 @@ app.post("/", async (c) => {
     },
   });
 
+  // Call storeCassette to get a replay of what happened
+  console.log("Calling store cassette...");
+  const storeCassetteResponse = await fetch("http://localhost:5173/api/run-route/store-cassette", {
+    method: "POST",
+    headers: {
+      "X-Parent-Request-Id": insertedRequest.id.toString(),
+    },
+  });
+
+  const cassetteResult = await storeCassetteResponse.json();
+  console.log("Store cassette result:", cassetteResult);
+
   return c.redirect(`/requests/${insertedRequest.id}`);
 });
 
