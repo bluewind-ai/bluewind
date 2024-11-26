@@ -13,6 +13,12 @@ import { db } from "~/middleware/main";
 const app = new Hono();
 
 app.post("/", async (c) => {
+  // First, call the reset factory route
+  console.log("Calling reset factory...");
+  await fetch("http://localhost:5173/api/run-route/reset-factory", {
+    method: "POST",
+  });
+
   // Create models first so we have their IDs
   console.log("Creating models...");
   const modelsToInsert = Object.entries(TABLES).map(([_, config]) => ({
@@ -94,21 +100,16 @@ app.post("/", async (c) => {
     ),
   );
 
-  // Call the routes endpoint
-  try {
-    await fetch("http://localhost:5173/api/routes", {
-      method: "POST",
-      body: JSON.stringify({
-        prompt: "I need you to be able to perform a reset factory",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        "X-Parent-Request-Id": insertedRequest.id.toString(),
-      },
-    });
-  } catch (error) {
-    console.error("Error calling routes endpoint:", error);
-  }
+  await fetch("http://localhost:5173/api/routes", {
+    method: "POST",
+    body: JSON.stringify({
+      prompt: "I need you to be able to perform a reset factory",
+    }),
+    headers: {
+      "Content-Type": "application/json",
+      "X-Parent-Request-Id": insertedRequest.id.toString(),
+    },
+  });
 
   return c.json({ requestId: insertedRequest.id });
 });

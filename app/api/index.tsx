@@ -54,15 +54,15 @@ export function configureHonoServer(server: Hono) {
     return c.html(html, 500);
   });
 
-  // Root route must be before middleware
+  // Routes that must bypass middleware
   server.route("/api/run-route/root", rootRoute);
+  server.route("/api/run-route/reset-factory", resetFactoryRoute);
 
   // Add middleware before other routes
   server.use("*", mainMiddleware);
 
   // All other routes under /api
   server.route("/api/routes", routesRoute);
-  server.route("/api/run-route/reset-factory", resetFactoryRoute);
   server.route("/api/run-route/truncate", truncateRoute);
 
   server.use("*", async (c: Context, next: () => Promise<void>) => {

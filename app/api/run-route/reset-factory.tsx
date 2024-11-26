@@ -30,7 +30,7 @@ app.post("/", async (c) => {
     });
 
     console.log("[reset-factory route] Database truncate completed successfully");
-    return c.redirect("/");
+    return c.json({ success: true }); // Just return success instead of redirecting
   } catch (error) {
     console.error("[reset-factory route] Error during truncate:", error);
     throw error;
