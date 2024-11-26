@@ -1,6 +1,6 @@
 // app/api/run-route/root.tsx
 
-import { sql } from "drizzle-orm";
+import { inArray,sql } from "drizzle-orm";
 import { Hono } from "hono";
 
 import { objects } from "~/db/schema";
@@ -53,14 +53,15 @@ app.post("/", async (c) => {
 
   // Update models with correct request ID
   console.log("[Current Location]:", getCurrentLocation());
-  await Promise.all(
-    insertedModels.map((model) =>
-      db
-        .update(models)
-        .set({ requestId: insertedRequest.id })
-        .where(sql`${models.id} = ${model.id}`),
-    ),
-  );
+  await db
+    .update(models)
+    .set({ requestId: insertedRequest.id })
+    .where(
+      inArray(
+        models.id,
+        insertedModels.map((m) => m.id),
+      ),
+    );
 
   // Create server function
   console.log("[Current Location]:", getCurrentLocation());
@@ -86,36 +87,29 @@ app.post("/", async (c) => {
   const serverFunctionsModel = insertedModels.find((m) => m.pluralName === "server_functions")!;
   const modelsModel = insertedModels.find((m) => m.pluralName === "models")!;
 
-  // Create object for request
+  // Create objects for request, server function and models in one insert
   console.log("[Current Location]:", getCurrentLocation());
-  await db.insert(objects).values({
-    modelId: requestsModel.id,
-    recordId: insertedRequest.id,
-    requestId: insertedRequest.id,
-    createdLocation: getCurrentLocation(),
-  });
-
-  // Create object for server function
-  console.log("[Current Location]:", getCurrentLocation());
-  await db.insert(objects).values({
-    modelId: serverFunctionsModel.id,
-    recordId: rootFunction.id,
-    requestId: insertedRequest.id,
-    createdLocation: getCurrentLocation(),
-  });
-
-  // Create objects for models
-  console.log("[Current Location]:", getCurrentLocation());
-  await Promise.all(
-    insertedModels.map((model) =>
-      db.insert(objects).values({
-        modelId: modelsModel.id,
-        recordId: model.id,
-        requestId: insertedRequest.id,
-        createdLocation: getCurrentLocation(),
-      }),
-    ),
-  );
+  const currentLocation = getCurrentLocation();
+  await db.insert(objects).values([
+    {
+      modelId: requestsModel.id,
+      recordId: insertedRequest.id,
+      requestId: insertedRequest.id,
+      createdLocation: currentLocation,
+    },
+    {
+      modelId: serverFunctionsModel.id,
+      recordId: rootFunction.id,
+      requestId: insertedRequest.id,
+      createdLocation: currentLocation,
+    },
+    ...insertedModels.map((model) => ({
+      modelId: modelsModel.id,
+      recordId: model.id,
+      requestId: insertedRequest.id,
+      createdLocation: currentLocation,
+    })),
+  ]);
 
   console.log("[Current Location]:", getCurrentLocation());
   await fetch("http://localhost:5173/api/routes", {
