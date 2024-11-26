@@ -8,18 +8,21 @@ import { models } from "~/db/schema/models/schema";
 import { requests } from "~/db/schema/requests/schema";
 import { serverFunctions, ServerFunctionType } from "~/db/schema/server-functions/schema";
 import { TABLES } from "~/db/schema/table-models";
+import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
 
 const app = new Hono();
 
 app.post("/", async (c) => {
   // First, call the reset factory route
+  console.log("[Current Location]:", getCurrentLocation());
   console.log("Calling reset factory...");
   await fetch("http://localhost:5173/api/run-route/reset-factory", {
     method: "POST",
   });
 
   // Create models first so we have their IDs
+  console.log("[Current Location]:", getCurrentLocation());
   console.log("Creating models...");
   const modelsToInsert = Object.entries(TABLES).map(([_, config]) => ({
     pluralName: config.modelName,
@@ -29,22 +32,26 @@ app.post("/", async (c) => {
   const insertedModels = await db.insert(models).values(modelsToInsert).returning();
 
   // Create request for root action itself
+  console.log("[Current Location]:", getCurrentLocation());
   console.log("Creating root request...");
   const [insertedRequest] = await db
     .insert(requests)
     .values({
       requestId: 0,
       pathname: new URL(c.req.url).pathname,
+      createdLocation: getCurrentLocation(),
     })
     .returning();
 
   // Update request to point to itself
+  console.log("[Current Location]:", getCurrentLocation());
   await db
     .update(requests)
     .set({ requestId: insertedRequest.id })
     .where(sql`${requests.id} = ${insertedRequest.id}`);
 
   // Update models with correct request ID
+  console.log("[Current Location]:", getCurrentLocation());
   await Promise.all(
     insertedModels.map((model) =>
       db
@@ -55,6 +62,7 @@ app.post("/", async (c) => {
   );
 
   // Create server function
+  console.log("[Current Location]:", getCurrentLocation());
   console.log("Creating root server function...");
   const [rootFunction] = await db
     .insert(serverFunctions)
@@ -71,11 +79,13 @@ app.post("/", async (c) => {
     .returning();
 
   // Create objects for everything
+  console.log("[Current Location]:", getCurrentLocation());
   const requestsModel = insertedModels.find((m) => m.pluralName === "requests")!;
   const serverFunctionsModel = insertedModels.find((m) => m.pluralName === "server_functions")!;
   const modelsModel = insertedModels.find((m) => m.pluralName === "models")!;
 
   // Create object for request
+  console.log("[Current Location]:", getCurrentLocation());
   await db.insert(objects).values({
     modelId: requestsModel.id,
     recordId: insertedRequest.id,
@@ -83,6 +93,7 @@ app.post("/", async (c) => {
   });
 
   // Create object for server function
+  console.log("[Current Location]:", getCurrentLocation());
   await db.insert(objects).values({
     modelId: serverFunctionsModel.id,
     recordId: rootFunction.id,
@@ -90,6 +101,7 @@ app.post("/", async (c) => {
   });
 
   // Create objects for models
+  console.log("[Current Location]:", getCurrentLocation());
   await Promise.all(
     insertedModels.map((model) =>
       db.insert(objects).values({
@@ -100,6 +112,7 @@ app.post("/", async (c) => {
     ),
   );
 
+  console.log("[Current Location]:", getCurrentLocation());
   await fetch("http://localhost:5173/api/routes", {
     method: "POST",
     body: JSON.stringify({
@@ -112,6 +125,7 @@ app.post("/", async (c) => {
   });
 
   // Call storeCassette to get a replay of what happened
+  console.log("[Current Location]:", getCurrentLocation());
   console.log("Calling store cassette...");
   const storeCassetteResponse = await fetch("http://localhost:5173/api/run-route/store-cassette", {
     method: "POST",

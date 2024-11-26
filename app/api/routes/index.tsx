@@ -24,7 +24,6 @@ app.post("/", async (c) => {
 
       console.log("[routes api endpoint] Found current request:", currentRequest);
 
-      // First get the server_functions model ID
       const [serverFunctionsModel] = await db.query.models.findMany({
         where: (models, { eq }) => eq(models.pluralName, "server_functions"),
         limit: 1,
@@ -47,7 +46,6 @@ app.post("/", async (c) => {
         })
         .returning();
 
-      // Create object for the new server function
       await db.insert(objects).values({
         modelId: serverFunctionsModel.id,
         recordId: truncateFunction.id,

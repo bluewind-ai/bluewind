@@ -1,7 +1,7 @@
 // app/db/schema/objects/schema.ts
 
 import { relations } from "drizzle-orm";
-import { integer, pgTable, serial } from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
 import { models } from "../models/schema";
@@ -17,6 +17,7 @@ export const objects = pgTable(TableModel.OBJECTS, {
   requestId: integer("request_id")
     .notNull()
     .references(() => requests.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const ObjectSchema = z.object({

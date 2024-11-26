@@ -10,12 +10,14 @@ export const requests = pgTable("requests", {
   id: serial("id").primaryKey(),
   requestId: integer("request_id").notNull(),
   pathname: text("pathname").notNull(),
+  createdLocation: text("created_location").notNull(),
 });
 
 export const RequestSchema = z.object({
   id: z.number(),
   requestId: z.number(),
   pathname: z.string(),
+  createdLocation: z.string(),
 });
 
 export type CreateRequest = z.infer<typeof RequestSchema>;

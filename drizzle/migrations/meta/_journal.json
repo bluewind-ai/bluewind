@@ -155,6 +155,13 @@
       "when": 1732598034024,
       "tag": "0021_glorious_darkhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1732646144751,
+      "tag": "0022_fuzzy_madrox",
+      "breakpoints": true
     }
   ]
 }

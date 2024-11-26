@@ -1,73 +1,65 @@
 CASSETTE REPLAY
 =================
 
-Object created:
-Model ID: 5
+A "request" was created:
 Record ID: 1
-Request ID: 1
+In Request: 1
+Created at location: api/run-route/root.tsx:41:44
 Object ID: 1
 -----------------
 
-Object created:
-Model ID: 3
+A "server_function" was created:
 Record ID: 1
-Request ID: 1
+In Request: 1
 Object ID: 2
 -----------------
 
-Object created:
-Model ID: 6
-Record ID: 5
-Request ID: 1
-Object ID: 5
------------------
-
-Object created:
-Model ID: 6
-Record ID: 2
-Request ID: 1
+A "model" was created:
+Record ID: 1
+In Request: 1
 Object ID: 4
 -----------------
 
-Object created:
-Model ID: 6
-Record ID: 4
-Request ID: 1
-Object ID: 6
------------------
-
-Object created:
-Model ID: 6
-Record ID: 6
-Request ID: 1
-Object ID: 8
------------------
-
-Object created:
-Model ID: 6
-Record ID: 3
-Request ID: 1
-Object ID: 7
------------------
-
-Object created:
-Model ID: 6
-Record ID: 1
-Request ID: 1
+A "model" was created:
+Record ID: 2
+In Request: 1
 Object ID: 3
 -----------------
 
-Object created:
-Model ID: 5
+A "model" was created:
+Record ID: 3
+In Request: 1
+Object ID: 8
+-----------------
+
+A "model" was created:
+Record ID: 4
+In Request: 1
+Object ID: 7
+-----------------
+
+A "model" was created:
+Record ID: 5
+In Request: 1
+Object ID: 5
+-----------------
+
+A "model" was created:
+Record ID: 6
+In Request: 1
+Object ID: 6
+-----------------
+
+A "request" was created:
 Record ID: 2
-Request ID: 2
+In Request: 2
+Created at location: middleware/main.tsx:64:48
 Object ID: 9
 -----------------
 
-Object created:
-Model ID: 3
+A "server_function" was created:
 Record ID: 2
-Request ID: 2
+In Request: 2
 Object ID: 10
 -----------------
 

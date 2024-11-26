@@ -1,10 +1,13 @@
 // app/api/run-route/store-cassette.tsx
 
+import { sql } from "drizzle-orm";
 import { writeFile } from "fs/promises";
 import { Hono } from "hono";
 import { join } from "path";
 
 import { objects } from "~/db/schema";
+import { models } from "~/db/schema/models/schema";
+import { requests } from "~/db/schema/requests/schema";
 import { db } from "~/middleware/main";
 
 const app = new Hono();
@@ -13,18 +16,29 @@ app.post("/", async (c) => {
   console.log("[store-cassette route] Starting...");
 
   try {
-    const results = await db.select().from(objects);
+    const results = await db
+      .select({
+        object: objects,
+        model: models,
+        request: requests,
+      })
+      .from(objects)
+      .leftJoin(models, sql`${objects.modelId} = ${models.id}`)
+      .leftJoin(requests, sql`${objects.requestId} = ${requests.id}`)
+      .orderBy(objects.createdAt);
 
     console.log("[store-cassette route] Results:", results);
 
     let cassette = "CASSETTE REPLAY\n=================\n\n";
 
-    for (const obj of results) {
-      cassette += `Object created:\n`;
-      cassette += `Model ID: ${obj.modelId}\n`;
-      cassette += `Record ID: ${obj.recordId}\n`;
-      cassette += `Request ID: ${obj.requestId}\n`;
-      cassette += `Object ID: ${obj.id}\n`;
+    for (const result of results) {
+      cassette += `A "${result.model.singularName}" was created:\n`;
+      cassette += `Record ID: ${result.object.recordId}\n`;
+      cassette += `In Request: ${result.object.requestId}\n`;
+      if (result.model.singularName === "request" && result.request?.createdLocation) {
+        cassette += `Created at location: ${result.request.createdLocation}\n`;
+      }
+      cassette += `Object ID: ${result.object.id}\n`;
       cassette += "-----------------\n\n";
     }
 

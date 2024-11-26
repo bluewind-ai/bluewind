@@ -9,6 +9,7 @@ import { models, objects, requests, serverFunctions } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { TABLES } from "~/db/schema/table-models";
 import { insertRequestObjects } from "~/functions/insert-request-objects.server";
+import { getCurrentLocation } from "~/lib/location-tracker";
 
 import { createDbProxy, ExtendedContext } from ".";
 
@@ -25,7 +26,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   c.queries = [];
 
   try {
-    // Check if any requests exist
     console.log("[mainMiddleware] Checking requests...");
     const firstRequest = await db.select().from(requests).limit(1);
     const isApiRequest = new URL(c.req.url).pathname.startsWith("/api/");
@@ -39,7 +39,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         if (!response.ok) {
           throw new Error(`Root route failed: ${response.statusText}`);
         }
-        // Instead of returning the JSON response, redirect to /
         return c.redirect("/");
       } catch (error) {
         console.error("[mainMiddleware] Error calling root route:", error);
@@ -53,7 +52,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         : "0";
     console.log("[mainMiddleware] Using Parent Request ID:", parentRequestId);
 
-    // Get request model first
     console.log("[mainMiddleware] Getting request model...");
     const [requestModel] = await db
       .select()
@@ -65,22 +63,20 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     }
     console.log("[mainMiddleware] Found request model:", requestModel);
 
-    // Create request and its object in one transaction
     console.log("[mainMiddleware] Creating request and object...");
     const [request] = await db.transaction(async (trx) => {
       console.log("[mainMiddleware] Starting transaction...");
 
-      // Create request with parent ID
       const [newRequest] = await trx
         .insert(requests)
         .values({
           requestId: parseInt(parentRequestId),
           pathname: new URL(c.req.url).pathname,
+          createdLocation: getCurrentLocation(),
         })
         .returning();
       console.log("[mainMiddleware] Created request:", newRequest);
 
-      // Create the request object right away
       const [requestObject] = await trx
         .insert(objects)
         .values({
@@ -96,10 +92,8 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
 
     console.log("[mainMiddleware] Transaction completed, request:", request);
 
-    // Set request context
     c.requestId = request.id;
 
-    // Now do the rest of the middleware operations with proxied db
     console.log("[mainMiddleware] Checking models...");
     const allModels = await db
       .select({ id: models.id, pluralName: models.pluralName })
@@ -109,7 +103,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     }
     console.log("[mainMiddleware] Found models count:", allModels.length);
 
-    // Get a valid server function ID
     console.log("[mainMiddleware] Checking server functions...");
     const [serverFunction] = await db
       .select({ id: serverFunctions.id })
