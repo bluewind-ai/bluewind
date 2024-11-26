@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm";
 import { hc } from "hono/client";
 
 import type { RoutesRouteType } from "~/api/routes";
-import { functionCalls , objects } from "~/db/schema";
+import { functionCalls, objects } from "~/db/schema";
 import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { models } from "~/db/schema/models/schema";
 import { requests } from "~/db/schema/requests/schema";
