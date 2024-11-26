@@ -111,7 +111,7 @@ app.post("/", async (c) => {
     },
   });
 
-  return c.json({ requestId: insertedRequest.id });
+  return c.redirect(`/requests/${insertedRequest.id}`);
 });
 
 export default app;

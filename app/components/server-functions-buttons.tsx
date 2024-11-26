@@ -22,6 +22,11 @@ export function ServerFunctionsButtons({
 }: ServerFunctionsButtonsProps) {
   return (
     <div className="flex gap-2 p-4 flex-wrap">
+      <form method="post" action="/api/run-route/root">
+        <Button type="submit" variant="default">
+          Root
+        </Button>
+      </form>
       {serverFunctions.map((fn) => {
         const label = typeof fn.metadata?.label === "string" ? fn.metadata.label : fn.name;
         const variant =
