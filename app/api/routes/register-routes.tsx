@@ -4,6 +4,7 @@ import { Hono } from "hono";
 
 import { mainMiddleware } from "~/middleware/main";
 
+import lintRoute from "../lint";
 import routesRoute from "../routes";
 import ingestCompanyDataRoute from "../run-route/ingest-company-data";
 import resetFactoryRoute from "../run-route/reset-factory";
@@ -26,6 +27,7 @@ export function registerRoutes(server: Hono) {
   server.route("/api/routes", routesRoute);
   server.route("/api/test-route", testRoute);
   server.route("/api/test-route-2", testRoute2);
+  server.route("/api/lint", lintRoute);
   server.route("/api/run-route/truncate", truncateRoute);
   server.route("/api/run-route/ingest-company-data", ingestCompanyDataRoute);
 

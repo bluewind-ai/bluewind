@@ -29,16 +29,15 @@ REQUEST /
       └─ Request created at: middleware/main.tsx:61:46
       RETURNED BODY
       └─ success: true
-      └─ message: "Test route working"
+      └─ lintResults.success: true
+      └─ lintResults.fetchLocation: "api/lint/index.tsx"
 
-            REQUEST /api/test-route-2
+            REQUEST /api/lint
             └─ Created at: middleware/main.tsx:61:46
             └─ Request created at: middleware/main.tsx:61:46
             RETURNED BODY
-            └─ 0: "t"
-            └─ 1: "e"
-            └─ 2: "s"
-            └─ 3: "t"
+            └─ success: true
+            └─ fetchLocation: "api/lint/index.tsx"
 
 -----------------
 

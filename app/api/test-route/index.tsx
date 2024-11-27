@@ -2,7 +2,6 @@
 
 import { Hono } from "hono";
 
-import { fetchWithContext } from "~/lib/fetch-with-context";
 import { getCurrentLocation } from "~/lib/location-tracker";
 
 const app = new Hono();
@@ -16,17 +15,23 @@ app.post("/", async (c) => {
     return c.json({ error: "No parent request ID provided" }, 400);
   }
 
-  console.log("Calling test-route-2...");
-  // Much cleaner!
-  const testRoute2Response = await fetchWithContext(c)("http://localhost:5173/api/test-route-2", {
+  console.log("Calling lint route...");
+  const lintResponse = await fetch("http://localhost:5173/api/lint", {
     method: "POST",
+    headers: {
+      "X-Parent-Request-Id": c.requestId?.toString(),
+    },
   });
 
-  if (!testRoute2Response.ok) {
-    throw new Error("Failed to call test-route-2");
+  if (!lintResponse.ok) {
+    throw new Error("Failed to call lint route");
   }
 
-  return c.json({ success: true, message: "Test route working" });
+  const lintData = await lintResponse.json();
+  return c.json({
+    success: true,
+    lintResults: lintData,
+  });
 });
 
 export default app;
