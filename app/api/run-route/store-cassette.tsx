@@ -26,6 +26,50 @@ function flattenJSON(obj: any): string[] {
   return lines;
 }
 
+// Recursive function to render a request and all its children
+function renderRequest(request: any, results: any[], indent: string = ""): string {
+  let output = "";
+
+  // Render current request
+  output += `${indent}REQUEST ${request.request.pathname}\n`;
+  output += `${indent}└─ Created at: ${request.request.createdLocation}\n`;
+  output += `${indent}└─ Request created at: ${request.request.createdLocation}\n`;
+  if (request.request.response) {
+    output += `${indent}RETURNED BODY\n`;
+    const responseLines = flattenJSON(JSON.parse(request.request.response));
+    responseLines.forEach((line) => {
+      output += `${indent}└─ ${line}\n`;
+    });
+  }
+  output += "\n";
+
+  // Get objects belonging to this request
+  const requestObjects = results.filter(
+    (r) =>
+      r.object?.requestId === request.request.id &&
+      r.model?.singularName !== "request" &&
+      r.object != null &&
+      r.model != null,
+  );
+
+  // Render request's objects
+  for (const obj of requestObjects) {
+    output += `${indent}   └─ ${obj.model.singularName.toUpperCase()}\n`;
+    output += `${indent}      └─ Created at: ${obj.object.createdLocation}\n\n`;
+  }
+
+  // Get and render all child requests
+  const childRequests = results
+    .filter((r) => r.request.parentId === request.request.id)
+    .sort((a, b) => a.request.id - b.request.id);
+
+  for (const childRequest of childRequests) {
+    output += renderRequest(childRequest, results, `${indent}      `);
+  }
+
+  return output;
+}
+
 const app = new Hono();
 
 app.post("/", async (c) => {
@@ -54,68 +98,8 @@ app.post("/", async (c) => {
     throw new Error(`Root request not found for ID ${parentRequestId}`);
   }
 
-  // Render root request
-  cassette += `REQUEST ${rootRequest.request.pathname}\n`;
-  cassette += `└─ Created at: ${rootRequest.request.createdLocation}\n`;
-  cassette += `└─ Request created at: ${rootRequest.request.createdLocation}\n`;
-  if (rootRequest.request.response) {
-    cassette += `RETURNED BODY\n`;
-    const responseLines = flattenJSON(JSON.parse(rootRequest.request.response));
-    responseLines.forEach((line) => {
-      cassette += `└─ ${line}\n`;
-    });
-  }
-  cassette += "\n";
-
-  // Get all objects that belong to root request
-  const rootObjects = results.filter(
-    (r) =>
-      r.object?.requestId === rootRequest.request.id &&
-      r.model?.singularName !== "request" &&
-      r.object != null &&
-      r.model != null,
-  );
-
-  // Render root request's objects
-  for (const obj of rootObjects) {
-    cassette += `   └─ ${obj.model.singularName.toUpperCase()}\n`;
-    cassette += `      └─ Created at: ${obj.object.createdLocation}\n\n`;
-  }
-
-  // Get all child requests and sort by ID to maintain execution order
-  const childRequests = results
-    .filter((r) => r.request.parentId === rootRequest.request.id)
-    .sort((a, b) => a.request.id - b.request.id);
-
-  // For each child request - increased indentation here
-  for (const childRequest of childRequests) {
-    cassette += `      REQUEST ${childRequest.request.pathname}\n`;
-    cassette += `      └─ Created at: ${childRequest.request.createdLocation}\n`;
-    cassette += `      └─ Request created at: ${childRequest.request.createdLocation}\n`;
-    if (childRequest.request.response) {
-      cassette += `      RETURNED BODY\n`;
-      const responseLines = flattenJSON(JSON.parse(childRequest.request.response));
-      responseLines.forEach((line) => {
-        cassette += `      └─ ${line}\n`;
-      });
-    }
-    cassette += "\n";
-
-    // Get objects belonging to this child request
-    const childObjects = results.filter(
-      (r) =>
-        r.object?.requestId === childRequest.request.id &&
-        r.model?.singularName !== "request" &&
-        r.object != null &&
-        r.model != null,
-    );
-
-    // Render child request's objects - increased indentation here
-    for (const obj of childObjects) {
-      cassette += `         └─ ${obj.model.singularName.toUpperCase()}\n`;
-      cassette += `            └─ Created at: ${obj.object.createdLocation}\n\n`;
-    }
-  }
+  // Use the recursive function to render the entire request tree
+  cassette += renderRequest(rootRequest, results);
 
   cassette += "-----------------\n\n";
 
