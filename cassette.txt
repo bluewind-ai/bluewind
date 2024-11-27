@@ -5,13 +5,6 @@ REQUEST /
 └─ Created at: api/run-route/root.tsx:31:46
 └─ Request created at: api/run-route/root.tsx:31:46
 
-      REQUEST /api/test-route
-      └─ Created at: middleware/main.tsx:61:46
-      └─ Request created at: middleware/main.tsx:61:46
-      RETURNED BODY
-      └─ success: true
-      └─ message: "Test route working"
-
       REQUEST /api/routes
       └─ Created at: middleware/main.tsx:61:46
       └─ Request created at: middleware/main.tsx:61:46
