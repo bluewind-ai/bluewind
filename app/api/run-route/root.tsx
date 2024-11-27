@@ -18,10 +18,6 @@ app.post("/", async (c) => {
     console.log("[Current Location]:", getCurrentLocation());
     console.log("Calling reset factory...");
 
-    await fetch("http://localhost:5173/api/run-route/reset-factory", {
-      method: "POST",
-    });
-
     // Get parent request ID from headers
     const parentRequestId = c.req.header("X-Parent-Request-Id");
 
@@ -134,7 +130,7 @@ app.post("/", async (c) => {
     });
     console.log("Store cassette result:", await res.json());
 
-    return c.redirect("/requests/1");
+    return c.redirect(`/requests/${rootRequest.id}`);
   } catch (error) {
     console.error("[root route] Error:", error);
     return c.json({ error: String(error) }, 500);
