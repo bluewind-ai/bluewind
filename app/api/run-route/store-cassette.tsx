@@ -10,6 +10,22 @@ import { models } from "~/db/schema/models/schema";
 import { requests } from "~/db/schema/requests/schema";
 import { db } from "~/middleware/main";
 
+function flattenJSON(obj: any): string[] {
+  const lines: string[] = [];
+
+  Object.entries(obj).forEach(([key, value]) => {
+    if (value !== null && typeof value === "object") {
+      Object.entries(value).forEach(([subKey, subValue]) => {
+        lines.push(`${key}.${subKey}: ${JSON.stringify(subValue)}`);
+      });
+    } else {
+      lines.push(`${key}: ${JSON.stringify(value)}`);
+    }
+  });
+
+  return lines;
+}
+
 const app = new Hono();
 
 app.post("/", async (c) => {
@@ -44,7 +60,15 @@ app.post("/", async (c) => {
   cassette += `└─ Parent ID: ${rootRequest.request.parentId}\n`;
   cassette += `└─ Created at: ${rootRequest.object?.createdLocation || rootRequest.request.createdLocation}\n`;
   cassette += `└─ Request created at: ${rootRequest.request.createdLocation}\n`;
-  cassette += `└─ Object ID: ${rootRequest.object?.id || "N/A"}\n\n`;
+  cassette += `└─ Object ID: ${rootRequest.object?.id || "N/A"}\n`;
+  if (rootRequest.request.response) {
+    cassette += `RETURNED BODY\n`;
+    const responseLines = flattenJSON(JSON.parse(rootRequest.request.response));
+    responseLines.forEach((line) => {
+      cassette += `└─ ${line}\n`;
+    });
+  }
+  cassette += "\n";
 
   // Get all objects that belong to root request
   const rootObjects = results.filter(
@@ -74,7 +98,15 @@ app.post("/", async (c) => {
     cassette += `      └─ Parent ID: ${childRequest.request.parentId}\n`;
     cassette += `      └─ Created at: ${childRequest.object?.createdLocation || childRequest.request.createdLocation}\n`;
     cassette += `      └─ Request created at: ${childRequest.request.createdLocation}\n`;
-    cassette += `      └─ Object ID: ${childRequest.object?.id || "N/A"}\n\n`;
+    cassette += `      └─ Object ID: ${childRequest.object?.id || "N/A"}\n`;
+    if (childRequest.request.response) {
+      cassette += `      RETURNED BODY\n`;
+      const responseLines = flattenJSON(JSON.parse(childRequest.request.response));
+      responseLines.forEach((line) => {
+        cassette += `      └─ ${line}\n`;
+      });
+    }
+    cassette += "\n";
 
     // Get objects belonging to this child request
     const childObjects = results.filter(

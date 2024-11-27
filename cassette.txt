@@ -56,6 +56,15 @@ REQUEST 1
       └─ Created at: api/routes/index.tsx:49:48
       └─ Request created at: middleware/main.tsx:61:46
       └─ Object ID: 10
+      RETURNED BODY
+      └─ success: true
+      └─ message: "Created reset-factory route"
+      └─ function.id: 2
+      └─ function.name: "reset-factory"
+      └─ function.type: "SYSTEM"
+      └─ function.requestId: 2
+      └─ function.metadata: {"label":"Factory Reset","variant":"destructive","description":"Reset the entire database to factory settings","confirmationMessage":"This will delete all data. Are you sure?","confirmationRequired":true}
+      └─ function.createdLocation: "api/routes/index.tsx:35:48"
 
          └─ SERVER_FUNCTION
             └─ Record ID: 2
@@ -69,6 +78,8 @@ REQUEST 1
       └─ Created at: middleware/main.tsx:61:46
       └─ Request created at: middleware/main.tsx:61:46
       └─ Object ID: N/A
+      RETURNED BODY
+      └─ message: "I worked for 1 second"
 
 -----------------
 
