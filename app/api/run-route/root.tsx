@@ -113,6 +113,18 @@ app.post("/", async (c) => {
       throw new Error("Failed to create reset factory route");
     }
 
+    console.log("Calling ingest company data...");
+    const ingestResponse = await fetch("http://localhost:5173/api/run-route/ingest-company-data", {
+      method: "POST",
+      headers: {
+        "X-Parent-Request-Id": rootRequest.id.toString(),
+      },
+    });
+
+    if (!ingestResponse.ok) {
+      throw new Error("Failed to ingest company data");
+    }
+
     console.log("Calling store cassette...");
     const res = await fetch("http://localhost:5173/api/run-route/store-cassette", {
       method: "POST",

@@ -63,5 +63,12 @@ REQUEST 1
             └─ Created at: api/routes/index.tsx:49:48
             └─ Object ID: 10
 
+      REQUEST 3
+      └─ Record ID: 3
+      └─ Parent ID: 1
+      └─ Created at: middleware/main.tsx:64:48
+      └─ Request created at: middleware/main.tsx:64:48
+      └─ Object ID: N/A
+
 -----------------
 
