@@ -1,0 +1,1 @@
+ALTER TABLE "server_functions" ADD CONSTRAINT "server_functions_name_unique" UNIQUE("name");

@@ -19,7 +19,7 @@ export const serverFunctionTypeEnum = pgEnum("server_function_type", [
 
 export const serverFunctions = pgTable("server_functions", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
+  name: text("name").notNull().unique(),
   type: serverFunctionTypeEnum("type").notNull(),
   requestId: integer("request_id")
     .references(() => requests.id, { onDelete: "cascade" })
