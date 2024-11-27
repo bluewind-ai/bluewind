@@ -1,64 +1,22 @@
 CASSETTE REPLAY
 =================
 
-REQUEST 1
-└─ Record ID: 1
+REQUEST 70
+└─ Record ID: 70
 └─ Parent ID: null
-└─ Created at: api/run-route/root.tsx:63:48
-└─ Request created at: api/run-route/root.tsx:29:46
-└─ Object ID: 1
+└─ Created at: api/run-route/root.tsx:80:48
+└─ Request created at: api/run-route/root.tsx:31:46
+└─ Object ID: 78
 
-   └─ SERVER_FUNCTION
-      └─ Record ID: 1
-      └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:70:48
-      └─ Object ID: 2
-
-   └─ MODEL
-      └─ Record ID: 1
-      └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:77:48
-      └─ Object ID: 3
-
-   └─ MODEL
-      └─ Record ID: 2
-      └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:77:48
-      └─ Object ID: 4
-
-   └─ MODEL
-      └─ Record ID: 3
-      └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:77:48
-      └─ Object ID: 5
-
-   └─ MODEL
-      └─ Record ID: 4
-      └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:77:48
-      └─ Object ID: 6
-
-   └─ MODEL
-      └─ Record ID: 5
-      └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:77:48
-      └─ Object ID: 7
-
-   └─ MODEL
-      └─ Record ID: 6
-      └─ Request ID: 1
-      └─ Created at: api/run-route/root.tsx:77:48
-      └─ Object ID: 8
-
-      REQUEST 2
-      └─ Record ID: 2
-      └─ Parent ID: 1
-      └─ Created at: api/routes/index.tsx:49:48
+      REQUEST 71
+      └─ Record ID: 71
+      └─ Parent ID: 70
+      └─ Created at: middleware/main.tsx:61:46
       └─ Request created at: middleware/main.tsx:61:46
-      └─ Object ID: 10
+      └─ Object ID: N/A
       RETURNED BODY
       └─ success: true
-      └─ message: "Created reset-factory route"
+      └─ message: "Using existing reset-factory route"
       └─ function.id: 2
       └─ function.name: "reset-factory"
       └─ function.type: "SYSTEM"
@@ -66,15 +24,9 @@ REQUEST 1
       └─ function.metadata: {"label":"Factory Reset","variant":"destructive","description":"Reset the entire database to factory settings","confirmationMessage":"This will delete all data. Are you sure?","confirmationRequired":true}
       └─ function.createdLocation: "api/routes/index.tsx:35:48"
 
-         └─ SERVER_FUNCTION
-            └─ Record ID: 2
-            └─ Request ID: 2
-            └─ Created at: api/routes/index.tsx:49:48
-            └─ Object ID: 10
-
-      REQUEST 3
-      └─ Record ID: 3
-      └─ Parent ID: 1
+      REQUEST 72
+      └─ Record ID: 72
+      └─ Parent ID: 70
       └─ Created at: middleware/main.tsx:61:46
       └─ Request created at: middleware/main.tsx:61:46
       └─ Object ID: N/A
