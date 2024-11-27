@@ -55,12 +55,9 @@ app.post("/", async (c) => {
   }
 
   // Render root request
-  cassette += `REQUEST ${rootRequest.request.id} ${rootRequest.request.pathname}\n`;
-  cassette += `└─ Record ID: ${rootRequest.object?.recordId || rootRequest.request.id}\n`;
-  cassette += `└─ Parent ID: ${rootRequest.request.parentId}\n`;
+  cassette += `REQUEST ${rootRequest.request.pathname}\n`;
   cassette += `└─ Created at: ${rootRequest.object?.createdLocation || rootRequest.request.createdLocation}\n`;
   cassette += `└─ Request created at: ${rootRequest.request.createdLocation}\n`;
-  cassette += `└─ Object ID: ${rootRequest.object?.id || "N/A"}\n`;
   if (rootRequest.request.response) {
     cassette += `RETURNED BODY\n`;
     const responseLines = flattenJSON(JSON.parse(rootRequest.request.response));
@@ -82,23 +79,19 @@ app.post("/", async (c) => {
   // Render root request's objects
   for (const obj of rootObjects) {
     cassette += `   └─ ${obj.model.singularName.toUpperCase()}\n`;
-    cassette += `      └─ Record ID: ${obj.object.recordId}\n`;
-    cassette += `      └─ Request ID: ${obj.object.requestId}\n`;
-    cassette += `      └─ Created at: ${obj.object.createdLocation}\n`;
-    cassette += `      └─ Object ID: ${obj.object.id}\n\n`;
+    cassette += `      └─ Created at: ${obj.object.createdLocation}\n\n`;
   }
 
-  // Get all child requests
-  const childRequests = results.filter((r) => r.request.parentId === rootRequest.request.id);
+  // Get all child requests and sort by ID to maintain execution order
+  const childRequests = results
+    .filter((r) => r.request.parentId === rootRequest.request.id)
+    .sort((a, b) => a.request.id - b.request.id);
 
   // For each child request - increased indentation here
   for (const childRequest of childRequests) {
-    cassette += `      REQUEST ${childRequest.request.id} ${childRequest.request.pathname}\n`;
-    cassette += `      └─ Record ID: ${childRequest.object?.recordId || childRequest.request.id}\n`;
-    cassette += `      └─ Parent ID: ${childRequest.request.parentId}\n`;
+    cassette += `      REQUEST ${childRequest.request.pathname}\n`;
     cassette += `      └─ Created at: ${childRequest.object?.createdLocation || childRequest.request.createdLocation}\n`;
     cassette += `      └─ Request created at: ${childRequest.request.createdLocation}\n`;
-    cassette += `      └─ Object ID: ${childRequest.object?.id || "N/A"}\n`;
     if (childRequest.request.response) {
       cassette += `      RETURNED BODY\n`;
       const responseLines = flattenJSON(JSON.parse(childRequest.request.response));
@@ -120,10 +113,7 @@ app.post("/", async (c) => {
     // Render child request's objects - increased indentation here
     for (const obj of childObjects) {
       cassette += `         └─ ${obj.model.singularName.toUpperCase()}\n`;
-      cassette += `            └─ Record ID: ${obj.object.recordId}\n`;
-      cassette += `            └─ Request ID: ${obj.object.requestId}\n`;
-      cassette += `            └─ Created at: ${obj.object.createdLocation}\n`;
-      cassette += `            └─ Object ID: ${obj.object.id}\n\n`;
+      cassette += `            └─ Created at: ${obj.object.createdLocation}\n\n`;
     }
   }
 
