@@ -2,6 +2,7 @@
 
 import { Hono } from "hono";
 
+import { fetchWithContext } from "~/lib/fetch-with-context";
 import { getCurrentLocation } from "~/lib/location-tracker";
 
 const app = new Hono();
@@ -16,11 +17,9 @@ app.post("/", async (c) => {
   }
 
   console.log("Calling test-route-2...");
-  const testRoute2Response = await fetch("http://localhost:5173/api/test-route-2", {
+  // Much cleaner!
+  const testRoute2Response = await fetchWithContext(c)("http://localhost:5173/api/test-route-2", {
     method: "POST",
-    headers: {
-      "X-Parent-Request-Id": c.requestId?.toString(),
-    },
   });
 
   if (!testRoute2Response.ok) {
