@@ -1,0 +1,2 @@
+ALTER TABLE "models" ADD CONSTRAINT "models_plural_name_unique" UNIQUE("plural_name");--> statement-breakpoint
+ALTER TABLE "models" ADD CONSTRAINT "models_singular_name_unique" UNIQUE("singular_name");

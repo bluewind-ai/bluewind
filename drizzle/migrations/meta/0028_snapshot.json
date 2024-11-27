@@ -1,6 +1,6 @@
 {
-  "id": "16b9a3db-e10c-4796-9e43-c13f6c0933e9",
-  "prevId": "e2880eb2-b551-4fa0-8643-1ab1c04f1347",
+  "id": "d84efa40-b067-4cfc-93c5-d2cc170abadb",
+  "prevId": "16b9a3db-e10c-4796-9e43-c13f6c0933e9",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -42,7 +42,22 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "models_plural_name_unique": {
+          "name": "models_plural_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "plural_name"
+          ]
+        },
+        "models_singular_name_unique": {
+          "name": "models_singular_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "singular_name"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -95,8 +110,12 @@
           "name": "objects_model_id_models_id_fk",
           "tableFrom": "objects",
           "tableTo": "models",
-          "columnsFrom": ["model_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "model_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -104,8 +123,12 @@
           "name": "objects_request_id_requests_id_fk",
           "tableFrom": "objects",
           "tableTo": "requests",
-          "columnsFrom": ["request_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "request_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -145,8 +168,12 @@
           "name": "raw_data_request_id_requests_id_fk",
           "tableFrom": "raw_data",
           "tableTo": "requests",
-          "columnsFrom": ["request_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "request_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -248,8 +275,12 @@
           "name": "server_functions_request_id_requests_id_fk",
           "tableFrom": "server_functions",
           "tableTo": "requests",
-          "columnsFrom": ["request_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "request_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -259,7 +290,9 @@
         "server_functions_name_unique": {
           "name": "server_functions_name_unique",
           "nullsNotDistinct": false,
-          "columns": ["name"]
+          "columns": [
+            "name"
+          ]
         }
       },
       "policies": {},
@@ -334,8 +367,12 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -343,8 +380,12 @@
           "name": "sessions_request_id_requests_id_fk",
           "tableFrom": "sessions",
           "tableTo": "requests",
-          "columnsFrom": ["request_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "request_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -354,7 +395,9 @@
         "sessions_session_token_unique": {
           "name": "sessions_session_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["session_token"]
+          "columns": [
+            "session_token"
+          ]
         }
       },
       "policies": {},
@@ -384,8 +427,12 @@
           "name": "users_request_id_requests_id_fk",
           "tableFrom": "users",
           "tableTo": "requests",
-          "columnsFrom": ["request_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "request_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -416,7 +463,10 @@
     "public.server_function_type": {
       "name": "server_function_type",
       "schema": "public",
-      "values": ["SYSTEM", "API"]
+      "values": [
+        "SYSTEM",
+        "API"
+      ]
     }
   },
   "schemas": {},

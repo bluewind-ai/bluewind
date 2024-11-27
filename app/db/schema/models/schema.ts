@@ -19,8 +19,8 @@ export const modelEnum = pgEnum("model", [
 
 export const models = pgTable(TableModel.MODELS, {
   id: serial("id").primaryKey(),
-  pluralName: text("plural_name").notNull(),
-  singularName: text("singular_name").notNull(),
+  pluralName: text("plural_name").notNull().unique(),
+  singularName: text("singular_name").notNull().unique(),
   requestId: integer("request_id").notNull(),
   createdLocation: text("created_location").notNull(),
 });
