@@ -55,7 +55,7 @@ app.post("/", async (c) => {
   }
 
   // Render root request
-  cassette += `REQUEST ${rootRequest.request.id}\n`;
+  cassette += `REQUEST ${rootRequest.request.id} ${rootRequest.request.pathname}\n`;
   cassette += `└─ Record ID: ${rootRequest.object?.recordId || rootRequest.request.id}\n`;
   cassette += `└─ Parent ID: ${rootRequest.request.parentId}\n`;
   cassette += `└─ Created at: ${rootRequest.object?.createdLocation || rootRequest.request.createdLocation}\n`;
@@ -93,7 +93,7 @@ app.post("/", async (c) => {
 
   // For each child request - increased indentation here
   for (const childRequest of childRequests) {
-    cassette += `      REQUEST ${childRequest.request.id}\n`;
+    cassette += `      REQUEST ${childRequest.request.id} ${childRequest.request.pathname}\n`;
     cassette += `      └─ Record ID: ${childRequest.object?.recordId || childRequest.request.id}\n`;
     cassette += `      └─ Parent ID: ${childRequest.request.parentId}\n`;
     cassette += `      └─ Created at: ${childRequest.object?.createdLocation || childRequest.request.createdLocation}\n`;
