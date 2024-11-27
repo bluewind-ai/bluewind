@@ -183,6 +183,13 @@
       "when": 1732647474270,
       "tag": "0025_slimy_madame_web",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1732669600198,
+      "tag": "0026_aspiring_fantastic_four",
+      "breakpoints": true
     }
   ]
 }

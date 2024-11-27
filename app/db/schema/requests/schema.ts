@@ -11,6 +11,7 @@ export const requests = pgTable("requests", {
   parentId: integer("parent_id"), // Changed from requestId
   pathname: text("pathname").notNull(),
   createdLocation: text("created_location").notNull(),
+  response: text("response"),
 });
 
 export const RequestSchema = z.object({
@@ -18,6 +19,7 @@ export const RequestSchema = z.object({
   parentId: z.number().nullable(), // Changed from requestId
   pathname: z.string(),
   createdLocation: z.string(),
+  response: z.string().nullable(),
 });
 
 export type CreateRequest = z.infer<typeof RequestSchema>;
