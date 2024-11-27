@@ -24,5 +24,12 @@ REQUEST /
       RETURNED BODY
       └─ message: "I worked for 1 second"
 
+      REQUEST /api/test-route
+      └─ Created at: middleware/main.tsx:61:46
+      └─ Request created at: middleware/main.tsx:61:46
+      RETURNED BODY
+      └─ success: true
+      └─ message: "Test route working"
+
 -----------------
 

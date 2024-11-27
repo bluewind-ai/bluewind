@@ -155,6 +155,18 @@ app.post("/", async (c) => {
       throw new Error("Failed to ingest company data");
     }
 
+    console.log("Calling test route...");
+    const testResponse = await fetch("http://localhost:5173/api/test-route", {
+      method: "POST",
+      headers: {
+        "X-Parent-Request-Id": rootRequest.id.toString(),
+      },
+    });
+
+    if (!testResponse.ok) {
+      throw new Error("Failed to call test route");
+    }
+
     console.log("Calling store cassette...");
     const res = await fetch("http://localhost:5173/api/run-route/store-cassette", {
       method: "POST",
