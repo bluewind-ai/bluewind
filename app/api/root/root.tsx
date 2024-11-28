@@ -1,4 +1,4 @@
-// app/api/run-route/root.tsx
+// app/api/root/root.tsx
 
 import { Hono } from "hono";
 import { join } from "path";

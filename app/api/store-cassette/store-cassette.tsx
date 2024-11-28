@@ -1,4 +1,4 @@
-// app/api/run-route/store-cassette.tsx
+// app/api/store-cassette/store-cassette.tsx
 
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -24,32 +24,30 @@ app.post("/api/run-route/store-cassette", async (c) => {
   const rootRequest = results.find((r) => r.request.id.toString() === parentRequestId);
   if (!rootRequest) throw new Error(`Root request not found for ID ${parentRequestId}`);
 
-  // Build tree
   const getNode = (id: number) => {
     const reqResults = results.filter((r) => r.request.id === id);
     const req = reqResults[0].request;
     return {
-      id: req.id, // Keep the actual ID for sorting
+      id: req.id,
       pathname: req.pathname.replace(/\/\d+(?=\/|$)/g, "/:id"),
       createdLocation: req.createdLocation,
       response: req.response,
       children: results
         .filter((r) => r.request.parentId === id)
         .map((r) => getNode(r.request.id))
-        .sort((a, b) => a.id - b.id), // Sort by actual numeric ID
+        .sort((a, b) => a.id - b.id),
       objects: reqResults
         .filter((r) => r.object && r.model && r.model.singularName.toLowerCase() !== "request")
         .map((r) => ({
           modelName: r.model.singularName,
           createdLocation: r.object.createdLocation,
         }))
-        .sort((a, b) => a.modelName.localeCompare(b.modelName)), // Sort objects by model name
+        .sort((a, b) => a.modelName.localeCompare(b.modelName)),
     };
   };
 
   const tree = getNode(rootRequest.request.id);
 
-  // Generate output
   const renderNode = (node: any, indent = "") => {
     let out = `${indent}REQUEST ${node.pathname}\n`;
     out += `${indent}└─ Created at: ${node.createdLocation}\n`;

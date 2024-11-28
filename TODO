@@ -284,3 +284,4 @@ Get rid of this error
 Warning: React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: object.
     at RemixServer (/Users/merwanehamadi/code/bluewind/node_modules/@remix-run/react/dist/server.js:48:3)
 
+Tired of switching between clicking ROOT and github desktop to see the diff

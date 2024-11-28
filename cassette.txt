@@ -2,14 +2,14 @@ CASSETTE REPLAY
 =================
 
 REQUEST /
-└─ Created at: api/run-route/root.tsx:27:46
+└─ Created at: api/root/root.tsx:27:46
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
       └─ <html lang="en" class="h-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Error</title></head><body class="h-full"><div class="p-4 font-mono"><div class="text-red-500 whitespace-pre-wrap">Error: Failed to call test route
 
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/run-route/main-flow/index.tsx:117:11</a>
+    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/main-flow/index.tsx:117:11</a>
     at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7" class="text-blue-500 hover:underline">app/middleware/main.tsx:95:7</a>
     at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3" class="text-blue-500 hover:underline">app/middleware/main.tsx:90:3</a></div></div></body></html>
 
@@ -54,7 +54,7 @@ REQUEST /
       RETURNED BODY
       └─ <html lang="en" class="h-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Error</title></head><body class="h-full"><div class="p-4 font-mono"><div class="text-red-500 whitespace-pre-wrap">Error: Failed to call test route
 
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/run-route/main-flow/index.tsx:117:11</a>
+    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/main-flow/index.tsx:117:11</a>
     at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7" class="text-blue-500 hover:underline">app/middleware/main.tsx:95:7</a>
     at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3" class="text-blue-500 hover:underline">app/middleware/main.tsx:90:3</a></div></div></body></html>
 
@@ -99,7 +99,7 @@ REQUEST /
       RETURNED BODY
       └─ <html lang="en" class="h-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Error</title></head><body class="h-full"><div class="p-4 font-mono"><div class="text-red-500 whitespace-pre-wrap">Error: Failed to call test route
 
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/run-route/main-flow/index.tsx:117:11</a>
+    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/main-flow/index.tsx:117:11</a>
     at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7" class="text-blue-500 hover:underline">app/middleware/main.tsx:95:7</a>
     at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3" class="text-blue-500 hover:underline">app/middleware/main.tsx:90:3</a></div></div></body></html>
 
@@ -146,14 +146,14 @@ REQUEST /
         "tree": {
           "id": "[ID]",
           "pathname": "/",
-          "createdLocation": "api/run-route/root.tsx:27:46",
+          "createdLocation": "api/root/root.tsx:27:46",
           "response": null,
           "children": [
             {
               "id": "[ID]",
               "pathname": "/api/run-route/main-flow",
               "createdLocation": "middleware/main.tsx:64:46",
-              "response": "<html lang=\"en\" class=\"h-full\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><title>Error</title></head><body class=\"h-full\"><div class=\"p-4 font-mono\"><div class=\"text-red-500 whitespace-pre-wrap\">Error: Failed to call test route\n\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11\" class=\"text-blue-500 hover:underline\">app/api/run-route/main-flow/index.tsx:117:11</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:95:7</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:90:3</a></div></div></body></html>",
+              "response": "<html lang=\"en\" class=\"h-full\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><title>Error</title></head><body class=\"h-full\"><div class=\"p-4 font-mono\"><div class=\"text-red-500 whitespace-pre-wrap\">Error: Failed to call test route\n\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/api/main-flow/index.tsx:117:11\" class=\"text-blue-500 hover:underline\">app/api/main-flow/index.tsx:117:11</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:95:7</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:90:3</a></div></div></body></html>",
               "children": [
                 {
                   "id": "[ID]",

@@ -4,15 +4,14 @@ import { Hono } from "hono";
 
 import { mainMiddleware } from "~/middleware/main";
 
+import getRequestTreeRoute from "../get-request-tree/get-request-tree";
+import ingestCompanyDataRoute from "../ingest-company-data/ingest-company-data";
 import lintRoute from "../lint";
+import mainFlowRoute from "../main-flow";
+import resetFactoryRoute from "../reset-factory/reset-factory";
+import rootRoute from "../root/root";
 import routesRoute from "../routes";
-import getRequestTreeRoute from "../run-route/get-request-tree";
-import ingestCompanyDataRoute from "../run-route/ingest-company-data";
-import mainFlowRoute from "../run-route/main-flow";
-import resetFactoryRoute from "../run-route/reset-factory";
-import rootRoute from "../run-route/root";
-import storeCassetteRoute from "../run-route/store-cassette";
-import truncateRoute from "../run-route/truncate";
+import storeCassetteRoute from "../store-cassette/store-cassette";
 import testRoute from "../test-route";
 import testRoute2 from "../test-route-2";
 
@@ -32,7 +31,6 @@ export function registerRoutes(server: Hono) {
     testRoute,
     testRoute2,
     lintRoute,
-    truncateRoute,
     ingestCompanyDataRoute,
     getRequestTreeRoute,
   ];
