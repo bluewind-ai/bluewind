@@ -13,7 +13,7 @@ import { db } from "~/middleware/main";
 
 const app = new Hono();
 
-app.post("/", async (c) => {
+app.post("/api/run-route/main-flow", async (c) => {
   console.log("[main-flow] Starting...");
   console.log("[Current Location]:", getCurrentLocation());
 

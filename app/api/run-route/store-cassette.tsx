@@ -11,7 +11,7 @@ import { writeFile } from "../../lib/intercepted-fs";
 
 const app = new Hono();
 
-app.post("/", async (c) => {
+app.post("/api/run-route/store-cassette", async (c) => {
   const parentRequestId = c.req.header("X-Parent-Request-Id");
   if (!parentRequestId) throw new Error("No parent request ID provided in headers");
 

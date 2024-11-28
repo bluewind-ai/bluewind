@@ -4,7 +4,7 @@ import { Hono } from "hono";
 
 const app = new Hono();
 
-app.post("/", async (c) => {
+app.post("/api/run-route/ingest-company-data", async (c) => {
   try {
     console.log("[ingest-company-data] Starting...");
 

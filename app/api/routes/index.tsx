@@ -11,7 +11,7 @@ import { db } from "~/middleware/main";
 
 const app = new Hono();
 
-app.post("/", async (c) => {
+app.post("/api/routes", async (c) => {
   console.log("[routes api endpoint] Starting route creation...");
   const body = await c.req.json();
   const userInput = body.prompt;

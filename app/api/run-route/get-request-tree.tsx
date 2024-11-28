@@ -22,7 +22,7 @@ interface RequestNode {
 
 const app = new Hono();
 
-app.get("/:requestId", async (c) => {
+app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
   const requestId = parseInt(c.req.param("requestId"));
   console.log("[request-tree] Building tree for request:", requestId);
 

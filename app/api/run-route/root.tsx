@@ -12,7 +12,7 @@ import { writeFile } from "../../lib/intercepted-fs";
 
 const app = new Hono();
 
-app.post("/", async (c) => {
+app.post("/api/run-route/root", async (c) => {
   console.log("[root route] Starting...");
   console.log("[Current Location]:", getCurrentLocation());
 

@@ -8,7 +8,7 @@ import { db } from "~/middleware/main";
 
 const app = new Hono();
 
-app.post("/", async (c) => {
+app.post("/api/run-route/reset-factory", async (c) => {
   console.log("[reset-factory route] Starting database truncate...");
 
   try {

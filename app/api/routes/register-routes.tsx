@@ -18,22 +18,29 @@ import testRoute2 from "../test-route-2";
 
 export function registerRoutes(server: Hono) {
   // Routes that must bypass middleware
-  server.route("/api/run-route/root", rootRoute);
-  server.route("/api/run-route/reset-factory", resetFactoryRoute);
-  server.route("/api/run-route/store-cassette", storeCassetteRoute);
+  server.route("", rootRoute);
+  server.route("", resetFactoryRoute);
+  server.route("", storeCassetteRoute);
 
   // Add middleware before other routes
   server.use("*", mainMiddleware);
 
   // All other routes under /api
-  server.route("/api/run-route/main-flow", mainFlowRoute);
-  server.route("/api/routes", routesRoute);
-  server.route("", testRoute);
-  server.route("/api/test-route-2", testRoute2);
-  server.route("/api/lint", lintRoute);
-  server.route("/api/run-route/truncate", truncateRoute);
-  server.route("/api/run-route/ingest-company-data", ingestCompanyDataRoute);
-  server.route("/api/run-route/get-request-tree", getRequestTreeRoute); // Moved here to use middleware
+  const routes = [
+    mainFlowRoute,
+    routesRoute,
+    testRoute,
+    testRoute2,
+    lintRoute,
+    truncateRoute,
+    ingestCompanyDataRoute,
+    getRequestTreeRoute,
+  ];
+
+  // Register all routes that use middleware
+  routes.forEach((route) => {
+    server.route("", route);
+  });
 
   server.use("*", async (c, next) => {
     await next();

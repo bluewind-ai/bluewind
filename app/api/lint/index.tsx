@@ -18,7 +18,7 @@ async function findFilesRecursively(dir: string): Promise<string[]> {
   return files.flat();
 }
 
-app.post("/", async (c) => {
+app.post("/api/lint", async (c) => {
   console.log("[lint] Starting search for fetch calls...");
 
   const appDir = join(process.cwd(), "app");

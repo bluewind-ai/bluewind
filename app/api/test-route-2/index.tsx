@@ -4,7 +4,7 @@ import { Hono } from "hono";
 
 const app = new Hono();
 
-app.post("/", async (c) => {
+app.post("/api/test-route-2", async (c) => {
   return c.json("test");
 });
 
