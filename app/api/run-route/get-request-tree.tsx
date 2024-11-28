@@ -90,15 +90,29 @@ app.get("/:requestId", async (c) => {
     }
   }
 
-  // Second pass: build parent-child relationships
+  // Second pass: build parent-child relationships and sort by createdAt
   for (const result of results) {
     if (result.request.parentId !== null) {
       const parentNode = requestsMap.get(result.request.parentId);
       const childNode = requestsMap.get(result.request.id);
       if (parentNode && childNode) {
-        parentNode.children.push(childNode);
+        // Only add the child if it's not already in the children array
+        if (!parentNode.children.some((child) => child.id === childNode.id)) {
+          parentNode.children.push(childNode);
+        }
       }
     }
+  }
+
+  // Third pass: sort all children arrays by createdAt
+  for (const node of requestsMap.values()) {
+    node.children.sort((a, b) => {
+      const aResult = results.find((r) => r.request.id === a.id);
+      const bResult = results.find((r) => r.request.id === b.id);
+      return (
+        (aResult?.request.createdAt?.getTime() || 0) - (bResult?.request.createdAt?.getTime() || 0)
+      );
+    });
   }
 
   // Get the root node
