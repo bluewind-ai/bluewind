@@ -6,9 +6,10 @@ import { useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
 
 import { requests } from "~/db/schema";
+import { fetchWithContext } from "~/lib/fetch-with-context";
 import { db } from "~/middleware/main";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, context }: LoaderFunctionArgs) {
   const requestId = Number(params.id);
   const request = await db.query.requests.findFirst({
     where: eq(requests.id, requestId),
@@ -18,8 +19,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
 
   try {
-    // Fetch the request tree
-    const treeResponse = await fetch(
+    // Fetch the request tree using fetchWithContext
+    const treeResponse = await fetchWithContext(context)(
       `http://localhost:5173/api/run-route/get-request-tree/${requestId}`,
     );
     if (!treeResponse.ok) {
