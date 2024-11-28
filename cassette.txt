@@ -3,11 +3,9 @@ CASSETTE REPLAY
 
 REQUEST /
 └─ Created at: api/run-route/root.tsx:23:46
-└─ Request created at: api/run-route/root.tsx:23:46
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:64:46
-      └─ Request created at: middleware/main.tsx:64:46
       RETURNED BODY
       └─ <html lang="en" class="h-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Error</title></head><body class="h-full"><div class="p-4 font-mono"><div class="text-red-500 whitespace-pre-wrap">Error: Failed to call test route
 
@@ -17,26 +15,18 @@ REQUEST /
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:64:46
-            └─ Request created at: middleware/main.tsx:64:46
             RETURNED BODY
             └─ success: true
             └─ message: "Using existing reset-factory route"
-            └─ function.id: 2
-            └─ function.name: "reset-factory"
-            └─ function.type: "SYSTEM"
-            └─ function.requestId: 2
-            └─ function.metadata: {"label":"Factory Reset","variant":"destructive","description":"Reset the entire database to factory settings","confirmationMessage":"This will delete all data. Are you sure?","confirmationRequired":true}
-            └─ function.createdLocation: "api/routes/index.tsx:35:48"
+            └─ function: {"id":2,"name":"reset-factory","type":"SYSTEM","requestId":2,"metadata":{"label":"Factory Reset","variant":"destructive","description":"Reset the entire database to factory settings","confirmationMessage":"This will delete all data. Are you sure?","confirmationRequired":true},"createdLocation":"api/routes/index.tsx:35:48"}
 
             REQUEST /api/run-route/ingest-company-data
             └─ Created at: middleware/main.tsx:64:46
-            └─ Request created at: middleware/main.tsx:64:46
             RETURNED BODY
             └─ message: "I worked for 1 second"
 
             REQUEST /api/test-route
             └─ Created at: middleware/main.tsx:64:46
-            └─ Request created at: middleware/main.tsx:64:46
             RETURNED BODY
             └─ error: "Test error"
 
