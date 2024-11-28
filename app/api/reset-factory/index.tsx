@@ -1,6 +1,4 @@
-
-
-// app/api/reset-factory/reset-factory.tsx
+// app/api/reset-factory/index.tsx
 
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -32,7 +30,7 @@ app.post("/api/run-route/reset-factory", async (c) => {
     });
 
     console.log("[reset-factory route] Database truncate completed successfully");
-    return c.json({ success: true }); 
+    return c.json({ success: true });
   } catch (error) {
     console.error("[reset-factory route] Error during truncate:", error);
     throw error;

@@ -2,7 +2,7 @@ CASSETTE REPLAY
 =================
 
 REQUEST /
-└─ Created at: api/root/root.tsx:27:46
+└─ Created at: api/root/index.tsx:27:46
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:64:46
@@ -146,7 +146,7 @@ REQUEST /
         "tree": {
           "id": "[ID]",
           "pathname": "/",
-          "createdLocation": "api/root/root.tsx:27:46",
+          "createdLocation": "api/root/index.tsx:27:46",
           "response": null,
           "children": [
             {

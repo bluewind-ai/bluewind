@@ -1,6 +1,4 @@
-
-
-// app/api/ingest-company-data/ingest-company-data.tsx
+// app/api/ingest-company-data/index.tsx
 
 import { Hono } from "hono";
 
@@ -10,7 +8,6 @@ app.post("/api/run-route/ingest-company-data", async (c) => {
   try {
     console.log("[ingest-company-data] Starting...");
 
-    
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     console.log("[ingest-company-data] Finished sleeping");

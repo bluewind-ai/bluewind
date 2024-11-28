@@ -6,7 +6,7 @@ import { encode } from "turbo-stream";
 
 import { StaticErrorPage } from "~/utils/error-utils";
 
-import { registerRoutes } from "./routes/register-routes";
+import { registerRoutes } from "./register-routes";
 
 export function configureHonoServer(server: Hono) {
   server.onError((err, c) => {

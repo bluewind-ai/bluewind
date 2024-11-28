@@ -1,4 +1,4 @@
-// app/api/get-request-tree/get-request-tree.tsx
+// app/api/get-request-tree/index.tsx
 
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
