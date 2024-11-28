@@ -276,3 +276,4 @@ integrate update tsx into the app
 also, amend commit automatically
 and push to main automatically
 shrink size of store cassettes
+add linter ruler to prevent usage of fs. except in the interceptor

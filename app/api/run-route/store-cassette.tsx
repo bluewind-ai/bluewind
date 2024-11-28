@@ -1,12 +1,13 @@
 // app/api/run-route/store-cassette.tsx
 
 import { sql } from "drizzle-orm";
-import { writeFile } from "fs/promises";
 import { Hono } from "hono";
 import { join } from "path";
 
 import { models, objects, requests } from "~/db/schema";
 import { db } from "~/middleware/main";
+
+import { writeFile } from "../../lib/intercepted-fs";
 
 const app = new Hono();
 
