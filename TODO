@@ -273,9 +273,7 @@ app.get("/:requestId", async (c) => {
 remove all console logs
 
 integrate update tsx into the app
-also, amend commit automatically
-and push to main automatically
-shrink size of store cassettes
+
 add linter ruler to prevent usage of fs. except in the interceptor
 
 Rerun the root multiple times to see if the cassette changes
