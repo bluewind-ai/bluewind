@@ -29,20 +29,21 @@ app.post("/", async (c) => {
     const reqResults = results.filter((r) => r.request.id === id);
     const req = reqResults[0].request;
     return {
-      id: "[ID]",
+      id: req.id, // Keep the actual ID for sorting
       pathname: req.pathname.replace(/\/\d+(?=\/|$)/g, "/:id"),
       createdLocation: req.createdLocation,
       response: req.response,
       children: results
         .filter((r) => r.request.parentId === id)
         .map((r) => getNode(r.request.id))
-        .sort((a, b) => a.id - b.id),
+        .sort((a, b) => a.id - b.id), // Sort by actual numeric ID
       objects: reqResults
         .filter((r) => r.object && r.model && r.model.singularName.toLowerCase() !== "request")
         .map((r) => ({
           modelName: r.model.singularName,
           createdLocation: r.object.createdLocation,
-        })),
+        }))
+        .sort((a, b) => a.modelName.localeCompare(b.modelName)), // Sort objects by model name
     };
   };
 
