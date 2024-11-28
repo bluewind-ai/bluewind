@@ -271,3 +271,8 @@ create a linter for hono routes
 route paths matter in hono, we should only have /:something or / because things are naturally nested in folders
 app.get("/:requestId", async (c) => {
 remove all console logs
+
+integrate update tsx into the app
+also, amend commit automatically
+and push to main automatically
+shrink size of store cassettes
