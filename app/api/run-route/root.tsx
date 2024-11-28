@@ -1,11 +1,14 @@
 // app/api/run-route/root.tsx
 
 import { Hono } from "hono";
+import { join } from "path";
 
 import { requests } from "~/db/schema/requests/schema";
 import { fetchWithContext } from "~/lib/fetch-with-context";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
+
+import { writeFile } from "../../lib/intercepted-fs";
 
 const app = new Hono();
 
@@ -17,7 +20,6 @@ app.post("/", async (c) => {
     const parentRequestId = c.req.header("X-Parent-Request-Id");
     console.log("[root] Parent request ID from header:", parentRequestId);
 
-    // 1. Create root request first
     const [rootRequest] = await db
       .insert(requests)
       .values({
@@ -34,7 +36,8 @@ app.post("/", async (c) => {
     let mainFlowError = null;
     let tree = null;
 
-    // Call main flow, using fetchWithContext
+    await writeFile(join(process.cwd(), "cassette.txt"), "", "utf-8");
+
     try {
       const mainFlowResponse = await fetchWithContext(c)(
         "http://localhost:5173/api/run-route/main-flow",
@@ -50,7 +53,6 @@ app.post("/", async (c) => {
       mainFlowError = error;
     }
 
-    // First get the tree structure
     try {
       const treeResponse = await fetchWithContext(c)(
         `http://localhost:5173/api/run-route/get-request-tree/${rootRequest.id}`,
@@ -65,12 +67,10 @@ app.post("/", async (c) => {
       console.error("[root] Failed to get tree:", error);
     }
 
-    // Then record the cassette (which will now include the get-request-tree call)
     await fetchWithContext(c)("http://localhost:5173/api/run-route/store-cassette", {
       method: "POST",
     });
 
-    // Build response with available data
     const response = {
       success: !mainFlowError,
       requestId: rootRequest.id,

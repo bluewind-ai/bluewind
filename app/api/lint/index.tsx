@@ -1,11 +1,9 @@
 // app/api/lint/index.tsx
 
-import { readdir } from "node:fs/promises";
-
 import { Hono } from "hono";
 import { join } from "path";
 
-import { readFile } from "../../lib/intercepted-fs";
+import { readdir, readFile } from "../../lib/intercepted-fs";
 
 const app = new Hono();
 
