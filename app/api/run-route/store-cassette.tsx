@@ -39,12 +39,21 @@ function renderRequest(request: any, allResults: any[], indent: string = ""): st
   output += `${indent}REQUEST ${request.request.pathname}\n`;
   output += `${indent}└─ Created at: ${request.request.createdLocation}\n`;
   output += `${indent}└─ Request created at: ${request.request.createdLocation}\n`;
+
+  // Handle both successful and error responses
   if (request.request.response) {
     output += `${indent}RETURNED BODY\n`;
-    const responseLines = flattenJSON(JSON.parse(request.request.response));
-    responseLines.forEach((line) => {
-      output += `${indent}└─ ${line}\n`;
-    });
+    try {
+      // Try to parse as JSON first
+      const responseObj = JSON.parse(request.request.response);
+      const responseLines = flattenJSON(responseObj);
+      responseLines.forEach((line) => {
+        output += `${indent}└─ ${line}\n`;
+      });
+    } catch (e) {
+      // If it's not JSON, just record the raw response
+      output += `${indent}└─ ${request.request.response}\n`;
+    }
   }
   output += "\n";
 

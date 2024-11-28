@@ -9,7 +9,11 @@ REQUEST /
       └─ Created at: middleware/main.tsx:64:46
       └─ Request created at: middleware/main.tsx:64:46
       RETURNED BODY
-      └─ success: true
+      └─ <html lang="en" class="h-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Error</title></head><body class="h-full"><div class="p-4 font-mono"><div class="text-red-500 whitespace-pre-wrap">Error: Failed to call test route
+
+    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/run-route/main-flow/index.tsx:117:11</a>
+    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7" class="text-blue-500 hover:underline">app/middleware/main.tsx:95:7</a>
+    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3" class="text-blue-500 hover:underline">app/middleware/main.tsx:90:3</a></div></div></body></html>
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:64:46
@@ -34,16 +38,7 @@ REQUEST /
             └─ Created at: middleware/main.tsx:64:46
             └─ Request created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ success: true
-            └─ lintResults.success: true
-            └─ lintResults.fetchLocation: "api/lint/index.tsx"
-
-                  REQUEST /api/lint
-                  └─ Created at: middleware/main.tsx:64:46
-                  └─ Request created at: middleware/main.tsx:64:46
-                  RETURNED BODY
-                  └─ success: true
-                  └─ fetchLocation: "api/lint/index.tsx"
+            └─ error: "Test error"
 
 -----------------
 
