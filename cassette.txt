@@ -7,10 +7,7 @@ REQUEST /
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
-      {
-        "error": "Internal server error",
-        "message": "Failed to call test route"
-      }
+      └─ Internal Server Error
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:64:46
@@ -51,10 +48,7 @@ REQUEST /
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
-      {
-        "error": "Internal server error",
-        "message": "Failed to call test route"
-      }
+      └─ Internal Server Error
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:64:46
@@ -95,10 +89,7 @@ REQUEST /
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
-      {
-        "error": "Internal server error",
-        "message": "Failed to call test route"
-      }
+      └─ Internal Server Error
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:64:46
@@ -150,7 +141,7 @@ REQUEST /
               "id": "[ID]",
               "pathname": "/api/run-route/main-flow",
               "createdLocation": "middleware/main.tsx:64:46",
-              "response": "{\"error\":\"Internal server error\",\"message\":\"Failed to call test route\"}",
+              "response": "Internal Server Error",
               "children": [
                 {
                   "id": "[ID]",
