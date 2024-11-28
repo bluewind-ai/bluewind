@@ -20,6 +20,7 @@ interface RequestNode {
   }>;
 }
 
+export const PATH = "/api/test-route";
 const app = new Hono();
 
 app.post("/", async (c) => {

@@ -13,7 +13,7 @@ import resetFactoryRoute from "../run-route/reset-factory";
 import rootRoute from "../run-route/root";
 import storeCassetteRoute from "../run-route/store-cassette";
 import truncateRoute from "../run-route/truncate";
-import testRoute from "../test-route";
+import testRoute, { PATH as testRoutePath } from "../test-route";
 import testRoute2 from "../test-route-2";
 
 export function registerRoutes(server: Hono) {
@@ -28,7 +28,7 @@ export function registerRoutes(server: Hono) {
   // All other routes under /api
   server.route("/api/run-route/main-flow", mainFlowRoute);
   server.route("/api/routes", routesRoute);
-  server.route("/api/test-route", testRoute);
+  server.route(testRoutePath, testRoute);
   server.route("/api/test-route-2", testRoute2);
   server.route("/api/lint", lintRoute);
   server.route("/api/run-route/truncate", truncateRoute);
