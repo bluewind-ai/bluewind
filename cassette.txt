@@ -16,19 +16,38 @@ REQUEST /
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ success: true
-            └─ message: "Using existing reset-factory route"
-            └─ function: {"id":2,"name":"reset-factory","type":"SYSTEM","requestId":2,"metadata":{"label":"Factory Reset","variant":"destructive","description":"Reset the entire database to factory settings","confirmationMessage":"This will delete all data. Are you sure?","confirmationRequired":true},"createdLocation":"api/routes/index.tsx:35:48"}
+            {
+              "success": true,
+              "message": "Using existing reset-factory route",
+              "function": {
+                "id": 2,
+                "name": "reset-factory",
+                "type": "SYSTEM",
+                "requestId": 2,
+                "metadata": {
+                  "label": "Factory Reset",
+                  "variant": "destructive",
+                  "description": "Reset the entire database to factory settings",
+                  "confirmationMessage": "This will delete all data. Are you sure?",
+                  "confirmationRequired": true
+                },
+                "createdLocation": "api/routes/index.tsx:35:48"
+              }
+            }
 
             REQUEST /api/run-route/ingest-company-data
             └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ message: "I worked for 1 second"
+            {
+              "message": "I worked for 1 second"
+            }
 
             REQUEST /api/test-route
             └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ error: "Test error"
+            {
+              "error": "Test error"
+            }
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:64:46
@@ -42,19 +61,38 @@ REQUEST /
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ success: true
-            └─ message: "Using existing reset-factory route"
-            └─ function: {"id":2,"name":"reset-factory","type":"SYSTEM","requestId":2,"metadata":{"label":"Factory Reset","variant":"destructive","description":"Reset the entire database to factory settings","confirmationMessage":"This will delete all data. Are you sure?","confirmationRequired":true},"createdLocation":"api/routes/index.tsx:35:48"}
+            {
+              "success": true,
+              "message": "Using existing reset-factory route",
+              "function": {
+                "id": 2,
+                "name": "reset-factory",
+                "type": "SYSTEM",
+                "requestId": 2,
+                "metadata": {
+                  "label": "Factory Reset",
+                  "variant": "destructive",
+                  "description": "Reset the entire database to factory settings",
+                  "confirmationMessage": "This will delete all data. Are you sure?",
+                  "confirmationRequired": true
+                },
+                "createdLocation": "api/routes/index.tsx:35:48"
+              }
+            }
 
             REQUEST /api/run-route/ingest-company-data
             └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ message: "I worked for 1 second"
+            {
+              "message": "I worked for 1 second"
+            }
 
             REQUEST /api/test-route
             └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ error: "Test error"
+            {
+              "error": "Test error"
+            }
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:64:46
@@ -68,24 +106,160 @@ REQUEST /
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ success: true
-            └─ message: "Using existing reset-factory route"
-            └─ function: {"id":2,"name":"reset-factory","type":"SYSTEM","requestId":2,"metadata":{"label":"Factory Reset","variant":"destructive","description":"Reset the entire database to factory settings","confirmationMessage":"This will delete all data. Are you sure?","confirmationRequired":true},"createdLocation":"api/routes/index.tsx:35:48"}
+            {
+              "success": true,
+              "message": "Using existing reset-factory route",
+              "function": {
+                "id": 2,
+                "name": "reset-factory",
+                "type": "SYSTEM",
+                "requestId": 2,
+                "metadata": {
+                  "label": "Factory Reset",
+                  "variant": "destructive",
+                  "description": "Reset the entire database to factory settings",
+                  "confirmationMessage": "This will delete all data. Are you sure?",
+                  "confirmationRequired": true
+                },
+                "createdLocation": "api/routes/index.tsx:35:48"
+              }
+            }
 
             REQUEST /api/run-route/ingest-company-data
             └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ message: "I worked for 1 second"
+            {
+              "message": "I worked for 1 second"
+            }
 
             REQUEST /api/test-route
             └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
-            └─ error: "Test error"
+            {
+              "error": "Test error"
+            }
 
-      REQUEST /api/run-route/get-request-tree/2803
+      REQUEST /api/run-route/get-request-tree/2811
       └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
-      └─ tree: {"id":2803,"pathname":"/","createdLocation":"api/run-route/root.tsx:27:46","response":null,"children":[{"id":2804,"pathname":"/api/run-route/main-flow","createdLocation":"middleware/main.tsx:64:46","response":"<html lang=\"en\" class=\"h-full\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><title>Error</title></head><body class=\"h-full\"><div class=\"p-4 font-mono\"><div class=\"text-red-500 whitespace-pre-wrap\">Error: Failed to call test route\n\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11\" class=\"text-blue-500 hover:underline\">app/api/run-route/main-flow/index.tsx:117:11</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:95:7</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:90:3</a></div></div></body></html>","children":[{"id":2805,"pathname":"/api/routes","createdLocation":"middleware/main.tsx:64:46","response":"{\"success\":true,\"message\":\"Using existing reset-factory route\",\"function\":{\"id\":2,\"name\":\"reset-factory\",\"type\":\"SYSTEM\",\"requestId\":2,\"metadata\":{\"label\":\"Factory Reset\",\"variant\":\"destructive\",\"description\":\"Reset the entire database to factory settings\",\"confirmationMessage\":\"This will delete all data. Are you sure?\",\"confirmationRequired\":true},\"createdLocation\":\"api/routes/index.tsx:35:48\"}}","children":[],"objects":[]},{"id":2807,"pathname":"/api/test-route","createdLocation":"middleware/main.tsx:64:46","response":"{\"error\":\"Test error\"}","children":[],"objects":[]},{"id":2806,"pathname":"/api/run-route/ingest-company-data","createdLocation":"middleware/main.tsx:64:46","response":"{\"message\":\"I worked for 1 second\"}","children":[],"objects":[]}],"objects":[]},{"id":2804,"pathname":"/api/run-route/main-flow","createdLocation":"middleware/main.tsx:64:46","response":"<html lang=\"en\" class=\"h-full\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><title>Error</title></head><body class=\"h-full\"><div class=\"p-4 font-mono\"><div class=\"text-red-500 whitespace-pre-wrap\">Error: Failed to call test route\n\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11\" class=\"text-blue-500 hover:underline\">app/api/run-route/main-flow/index.tsx:117:11</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:95:7</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:90:3</a></div></div></body></html>","children":[{"id":2805,"pathname":"/api/routes","createdLocation":"middleware/main.tsx:64:46","response":"{\"success\":true,\"message\":\"Using existing reset-factory route\",\"function\":{\"id\":2,\"name\":\"reset-factory\",\"type\":\"SYSTEM\",\"requestId\":2,\"metadata\":{\"label\":\"Factory Reset\",\"variant\":\"destructive\",\"description\":\"Reset the entire database to factory settings\",\"confirmationMessage\":\"This will delete all data. Are you sure?\",\"confirmationRequired\":true},\"createdLocation\":\"api/routes/index.tsx:35:48\"}}","children":[],"objects":[]},{"id":2807,"pathname":"/api/test-route","createdLocation":"middleware/main.tsx:64:46","response":"{\"error\":\"Test error\"}","children":[],"objects":[]},{"id":2806,"pathname":"/api/run-route/ingest-company-data","createdLocation":"middleware/main.tsx:64:46","response":"{\"message\":\"I worked for 1 second\"}","children":[],"objects":[]}],"objects":[]},{"id":2804,"pathname":"/api/run-route/main-flow","createdLocation":"middleware/main.tsx:64:46","response":"<html lang=\"en\" class=\"h-full\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><title>Error</title></head><body class=\"h-full\"><div class=\"p-4 font-mono\"><div class=\"text-red-500 whitespace-pre-wrap\">Error: Failed to call test route\n\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11\" class=\"text-blue-500 hover:underline\">app/api/run-route/main-flow/index.tsx:117:11</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:95:7</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:90:3</a></div></div></body></html>","children":[{"id":2805,"pathname":"/api/routes","createdLocation":"middleware/main.tsx:64:46","response":"{\"success\":true,\"message\":\"Using existing reset-factory route\",\"function\":{\"id\":2,\"name\":\"reset-factory\",\"type\":\"SYSTEM\",\"requestId\":2,\"metadata\":{\"label\":\"Factory Reset\",\"variant\":\"destructive\",\"description\":\"Reset the entire database to factory settings\",\"confirmationMessage\":\"This will delete all data. Are you sure?\",\"confirmationRequired\":true},\"createdLocation\":\"api/routes/index.tsx:35:48\"}}","children":[],"objects":[]},{"id":2807,"pathname":"/api/test-route","createdLocation":"middleware/main.tsx:64:46","response":"{\"error\":\"Test error\"}","children":[],"objects":[]},{"id":2806,"pathname":"/api/run-route/ingest-company-data","createdLocation":"middleware/main.tsx:64:46","response":"{\"message\":\"I worked for 1 second\"}","children":[],"objects":[]}],"objects":[]},{"id":2808,"pathname":"/api/run-route/get-request-tree/2803","createdLocation":"middleware/main.tsx:64:46","response":null,"children":[],"objects":[]}],"objects":[]}
+      {
+        "tree": {
+          "id": 2811,
+          "pathname": "/",
+          "createdLocation": "api/run-route/root.tsx:27:46",
+          "response": null,
+          "children": [
+            {
+              "id": 2812,
+              "pathname": "/api/run-route/main-flow",
+              "createdLocation": "middleware/main.tsx:64:46",
+              "response": "<html lang=\"en\" class=\"h-full\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><title>Error</title></head><body class=\"h-full\"><div class=\"p-4 font-mono\"><div class=\"text-red-500 whitespace-pre-wrap\">Error: Failed to call test route\n\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11\" class=\"text-blue-500 hover:underline\">app/api/run-route/main-flow/index.tsx:117:11</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:95:7</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:90:3</a></div></div></body></html>",
+              "children": [
+                {
+                  "id": 2813,
+                  "pathname": "/api/routes",
+                  "createdLocation": "middleware/main.tsx:64:46",
+                  "response": "{\"success\":true,\"message\":\"Using existing reset-factory route\",\"function\":{\"id\":2,\"name\":\"reset-factory\",\"type\":\"SYSTEM\",\"requestId\":2,\"metadata\":{\"label\":\"Factory Reset\",\"variant\":\"destructive\",\"description\":\"Reset the entire database to factory settings\",\"confirmationMessage\":\"This will delete all data. Are you sure?\",\"confirmationRequired\":true},\"createdLocation\":\"api/routes/index.tsx:35:48\"}}",
+                  "children": [],
+                  "objects": []
+                },
+                {
+                  "id": 2814,
+                  "pathname": "/api/run-route/ingest-company-data",
+                  "createdLocation": "middleware/main.tsx:64:46",
+                  "response": "{\"message\":\"I worked for 1 second\"}",
+                  "children": [],
+                  "objects": []
+                },
+                {
+                  "id": 2815,
+                  "pathname": "/api/test-route",
+                  "createdLocation": "middleware/main.tsx:64:46",
+                  "response": "{\"error\":\"Test error\"}",
+                  "children": [],
+                  "objects": []
+                }
+              ],
+              "objects": []
+            },
+            {
+              "id": 2812,
+              "pathname": "/api/run-route/main-flow",
+              "createdLocation": "middleware/main.tsx:64:46",
+              "response": "<html lang=\"en\" class=\"h-full\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><title>Error</title></head><body class=\"h-full\"><div class=\"p-4 font-mono\"><div class=\"text-red-500 whitespace-pre-wrap\">Error: Failed to call test route\n\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11\" class=\"text-blue-500 hover:underline\">app/api/run-route/main-flow/index.tsx:117:11</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:95:7</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:90:3</a></div></div></body></html>",
+              "children": [
+                {
+                  "id": 2813,
+                  "pathname": "/api/routes",
+                  "createdLocation": "middleware/main.tsx:64:46",
+                  "response": "{\"success\":true,\"message\":\"Using existing reset-factory route\",\"function\":{\"id\":2,\"name\":\"reset-factory\",\"type\":\"SYSTEM\",\"requestId\":2,\"metadata\":{\"label\":\"Factory Reset\",\"variant\":\"destructive\",\"description\":\"Reset the entire database to factory settings\",\"confirmationMessage\":\"This will delete all data. Are you sure?\",\"confirmationRequired\":true},\"createdLocation\":\"api/routes/index.tsx:35:48\"}}",
+                  "children": [],
+                  "objects": []
+                },
+                {
+                  "id": 2814,
+                  "pathname": "/api/run-route/ingest-company-data",
+                  "createdLocation": "middleware/main.tsx:64:46",
+                  "response": "{\"message\":\"I worked for 1 second\"}",
+                  "children": [],
+                  "objects": []
+                },
+                {
+                  "id": 2815,
+                  "pathname": "/api/test-route",
+                  "createdLocation": "middleware/main.tsx:64:46",
+                  "response": "{\"error\":\"Test error\"}",
+                  "children": [],
+                  "objects": []
+                }
+              ],
+              "objects": []
+            },
+            {
+              "id": 2812,
+              "pathname": "/api/run-route/main-flow",
+              "createdLocation": "middleware/main.tsx:64:46",
+              "response": "<html lang=\"en\" class=\"h-full\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><title>Error</title></head><body class=\"h-full\"><div class=\"p-4 font-mono\"><div class=\"text-red-500 whitespace-pre-wrap\">Error: Failed to call test route\n\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/api/run-route/main-flow/index.tsx:117:11\" class=\"text-blue-500 hover:underline\">app/api/run-route/main-flow/index.tsx:117:11</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:95:7</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:90:3</a></div></div></body></html>",
+              "children": [
+                {
+                  "id": 2813,
+                  "pathname": "/api/routes",
+                  "createdLocation": "middleware/main.tsx:64:46",
+                  "response": "{\"success\":true,\"message\":\"Using existing reset-factory route\",\"function\":{\"id\":2,\"name\":\"reset-factory\",\"type\":\"SYSTEM\",\"requestId\":2,\"metadata\":{\"label\":\"Factory Reset\",\"variant\":\"destructive\",\"description\":\"Reset the entire database to factory settings\",\"confirmationMessage\":\"This will delete all data. Are you sure?\",\"confirmationRequired\":true},\"createdLocation\":\"api/routes/index.tsx:35:48\"}}",
+                  "children": [],
+                  "objects": []
+                },
+                {
+                  "id": 2814,
+                  "pathname": "/api/run-route/ingest-company-data",
+                  "createdLocation": "middleware/main.tsx:64:46",
+                  "response": "{\"message\":\"I worked for 1 second\"}",
+                  "children": [],
+                  "objects": []
+                },
+                {
+                  "id": 2815,
+                  "pathname": "/api/test-route",
+                  "createdLocation": "middleware/main.tsx:64:46",
+                  "response": "{\"error\":\"Test error\"}",
+                  "children": [],
+                  "objects": []
+                }
+              ],
+              "objects": []
+            },
+            {
+              "id": 2816,
+              "pathname": "/api/run-route/get-request-tree/2811",
+              "createdLocation": "middleware/main.tsx:64:46",
+              "response": null,
+              "children": [],
+              "objects": []
+            }
+          ],
+          "objects": []
+        }
+      }
 
 -----------------
 

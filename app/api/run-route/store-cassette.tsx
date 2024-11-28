@@ -56,9 +56,9 @@ app.post("/", async (c) => {
       out += `${indent}RETURNED BODY\n`;
       try {
         const resp = JSON.parse(node.response);
-        Object.entries(resp).forEach(([k, v]) => {
-          out += `${indent}└─ ${k}: ${JSON.stringify(v)}\n`;
-        });
+        out += `${indent}${JSON.stringify(resp, null, 2)
+          .split("\n")
+          .join("\n" + indent)}\n`;
       } catch (e) {
         out += `${indent}└─ ${node.response}\n`;
       }
