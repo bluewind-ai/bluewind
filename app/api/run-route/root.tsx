@@ -57,19 +57,43 @@ app.post("/", async (c) => {
       },
     );
 
-    // Now handle any errors that occurred
+    // Now handle any errors that occurred but still include requestId
     if (mainFlowError) {
-      throw mainFlowError;
+      const response = {
+        success: false,
+        error: String(mainFlowError),
+        requestId: rootRequest.id,
+      };
+      console.log("[root] Sending error response with requestId:", response);
+      return c.json(response, 500);
     }
 
-    // Return JSON with the request ID
-    return c.json({
+    // Success case
+    const successResponse = {
       success: true,
       requestId: rootRequest.id,
-    });
+    };
+    console.log("[root] Sending success response:", successResponse);
+    return c.json(successResponse);
   } catch (error) {
     console.error("[root route] Error:", error);
-    return c.json({ error: String(error) }, 500);
+    // If we have c.requestId, we created the request before failing
+    if (c.requestId) {
+      const errorResponse = {
+        success: false,
+        error: String(error),
+        requestId: c.requestId,
+      };
+      console.log("[root] Sending catch block error response with requestId:", errorResponse);
+      return c.json(errorResponse, 500);
+    }
+    // Complete failure case - request wasn't even created
+    const finalErrorResponse = {
+      success: false,
+      error: String(error),
+    };
+    console.log("[root] Sending catch block error response without requestId:", finalErrorResponse);
+    return c.json(finalErrorResponse, 500);
   }
 });
 

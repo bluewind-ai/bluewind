@@ -25,13 +25,21 @@ export function ServerFunctionsButtons({
   const navigate = useNavigate();
 
   const handleRootClick = async () => {
-    const response = await fetch("http://localhost:5173/api/run-route/root", {
-      method: "POST",
-    });
+    try {
+      const response = await fetch("http://localhost:5173/api/run-route/root", {
+        method: "POST",
+      });
 
-    if (response.ok) {
       const data = await response.json();
-      navigate(`/requests/${data.requestId}`);
+
+      // Navigate regardless of response status if we have a requestId
+      if (data.requestId) {
+        navigate(`/requests/${data.requestId}`);
+      } else {
+        console.error("No requestId in response:", data);
+      }
+    } catch (error) {
+      console.error("Error calling root:", error);
     }
   };
 
