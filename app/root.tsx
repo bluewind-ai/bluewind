@@ -38,7 +38,6 @@ function Document({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
-export { RemixErrorBoundary as ErrorBoundary } from "~/utils/error-utils";
 export interface LoaderData {
   navigationData: NavigationNode;
   backOfficeData: NavigationNode;

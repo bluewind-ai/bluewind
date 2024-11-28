@@ -5,12 +5,12 @@ REQUEST /
 └─ Created at: api/root/index.tsx:27:46
 
       REQUEST /api/run-route/main-flow
-      └─ Created at: middleware/main.tsx:73:46
+      └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
       └─ Internal Server Error
 
             REQUEST /api/routes
-            └─ Created at: middleware/main.tsx:73:46
+            └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
             {
               "success": true,
@@ -32,26 +32,26 @@ REQUEST /
             }
 
             REQUEST /api/run-route/ingest-company-data
-            └─ Created at: middleware/main.tsx:73:46
+            └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
             {
               "message": "I worked for 1 second"
             }
 
             REQUEST /api/test-route
-            └─ Created at: middleware/main.tsx:73:46
+            └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
             {
               "error": "Test error"
             }
 
       REQUEST /api/run-route/main-flow
-      └─ Created at: middleware/main.tsx:73:46
+      └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
       └─ Internal Server Error
 
             REQUEST /api/routes
-            └─ Created at: middleware/main.tsx:73:46
+            └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
             {
               "success": true,
@@ -73,26 +73,26 @@ REQUEST /
             }
 
             REQUEST /api/run-route/ingest-company-data
-            └─ Created at: middleware/main.tsx:73:46
+            └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
             {
               "message": "I worked for 1 second"
             }
 
             REQUEST /api/test-route
-            └─ Created at: middleware/main.tsx:73:46
+            └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
             {
               "error": "Test error"
             }
 
       REQUEST /api/run-route/main-flow
-      └─ Created at: middleware/main.tsx:73:46
+      └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
       └─ Internal Server Error
 
             REQUEST /api/routes
-            └─ Created at: middleware/main.tsx:73:46
+            └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
             {
               "success": true,
@@ -114,21 +114,21 @@ REQUEST /
             }
 
             REQUEST /api/run-route/ingest-company-data
-            └─ Created at: middleware/main.tsx:73:46
+            └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
             {
               "message": "I worked for 1 second"
             }
 
             REQUEST /api/test-route
-            └─ Created at: middleware/main.tsx:73:46
+            └─ Created at: middleware/main.tsx:64:46
             RETURNED BODY
             {
               "error": "Test error"
             }
 
       REQUEST /api/run-route/get-request-tree/:id
-      └─ Created at: middleware/main.tsx:73:46
+      └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
       {
         "tree": {
@@ -140,13 +140,13 @@ REQUEST /
             {
               "id": "[ID]",
               "pathname": "/api/run-route/main-flow",
-              "createdLocation": "middleware/main.tsx:73:46",
+              "createdLocation": "middleware/main.tsx:64:46",
               "response": "Internal Server Error",
               "children": [
                 {
                   "id": "[ID]",
                   "pathname": "/api/routes",
-                  "createdLocation": "middleware/main.tsx:73:46",
+                  "createdLocation": "middleware/main.tsx:64:46",
                   "response": "{\"success\":true,\"message\":\"Using existing reset-factory route\",\"function\":{\"id\":2,\"name\":\"reset-factory\",\"type\":\"SYSTEM\",\"requestId\":2,\"metadata\":{\"label\":\"Factory Reset\",\"variant\":\"destructive\",\"description\":\"Reset the entire database to factory settings\",\"confirmationMessage\":\"This will delete all data. Are you sure?\",\"confirmationRequired\":true},\"createdLocation\":\"api/routes/index.tsx:35:48\"}}",
                   "children": [],
                   "objects": []
@@ -154,7 +154,7 @@ REQUEST /
                 {
                   "id": "[ID]",
                   "pathname": "/api/run-route/ingest-company-data",
-                  "createdLocation": "middleware/main.tsx:73:46",
+                  "createdLocation": "middleware/main.tsx:64:46",
                   "response": "{\"message\":\"I worked for 1 second\"}",
                   "children": [],
                   "objects": []
@@ -162,7 +162,7 @@ REQUEST /
                 {
                   "id": "[ID]",
                   "pathname": "/api/test-route",
-                  "createdLocation": "middleware/main.tsx:73:46",
+                  "createdLocation": "middleware/main.tsx:64:46",
                   "response": "{\"error\":\"Test error\"}",
                   "children": [],
                   "objects": []
@@ -173,7 +173,7 @@ REQUEST /
             {
               "id": "[ID]",
               "pathname": "/api/run-route/get-request-tree/:id",
-              "createdLocation": "middleware/main.tsx:73:46",
+              "createdLocation": "middleware/main.tsx:64:46",
               "response": null,
               "children": [],
               "objects": []
