@@ -1,5 +1,4 @@
 // app/lib/fetch-with-context.ts
-
 export function fetchWithContext(c: any) {
   return (url: string, init: RequestInit = {}) => {
     const headers = new Headers(init.headers);

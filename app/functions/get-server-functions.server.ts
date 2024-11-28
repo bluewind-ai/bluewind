@@ -1,5 +1,4 @@
 // app/functions/get-server-functions.server.ts
-
 import { sql } from "drizzle-orm";
 
 import { serverFunctions } from "~/db/schema";

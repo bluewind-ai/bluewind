@@ -39,7 +39,6 @@ export async function goNext(request: ExtendedContext) {
     const functionModule = await import(
       /* @vite-ignore */ `./${nextFunction.serverFunctionName}.server`
     );
-
     const result = await functionModule[nextFunction.serverFunctionName](
       request,
       nextFunction.args,

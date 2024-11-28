@@ -1,5 +1,4 @@
 // app/middleware/insert.ts
-
 import { z } from "zod";
 
 import { ExtendedContext } from ".";
@@ -30,12 +29,10 @@ const tableSchemas = {
   }),
   // Add other schemas...
 } as const;
-
 type FunctionWithApply = {
   (...args: unknown[]): unknown;
   apply(thisArg: any, argArray: unknown[]): unknown;
 };
-
 export function insertMiddleware(
   target: any,
   value: FunctionWithApply,
@@ -46,7 +43,6 @@ export function insertMiddleware(
   if (!c.requestId) {
     throw new Error("Request ID is required in context for database operations");
   }
-
   const query = value.apply(target, args);
   return new Proxy(query as object, {
     get(target: object, prop) {

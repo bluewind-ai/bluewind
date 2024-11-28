@@ -1,5 +1,4 @@
 // app/lib/functions.ts
-
 import { eq } from "drizzle-orm";
 
 import { functionCalls, serverFunctions } from "~/db/schema";
@@ -10,7 +9,6 @@ import type { ExtendedContext } from "~/middleware";
 import { db } from "~/middleware/main";
 
 type ServerFunction = (c: ExtendedContext) => Promise<any>;
-
 function wrapFunction(fn: ServerFunction, name: string) {
   return async (c: ExtendedContext) => {
     // dd("wrapFunction", { name });
@@ -19,11 +17,9 @@ function wrapFunction(fn: ServerFunction, name: string) {
       .from(serverFunctions)
       .where(eq(serverFunctions.name, name))
       .limit(1);
-
     if (!serverFunction) {
       throw new Error(`Server function ${name} not found`);
     }
-
     const [functionCall] = await db
       .insert(functionCalls)
       .values({
@@ -35,7 +31,6 @@ function wrapFunction(fn: ServerFunction, name: string) {
         result: null,
       })
       .returning();
-
     try {
       const result = await fn(c);
       await db
@@ -58,7 +53,6 @@ function wrapFunction(fn: ServerFunction, name: string) {
     }
   };
 }
-
 export const functions = {
   root,
   master: wrapFunction(master, "master"),

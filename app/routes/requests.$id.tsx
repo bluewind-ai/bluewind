@@ -1,5 +1,4 @@
 // app/routes/requests.$id.tsx
-
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -10,21 +9,16 @@ import { db } from "~/middleware/main";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const requestId = Number(params.id);
-
   const request = await db.query.requests.findFirst({
     where: eq(requests.id, requestId),
   });
-
   if (!request) {
     throw new Response("Request not found", { status: 404 });
   }
-
   return json({ request });
 }
-
 export default function Request() {
   const { request } = useLoaderData<typeof loader>();
-
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Request {request.id}</h1>

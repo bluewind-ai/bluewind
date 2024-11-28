@@ -1,5 +1,4 @@
 // app/api/register-routes.tsx
-
 import { Hono } from "hono";
 
 import { mainMiddleware } from "~/middleware/main";
@@ -19,9 +18,7 @@ export function registerRoutes(server: Hono) {
   server.route("", rootRoute);
   server.route("", resetFactoryRoute);
   server.route("", storeCassetteRoute);
-
   server.use("*", mainMiddleware);
-
   const routes = [
     mainFlowRoute,
     routesRoute,
@@ -31,11 +28,9 @@ export function registerRoutes(server: Hono) {
     ingestCompanyDataRoute,
     getRequestTreeRoute,
   ];
-
   routes.forEach((route) => {
     server.route("", route);
   });
-
   server.use("*", async (c, next) => {
     await next();
   });

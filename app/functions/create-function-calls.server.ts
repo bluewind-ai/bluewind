@@ -1,18 +1,14 @@
 // // app/functions/create-function-calls.server.ts
-
 // import { redirect } from "@remix-run/node";
 // import { sql } from "drizzle-orm";
 // import { hc } from "hono/client";
-
 // import type { ResetFactoryRouteType } from "~/api/run-route/reset-factory";
 // import { functionCalls, objects, serverFunctions } from "~/db/schema";
 // import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 // import { ServerFunctionType } from "~/db/schema/server-functions/schema";
 // import type { ServerFunctionName } from "~/lib/server-functions-types";
 // import type { ExtendedContext } from "~/middleware";
-
 // const client = hc<ResetFactoryRouteType>("http://localhost:5173");
-
 // export async function createFunctionCalls(
 //   request: ExtendedContext,
 //   functionName: ServerFunctionName,
@@ -28,7 +24,6 @@
 //       functionCallId: true,
 //     },
 //   });
-
 //   // If it doesn't exist, create it
 //   if (!serverFunction) {
 //     const [newServerFunction] = await request.db
@@ -48,7 +43,6 @@
 //       });
 //     serverFunction = newServerFunction;
 //   }
-
 //   const [functionCall] = await request.db
 //     .insert(functionCalls)
 //     .values({
@@ -59,7 +53,6 @@
 //     .returning({
 //       id: functionCalls.id,
 //     });
-
 //   // Create object for the function call
 //   await request.db.insert(objects).values({
 //     modelId: 4, // Function calls model ID
@@ -67,13 +60,11 @@
 //     requestId: request.requestId,
 //     functionCallId: request.functionCallId,
 //   });
-
 //   try {
 //     const response = await client.run$45$route.reset$45$factory.$post();
 //     if (!response.ok) {
 //       throw new Error(`Failed to reset factory: ${response.statusText}`);
 //     }
-
 //     await request.db
 //       .update(functionCalls)
 //       .set({ status: FunctionCallStatus.COMPLETED })
@@ -85,6 +76,5 @@
 //       .where(sql`${functionCalls.requestId} = ${request.requestId}`);
 //     throw error;
 //   }
-
 //   return redirect(`/objects?function-call-id=${request.functionCallId}`);
 // }

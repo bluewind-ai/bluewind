@@ -13,7 +13,6 @@ export const users = pgTable("users", {
 });
 export const usersRelations = relations(users, ({ one, many }) => ({
   sessions: many(sessions),
-
   request: one(requests, {
     fields: [users.requestId],
     references: [requests.id],

@@ -1,5 +1,4 @@
 // app/api/store-cassette/index.tsx
-
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { join } from "path";
@@ -10,20 +9,16 @@ import { db } from "~/middleware/main";
 import { writeFile } from "../../lib/intercepted-fs";
 
 const app = new Hono();
-
 app.post("/api/run-route/store-cassette", async (c) => {
   const parentRequestId = c.req.header("X-Parent-Request-Id");
   if (!parentRequestId) throw new Error("No parent request ID provided in headers");
-
   const results = await db
     .select({ object: objects, model: models, request: requests })
     .from(requests)
     .leftJoin(objects, sql`${objects.requestId} = ${requests.id}`)
     .leftJoin(models, sql`${objects.modelId} = ${models.id}`);
-
   const rootRequest = results.find((r) => r.request.id.toString() === parentRequestId);
   if (!rootRequest) throw new Error(`Root request not found for ID ${parentRequestId}`);
-
   const getNode = (id: number) => {
     const reqResults = results.filter((r) => r.request.id === id);
     const req = reqResults[0].request;
@@ -45,9 +40,7 @@ app.post("/api/run-route/store-cassette", async (c) => {
         .sort((a, b) => a.modelName.localeCompare(b.modelName)),
     };
   };
-
   const tree = getNode(rootRequest.request.id);
-
   const renderNode = (node: any, indent = "") => {
     let out = `${indent}REQUEST ${node.pathname}\n`;
     out += `${indent}└─ Created at: ${node.createdLocation}\n`;
@@ -77,12 +70,8 @@ app.post("/api/run-route/store-cassette", async (c) => {
     });
     return out;
   };
-
   const cassette = `CASSETTE REPLAY\n=================\n\n${renderNode(tree)}-----------------\n\n`;
-
   await writeFile(join(process.cwd(), "cassette.txt"), cassette, "utf-8");
-
   return c.json({ success: true });
 });
-
 export default app;

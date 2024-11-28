@@ -1,5 +1,4 @@
 // app/api/test-route/index.tsx
-
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 
@@ -19,30 +18,22 @@ interface RequestNode {
     createdLocation: string;
   }>;
 }
-
 const app = new Hono();
-
 app.post("/api/test-route", async (c) => {
   return c.json({ error: "Test error" }, 500);
 });
-
 app.get("/api/run-route/test-route/:requestId", async (c) => {
   const requestId = parseInt(c.req.param("requestId"));
-  console.log("[request-tree] Building tree for request:", requestId);
-
   // First find the root request by traversing up the parent chain
   const currentRequest = await db
     .select()
     .from(requests)
     .where(sql`${requests.id} = ${requestId}`)
     .limit(1);
-
   if (!currentRequest.length) {
     return c.json({ error: "Request not found" }, 404);
   }
-
   let rootRequest = currentRequest[0];
-
   // Keep traversing up until we find the request with no parent
   while (rootRequest.parentId !== null) {
     const parentRequest = await db
@@ -50,13 +41,9 @@ app.get("/api/run-route/test-route/:requestId", async (c) => {
       .from(requests)
       .where(sql`${requests.id} = ${rootRequest.parentId}`)
       .limit(1);
-
     if (!parentRequest.length) break;
     rootRequest = parentRequest[0];
   }
-
-  console.log("[request-tree] Found root request:", rootRequest.id);
-
   // Now get all requests and objects in a single query
   const results = await db
     .select({
@@ -67,10 +54,8 @@ app.get("/api/run-route/test-route/:requestId", async (c) => {
     .from(requests)
     .leftJoin(objects, sql`${objects.requestId} = ${requests.id}`)
     .leftJoin(models, sql`${objects.modelId} = ${models.id}`);
-
   // Build a map of all requests
   const requestsMap = new Map<number, RequestNode>();
-
   // First pass: create all request nodes
   for (const result of results) {
     if (!requestsMap.has(result.request.id)) {
@@ -83,7 +68,6 @@ app.get("/api/run-route/test-route/:requestId", async (c) => {
         objects: [],
       });
     }
-
     // Add object if it exists
     if (result.object && result.model) {
       const node = requestsMap.get(result.request.id)!;
@@ -93,7 +77,6 @@ app.get("/api/run-route/test-route/:requestId", async (c) => {
       });
     }
   }
-
   // Second pass: build parent-child relationships
   for (const result of results) {
     if (result.request.parentId !== null) {
@@ -104,16 +87,11 @@ app.get("/api/run-route/test-route/:requestId", async (c) => {
       }
     }
   }
-
   // Get the root node
   const tree = requestsMap.get(rootRequest.id);
-
   if (!tree) {
     return c.json({ error: "Failed to build request tree" }, 500);
   }
-
-  console.log("[request-tree] Successfully built tree");
   return c.json({ tree });
 });
-
 export default app;

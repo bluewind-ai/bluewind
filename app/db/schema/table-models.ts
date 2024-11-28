@@ -31,7 +31,6 @@ export const TABLES: Record<string, TableConfig> = {
     urlName: TableModel.SERVER_FUNCTIONS,
     modelName: "server_functions",
   },
-
   objects: {
     displayName: "Objects",
     urlName: TableModel.OBJECTS,

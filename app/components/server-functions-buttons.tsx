@@ -1,5 +1,4 @@
 // app/components/server-functions-buttons.tsx
-
 import { useNavigate } from "@remix-run/react";
 
 import { TableModel } from "~/db/schema/table-models";
@@ -18,31 +17,23 @@ interface ServerFunctionsButtonsProps {
     } | null;
   }>;
 }
-
 export function ServerFunctionsButtons({
   [TableModel.SERVER_FUNCTIONS]: serverFunctions,
 }: ServerFunctionsButtonsProps) {
   const navigate = useNavigate();
-
   const handleRootClick = async () => {
     try {
       const response = await fetch("http://localhost:5173/api/run-route/root", {
         method: "POST",
       });
-
       const data = await response.json();
-
       // Navigate regardless of response status if we have a requestId
       if (data.requestId) {
         navigate(`/requests/${data.requestId}`);
       } else {
-        console.error("No requestId in response:", data);
       }
-    } catch (error) {
-      console.error("Error calling root:", error);
-    }
+    } catch (error) {}
   };
-
   return (
     <div className="flex gap-2 p-4 flex-wrap">
       <Button onClick={handleRootClick} variant="default">

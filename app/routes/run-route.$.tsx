@@ -1,5 +1,4 @@
 // app/routes/run-route.$.tsx
-
 import { type ActionFunction, redirect } from "@remix-run/node";
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -9,10 +8,8 @@ export const action: ActionFunction = async ({ request, params }) => {
     body: request.body,
     headers: request.headers,
   });
-
   if (params["*"] === "reset-factory") {
     return redirect("/");
   }
-
   return new Response(null, { status: 200 });
 };

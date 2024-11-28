@@ -1,5 +1,4 @@
 // app/db/schema/requests/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
@@ -14,7 +13,6 @@ export const requests = pgTable("requests", {
   response: text("response"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-
 export const RequestSchema = z.object({
   id: z.number(),
   parentId: z.number().nullable(),
@@ -23,9 +21,7 @@ export const RequestSchema = z.object({
   response: z.string().nullable(),
   createdAt: z.date(),
 });
-
 export type CreateRequest = z.infer<typeof RequestSchema>;
-
 export const requestsRelations = relations(requests, ({ many }) => ({
   serverFunctions: many(serverFunctions),
 }));

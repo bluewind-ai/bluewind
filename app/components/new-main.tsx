@@ -1,5 +1,4 @@
 // app/components/new-main.tsx
-
 import { type ColumnDef, type SortingState } from "@tanstack/react-table";
 import {
   flexRender,
@@ -10,12 +9,14 @@ import {
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
-export function NewMain<TData extends { name: string }>({ data }: { data: TData[] }) {
+export function NewMain<
+  TData extends {
+    name: string;
+  },
+>({ data }: { data: TData[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
-
   const createColumns = (data: TData[]): ColumnDef<TData>[] => {
     if (!data.length) return [];
-
     const baseColumns = Object.keys(data[0]).map((key) => ({
       accessorKey: key,
       header: key,
@@ -32,7 +33,6 @@ export function NewMain<TData extends { name: string }>({ data }: { data: TData[
         return value;
       },
     }));
-
     const actionColumn: ColumnDef<TData> = {
       id: "action",
       header: "Action",
@@ -50,10 +50,8 @@ export function NewMain<TData extends { name: string }>({ data }: { data: TData[
         );
       },
     };
-
     return [...baseColumns, actionColumn];
   };
-
   const table = useReactTable({
     data,
     columns: createColumns(data),
@@ -64,7 +62,6 @@ export function NewMain<TData extends { name: string }>({ data }: { data: TData[
     },
     onSortingChange: setSorting,
   });
-
   return (
     <div className="p-4">
       <table className="min-w-full border-collapse border border-slate-200">

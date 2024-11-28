@@ -1,5 +1,4 @@
 // app/lib/location-tracker.ts
-
 /**
  * Returns the current file location and line number from the call stack
  * Converts '/Users/merwanehamadi/code/bluewind/app/api/run-route/root.tsx:41:44'

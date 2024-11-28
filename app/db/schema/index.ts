@@ -1,6 +1,5 @@
 // app/db/schema/index.ts
 // Function Calls
-
 // Models
 import { modelEnum, models } from "./models/schema";
 // Objects
