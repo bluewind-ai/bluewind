@@ -62,20 +62,10 @@ app.post("/", async (c) => {
       throw mainFlowError;
     }
 
-    // Instead of redirect, fetch the requests page and return its response
-    const requestsResponse = await fetchWithContext(c)(
-      `http://localhost:5173/requests/${rootRequest.id}`,
-      {
-        method: "GET",
-      },
-    );
-
-    if (!requestsResponse.ok) {
-      throw new Error("Failed to fetch requests page");
-    }
-
-    return new Response(await requestsResponse.text(), {
-      headers: { "Content-Type": "text/html" },
+    // Return JSON with the request ID
+    return c.json({
+      success: true,
+      requestId: rootRequest.id,
     });
   } catch (error) {
     console.error("[root route] Error:", error);
