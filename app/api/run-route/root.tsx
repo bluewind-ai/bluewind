@@ -32,6 +32,7 @@ app.post("/", async (c) => {
     console.log("[root] Set context requestId to:", c.requestId);
 
     let mainFlowError = null;
+    let tree = null;
 
     // Call main flow, using fetchWithContext
     try {
@@ -49,51 +50,58 @@ app.post("/", async (c) => {
       mainFlowError = error;
     }
 
-    // Always record the cassette using fetchWithContext
-    const cassetteResponse = await fetchWithContext(c)(
-      "http://localhost:5173/api/run-route/store-cassette",
-      {
-        method: "POST",
-      },
-    );
+    // First get the tree structure
+    try {
+      const treeResponse = await fetchWithContext(c)(
+        `http://localhost:5173/api/run-route/get-request-tree/${rootRequest.id}`,
+        {
+          method: "GET",
+        },
+      );
 
-    // Now handle any errors that occurred but still include requestId
-    if (mainFlowError) {
-      const response = {
-        success: false,
-        error: String(mainFlowError),
-        requestId: rootRequest.id,
-      };
-      console.log("[root] Sending error response with requestId:", response);
-      return c.json(response, 500);
+      const treeJson = await treeResponse.json();
+      tree = treeJson.tree;
+    } catch (error) {
+      console.error("[root] Failed to get tree:", error);
     }
 
-    // Success case
-    const successResponse = {
-      success: true,
+    // Then record the cassette (which will now include the get-request-tree call)
+    await fetchWithContext(c)("http://localhost:5173/api/run-route/store-cassette", {
+      method: "POST",
+    });
+
+    // Build response with available data
+    const response = {
+      success: !mainFlowError,
       requestId: rootRequest.id,
+      ...(mainFlowError && { error: String(mainFlowError) }),
+      ...(tree && { tree }),
     };
-    console.log("[root] Sending success response:", successResponse);
-    return c.json(successResponse);
+
+    console.log("[root] Sending response:", {
+      ...response,
+      tree: tree ? "<tree data>" : undefined,
+    });
+    return c.json(response, mainFlowError ? 500 : 200);
   } catch (error) {
     console.error("[root route] Error:", error);
-    // If we have c.requestId, we created the request before failing
     if (c.requestId) {
-      const errorResponse = {
+      return c.json(
+        {
+          success: false,
+          error: String(error),
+          requestId: c.requestId,
+        },
+        500,
+      );
+    }
+    return c.json(
+      {
         success: false,
         error: String(error),
-        requestId: c.requestId,
-      };
-      console.log("[root] Sending catch block error response with requestId:", errorResponse);
-      return c.json(errorResponse, 500);
-    }
-    // Complete failure case - request wasn't even created
-    const finalErrorResponse = {
-      success: false,
-      error: String(error),
-    };
-    console.log("[root] Sending catch block error response without requestId:", finalErrorResponse);
-    return c.json(finalErrorResponse, 500);
+      },
+      500,
+    );
   }
 });
 

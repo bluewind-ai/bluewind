@@ -260,3 +260,14 @@ X They're not mutually exclusive
 How do you think about free speech:
 X Free speech is unconditional except very very rare exceptions where speaking freely will endanger someone else's life.
 X Free speech is extremely important. And it's also important to respect other human beings.
+
+
+
+automatically register routes
+create rule to error if try catch -> remove try catches
+
+
+create a linter for hono routes
+route paths matter in hono, we should only have /:something or / because things are naturally nested in folders
+app.get("/:requestId", async (c) => {
+remove all console logs

@@ -6,6 +6,7 @@ import { mainMiddleware } from "~/middleware/main";
 
 import lintRoute from "../lint";
 import routesRoute from "../routes";
+import getRequestTreeRoute from "../run-route/get-request-tree";
 import ingestCompanyDataRoute from "../run-route/ingest-company-data";
 import mainFlowRoute from "../run-route/main-flow";
 import resetFactoryRoute from "../run-route/reset-factory";
@@ -25,13 +26,14 @@ export function registerRoutes(server: Hono) {
   server.use("*", mainMiddleware);
 
   // All other routes under /api
-  server.route("/api/run-route/main-flow", mainFlowRoute); // <-- MOVED HERE
+  server.route("/api/run-route/main-flow", mainFlowRoute);
   server.route("/api/routes", routesRoute);
   server.route("/api/test-route", testRoute);
   server.route("/api/test-route-2", testRoute2);
   server.route("/api/lint", lintRoute);
   server.route("/api/run-route/truncate", truncateRoute);
   server.route("/api/run-route/ingest-company-data", ingestCompanyDataRoute);
+  server.route("/api/run-route/get-request-tree", getRequestTreeRoute); // Moved here to use middleware
 
   server.use("*", async (c, next) => {
     await next();
