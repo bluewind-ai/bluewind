@@ -77,7 +77,6 @@ app.post("/", async (c) => {
   const cassette = `CASSETTE REPLAY\n=================\n\n${renderNode(tree)}-----------------\n\n`;
 
   await writeFile(join(process.cwd(), "cassette.txt"), cassette, "utf-8");
-  await writeFile(join(process.cwd(), "cassette.json"), JSON.stringify({ tree }, null, 2), "utf-8");
 
   return c.json({ success: true });
 });
