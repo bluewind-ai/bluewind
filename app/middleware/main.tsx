@@ -37,8 +37,14 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     return c.redirect("/");
   }
 
+  const pathname = new URL(c.req.url).pathname;
   const parentRequestId = c.req.header("X-Parent-Request-Id");
   console.log("[mainMiddleware] Using Parent Request ID:", parentRequestId);
+
+  // Only throw if it's an API route and no parent ID
+  if (pathname.startsWith("/api/") && !parentRequestId) {
+    throw new Error("No parent request ID provided");
+  }
 
   console.log("[mainMiddleware] Getting request model...");
   const [requestModel] = await db
@@ -50,7 +56,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
 
   // Check for cached response before creating a new request
   console.log("[mainMiddleware] Checking for cached response...");
-  const pathname = new URL(c.req.url).pathname;
   const existingRequest = await db
     .select()
     .from(requests)

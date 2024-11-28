@@ -7,6 +7,7 @@ import { mainMiddleware } from "~/middleware/main";
 import lintRoute from "../lint";
 import routesRoute from "../routes";
 import ingestCompanyDataRoute from "../run-route/ingest-company-data";
+import mainFlowRoute from "../run-route/main-flow";
 import resetFactoryRoute from "../run-route/reset-factory";
 import rootRoute from "../run-route/root";
 import storeCassetteRoute from "../run-route/store-cassette";
@@ -24,6 +25,7 @@ export function registerRoutes(server: Hono) {
   server.use("*", mainMiddleware);
 
   // All other routes under /api
+  server.route("/api/run-route/main-flow", mainFlowRoute); // <-- MOVED HERE
   server.route("/api/routes", routesRoute);
   server.route("/api/test-route", testRoute);
   server.route("/api/test-route-2", testRoute2);

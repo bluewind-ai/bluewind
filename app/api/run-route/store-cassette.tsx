@@ -27,8 +27,13 @@ function flattenJSON(obj: any): string[] {
 }
 
 // Recursive function to render a request and all its children
-function renderRequest(request: any, results: any[], indent: string = ""): string {
+function renderRequest(request: any, allResults: any[], indent: string = ""): string {
   let output = "";
+
+  // Deduplicate requests - we only want the first occurrence
+  const uniqueResults = allResults.filter((r, index) => {
+    return allResults.findIndex((x) => x.request.id === r.request.id) === index;
+  });
 
   // Render current request
   output += `${indent}REQUEST ${request.request.pathname}\n`;
@@ -44,7 +49,7 @@ function renderRequest(request: any, results: any[], indent: string = ""): strin
   output += "\n";
 
   // Get objects belonging to this request
-  const requestObjects = results.filter(
+  const requestObjects = allResults.filter(
     (r) =>
       r.object?.requestId === request.request.id &&
       r.model?.singularName !== "request" &&
@@ -58,13 +63,13 @@ function renderRequest(request: any, results: any[], indent: string = ""): strin
     output += `${indent}      └─ Created at: ${obj.object.createdLocation}\n\n`;
   }
 
-  // Get and render all child requests
-  const childRequests = results
+  // Get and render all child requests from the deduplicated results
+  const childRequests = uniqueResults
     .filter((r) => r.request.parentId === request.request.id)
     .sort((a, b) => a.request.id - b.request.id);
 
   for (const childRequest of childRequests) {
-    output += renderRequest(childRequest, results, `${indent}      `);
+    output += renderRequest(childRequest, allResults, `${indent}      `);
   }
 
   return output;
