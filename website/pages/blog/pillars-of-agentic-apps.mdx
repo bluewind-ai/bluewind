@@ -1,0 +1,57 @@
+---
+title: Pillars of agentic apps
+---
+
+# Pillars of agentic apps
+
+AI agents are the future of software. AI agents are systems that moves things forward instead of needing a user to do things. They iterate to achieve a goal.
+
+Building them is very important for companies that want to keep their competitive advantage.
+
+I will lay out properties that naturally emerge from useful AI agents. They're system oriented, and not outcome oriented.
+For example, I think useful AI agents tend to be proactive, but I didn't write this property here.
+
+Cachability
+AI agents make a lot of API calls. These calls are expensive, both in time and money. No caching = No ability to reliably test them.
+Resumability
+They need to be stopped and resumed very easily. Not even just for security purposes. If you can't stop them while they do they work, when you develop them you will waste a lot of resources.
+Replayability
+If you can't replay a run you won't be able to maintain and understand the agent
+Spammability/Idempotency
+I wanted to just call it idempotency, but this is not accurate. Idempotency guarantees the same input produces the same output.
+But I am dealing with data and a DB. Things are stateful. I can't really have idempotency everywhere. Instead I try to reach for spammability: if the main loop is not spammable, we have a problem.
+If the main loop does the same work multiple times, we have a problem.
+Forkability
+You need to fork runs at a given time. In practice, this means starting only from a certain point, and assuming everything before that has been done.
+Single Function/ Main loop
+Hard to give a property name to that. I have always come back to a design where the entire agent runs in a single function I call the main loop I don't know why this is better. But it is always better and easier. Sometimes I call this function root, because it's an accurate name, but it feels like the best name is to use the verb "iterate" (or heck, "live"? haha this is scary)
+
+Draft:
+not a property but a tip: Put your tests in the loop, and test mostly in prod, otherwise your head will explode.
+AI agents are so hard to test that if you start having a piece of code that exists just to test the agent, but it's not in the main loop, you're going to end up living 2 realities: the reality of the tests and the reality of the main loop.
+In practice. I use what I call a cassette, that records all my runs. This allows me to have control over every iteration and know what each of my commits actually changed. And I have very few acceptance tests. Instead of acceptance tests, I literally do assertions in the production code.
+If the tape changes, my agent comes back to me for approval. An example is I recently added user_id to all the requests. This impacted the whole tape. Which is fine.
+
+This unification of testing and prod environment is not the only unification you need to develop AI agents.
+
+I ended up rewriting every software I would usually use a third-party dependency for. And you guessed it, the software I wrote IS IN THE MAIN LOOP.
+
+NOT IN THE MAIN LOOP = HELL, you're going to be in pain.
+
+Another unification, is development and usage of an application. Why do I talk about development? Only the user experience counts right?
+
+Well, if you go that route, you're going to be in pain. let's say you decide to build an agent but it has no coding capabilities, it just finds leads and writes emails for them.
+
+You're doomed. You're going to get beaten by the folks who built a decent software engineer.
+
+And don't think that you need to build THE SOFTWARE ENGINEER. You only need the software engineer that can build a system that finds leads and writes emails.
+
+I call this a generator. I should probably put it in the pillars, but it's a bit different.
+
+No generator, no potential. It's literally in the name: gen AI. If you don't generate your code, you're going to die eventually.
+
+What you need to code is the level 2 system. The evaluator.
+
+The generator is made of an evaluator and an iterator.
+
+The iterator produces code evaluated by the evaluator, until the code behaves like expected
