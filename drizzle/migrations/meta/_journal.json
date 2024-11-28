@@ -204,6 +204,13 @@
       "when": 1732677863518,
       "tag": "0028_uneven_mister_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1732820227467,
+      "tag": "0029_swift_kid_colt",
+      "breakpoints": true
     }
   ]
 }
