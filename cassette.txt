@@ -5,16 +5,12 @@ REQUEST /
 └─ Created at: api/root/index.tsx:27:46
 
       REQUEST /api/run-route/main-flow
-      └─ Created at: middleware/main.tsx:64:46
+      └─ Created at: middleware/main.tsx:73:46
       RETURNED BODY
-      └─ <html lang="en" class="h-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Error</title></head><body class="h-full"><div class="p-4 font-mono"><div class="text-red-500 whitespace-pre-wrap">Error: Failed to call test route
-
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/main-flow/index.tsx:117:11</a>
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7" class="text-blue-500 hover:underline">app/middleware/main.tsx:95:7</a>
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3" class="text-blue-500 hover:underline">app/middleware/main.tsx:90:3</a></div></div></body></html>
+      └─ Internal Server Error
 
             REQUEST /api/routes
-            └─ Created at: middleware/main.tsx:64:46
+            └─ Created at: middleware/main.tsx:73:46
             RETURNED BODY
             {
               "success": true,
@@ -36,30 +32,26 @@ REQUEST /
             }
 
             REQUEST /api/run-route/ingest-company-data
-            └─ Created at: middleware/main.tsx:64:46
+            └─ Created at: middleware/main.tsx:73:46
             RETURNED BODY
             {
               "message": "I worked for 1 second"
             }
 
             REQUEST /api/test-route
-            └─ Created at: middleware/main.tsx:64:46
+            └─ Created at: middleware/main.tsx:73:46
             RETURNED BODY
             {
               "error": "Test error"
             }
 
       REQUEST /api/run-route/main-flow
-      └─ Created at: middleware/main.tsx:64:46
+      └─ Created at: middleware/main.tsx:73:46
       RETURNED BODY
-      └─ <html lang="en" class="h-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Error</title></head><body class="h-full"><div class="p-4 font-mono"><div class="text-red-500 whitespace-pre-wrap">Error: Failed to call test route
-
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/main-flow/index.tsx:117:11</a>
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7" class="text-blue-500 hover:underline">app/middleware/main.tsx:95:7</a>
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3" class="text-blue-500 hover:underline">app/middleware/main.tsx:90:3</a></div></div></body></html>
+      └─ Internal Server Error
 
             REQUEST /api/routes
-            └─ Created at: middleware/main.tsx:64:46
+            └─ Created at: middleware/main.tsx:73:46
             RETURNED BODY
             {
               "success": true,
@@ -81,30 +73,26 @@ REQUEST /
             }
 
             REQUEST /api/run-route/ingest-company-data
-            └─ Created at: middleware/main.tsx:64:46
+            └─ Created at: middleware/main.tsx:73:46
             RETURNED BODY
             {
               "message": "I worked for 1 second"
             }
 
             REQUEST /api/test-route
-            └─ Created at: middleware/main.tsx:64:46
+            └─ Created at: middleware/main.tsx:73:46
             RETURNED BODY
             {
               "error": "Test error"
             }
 
       REQUEST /api/run-route/main-flow
-      └─ Created at: middleware/main.tsx:64:46
+      └─ Created at: middleware/main.tsx:73:46
       RETURNED BODY
-      └─ <html lang="en" class="h-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Error</title></head><body class="h-full"><div class="p-4 font-mono"><div class="text-red-500 whitespace-pre-wrap">Error: Failed to call test route
-
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/api/main-flow/index.tsx:117:11" class="text-blue-500 hover:underline">app/api/main-flow/index.tsx:117:11</a>
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7" class="text-blue-500 hover:underline">app/middleware/main.tsx:95:7</a>
-    at <a href="vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3" class="text-blue-500 hover:underline">app/middleware/main.tsx:90:3</a></div></div></body></html>
+      └─ Internal Server Error
 
             REQUEST /api/routes
-            └─ Created at: middleware/main.tsx:64:46
+            └─ Created at: middleware/main.tsx:73:46
             RETURNED BODY
             {
               "success": true,
@@ -126,21 +114,21 @@ REQUEST /
             }
 
             REQUEST /api/run-route/ingest-company-data
-            └─ Created at: middleware/main.tsx:64:46
+            └─ Created at: middleware/main.tsx:73:46
             RETURNED BODY
             {
               "message": "I worked for 1 second"
             }
 
             REQUEST /api/test-route
-            └─ Created at: middleware/main.tsx:64:46
+            └─ Created at: middleware/main.tsx:73:46
             RETURNED BODY
             {
               "error": "Test error"
             }
 
       REQUEST /api/run-route/get-request-tree/:id
-      └─ Created at: middleware/main.tsx:64:46
+      └─ Created at: middleware/main.tsx:73:46
       RETURNED BODY
       {
         "tree": {
@@ -152,13 +140,13 @@ REQUEST /
             {
               "id": "[ID]",
               "pathname": "/api/run-route/main-flow",
-              "createdLocation": "middleware/main.tsx:64:46",
-              "response": "<html lang=\"en\" class=\"h-full\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><title>Error</title></head><body class=\"h-full\"><div class=\"p-4 font-mono\"><div class=\"text-red-500 whitespace-pre-wrap\">Error: Failed to call test route\n\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/api/main-flow/index.tsx:117:11\" class=\"text-blue-500 hover:underline\">app/api/main-flow/index.tsx:117:11</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:95:7\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:95:7</a>\n    at <a href=\"vscode://file/Users/merwanehamadi/code/bluewind/app/middleware/main.tsx:90:3\" class=\"text-blue-500 hover:underline\">app/middleware/main.tsx:90:3</a></div></div></body></html>",
+              "createdLocation": "middleware/main.tsx:73:46",
+              "response": "Internal Server Error",
               "children": [
                 {
                   "id": "[ID]",
                   "pathname": "/api/routes",
-                  "createdLocation": "middleware/main.tsx:64:46",
+                  "createdLocation": "middleware/main.tsx:73:46",
                   "response": "{\"success\":true,\"message\":\"Using existing reset-factory route\",\"function\":{\"id\":2,\"name\":\"reset-factory\",\"type\":\"SYSTEM\",\"requestId\":2,\"metadata\":{\"label\":\"Factory Reset\",\"variant\":\"destructive\",\"description\":\"Reset the entire database to factory settings\",\"confirmationMessage\":\"This will delete all data. Are you sure?\",\"confirmationRequired\":true},\"createdLocation\":\"api/routes/index.tsx:35:48\"}}",
                   "children": [],
                   "objects": []
@@ -166,7 +154,7 @@ REQUEST /
                 {
                   "id": "[ID]",
                   "pathname": "/api/run-route/ingest-company-data",
-                  "createdLocation": "middleware/main.tsx:64:46",
+                  "createdLocation": "middleware/main.tsx:73:46",
                   "response": "{\"message\":\"I worked for 1 second\"}",
                   "children": [],
                   "objects": []
@@ -174,7 +162,7 @@ REQUEST /
                 {
                   "id": "[ID]",
                   "pathname": "/api/test-route",
-                  "createdLocation": "middleware/main.tsx:64:46",
+                  "createdLocation": "middleware/main.tsx:73:46",
                   "response": "{\"error\":\"Test error\"}",
                   "children": [],
                   "objects": []
@@ -185,7 +173,7 @@ REQUEST /
             {
               "id": "[ID]",
               "pathname": "/api/run-route/get-request-tree/:id",
-              "createdLocation": "middleware/main.tsx:64:46",
+              "createdLocation": "middleware/main.tsx:73:46",
               "response": null,
               "children": [],
               "objects": []
