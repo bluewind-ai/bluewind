@@ -20,14 +20,13 @@ interface RequestNode {
   }>;
 }
 
-export const PATH = "/api/test-route";
 const app = new Hono();
 
-app.post("/", async (c) => {
+app.post("/api/test-route", async (c) => {
   return c.json({ error: "Test error" }, 500);
 });
 
-app.get("/:requestId", async (c) => {
+app.get("/api/test-route/:requestId", async (c) => {
   const requestId = parseInt(c.req.param("requestId"));
   console.log("[request-tree] Building tree for request:", requestId);
 
