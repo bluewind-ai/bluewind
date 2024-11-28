@@ -280,11 +280,12 @@ add linter ruler to prevent usage of fs. except in the interceptor
 
 Rerun the root multiple times to see if the cassette changes
 
-Get rid of this error
-Warning: React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: object.
-    at RemixServer (/Users/merwanehamadi/code/bluewind/node_modules/@remix-run/react/dist/server.js:48:3)
-
 Tired of switching between clicking ROOT and github desktop to see the diff
-Create error if file more than 150 lines
+
 
 visualize tree in client, which is sometimes better than the cassettes.txt. cassettes.txt is amazing to give the LLM
+
+automate console log removal
+
+Create script detect files more than 150 lines
+Create error if file more than 150 lines
