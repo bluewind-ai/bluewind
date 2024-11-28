@@ -13,3 +13,5 @@ claude-answer.txt
 outreach.txt
 
 data
+.DS_Store
+app/.DS_Store
