@@ -139,7 +139,7 @@ REQUEST /
               "error": "Test error"
             }
 
-      REQUEST /api/run-route/get-request-tree/[ID]
+      REQUEST /api/run-route/get-request-tree/:id
       └─ Created at: middleware/main.tsx:64:46
       RETURNED BODY
       {
@@ -250,7 +250,7 @@ REQUEST /
             },
             {
               "id": "[ID]",
-              "pathname": "/api/run-route/get-request-tree/2947",
+              "pathname": "/api/run-route/get-request-tree/:id",
               "createdLocation": "middleware/main.tsx:64:46",
               "response": null,
               "children": [],

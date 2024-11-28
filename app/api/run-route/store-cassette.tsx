@@ -29,8 +29,8 @@ app.post("/", async (c) => {
     const reqResults = results.filter((r) => r.request.id === id);
     const req = reqResults[0].request;
     return {
-      id,
-      pathname: req.pathname.replace(/\/\d+$/, "/[ID]"),
+      id: "[ID]",
+      pathname: req.pathname.replace(/\/\d+(?=\/|$)/g, "/:id"),
       createdLocation: req.createdLocation,
       response: req.response,
       children: results
@@ -56,7 +56,11 @@ app.post("/", async (c) => {
       out += `${indent}RETURNED BODY\n`;
       try {
         const resp = JSON.parse(node.response);
-        const maskedResp = JSON.parse(JSON.stringify(resp).replace(/"id":\s*\d+/g, '"id": "[ID]"'));
+        const maskedResp = JSON.parse(
+          JSON.stringify(resp)
+            .replace(/"id":\s*\d+/g, '"id": "[ID]"')
+            .replace(/"pathname":\s*"[^"]*\d+[^"]*"/g, (match) => match.replace(/\d+/g, ":id")),
+        );
         out += `${indent}${JSON.stringify(maskedResp, null, 2)
           .split("\n")
           .join("\n" + indent)}\n`;
