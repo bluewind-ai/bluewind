@@ -6,10 +6,22 @@ import type { Context } from "hono";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 import { createHonoServer } from "react-router-hono-server/node";
-import { PassThrough } from "stream"; // Added this import
+import { PassThrough } from "stream";
 
 import { configureHonoServer } from "./api";
 import { createLoadContext } from "./api/context";
+
+// Override React's internal error logging
+const originalConsoleError = console.error;
+console.error = function (...args) {
+  const message = typeof args[0] === "string" ? args[0] : "";
+  if (message.includes("Warning: React.createElement: type is invalid")) {
+    const error = new Error(args.join(" "));
+    error.name = "ReactInvalidElementError";
+    throw error;
+  }
+  return originalConsoleError.apply(console, args);
+};
 
 declare module "hono" {
   interface ContextVariableMap {
@@ -26,33 +38,22 @@ function handleBotRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
-    let didError = false;
-
     const { pipe, abort } = renderToPipeableStream(
       <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
       {
         onAllReady() {
           const body = new PassThrough();
-
           responseHeaders.set("Content-Type", "text/html");
-
           resolve(
             new Response(body, {
               headers: responseHeaders,
-              status: didError ? 500 : responseStatusCode,
+              status: responseStatusCode,
             }),
           );
-
           pipe(body);
         },
-        onShellError(error: unknown) {
-          reject(error);
-        },
-        onError(error: unknown) {
-          didError = true;
-
-          console.error(error);
-        },
+        onShellError: reject,
+        onError: reject,
       },
     );
 
@@ -67,33 +68,22 @@ function handleBrowserRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
-    let didError = false;
-
     const { pipe, abort } = renderToPipeableStream(
       <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
       {
         onShellReady() {
           const body = new PassThrough();
-
           responseHeaders.set("Content-Type", "text/html");
-
           resolve(
             new Response(body, {
               headers: responseHeaders,
-              status: didError ? 500 : responseStatusCode,
+              status: responseStatusCode,
             }),
           );
-
           pipe(body);
         },
-        onShellError(err: unknown) {
-          reject(err);
-        },
-        onError(error: unknown) {
-          didError = true;
-
-          console.error(error);
-        },
+        onShellError: reject,
+        onError: reject,
       },
     );
 
