@@ -11,6 +11,7 @@ import mainFlowRoute from "./main-flow";
 import resetFactoryRoute from "./reset-factory";
 import rootRoute from "./root";
 import routesRoute from "./routes";
+import listSourceFilesRoute from "./run-route/list-source-files";
 import storeCassetteRoute from "./run-route/store-cassette";
 import testRoute from "./test-route";
 import testRoute2 from "./test-route-2";
@@ -28,6 +29,7 @@ export function registerRoutes(server: Hono) {
     ingestCompanyDataRoute,
     getRequestTreeRoute,
     storeCassetteRoute,
+    listSourceFilesRoute,
   ];
   routes.forEach((route) => {
     server.route("", route);
