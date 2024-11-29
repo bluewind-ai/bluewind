@@ -1,4 +1,5 @@
 // app/api/register-routes.tsx
+
 import { Hono } from "hono";
 
 import { mainMiddleware } from "~/middleware/main";
@@ -10,6 +11,7 @@ import mainFlowRoute from "./main-flow";
 import resetFactoryRoute from "./reset-factory";
 import rootRoute from "./root";
 import routesRoute from "./routes";
+import storeCassetteRoute from "./run-route/store-cassette";
 import testRoute from "./test-route";
 import testRoute2 from "./test-route-2";
 
@@ -25,6 +27,7 @@ export function registerRoutes(server: Hono) {
     lintRoute,
     ingestCompanyDataRoute,
     getRequestTreeRoute,
+    storeCassetteRoute,
   ];
   routes.forEach((route) => {
     server.route("", route);
