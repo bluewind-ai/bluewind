@@ -69,13 +69,6 @@ REQUEST /
               "message": "I worked for 1 second"
             }
 
-                  REQUEST /api/run-route/ingest-company-data
-                  └─ Created at: middleware/main.tsx:45:44
-                  RETURNED BODY
-                  {
-                    "message": "I worked for 1 second"
-                  }
-
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:45:44
       RETURNED BODY
@@ -141,13 +134,6 @@ REQUEST /
               "message": "I worked for 1 second"
             }
 
-                  REQUEST /api/run-route/ingest-company-data
-                  └─ Created at: middleware/main.tsx:45:44
-                  RETURNED BODY
-                  {
-                    "message": "I worked for 1 second"
-                  }
-
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:45:44
       RETURNED BODY
@@ -212,13 +198,6 @@ REQUEST /
             {
               "message": "I worked for 1 second"
             }
-
-                  REQUEST /api/run-route/ingest-company-data
-                  └─ Created at: middleware/main.tsx:45:44
-                  RETURNED BODY
-                  {
-                    "message": "I worked for 1 second"
-                  }
 
       REQUEST /api/run-route/get-request-tree/:id
       └─ Created at: middleware/main.tsx:45:44
@@ -257,16 +236,7 @@ REQUEST /
                   "pathname": "/api/test-route",
                   "createdLocation": "middleware/main.tsx:45:44",
                   "response": "{\"message\":\"I worked for 1 second\"}",
-                  "children": [
-                    {
-                      "id": "[ID]",
-                      "pathname": "/api/run-route/ingest-company-data",
-                      "createdLocation": "middleware/main.tsx:45:44",
-                      "response": "{\"message\":\"I worked for 1 second\"}",
-                      "children": [],
-                      "objects": []
-                    }
-                  ],
+                  "children": [],
                   "objects": []
                 }
               ],

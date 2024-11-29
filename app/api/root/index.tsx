@@ -1,5 +1,4 @@
 // app/api/root/index.tsx
-
 import { Hono } from "hono";
 import { join } from "path";
 
@@ -67,7 +66,7 @@ app.post("/api/run-route/root", async (c) => {
           error: String(error),
           requestId: c.requestId,
         },
-        200, // Always return 200
+        200,
       );
     }
     return c.json(
@@ -75,7 +74,7 @@ app.post("/api/run-route/root", async (c) => {
         success: false,
         error: String(error),
       },
-      200, // Always return 200
+      200,
     );
   }
 });
