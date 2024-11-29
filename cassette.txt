@@ -7,7 +7,31 @@ REQUEST /
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:45:44
       RETURNED BODY
-      └─ Internal Server Error
+      {
+        "success": true
+      }
+
+            REQUEST /api/routes
+            └─ Created at: middleware/main.tsx:45:44
+            RETURNED BODY
+            {
+              "success": true,
+              "message": "Using existing reset-factory route",
+              "function": {
+                "id": "[ID]",
+                "name": "reset-factory",
+                "type": "SYSTEM",
+                "requestId": 2,
+                "metadata": {
+                  "label": "Factory Reset",
+                  "variant": "destructive",
+                  "description": "Reset the entire database to factory settings",
+                  "confirmationMessage": "This will delete all data. Are you sure?",
+                  "confirmationRequired": true
+                },
+                "createdLocation": "api/routes/index.tsx:35:48"
+              }
+            }
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:45:44
@@ -42,13 +66,44 @@ REQUEST /
             └─ Created at: middleware/main.tsx:45:44
             RETURNED BODY
             {
-              "error": "Test error"
+              "message": "I worked for 1 second"
             }
+
+                  REQUEST /api/run-route/ingest-company-data
+                  └─ Created at: middleware/main.tsx:45:44
+                  RETURNED BODY
+                  {
+                    "message": "I worked for 1 second"
+                  }
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:45:44
       RETURNED BODY
-      └─ Internal Server Error
+      {
+        "success": true
+      }
+
+            REQUEST /api/routes
+            └─ Created at: middleware/main.tsx:45:44
+            RETURNED BODY
+            {
+              "success": true,
+              "message": "Using existing reset-factory route",
+              "function": {
+                "id": "[ID]",
+                "name": "reset-factory",
+                "type": "SYSTEM",
+                "requestId": 2,
+                "metadata": {
+                  "label": "Factory Reset",
+                  "variant": "destructive",
+                  "description": "Reset the entire database to factory settings",
+                  "confirmationMessage": "This will delete all data. Are you sure?",
+                  "confirmationRequired": true
+                },
+                "createdLocation": "api/routes/index.tsx:35:48"
+              }
+            }
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:45:44
@@ -83,13 +138,44 @@ REQUEST /
             └─ Created at: middleware/main.tsx:45:44
             RETURNED BODY
             {
-              "error": "Test error"
+              "message": "I worked for 1 second"
             }
+
+                  REQUEST /api/run-route/ingest-company-data
+                  └─ Created at: middleware/main.tsx:45:44
+                  RETURNED BODY
+                  {
+                    "message": "I worked for 1 second"
+                  }
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:45:44
       RETURNED BODY
-      └─ Internal Server Error
+      {
+        "success": true
+      }
+
+            REQUEST /api/routes
+            └─ Created at: middleware/main.tsx:45:44
+            RETURNED BODY
+            {
+              "success": true,
+              "message": "Using existing reset-factory route",
+              "function": {
+                "id": "[ID]",
+                "name": "reset-factory",
+                "type": "SYSTEM",
+                "requestId": 2,
+                "metadata": {
+                  "label": "Factory Reset",
+                  "variant": "destructive",
+                  "description": "Reset the entire database to factory settings",
+                  "confirmationMessage": "This will delete all data. Are you sure?",
+                  "confirmationRequired": true
+                },
+                "createdLocation": "api/routes/index.tsx:35:48"
+              }
+            }
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:45:44
@@ -124,8 +210,15 @@ REQUEST /
             └─ Created at: middleware/main.tsx:45:44
             RETURNED BODY
             {
-              "error": "Test error"
+              "message": "I worked for 1 second"
             }
+
+                  REQUEST /api/run-route/ingest-company-data
+                  └─ Created at: middleware/main.tsx:45:44
+                  RETURNED BODY
+                  {
+                    "message": "I worked for 1 second"
+                  }
 
       REQUEST /api/run-route/get-request-tree/:id
       └─ Created at: middleware/main.tsx:45:44
@@ -141,7 +234,7 @@ REQUEST /
               "id": "[ID]",
               "pathname": "/api/run-route/main-flow",
               "createdLocation": "middleware/main.tsx:45:44",
-              "response": "Internal Server Error",
+              "response": "{\"success\":true}",
               "children": [
                 {
                   "id": "[ID]",
@@ -163,8 +256,17 @@ REQUEST /
                   "id": "[ID]",
                   "pathname": "/api/test-route",
                   "createdLocation": "middleware/main.tsx:45:44",
-                  "response": "{\"error\":\"Test error\"}",
-                  "children": [],
+                  "response": "{\"message\":\"I worked for 1 second\"}",
+                  "children": [
+                    {
+                      "id": "[ID]",
+                      "pathname": "/api/run-route/ingest-company-data",
+                      "createdLocation": "middleware/main.tsx:45:44",
+                      "response": "{\"message\":\"I worked for 1 second\"}",
+                      "children": [],
+                      "objects": []
+                    }
+                  ],
                   "objects": []
                 }
               ],

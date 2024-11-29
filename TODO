@@ -280,10 +280,6 @@ Rerun the root multiple times to see if the cassette changes
 
 Tired of switching between clicking ROOT and github desktop to see the diff
 
-
-visualize tree in client, which is sometimes better than the cassettes.txt. cassettes.txt is amazing to give the LLM
-
 automate console log removal
-
 Create script detect files more than 150 lines
 Create error if file more than 150 lines
