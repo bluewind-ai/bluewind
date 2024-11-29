@@ -5,10 +5,8 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
 import postgres from "postgres";
 
-import { models, objects, requests } from "~/db/schema";
+import { requests } from "~/db/schema";
 import * as schema from "~/db/schema";
-import { TABLES } from "~/db/schema/table-models";
-import { insertRequestObjects } from "~/functions/insert-request-objects.server";
 import { getCurrentLocation } from "~/lib/location-tracker";
 
 import { createDbProxy, ExtendedContext } from ".";
@@ -40,11 +38,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   const shouldUseCache = c.req.header("Cache-Control") === "only-if-cached";
   const cachedResponse = shouldUseCache ? await retrieveCache(pathname) : null;
 
-  const [requestModel] = await db
-    .select()
-    .from(models)
-    .where(eq(models.pluralName, TABLES.requests.modelName));
-
   console.log(`[Middleware] Creating request for ${pathname} with cache settings:`, {
     shouldUseCache,
     hasCachedResponse: !!cachedResponse,
@@ -66,13 +59,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     `[Middleware] Created request ${newRequest.id} with cacheStatus:`,
     newRequest.cacheStatus,
   );
-
-  await db.insert(objects).values({
-    modelId: requestModel.id,
-    recordId: newRequest.id,
-    requestId: parentRequestId ? parseInt(parentRequestId) : null,
-    createdLocation: getCurrentLocation(),
-  });
 
   c.requestId = newRequest.id;
 
@@ -127,6 +113,4 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       durationMs,
     })
     .where(eq(requests.id, newRequest.id));
-
-  await insertRequestObjects(c);
 }
