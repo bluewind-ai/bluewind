@@ -18,7 +18,7 @@
           "createdLocation": "middleware/main.tsx:51:44",
           "response": {
             "success": true,
-            "message": "Created reset-factory route",
+            "message": "Using existing reset-factory route",
             "function": {
               "id": "[MASKED]",
               "name": "reset-factory",
@@ -35,13 +35,10 @@
             }
           },
           "children": [],
-          "objects": [
-            {
-              "modelName": "server_function",
-              "createdLocation": "api/routes/index.tsx:52:50"
-            }
-          ],
-          "durationMsRange": "< 1000"
+          "objects": [],
+          "durationMsRange": "< 1000",
+          "requestSizeBytesRange": "< 1 MB",
+          "responseSizeBytesRange": "< 1 MB"
         },
         {
           "id": "[MASKED]",
@@ -71,7 +68,9 @@
               },
               "children": [],
               "objects": [],
-              "durationMsRange": "< 1000"
+              "durationMsRange": "< 1000",
+              "requestSizeBytesRange": "< 1 MB",
+              "responseSizeBytesRange": "1 MB+"
             },
             {
               "id": "[MASKED]",
@@ -82,11 +81,15 @@
               },
               "children": [],
               "objects": [],
-              "durationMsRange": "< 1000"
+              "durationMsRange": "< 1000",
+              "requestSizeBytesRange": "< 1 MB",
+              "responseSizeBytesRange": "< 1 MB"
             }
           ],
           "objects": [],
-          "durationMsRange": "1001+"
+          "durationMsRange": "1001+",
+          "requestSizeBytesRange": "< 1 MB",
+          "responseSizeBytesRange": "1 MB+"
         },
         {
           "id": "[MASKED]",
@@ -115,15 +118,21 @@
               },
               "children": [],
               "objects": [],
-              "durationMsRange": "< 1000"
+              "durationMsRange": "< 1000",
+              "requestSizeBytesRange": "< 1 MB",
+              "responseSizeBytesRange": "1 MB+"
             }
           ],
           "objects": [],
-          "durationMsRange": "< 1000"
+          "durationMsRange": "< 1000",
+          "requestSizeBytesRange": "< 1 MB",
+          "responseSizeBytesRange": "1 MB+"
         }
       ],
       "objects": [],
-      "durationMsRange": "1001+"
+      "durationMsRange": "1001+",
+      "requestSizeBytesRange": "< 1 MB",
+      "responseSizeBytesRange": "< 1 MB"
     },
     {
       "id": "[MASKED]",
@@ -132,14 +141,13 @@
       "response": null,
       "children": [],
       "objects": [],
-      "durationMsRange": "< 1000"
+      "durationMsRange": "< 1000",
+      "requestSizeBytesRange": "< 1 MB",
+      "responseSizeBytesRange": "< 1 MB"
     }
   ],
-  "objects": [
-    {
-      "modelName": "server_function",
-      "createdLocation": "api/main-flow/index.tsx:71:46"
-    }
-  ],
-  "durationMsRange": "< 1000"
+  "objects": [],
+  "durationMsRange": "< 1000",
+  "requestSizeBytesRange": "< 1 MB",
+  "responseSizeBytesRange": "< 1 MB"
 }

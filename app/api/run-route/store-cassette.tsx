@@ -9,6 +9,11 @@ const getDurationRange = (ms: number): string => {
   return ms <= 1000 ? "< 1000" : "1001+";
 };
 
+const getBytesRange = (bytes: number): string => {
+  const MB = 1024 * 1024;
+  return bytes < MB ? "< 1 MB" : "1 MB+";
+};
+
 const processNode = (obj: any): any => {
   if (typeof obj !== "object" || obj === null) return obj;
 
@@ -36,6 +41,16 @@ const processNode = (obj: any): any => {
   if (newObj.durationMs !== undefined) {
     newObj.durationMsRange = getDurationRange(newObj.durationMs);
     delete newObj.durationMs;
+  }
+
+  if (newObj.requestSizeBytes !== undefined) {
+    newObj.requestSizeBytesRange = getBytesRange(newObj.requestSizeBytes);
+    delete newObj.requestSizeBytes;
+  }
+
+  if (newObj.responseSizeBytes !== undefined) {
+    newObj.responseSizeBytesRange = getBytesRange(newObj.responseSizeBytes);
+    delete newObj.responseSizeBytes;
   }
 
   for (const key in newObj) {

@@ -14,6 +14,8 @@ interface RequestNode {
   createdLocation: string;
   response: any;
   durationMs: number;
+  requestSizeBytes: number;
+  responseSizeBytes: number | null;
   children: RequestNode[];
   objects: Array<{
     modelName: string;
@@ -93,6 +95,8 @@ app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
         createdLocation: result.request.createdLocation,
         response: processResponse(result.request.response),
         durationMs: result.request.durationMs,
+        requestSizeBytes: result.request.requestSizeBytes,
+        responseSizeBytes: result.request.responseSizeBytes,
         children: [],
         objects: [],
       });
