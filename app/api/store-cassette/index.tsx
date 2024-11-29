@@ -1,4 +1,5 @@
 // app/api/store-cassette/index.tsx
+
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { join } from "path";
@@ -27,6 +28,7 @@ app.post("/api/run-route/store-cassette", async (c) => {
       pathname: req.pathname.replace(/\/\d+(?=\/|$)/g, "/:id"),
       createdLocation: req.createdLocation,
       response: req.response,
+      cacheStatus: req.cacheStatus,
       children: results
         .filter((r) => r.request.parentId === id)
         .map((r) => getNode(r.request.id))
@@ -44,6 +46,7 @@ app.post("/api/run-route/store-cassette", async (c) => {
   const renderNode = (node: any, indent = "") => {
     let out = `${indent}REQUEST ${node.pathname}\n`;
     out += `${indent}└─ Created at: ${node.createdLocation}\n`;
+    out += `${indent}└─ Cache: ${node.cacheStatus}\n`;
     if (node.response) {
       out += `${indent}RETURNED BODY\n`;
       try {

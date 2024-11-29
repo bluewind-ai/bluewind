@@ -3,9 +3,11 @@ CASSETTE REPLAY
 
 REQUEST /
 └─ Created at: api/root/index.tsx:28:46
+└─ Cache: SKIP
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:48:44
+      └─ Cache: SKIP
       RETURNED BODY
       {
         "success": true
@@ -13,6 +15,7 @@ REQUEST /
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:48:44
+            └─ Cache: SKIP
             RETURNED BODY
             {
               "success": true,
@@ -35,6 +38,7 @@ REQUEST /
 
             REQUEST /api/run-route/ingest-company-data
             └─ Created at: middleware/main.tsx:48:44
+            └─ Cache: HIT
             RETURNED BODY
             {
               "message": "I worked for 1 second"
@@ -42,6 +46,7 @@ REQUEST /
 
             REQUEST /api/test-route
             └─ Created at: middleware/main.tsx:48:44
+            └─ Cache: SKIP
             RETURNED BODY
             {
               "message": "I worked for 1 second"
@@ -49,6 +54,7 @@ REQUEST /
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:48:44
+      └─ Cache: SKIP
       RETURNED BODY
       {
         "success": true
@@ -56,6 +62,7 @@ REQUEST /
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:48:44
+            └─ Cache: SKIP
             RETURNED BODY
             {
               "success": true,
@@ -78,6 +85,7 @@ REQUEST /
 
             REQUEST /api/run-route/ingest-company-data
             └─ Created at: middleware/main.tsx:48:44
+            └─ Cache: HIT
             RETURNED BODY
             {
               "message": "I worked for 1 second"
@@ -85,6 +93,7 @@ REQUEST /
 
             REQUEST /api/test-route
             └─ Created at: middleware/main.tsx:48:44
+            └─ Cache: SKIP
             RETURNED BODY
             {
               "message": "I worked for 1 second"
@@ -92,6 +101,7 @@ REQUEST /
 
       REQUEST /api/run-route/main-flow
       └─ Created at: middleware/main.tsx:48:44
+      └─ Cache: SKIP
       RETURNED BODY
       {
         "success": true
@@ -99,6 +109,7 @@ REQUEST /
 
             REQUEST /api/routes
             └─ Created at: middleware/main.tsx:48:44
+            └─ Cache: SKIP
             RETURNED BODY
             {
               "success": true,
@@ -121,6 +132,7 @@ REQUEST /
 
             REQUEST /api/run-route/ingest-company-data
             └─ Created at: middleware/main.tsx:48:44
+            └─ Cache: HIT
             RETURNED BODY
             {
               "message": "I worked for 1 second"
@@ -128,6 +140,7 @@ REQUEST /
 
             REQUEST /api/test-route
             └─ Created at: middleware/main.tsx:48:44
+            └─ Cache: SKIP
             RETURNED BODY
             {
               "message": "I worked for 1 second"
@@ -135,6 +148,7 @@ REQUEST /
 
       REQUEST /api/run-route/get-request-tree/:id
       └─ Created at: middleware/main.tsx:48:44
+      └─ Cache: SKIP
       RETURNED BODY
       {
         "tree": {
