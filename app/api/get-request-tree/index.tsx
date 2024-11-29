@@ -12,7 +12,8 @@ interface RequestNode {
   id: number;
   pathname: string;
   createdLocation: string;
-  response: any; // Changed from string | null to any since we'll parse JSON
+  response: any;
+  durationMs: number;
   children: RequestNode[];
   objects: Array<{
     modelName: string;
@@ -50,14 +51,17 @@ const processResponse = (response: string | null): any => {
 const app = new Hono();
 app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
   const requestId = parseInt(c.req.param("requestId"));
+
   const currentRequest = await db
     .select()
     .from(requests)
     .where(sql`${requests.id} = ${requestId}`)
     .limit(1);
+
   if (!currentRequest.length) {
     return c.json({ error: "Request not found" }, 404);
   }
+
   let rootRequest = currentRequest[0];
   while (rootRequest.parentId !== null) {
     const parentRequest = await db
@@ -68,6 +72,7 @@ app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
     if (!parentRequest.length) break;
     rootRequest = parentRequest[0];
   }
+
   const results = await db
     .select({
       request: requests,
@@ -77,7 +82,9 @@ app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
     .from(requests)
     .leftJoin(objects, sql`${objects.requestId} = ${requests.id}`)
     .leftJoin(models, sql`${objects.modelId} = ${models.id}`);
+
   const requestsMap = new Map<number, RequestNode>();
+
   for (const result of results) {
     if (!requestsMap.has(result.request.id)) {
       requestsMap.set(result.request.id, {
@@ -85,6 +92,7 @@ app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
         pathname: result.request.pathname,
         createdLocation: result.request.createdLocation,
         response: processResponse(result.request.response),
+        durationMs: result.request.durationMs,
         children: [],
         objects: [],
       });
@@ -97,6 +105,7 @@ app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
       });
     }
   }
+
   for (const result of results) {
     if (result.request.parentId !== null) {
       const parentNode = requestsMap.get(result.request.parentId);
@@ -108,6 +117,7 @@ app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
       }
     }
   }
+
   for (const node of requestsMap.values()) {
     node.children.sort((a, b) => {
       const aResult = results.find((r) => r.request.id === a.id);
@@ -117,10 +127,13 @@ app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
       );
     });
   }
+
   const tree = requestsMap.get(rootRequest.id);
   if (!tree) {
     return c.json({ error: "Failed to build request tree" }, 500);
   }
+
   return c.json({ tree });
 });
+
 export default app;

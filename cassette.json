@@ -3,6 +3,7 @@
   "pathname": "/",
   "createdLocation": "api/root/index.tsx:30:44",
   "response": null,
+  "durationMs": null,
   "children": [
     {
       "id": "[MASKED]",
@@ -11,6 +12,7 @@
       "response": {
         "success": true
       },
+      "durationMs": 3752,
       "children": [
         {
           "id": "[MASKED]",
@@ -23,7 +25,7 @@
               "id": "[MASKED]",
               "name": "reset-factory",
               "type": "SYSTEM",
-              "requestId": 12,
+              "requestId": 5,
               "metadata": {
                 "label": "Factory Reset",
                 "variant": "destructive",
@@ -34,6 +36,7 @@
               "createdLocation": "api/routes/index.tsx:38:50"
             }
           },
+          "durationMs": 5,
           "children": [],
           "objects": []
         },
@@ -44,6 +47,7 @@
           "response": {
             "message": "I worked for 1 second"
           },
+          "durationMs": 2,
           "children": [],
           "objects": []
         },
@@ -59,6 +63,7 @@
               "... and 903655 more items"
             ]
           },
+          "durationMs": 3542,
           "children": [],
           "objects": []
         }
@@ -70,6 +75,7 @@
       "pathname": "/api/run-route/get-request-tree/[MASKED]",
       "createdLocation": "middleware/main.tsx:49:44",
       "response": null,
+      "durationMs": null,
       "children": [],
       "objects": []
     }
