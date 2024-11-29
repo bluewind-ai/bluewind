@@ -1,8 +1,10 @@
 // app/api/root/index.tsx
+
 import { Hono } from "hono";
 import { join } from "path";
 
 import { requests } from "~/db/schema/requests/schema";
+import { migrateModels } from "~/functions/server.migrate";
 import { fetchWithContext } from "~/lib/fetch-with-context";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
@@ -12,6 +14,9 @@ import { writeFile } from "../../lib/intercepted-fs";
 const app = new Hono();
 app.post("/api/run-route/root", async (c) => {
   try {
+    // Initialize models first
+    await migrateModels();
+
     const parentRequestId = c.req.header("X-Parent-Request-Id");
     const [rootRequest] = await db
       .insert(requests)
