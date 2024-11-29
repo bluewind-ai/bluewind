@@ -18,6 +18,12 @@ app.post("/api/run-route/store-cassette", async (c) => {
     for (const key in obj) {
       if (key === "id") {
         newObj[key] = "[MASKED]";
+      } else if (
+        key === "pathname" &&
+        typeof obj[key] === "string" &&
+        obj[key].includes("/get-request-tree/")
+      ) {
+        newObj[key] = obj[key].replace(/\/get-request-tree\/\d+/, "/get-request-tree/[MASKED]");
       } else {
         newObj[key] = maskIds(obj[key]);
       }
