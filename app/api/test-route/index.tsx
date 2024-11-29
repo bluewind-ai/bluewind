@@ -1,23 +1,27 @@
 // app/api/test-route/index.tsx
 
+import { readdir } from "node:fs/promises";
+import { resolve } from "node:path";
+
 import { Hono } from "hono";
 
-import { fetchWithContext } from "~/lib/fetch-with-context";
-import { retrieveCache } from "~/middleware/retrieve-cache";
-
 const app = new Hono();
+
 app.post("/api/test-route", async (c) => {
-  const targetPath = "/api/run-route/ingest-company-data";
-
-  const cachedResponse = await retrieveCache(targetPath);
-  if (cachedResponse) {
-    return c.json(cachedResponse);
+  try {
+    const submissionsPath = resolve("..", "bluewind-data", "sec-submissions");
+    const files = await readdir(submissionsPath);
+    return c.json({ files });
+  } catch (error) {
+    console.error("Error reading directory:", error);
+    return c.json(
+      {
+        error: "Failed to read directory",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      500,
+    );
   }
-
-  const response = await fetchWithContext(c)("http://localhost:5173" + targetPath, {
-    method: "POST",
-  });
-  const data = await response.json();
-  return c.json(data);
 });
+
 export default app;

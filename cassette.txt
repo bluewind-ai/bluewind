@@ -49,7 +49,12 @@ REQUEST /
             └─ Cache: SKIP
             RETURNED BODY
             {
-              "message": "I worked for 1 second"
+              "files": [
+                "CIK0000000003.json",
+                "CIK0000000013.json",
+                "CIK0000000014.json",
+                "... and 903655 more items"
+              ]
             }
 
       REQUEST /api/run-route/main-flow
@@ -96,7 +101,12 @@ REQUEST /
             └─ Cache: SKIP
             RETURNED BODY
             {
-              "message": "I worked for 1 second"
+              "files": [
+                "CIK0000000003.json",
+                "CIK0000000013.json",
+                "CIK0000000014.json",
+                "... and 903655 more items"
+              ]
             }
 
       REQUEST /api/run-route/main-flow
@@ -143,7 +153,12 @@ REQUEST /
             └─ Cache: SKIP
             RETURNED BODY
             {
-              "message": "I worked for 1 second"
+              "files": [
+                "CIK0000000003.json",
+                "CIK0000000013.json",
+                "CIK0000000014.json",
+                "... and 903655 more items"
+              ]
             }
 
       REQUEST /api/run-route/get-request-tree/:id
@@ -183,7 +198,7 @@ REQUEST /
                   "id": "[ID]",
                   "pathname": "/api/test-route",
                   "createdLocation": "middleware/main.tsx:48:44",
-                  "response": "{\"message\":\"I worked for 1 second\"}",
+                  "response": "{\"files\":[\"CIK0000000003.json\",\"CIK0000000013.json\",\"CIK0000000014.json\",\"... and 903655 more items\"]}",
                   "children": [],
                   "objects": []
                 }

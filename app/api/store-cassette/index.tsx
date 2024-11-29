@@ -51,8 +51,26 @@ app.post("/api/run-route/store-cassette", async (c) => {
       out += `${indent}RETURNED BODY\n`;
       try {
         const resp = JSON.parse(node.response);
+        // Handle large arrays in the response
+        const truncateArrays = (obj: any): any => {
+          if (Array.isArray(obj)) {
+            if (obj.length > 100) {
+              return [...obj.slice(0, 3), "... and " + (obj.length - 3) + " more items"];
+            }
+            return obj.map((item) => truncateArrays(item));
+          }
+          if (typeof obj === "object" && obj !== null) {
+            const newObj: any = {};
+            for (const key in obj) {
+              newObj[key] = truncateArrays(obj[key]);
+            }
+            return newObj;
+          }
+          return obj;
+        };
+
         const maskedResp = JSON.parse(
-          JSON.stringify(resp)
+          JSON.stringify(truncateArrays(resp))
             .replace(/"id":\s*\d+/g, '"id": "[ID]"')
             .replace(/"pathname":\s*"[^"]*\d+[^"]*"/g, (match) => match.replace(/\d+/g, ":id")),
         );

@@ -1,4 +1,5 @@
 // app/api/get-request-tree/index.tsx
+
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 
@@ -18,6 +19,35 @@ interface RequestNode {
     createdLocation: string;
   }>;
 }
+
+const truncateArrays = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    if (obj.length > 100) {
+      return [...obj.slice(0, 3), "... and " + (obj.length - 3) + " more items"];
+    }
+    return obj.map((item) => truncateArrays(item));
+  }
+  if (typeof obj === "object" && obj !== null) {
+    const newObj: any = {};
+    for (const key in obj) {
+      newObj[key] = truncateArrays(obj[key]);
+    }
+    return newObj;
+  }
+  return obj;
+};
+
+const processResponse = (response: string | null): string | null => {
+  if (!response) return null;
+  try {
+    const parsed = JSON.parse(response);
+    const truncated = truncateArrays(parsed);
+    return JSON.stringify(truncated);
+  } catch (e) {
+    return response;
+  }
+};
+
 const app = new Hono();
 app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
   const requestId = parseInt(c.req.param("requestId"));
@@ -55,7 +85,7 @@ app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
         id: result.request.id,
         pathname: result.request.pathname,
         createdLocation: result.request.createdLocation,
-        response: result.request.response,
+        response: processResponse(result.request.response),
         children: [],
         objects: [],
       });
