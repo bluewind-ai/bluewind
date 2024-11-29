@@ -43,11 +43,34 @@
           "pathname": "/api/run-route/ingest-company-data",
           "createdLocation": "middleware/main.tsx:49:44",
           "response": {
-            "message": "I worked for 1 second"
+            "message": "I worked for 1 second",
+            "files": [
+              "CIK0000000003.json",
+              "CIK0000000013.json",
+              "CIK0000000014.json",
+              "... and 903655 more items"
+            ]
           },
-          "children": [],
+          "children": [
+            {
+              "id": "[MASKED]",
+              "pathname": "/api/run-route/list-source-files",
+              "createdLocation": "middleware/main.tsx:49:44",
+              "response": {
+                "files": [
+                  "CIK0000000003.json",
+                  "CIK0000000013.json",
+                  "CIK0000000014.json",
+                  "... and 903655 more items"
+                ]
+              },
+              "children": [],
+              "objects": [],
+              "durationMsRange": "< 1000"
+            }
+          ],
           "objects": [],
-          "durationMsRange": "< 1000"
+          "durationMsRange": "1001+"
         },
         {
           "id": "[MASKED]",
@@ -80,7 +103,7 @@
             }
           ],
           "objects": [],
-          "durationMsRange": "1001+"
+          "durationMsRange": "< 1000"
         }
       ],
       "objects": [],

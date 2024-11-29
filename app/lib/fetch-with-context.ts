@@ -7,8 +7,8 @@ export function fetchWithContext(c: any) {
       headers.set("X-Parent-Request-Id", c.requestId.toString());
     }
 
-    // Add cache header for ingest-company-data route
-    if (url.includes("/api/run-route/ingest-company-data")) {
+    // Add cache header for list-source-files route
+    if (url.includes("/api/run-route/list-source-files")) {
       headers.set("Cache-Control", "only-if-cached");
     }
 
