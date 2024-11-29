@@ -18,7 +18,7 @@
           "createdLocation": "middleware/main.tsx:49:44",
           "response": {
             "success": true,
-            "message": "Created reset-factory route",
+            "message": "Using existing reset-factory route",
             "function": {
               "id": "[MASKED]",
               "name": "reset-factory",
@@ -35,12 +35,7 @@
             }
           },
           "children": [],
-          "objects": [
-            {
-              "modelName": "server_function",
-              "createdLocation": "api/routes/index.tsx:52:50"
-            }
-          ]
+          "objects": []
         },
         {
           "id": "[MASKED]",
@@ -79,10 +74,5 @@
       "objects": []
     }
   ],
-  "objects": [
-    {
-      "modelName": "server_function",
-      "createdLocation": "api/main-flow/index.tsx:71:46"
-    }
-  ]
+  "objects": []
 }
