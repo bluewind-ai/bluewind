@@ -1,5 +1,6 @@
 // app/api/root/index.tsx
 
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { join } from "path";
 
@@ -13,6 +14,8 @@ import { writeFile } from "../../lib/intercepted-fs";
 
 const app = new Hono();
 app.post("/api/run-route/root", async (c) => {
+  const startTime = performance.now();
+
   await migrateModels();
 
   const parentRequestId = c.req.header("X-Parent-Request-Id");
@@ -66,6 +69,16 @@ app.post("/api/run-route/root", async (c) => {
     },
     body: JSON.stringify({ cassette }),
   });
+
+  const endTime = performance.now();
+  const durationMs = Math.round(endTime - startTime);
+
+  console.log("[Root] Request completed:", {
+    id: rootRequest.id,
+    durationMs,
+  });
+
+  await db.update(requests).set({ durationMs }).where(eq(requests.id, rootRequest.id));
 
   const response = {
     success: !mainFlowError,
