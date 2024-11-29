@@ -225,6 +225,13 @@
       "when": 1732898883472,
       "tag": "0031_stale_kid_colt",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1732909007756,
+      "tag": "0032_stormy_pixie",
+      "breakpoints": true
     }
   ]
 }

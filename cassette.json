@@ -1,13 +1,13 @@
 {
   "id": "[MASKED]",
   "pathname": "/",
-  "createdLocation": "api/root/index.tsx:30:44",
+  "createdLocation": "api/root/index.tsx:31:44",
   "response": null,
   "children": [
     {
       "id": "[MASKED]",
       "pathname": "/api/run-route/main-flow",
-      "createdLocation": "middleware/main.tsx:49:44",
+      "createdLocation": "middleware/main.tsx:51:44",
       "response": {
         "success": true
       },
@@ -15,15 +15,15 @@
         {
           "id": "[MASKED]",
           "pathname": "/api/routes",
-          "createdLocation": "middleware/main.tsx:49:44",
+          "createdLocation": "middleware/main.tsx:51:44",
           "response": {
             "success": true,
-            "message": "Using existing reset-factory route",
+            "message": "Created reset-factory route",
             "function": {
               "id": "[MASKED]",
               "name": "reset-factory",
               "type": "SYSTEM",
-              "requestId": 5,
+              "requestId": 38,
               "metadata": {
                 "label": "Factory Reset",
                 "variant": "destructive",
@@ -35,13 +35,18 @@
             }
           },
           "children": [],
-          "objects": [],
+          "objects": [
+            {
+              "modelName": "server_function",
+              "createdLocation": "api/routes/index.tsx:52:50"
+            }
+          ],
           "durationMsRange": "< 1000"
         },
         {
           "id": "[MASKED]",
           "pathname": "/api/run-route/ingest-company-data",
-          "createdLocation": "middleware/main.tsx:49:44",
+          "createdLocation": "middleware/main.tsx:51:44",
           "response": {
             "message": "I worked for 1 second",
             "files": [
@@ -55,7 +60,7 @@
             {
               "id": "[MASKED]",
               "pathname": "/api/run-route/list-source-files",
-              "createdLocation": "middleware/main.tsx:49:44",
+              "createdLocation": "middleware/main.tsx:51:44",
               "response": {
                 "files": [
                   "CIK0000000003.json",
@@ -71,7 +76,7 @@
             {
               "id": "[MASKED]",
               "pathname": "/api/run-route/create-raw-data",
-              "createdLocation": "middleware/main.tsx:49:44",
+              "createdLocation": "middleware/main.tsx:51:44",
               "response": {
                 "success": true
               },
@@ -86,7 +91,7 @@
         {
           "id": "[MASKED]",
           "pathname": "/api/test-route",
-          "createdLocation": "middleware/main.tsx:49:44",
+          "createdLocation": "middleware/main.tsx:51:44",
           "response": {
             "files": [
               "CIK0000000003.json",
@@ -99,7 +104,7 @@
             {
               "id": "[MASKED]",
               "pathname": "/api/run-route/list-source-files",
-              "createdLocation": "middleware/main.tsx:49:44",
+              "createdLocation": "middleware/main.tsx:51:44",
               "response": {
                 "files": [
                   "CIK0000000003.json",
@@ -123,13 +128,18 @@
     {
       "id": "[MASKED]",
       "pathname": "/api/run-route/get-request-tree/[MASKED]",
-      "createdLocation": "middleware/main.tsx:49:44",
+      "createdLocation": "middleware/main.tsx:51:44",
       "response": null,
       "children": [],
       "objects": [],
       "durationMsRange": "< 1000"
     }
   ],
-  "objects": [],
+  "objects": [
+    {
+      "modelName": "server_function",
+      "createdLocation": "api/main-flow/index.tsx:71:46"
+    }
+  ],
   "durationMsRange": "< 1000"
 }

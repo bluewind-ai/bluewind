@@ -31,6 +31,9 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     parentId: parentRequestId || "null",
   });
 
+  const requestBody = await c.req.text();
+  const requestSizeBytes = new TextEncoder().encode(requestBody).length;
+
   if (pathname.startsWith("/api/") && !parentRequestId) {
     throw new Error("No parent request ID provided");
   }
@@ -52,6 +55,8 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       createdLocation: getCurrentLocation(),
       response: cachedResponse ? JSON.stringify(cachedResponse) : null,
       cacheStatus: cachedResponse ? "HIT" : shouldUseCache ? "MISS" : "SKIP",
+      durationMs: 0,
+      requestSizeBytes,
     })
     .returning();
 
@@ -65,8 +70,12 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   if (cachedResponse) {
     const endTime = performance.now();
     const durationMs = Math.round(endTime - startTime);
+    const responseSizeBytes = new TextEncoder().encode(JSON.stringify(cachedResponse)).length;
 
-    await db.update(requests).set({ durationMs }).where(eq(requests.id, newRequest.id));
+    await db
+      .update(requests)
+      .set({ durationMs, responseSizeBytes })
+      .where(eq(requests.id, newRequest.id));
 
     return new Response(JSON.stringify(cachedResponse), {
       headers: { "Content-Type": "application/json" },
@@ -94,12 +103,15 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     }
   }
 
+  const responseSizeBytes = new TextEncoder().encode(finalResponseText).length;
+
   console.log(`[Middleware] Request completed:`, {
     id: newRequest.id,
     pathname,
     durationMs,
     responseStatus: c.res.status,
-    responseLength: finalResponseText?.length || 0,
+    requestSizeBytes,
+    responseSizeBytes,
   });
 
   if (!durationMs) {
@@ -111,6 +123,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     .set({
       response: finalResponseText,
       durationMs,
+      responseSizeBytes,
     })
     .where(eq(requests.id, newRequest.id));
 }

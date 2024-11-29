@@ -14,7 +14,9 @@ export const requests = pgTable("requests", {
   response: text("response"),
   cacheStatus: text("cache_status").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  durationMs: integer("duration_ms"),
+  durationMs: integer("duration_ms").notNull(),
+  requestSizeBytes: integer("request_size_bytes").notNull(),
+  responseSizeBytes: integer("response_size_bytes"),
 });
 
 export const RequestSchema = z.object({
@@ -23,9 +25,11 @@ export const RequestSchema = z.object({
   pathname: z.string(),
   createdLocation: z.string(),
   response: z.string().nullable(),
-  cacheStatus: z.string(), // Made mandatory in DB but keeping schema flexible
+  cacheStatus: z.string(),
   createdAt: z.date(),
-  durationMs: z.number().nullable(),
+  durationMs: z.number(),
+  requestSizeBytes: z.number(),
+  responseSizeBytes: z.number().nullable(),
 });
 
 export type CreateRequest = z.infer<typeof RequestSchema>;

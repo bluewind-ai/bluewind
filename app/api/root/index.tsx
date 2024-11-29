@@ -19,6 +19,7 @@ app.post("/api/run-route/root", async (c) => {
   await migrateModels();
 
   const parentRequestId = c.req.header("X-Parent-Request-Id");
+  const requestSizeBytes = (await c.req.text()).length;
 
   console.log("[Root] Creating root request with explicit SKIP cacheStatus");
 
@@ -29,6 +30,8 @@ app.post("/api/run-route/root", async (c) => {
       pathname: "/",
       createdLocation: getCurrentLocation(),
       cacheStatus: "SKIP",
+      durationMs: 0,
+      requestSizeBytes,
     })
     .returning();
 
@@ -78,14 +81,25 @@ app.post("/api/run-route/root", async (c) => {
     durationMs,
   });
 
-  await db.update(requests).set({ durationMs }).where(eq(requests.id, rootRequest.id));
-
   const response = {
     success: !mainFlowError,
     requestId: rootRequest.id,
     ...(mainFlowError && { error: String(mainFlowError) }),
     ...(tree && { tree }),
   };
+
+  const responseText = JSON.stringify(response);
+  const responseSizeBytes = responseText.length;
+
+  await db
+    .update(requests)
+    .set({
+      durationMs,
+      response: responseText,
+      responseSizeBytes,
+    })
+    .where(eq(requests.id, rootRequest.id));
+
   return c.json(response, 200);
 });
 
