@@ -21,40 +21,51 @@ const processNode = (obj: any): any => {
     return obj.map(processNode);
   }
 
-  const newObj = { ...obj };
+  const newObj: any = {};
 
-  if (newObj.id !== undefined) {
+  // Group node properties together first
+  if (obj.id !== undefined) {
     newObj.id = "[MASKED]";
   }
-
-  if (
-    newObj.pathname &&
-    typeof newObj.pathname === "string" &&
-    newObj.pathname.includes("/get-request-tree/")
-  ) {
-    newObj.pathname = newObj.pathname.replace(
-      /\/get-request-tree\/\d+/,
-      "/get-request-tree/[MASKED]",
-    );
+  if (obj.pathname) {
+    newObj.pathname = obj.pathname.includes("/get-request-tree/")
+      ? obj.pathname.replace(/\/get-request-tree\/\d+/, "/get-request-tree/[MASKED]")
+      : obj.pathname;
+  }
+  if (obj.createdLocation) {
+    newObj.createdLocation = obj.createdLocation;
+  }
+  if (obj.response !== undefined) {
+    newObj.response = processNode(obj.response);
+  }
+  if (obj.durationMs !== undefined) {
+    newObj.durationMsRange = getDurationRange(obj.durationMs);
+  }
+  if (obj.requestSizeBytes !== undefined) {
+    newObj.requestSizeBytesRange = getBytesRange(obj.requestSizeBytes);
+  }
+  if (obj.responseSizeBytes !== undefined) {
+    newObj.responseSizeBytesRange = getBytesRange(obj.responseSizeBytes);
   }
 
-  if (newObj.durationMs !== undefined) {
-    newObj.durationMsRange = getDurationRange(newObj.durationMs);
-    delete newObj.durationMs;
+  // Then add children and objects
+  if (obj.children) {
+    newObj.children = processNode(obj.children);
+  }
+  if (obj.objects) {
+    newObj.objects = processNode(obj.objects);
   }
 
-  if (newObj.requestSizeBytes !== undefined) {
-    newObj.requestSizeBytesRange = getBytesRange(newObj.requestSizeBytes);
-    delete newObj.requestSizeBytes;
-  }
-
-  if (newObj.responseSizeBytes !== undefined) {
-    newObj.responseSizeBytesRange = getBytesRange(newObj.responseSizeBytes);
-    delete newObj.responseSizeBytes;
-  }
-
-  for (const key in newObj) {
-    newObj[key] = processNode(newObj[key]);
+  // Process any remaining properties
+  for (const key in obj) {
+    if (
+      !newObj.hasOwnProperty(key) &&
+      key !== "durationMs" &&
+      key !== "requestSizeBytes" &&
+      key !== "responseSizeBytes"
+    ) {
+      newObj[key] = processNode(obj[key]);
+    }
   }
 
   return newObj;

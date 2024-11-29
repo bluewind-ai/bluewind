@@ -1,8 +1,11 @@
 {
   "id": "[MASKED]",
   "pathname": "/",
-  "createdLocation": "api/root/index.tsx:31:44",
+  "createdLocation": "api/root/index.tsx:30:44",
   "response": null,
+  "durationMsRange": "< 1000",
+  "requestSizeBytesRange": "< 1 MB",
+  "responseSizeBytesRange": "< 1 MB",
   "children": [
     {
       "id": "[MASKED]",
@@ -11,6 +14,9 @@
       "response": {
         "success": true
       },
+      "durationMsRange": "1001+",
+      "requestSizeBytesRange": "< 1 MB",
+      "responseSizeBytesRange": "< 1 MB",
       "children": [
         {
           "id": "[MASKED]",
@@ -21,6 +27,7 @@
             "message": "Using existing reset-factory route",
             "function": {
               "id": "[MASKED]",
+              "createdLocation": "api/routes/index.tsx:38:50",
               "name": "reset-factory",
               "type": "SYSTEM",
               "requestId": 38,
@@ -30,15 +37,14 @@
                 "description": "Reset the entire database to factory settings",
                 "confirmationMessage": "This will delete all data. Are you sure?",
                 "confirmationRequired": true
-              },
-              "createdLocation": "api/routes/index.tsx:38:50"
+              }
             }
           },
-          "children": [],
-          "objects": [],
           "durationMsRange": "< 1000",
           "requestSizeBytesRange": "< 1 MB",
-          "responseSizeBytesRange": "< 1 MB"
+          "responseSizeBytesRange": "< 1 MB",
+          "children": [],
+          "objects": []
         },
         {
           "id": "[MASKED]",
@@ -53,6 +59,9 @@
               "... and 903655 more items"
             ]
           },
+          "durationMsRange": "1001+",
+          "requestSizeBytesRange": "< 1 MB",
+          "responseSizeBytesRange": "1 MB+",
           "children": [
             {
               "id": "[MASKED]",
@@ -66,11 +75,11 @@
                   "... and 903655 more items"
                 ]
               },
-              "children": [],
-              "objects": [],
               "durationMsRange": "< 1000",
               "requestSizeBytesRange": "< 1 MB",
-              "responseSizeBytesRange": "1 MB+"
+              "responseSizeBytesRange": "1 MB+",
+              "children": [],
+              "objects": []
             },
             {
               "id": "[MASKED]",
@@ -79,17 +88,14 @@
               "response": {
                 "success": true
               },
-              "children": [],
-              "objects": [],
               "durationMsRange": "< 1000",
               "requestSizeBytesRange": "< 1 MB",
-              "responseSizeBytesRange": "< 1 MB"
+              "responseSizeBytesRange": "< 1 MB",
+              "children": [],
+              "objects": []
             }
           ],
-          "objects": [],
-          "durationMsRange": "1001+",
-          "requestSizeBytesRange": "< 1 MB",
-          "responseSizeBytesRange": "1 MB+"
+          "objects": []
         },
         {
           "id": "[MASKED]",
@@ -103,6 +109,9 @@
               "... and 903655 more items"
             ]
           },
+          "durationMsRange": "< 1000",
+          "requestSizeBytesRange": "< 1 MB",
+          "responseSizeBytesRange": "1 MB+",
           "children": [
             {
               "id": "[MASKED]",
@@ -116,38 +125,29 @@
                   "... and 903655 more items"
                 ]
               },
-              "children": [],
-              "objects": [],
               "durationMsRange": "< 1000",
               "requestSizeBytesRange": "< 1 MB",
-              "responseSizeBytesRange": "1 MB+"
+              "responseSizeBytesRange": "1 MB+",
+              "children": [],
+              "objects": []
             }
           ],
-          "objects": [],
-          "durationMsRange": "< 1000",
-          "requestSizeBytesRange": "< 1 MB",
-          "responseSizeBytesRange": "1 MB+"
+          "objects": []
         }
       ],
-      "objects": [],
-      "durationMsRange": "1001+",
-      "requestSizeBytesRange": "< 1 MB",
-      "responseSizeBytesRange": "< 1 MB"
+      "objects": []
     },
     {
       "id": "[MASKED]",
       "pathname": "/api/run-route/get-request-tree/[MASKED]",
       "createdLocation": "middleware/main.tsx:51:44",
       "response": null,
-      "children": [],
-      "objects": [],
       "durationMsRange": "< 1000",
       "requestSizeBytesRange": "< 1 MB",
-      "responseSizeBytesRange": "< 1 MB"
+      "responseSizeBytesRange": "< 1 MB",
+      "children": [],
+      "objects": []
     }
   ],
-  "objects": [],
-  "durationMsRange": "< 1000",
-  "requestSizeBytesRange": "< 1 MB",
-  "responseSizeBytesRange": "< 1 MB"
+  "objects": []
 }
