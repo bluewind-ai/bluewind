@@ -5,38 +5,57 @@ import { join } from "path";
 
 import { writeFile } from "../../lib/intercepted-fs";
 
+const getDurationRange = (ms: number): string => {
+  return ms <= 1000 ? "< 1000" : "1001+";
+};
+
+const processNode = (obj: any): any => {
+  if (typeof obj !== "object" || obj === null) return obj;
+
+  if (Array.isArray(obj)) {
+    return obj.map(processNode);
+  }
+
+  const newObj = { ...obj };
+
+  if (newObj.id !== undefined) {
+    newObj.id = "[MASKED]";
+  }
+
+  if (
+    newObj.pathname &&
+    typeof newObj.pathname === "string" &&
+    newObj.pathname.includes("/get-request-tree/")
+  ) {
+    newObj.pathname = newObj.pathname.replace(
+      /\/get-request-tree\/\d+/,
+      "/get-request-tree/[MASKED]",
+    );
+  }
+
+  if (newObj.durationMs !== undefined) {
+    newObj.durationMsRange = getDurationRange(newObj.durationMs);
+    delete newObj.durationMs;
+  }
+
+  for (const key in newObj) {
+    newObj[key] = processNode(newObj[key]);
+  }
+
+  return newObj;
+};
+
 const app = new Hono();
 
 app.post("/api/run-route/store-cassette", async (c) => {
   const { cassette } = await c.req.json();
-  console.log("[Store-Cassette] Received cassette:", typeof cassette);
+  const data = typeof cassette === "string" ? JSON.parse(cassette) : cassette;
 
-  const maskIds = (obj: any) => {
-    if (typeof obj !== "object" || obj === null) return obj;
+  const processedCassette = processNode(data);
+  const finalCassette = JSON.stringify(processedCassette, null, 2);
 
-    const newObj = Array.isArray(obj) ? [] : {};
-    for (const key in obj) {
-      if (key === "id") {
-        newObj[key] = "[MASKED]";
-      } else if (
-        key === "pathname" &&
-        typeof obj[key] === "string" &&
-        obj[key].includes("/get-request-tree/")
-      ) {
-        newObj[key] = obj[key].replace(/\/get-request-tree\/\d+/, "/get-request-tree/[MASKED]");
-      } else {
-        newObj[key] = maskIds(obj[key]);
-      }
-    }
-    return newObj;
-  };
-
-  const dataToMask = typeof cassette === "string" ? JSON.parse(cassette) : cassette;
-  const maskedCassette = maskIds(dataToMask);
-  const maskedCassetteString = JSON.stringify(maskedCassette, null, 2);
-
-  await writeFile(join(process.cwd(), "cassette.json"), maskedCassetteString, "utf-8");
-  console.log("[Store-Cassette] Cassette stored successfully with masked IDs");
+  await writeFile(join(process.cwd(), "cassette.json"), finalCassette, "utf-8");
+  console.log("[Store-Cassette] Cassette stored successfully with masked IDs and duration ranges");
   return c.json({ success: true });
 });
 

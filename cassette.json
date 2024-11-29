@@ -3,7 +3,6 @@
   "pathname": "/",
   "createdLocation": "api/root/index.tsx:30:44",
   "response": null,
-  "durationMs": null,
   "children": [
     {
       "id": "[MASKED]",
@@ -12,7 +11,6 @@
       "response": {
         "success": true
       },
-      "durationMs": 3752,
       "children": [
         {
           "id": "[MASKED]",
@@ -36,9 +34,9 @@
               "createdLocation": "api/routes/index.tsx:38:50"
             }
           },
-          "durationMs": 5,
           "children": [],
-          "objects": []
+          "objects": [],
+          "durationMsRange": "< 1000"
         },
         {
           "id": "[MASKED]",
@@ -47,9 +45,9 @@
           "response": {
             "message": "I worked for 1 second"
           },
-          "durationMs": 2,
           "children": [],
-          "objects": []
+          "objects": [],
+          "durationMsRange": "< 1000"
         },
         {
           "id": "[MASKED]",
@@ -63,22 +61,24 @@
               "... and 903655 more items"
             ]
           },
-          "durationMs": 3542,
           "children": [],
-          "objects": []
+          "objects": [],
+          "durationMsRange": "< 1000"
         }
       ],
-      "objects": []
+      "objects": [],
+      "durationMsRange": "1001+"
     },
     {
       "id": "[MASKED]",
       "pathname": "/api/run-route/get-request-tree/[MASKED]",
       "createdLocation": "middleware/main.tsx:49:44",
       "response": null,
-      "durationMs": null,
       "children": [],
-      "objects": []
+      "objects": [],
+      "durationMsRange": "< 1000"
     }
   ],
-  "objects": []
+  "objects": [],
+  "durationMsRange": "< 1000"
 }
