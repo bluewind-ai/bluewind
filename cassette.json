@@ -7,7 +7,7 @@
     {
       "id": "[MASKED]",
       "pathname": "/api/run-route/main-flow",
-      "createdLocation": "middleware/main.tsx:48:44",
+      "createdLocation": "middleware/main.tsx:54:44",
       "response": {
         "success": true
       },
@@ -15,7 +15,7 @@
         {
           "id": "[MASKED]",
           "pathname": "/api/routes",
-          "createdLocation": "middleware/main.tsx:48:44",
+          "createdLocation": "middleware/main.tsx:54:44",
           "response": {
             "success": true,
             "message": "Using existing reset-factory route",
@@ -40,7 +40,7 @@
         {
           "id": "[MASKED]",
           "pathname": "/api/run-route/ingest-company-data",
-          "createdLocation": "middleware/main.tsx:48:44",
+          "createdLocation": "middleware/main.tsx:54:44",
           "response": {
             "message": "I worked for 1 second"
           },
@@ -50,7 +50,7 @@
         {
           "id": "[MASKED]",
           "pathname": "/api/test-route",
-          "createdLocation": "middleware/main.tsx:48:44",
+          "createdLocation": "middleware/main.tsx:54:44",
           "response": {
             "files": [
               "CIK0000000003.json",
@@ -68,7 +68,7 @@
     {
       "id": "[MASKED]",
       "pathname": "/api/run-route/get-request-tree/[MASKED]",
-      "createdLocation": "middleware/main.tsx:48:44",
+      "createdLocation": "middleware/main.tsx:54:44",
       "response": null,
       "children": [],
       "objects": []

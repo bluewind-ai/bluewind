@@ -14,6 +14,7 @@ export const requests = pgTable("requests", {
   response: text("response"),
   cacheStatus: text("cache_status").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  durationMs: integer("duration_ms"),
 });
 
 export const RequestSchema = z.object({
@@ -24,6 +25,7 @@ export const RequestSchema = z.object({
   response: z.string().nullable(),
   cacheStatus: z.string(), // Made mandatory in DB but keeping schema flexible
   createdAt: z.date(),
+  durationMs: z.number().nullable(),
 });
 
 export type CreateRequest = z.infer<typeof RequestSchema>;

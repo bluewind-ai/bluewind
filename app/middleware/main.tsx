@@ -21,10 +21,17 @@ const baseDb = drizzle(postgres(connectionString), {
 export const db = baseDb;
 
 export async function mainMiddleware(context: Context, next: () => Promise<void>) {
+  const startTime = performance.now();
   const c = context as unknown as ExtendedContext;
   c.queries = [];
   const pathname = new URL(c.req.url).pathname;
   const parentRequestId = c.req.header("X-Parent-Request-Id");
+
+  console.log(`[Middleware] Request details:`, {
+    url: c.req.url,
+    method: c.req.method,
+    parentId: parentRequestId || "null",
+  });
 
   if (pathname.startsWith("/api/") && !parentRequestId) {
     throw new Error("No parent request ID provided");
@@ -70,6 +77,11 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   c.requestId = newRequest.id;
 
   if (cachedResponse) {
+    const endTime = performance.now();
+    const durationMs = Math.round(endTime - startTime);
+
+    await db.update(requests).set({ durationMs }).where(eq(requests.id, newRequest.id));
+
     return new Response(JSON.stringify(cachedResponse), {
       headers: { "Content-Type": "application/json" },
     });
@@ -79,6 +91,9 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   c.db = dbWithProxy;
 
   await next();
+
+  const endTime = performance.now();
+  const durationMs = Math.round(endTime - startTime);
 
   const clonedResponse = c.res.clone();
   const responseText = await clonedResponse.text();
@@ -93,9 +108,24 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     }
   }
 
+  console.log(`[Middleware] Request completed:`, {
+    id: newRequest.id,
+    pathname,
+    durationMs,
+    responseStatus: c.res.status,
+    responseLength: finalResponseText?.length || 0,
+  });
+
+  if (!durationMs) {
+    throw new Error("No durationMs available");
+  }
+
   await db
     .update(requests)
-    .set({ response: finalResponseText })
+    .set({
+      response: finalResponseText,
+      durationMs,
+    })
     .where(eq(requests.id, newRequest.id));
 
   await insertRequestObjects(c);
