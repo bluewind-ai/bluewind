@@ -1,4 +1,5 @@
 // app/db/schema/requests/schema.ts
+
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
@@ -11,17 +12,22 @@ export const requests = pgTable("requests", {
   pathname: text("pathname").notNull(),
   createdLocation: text("created_location").notNull(),
   response: text("response"),
+  cacheStatus: text("cache_status"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
 export const RequestSchema = z.object({
   id: z.number(),
   parentId: z.number().nullable(),
   pathname: z.string(),
   createdLocation: z.string(),
   response: z.string().nullable(),
+  cacheStatus: z.string(), // Still allow null in schema for flexibility
   createdAt: z.date(),
 });
+
 export type CreateRequest = z.infer<typeof RequestSchema>;
+
 export const requestsRelations = relations(requests, ({ many }) => ({
   serverFunctions: many(serverFunctions),
 }));

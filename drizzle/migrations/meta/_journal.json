@@ -211,6 +211,13 @@
       "when": 1732820227467,
       "tag": "0029_swift_kid_colt",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1732848358105,
+      "tag": "0030_loud_squirrel_girl",
+      "breakpoints": true
     }
   ]
 }
