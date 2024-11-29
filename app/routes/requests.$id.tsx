@@ -11,9 +11,8 @@ import { db } from "~/middleware/main";
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
   const requestId = Number(params.id);
-  const request = await db.query.requests.findFirst({
-    where: eq(requests.id, requestId),
-  });
+  const [request] = await db.select().from(requests).where(eq(requests.id, requestId)).limit(1);
+
   if (!request) {
     throw new Response("Request not found", { status: 404 });
   }
@@ -77,7 +76,7 @@ export default function Request() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Request {request.id}</h1>
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white shadow rounded-lg p-6 max-h-[80vh] overflow-y-auto">
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 mb-6">
           <dt className="font-semibold">ID:</dt>
           <dd>{request.id}</dd>
