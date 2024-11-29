@@ -1,0 +1,78 @@
+{
+  "id": 786,
+  "pathname": "/",
+  "createdLocation": "api/root/index.tsx:28:46",
+  "response": null,
+  "children": [
+    {
+      "id": 787,
+      "pathname": "/api/run-route/main-flow",
+      "createdLocation": "middleware/main.tsx:48:44",
+      "response": {
+        "success": true
+      },
+      "children": [
+        {
+          "id": 788,
+          "pathname": "/api/routes",
+          "createdLocation": "middleware/main.tsx:48:44",
+          "response": {
+            "success": true,
+            "message": "Using existing reset-factory route",
+            "function": {
+              "id": 2,
+              "name": "reset-factory",
+              "type": "SYSTEM",
+              "requestId": 13,
+              "metadata": {
+                "label": "Factory Reset",
+                "variant": "destructive",
+                "description": "Reset the entire database to factory settings",
+                "confirmationMessage": "This will delete all data. Are you sure?",
+                "confirmationRequired": true
+              },
+              "createdLocation": "api/routes/index.tsx:38:50"
+            }
+          },
+          "children": [],
+          "objects": []
+        },
+        {
+          "id": 789,
+          "pathname": "/api/run-route/ingest-company-data",
+          "createdLocation": "middleware/main.tsx:48:44",
+          "response": {
+            "message": "I worked for 1 second"
+          },
+          "children": [],
+          "objects": []
+        },
+        {
+          "id": 790,
+          "pathname": "/api/test-route",
+          "createdLocation": "middleware/main.tsx:48:44",
+          "response": {
+            "files": [
+              "CIK0000000003.json",
+              "CIK0000000013.json",
+              "CIK0000000014.json",
+              "... and 903655 more items"
+            ]
+          },
+          "children": [],
+          "objects": []
+        }
+      ],
+      "objects": []
+    },
+    {
+      "id": 791,
+      "pathname": "/api/run-route/get-request-tree/786",
+      "createdLocation": "middleware/main.tsx:48:44",
+      "response": null,
+      "children": [],
+      "objects": []
+    }
+  ],
+  "objects": []
+}

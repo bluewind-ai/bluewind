@@ -39,7 +39,7 @@ app.post("/api/run-route/root", async (c) => {
     c.requestId = rootRequest.id;
     let mainFlowError = null;
     let tree = null;
-    await writeFile(join(process.cwd(), "cassette.txt"), "", "utf-8");
+    await writeFile(join(process.cwd(), "cassette.json"), "", "utf-8");
     try {
       const mainFlowResponse = await fetchWithContext(c)(
         "http://localhost:5173/api/run-route/main-flow",
@@ -62,10 +62,11 @@ app.post("/api/run-route/root", async (c) => {
       );
       const treeJson = await treeResponse.json();
       tree = treeJson.tree;
+
+      const cassette = JSON.stringify(tree, null, 2);
+      await writeFile(join(process.cwd(), "cassette.json"), cassette, "utf-8");
     } catch (error) {}
-    await fetchWithContext(c)("http://localhost:5173/api/run-route/store-cassette", {
-      method: "POST",
-    });
+
     const response = {
       success: !mainFlowError,
       requestId: rootRequest.id,

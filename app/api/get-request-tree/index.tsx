@@ -12,7 +12,7 @@ interface RequestNode {
   id: number;
   pathname: string;
   createdLocation: string;
-  response: string | null;
+  response: any; // Changed from string | null to any since we'll parse JSON
   children: RequestNode[];
   objects: Array<{
     modelName: string;
@@ -37,12 +37,11 @@ const truncateArrays = (obj: any): any => {
   return obj;
 };
 
-const processResponse = (response: string | null): string | null => {
+const processResponse = (response: string | null): any => {
   if (!response) return null;
   try {
     const parsed = JSON.parse(response);
-    const truncated = truncateArrays(parsed);
-    return JSON.stringify(truncated);
+    return truncateArrays(parsed);
   } catch (e) {
     return response;
   }

@@ -286,3 +286,5 @@ Create error if file more than 150 lines
 
 
 remove factory reset button to avoid mistakes
+
+if fetch use, return error
