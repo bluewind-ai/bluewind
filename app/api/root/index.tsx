@@ -18,14 +18,24 @@ app.post("/api/run-route/root", async (c) => {
     await migrateModels();
 
     const parentRequestId = c.req.header("X-Parent-Request-Id");
+
+    console.log("[Root] Creating root request with explicit SKIP cacheStatus");
+
     const [rootRequest] = await db
       .insert(requests)
       .values({
         requestId: parentRequestId ? parseInt(parentRequestId) : null,
         pathname: "/",
         createdLocation: getCurrentLocation(),
+        cacheStatus: "SKIP",
       })
       .returning();
+
+    console.log("[Root] Created root request", {
+      id: rootRequest.id,
+      cacheStatus: rootRequest.cacheStatus,
+    });
+
     c.requestId = rootRequest.id;
     let mainFlowError = null;
     let tree = null;

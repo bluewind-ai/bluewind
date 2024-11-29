@@ -12,7 +12,7 @@ export const requests = pgTable("requests", {
   pathname: text("pathname").notNull(),
   createdLocation: text("created_location").notNull(),
   response: text("response"),
-  cacheStatus: text("cache_status"),
+  cacheStatus: text("cache_status").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -22,7 +22,7 @@ export const RequestSchema = z.object({
   pathname: z.string(),
   createdLocation: z.string(),
   response: z.string().nullable(),
-  cacheStatus: z.string(), // Still allow null in schema for flexibility
+  cacheStatus: z.string(), // Made mandatory in DB but keeping schema flexible
   createdAt: z.date(),
 });
 

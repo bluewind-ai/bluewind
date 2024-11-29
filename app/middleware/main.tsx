@@ -38,6 +38,12 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     .from(models)
     .where(eq(models.pluralName, TABLES.requests.modelName));
 
+  console.log(`[Middleware] Creating request for ${pathname} with cache settings:`, {
+    shouldUseCache,
+    hasCachedResponse: !!cachedResponse,
+    willSetCacheStatus: cachedResponse ? "HIT" : shouldUseCache ? "MISS" : "SKIP",
+  });
+
   const [newRequest] = await db
     .insert(requests)
     .values({
@@ -45,8 +51,14 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       pathname,
       createdLocation: getCurrentLocation(),
       response: cachedResponse ? JSON.stringify(cachedResponse) : null,
+      cacheStatus: cachedResponse ? "HIT" : shouldUseCache ? "MISS" : "SKIP",
     })
     .returning();
+
+  console.log(
+    `[Middleware] Created request ${newRequest.id} with cacheStatus:`,
+    newRequest.cacheStatus,
+  );
 
   await db.insert(objects).values({
     modelId: requestModel.id,
