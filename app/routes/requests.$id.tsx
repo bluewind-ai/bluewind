@@ -1,4 +1,5 @@
 // app/routes/requests.$id.tsx
+
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -39,7 +40,11 @@ function RequestTree({ node }: { node: any }) {
         {node.response && (
           <div className="text-sm mt-1 p-2 bg-gray-50 rounded">
             <div className="font-medium">Response:</div>
-            <pre className="text-xs overflow-x-auto">{node.response}</pre>
+            <pre className="text-xs overflow-x-auto">
+              {typeof node.response === "string"
+                ? node.response
+                : JSON.stringify(node.response, null, 2)}
+            </pre>
           </div>
         )}
         {node.objects.length > 0 && (
