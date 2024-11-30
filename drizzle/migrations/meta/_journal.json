@@ -232,6 +232,13 @@
       "when": 1732909007756,
       "tag": "0032_stormy_pixie",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1732990862916,
+      "tag": "0033_awesome_avengers",
+      "breakpoints": true
     }
   ]
 }

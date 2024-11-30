@@ -7,33 +7,36 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
+import { readFile } from "fs/promises";
+import { join } from "path";
 import { useState } from "react";
 import JsonView from "react18-json-view";
 
 import RequestFlowVisualization from "~/components/RequestFlowVisualization";
 import { requests } from "~/db/schema";
-import { fetchWithContext } from "~/lib/fetch-with-context";
 import { db } from "~/middleware/main";
 
-export async function loader({ params, context }: LoaderFunctionArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
   const requestId = Number(params.id);
   const [request] = await db.select().from(requests).where(eq(requests.id, requestId)).limit(1);
+
+  console.log("Request from DB:", request);
+
   if (!request) {
     throw new Response("Request not found", { status: 404 });
   }
-  try {
-    const treeResponse = await fetchWithContext(context)(
-      `http://localhost:5173/api/run-route/get-request-tree/${requestId}`,
-    );
-    if (!treeResponse.ok) {
-      return json({ request, tree: null });
-    }
-    const treeData = await treeResponse.json();
 
-    // Extract the actual tree data from nested structure if needed
-    const cleanTree = treeData.tree.response?.tree || treeData.tree;
-    return json({ request, tree: cleanTree });
+  try {
+    const treeData = await readFile(
+      join(process.cwd(), "data", "requests", `${requestId}.json`),
+      "utf-8",
+    );
+    console.log("Tree data from file:", treeData);
+    const tree = JSON.parse(treeData);
+    console.log("Parsed tree:", tree);
+    return json({ request, tree });
   } catch (error) {
+    console.error("Error reading/parsing tree:", error);
     return json({ request, tree: null });
   }
 }
@@ -41,6 +44,9 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 export default function Request() {
   const { request, tree } = useLoaderData<typeof loader>();
   const [viewMode, setViewMode] = useState<"tree" | "flow">("tree");
+
+  console.log("Component received request:", request);
+  console.log("Component received tree:", tree);
 
   return (
     <div className="p-4">

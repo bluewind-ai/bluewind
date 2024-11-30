@@ -1,16 +1,16 @@
 // app/api/root/index.tsx
 
 import { eq } from "drizzle-orm";
+import { writeFile } from "fs/promises";
 import { Hono } from "hono";
 import { join } from "path";
 
 import { requests } from "~/db/schema/requests/schema";
+import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and-store-cassette.server";
 import { migrateModels } from "~/functions/server.migrate";
 import { fetchWithContext } from "~/lib/fetch-with-context";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
-
-import { writeFile } from "../../lib/intercepted-fs";
 
 const app = new Hono();
 app.post("/api/run-route/root", async (c) => {
@@ -29,10 +29,11 @@ app.post("/api/run-route/root", async (c) => {
       durationMs: 0, // Set initial value to satisfy NOT NULL constraint
     })
     .returning();
+
   const startTime = performance.now();
   c.requestId = rootRequest.id;
   let mainFlowError = null;
-  let tree = null;
+
   await writeFile(join(process.cwd(), "cassette.json"), "", "utf-8");
   const mainFlowResponse = await fetchWithContext(c)(
     "http://localhost:5173/api/run-route/main-flow",
@@ -43,28 +44,10 @@ app.post("/api/run-route/root", async (c) => {
   if (!mainFlowResponse.ok) {
     mainFlowError = new Error("Main flow failed");
   }
-  const treeResponse = await fetchWithContext(c)(
-    `http://localhost:5173/api/run-route/get-request-tree/${rootRequest.id}`,
-    {
-      method: "GET",
-    },
-  );
-  const treeJson = await treeResponse.json();
-  tree = treeJson.tree;
 
-  // Log the tree data that will be used for both
-  console.log("Tree data before writing to cassette:", JSON.stringify(tree, null, 2));
+  // Get tree and store both versions
+  const tree = await getRequestTreeAndStoreCassette(rootRequest.id);
 
-  const cassette = JSON.stringify(tree, null, 2);
-  console.log("Cassette data being written:", cassette);
-
-  await fetchWithContext(c)("http://localhost:5173/api/run-route/store-cassette", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ cassette }),
-  });
   const endTime = performance.now();
   const durationMs = Math.round(endTime - startTime);
   const response = {
@@ -73,6 +56,7 @@ app.post("/api/run-route/root", async (c) => {
     ...(mainFlowError && { error: String(mainFlowError) }),
     ...(tree && { tree }),
   };
+
   const responseText = JSON.stringify(response);
   const responseSizeBytes = responseText.length;
   await db
@@ -84,9 +68,7 @@ app.post("/api/run-route/root", async (c) => {
     })
     .where(eq(requests.id, rootRequest.id));
 
-  // Log final response data
-  console.log("Final response data:", JSON.stringify(response, null, 2));
-
   return c.json(response, 200);
 });
+
 export default app;
