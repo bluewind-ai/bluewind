@@ -30,7 +30,7 @@
               "createdLocation": "api/routes/index.tsx:38:50",
               "name": "reset-factory",
               "type": "SYSTEM",
-              "requestId": 38,
+              "requestId": 10,
               "metadata": {
                 "label": "Factory Reset",
                 "variant": "destructive",

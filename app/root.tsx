@@ -16,8 +16,7 @@ import * as schema from "~/db/schema";
 import { TableModel } from "~/db/schema/table-models";
 import { ExtendedContext } from "~/middleware";
 
-import { BackOfficeTree } from "./components/back-office-tree";
-import { type NavigationNode, NavigationTree } from "./components/navigation-tree";
+import { type NavigationNode } from "./components/navigation-tree";
 import { ServerFunctionsButtons } from "./components/server-functions-buttons";
 import { loadNavigationData } from "./functions/load-navigation-data.server";
 
@@ -93,14 +92,14 @@ function LoadingUI() {
 function AppContent({ data }: { data: LoaderData }) {
   return (
     <div className="flex h-full overflow-hidden">
-      <NavigationTree data={data.navigationData} />
+      {/* <NavigationTree data={data.navigationData} /> */}
       <div className="flex-1">
         <ServerFunctionsButtons
           {...{ [TableModel.SERVER_FUNCTIONS]: data[TableModel.SERVER_FUNCTIONS] }}
         />
         <Outlet />
       </div>
-      <BackOfficeTree data={data.backOfficeData} />
+      {/* <BackOfficeTree data={data.backOfficeData} /> */}
     </div>
   );
 }
