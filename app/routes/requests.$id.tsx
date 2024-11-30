@@ -20,23 +20,19 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
     throw new Response("Request not found", { status: 404 });
   }
   try {
-    // Fetch the request tree using fetchWithContext
     const treeResponse = await fetchWithContext(context)(
       `http://localhost:5173/api/run-route/get-request-tree/${requestId}`,
     );
     if (!treeResponse.ok) {
-      // If the response is not ok, return just the request without the tree
       return json({ request, tree: null });
     }
     const treeData = await treeResponse.json();
     return json({ request, tree: treeData.tree });
   } catch (error) {
-    // If there's any error fetching the tree, return just the request
     return json({ request, tree: null });
   }
 }
 
-// We'll keep this component for reference or as a toggle option
 function RequestTree({ node }: { node: any }) {
   return (
     <div className="pl-4 border-l border-gray-200">
@@ -83,22 +79,7 @@ export default function Request() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Request {request.id}</h1>
       <div className="bg-white shadow rounded-lg p-6">
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 mb-6">
-          <dt className="font-semibold">ID:</dt>
-          <dd>{request.id}</dd>
-
-          <dt className="font-semibold">Request ID:</dt>
-          <dd>{request.requestId}</dd>
-
-          <dt className="font-semibold">Function Call ID:</dt>
-          <dd>{request.functionCallId}</dd>
-
-          <dt className="font-semibold">Pathname:</dt>
-          <dd>{request.pathname}</dd>
-        </dl>
-
         <div className="border-t pt-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Request Tree</h2>
