@@ -1,5 +1,4 @@
 // app/api/root/index.tsx
-
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { join } from "path";
@@ -18,9 +17,6 @@ app.post("/api/run-route/root", async (c) => {
   await migrateModels();
   const parentRequestId = c.req.header("X-Parent-Request-Id");
   const requestSizeBytes = (await c.req.text()).length;
-
-  console.log("[Root] Creating initial root request entry");
-
   const [rootRequest] = await db
     .insert(requests)
     .values({
@@ -32,22 +28,11 @@ app.post("/api/run-route/root", async (c) => {
       durationMs: 0, // Set initial value to satisfy NOT NULL constraint
     })
     .returning();
-
-  console.log("[Root] Created root request", {
-    id: rootRequest.id,
-    cacheStatus: rootRequest.cacheStatus,
-  });
-
-  // Start timing only the actual processing work
-  console.log("[Root] Starting processing timer");
   const startTime = performance.now();
-
   c.requestId = rootRequest.id;
   let mainFlowError = null;
   let tree = null;
   await writeFile(join(process.cwd(), "cassette.json"), "", "utf-8");
-
-  console.log("[Root] Initiating main flow request");
   const mainFlowResponse = await fetchWithContext(c)(
     "http://localhost:5173/api/run-route/main-flow",
     {
@@ -56,10 +41,7 @@ app.post("/api/run-route/root", async (c) => {
   );
   if (!mainFlowResponse.ok) {
     mainFlowError = new Error("Main flow failed");
-    console.log("[Root] Main flow failed");
   }
-
-  console.log("[Root] Fetching request tree");
   const treeResponse = await fetchWithContext(c)(
     `http://localhost:5173/api/run-route/get-request-tree/${rootRequest.id}`,
     {
@@ -68,8 +50,6 @@ app.post("/api/run-route/root", async (c) => {
   );
   const treeJson = await treeResponse.json();
   tree = treeJson.tree;
-
-  console.log("[Root] Storing cassette");
   const cassette = JSON.stringify(tree, null, 2);
   await fetchWithContext(c)("http://localhost:5173/api/run-route/store-cassette", {
     method: "POST",
@@ -78,30 +58,16 @@ app.post("/api/run-route/root", async (c) => {
     },
     body: JSON.stringify({ cassette }),
   });
-
   const endTime = performance.now();
   const durationMs = Math.round(endTime - startTime);
-
-  console.log("[Root] Processing completed:", {
-    id: rootRequest.id,
-    durationMs,
-  });
-
   const response = {
     success: !mainFlowError,
     requestId: rootRequest.id,
     ...(mainFlowError && { error: String(mainFlowError) }),
     ...(tree && { tree }),
   };
-
   const responseText = JSON.stringify(response);
   const responseSizeBytes = responseText.length;
-
-  console.log("[Root] Updating request with final metrics:", {
-    durationMs,
-    responseSizeBytes,
-  });
-
   await db
     .update(requests)
     .set({
@@ -110,8 +76,6 @@ app.post("/api/run-route/root", async (c) => {
       responseSizeBytes,
     })
     .where(eq(requests.id, rootRequest.id));
-
   return c.json(response, 200);
 });
-
 export default app;

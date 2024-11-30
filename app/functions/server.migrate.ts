@@ -1,5 +1,4 @@
 // app/functions/server.migrate.ts
-
 import { sql } from "drizzle-orm";
 
 import { models } from "~/db/schema/models/schema";
@@ -13,19 +12,14 @@ export async function migrateModels() {
     .update(requests)
     .set({ cacheStatus: "SKIP" })
     .where(sql`${requests.cacheStatus} IS NULL`);
-
   // Get all existing models
   const existingModels = await db.select({ pluralName: models.pluralName }).from(models);
-
   const existingPlurals = new Set(existingModels.map((m) => m.pluralName));
-
   // Get all table metadata
   const tables = getTableMetadata();
-
   // Insert any missing models
   for (const table of tables) {
     if (!existingPlurals.has(table.modelName)) {
-      console.log(`Adding model for ${table.modelName}`);
       await db
         .insert(models)
         .values({
@@ -37,9 +31,6 @@ export async function migrateModels() {
         .onConflictDoNothing({ target: models.pluralName });
     }
   }
-
   // Verify all models were created
   const finalModels = await db.select().from(models);
-  console.log("Final models count:", finalModels.length);
-  console.log("Models:", finalModels);
 }

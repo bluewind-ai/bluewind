@@ -1,5 +1,4 @@
 // app/entry.server.tsx
-
 import type { EntryContext } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import type { Context } from "hono";
@@ -10,20 +9,16 @@ import { PassThrough } from "stream";
 
 import { configureHonoServer } from "./api";
 import { createLoadContext } from "./api/context";
-
 // Store original console methods
 const originalConsoleLog = console.log;
-
 // Override console.log to filter out Hono's timing logs
 console.log = function (...args) {
   const message = args[0]?.toString() || "";
-
   // Filter out the timing-related logs
   if (!message.startsWith("-->") && !message.startsWith("<--")) {
     originalConsoleLog.apply(console, args);
   }
 };
-
 // Override React's internal error logging with verbose details
 const originalConsoleError = console.error;
 console.error = function (...args) {
@@ -46,15 +41,12 @@ console.error = function (...args) {
   }
   return originalConsoleError.apply(console, args);
 };
-
 declare module "hono" {
   interface ContextVariableMap {
     remixContext: EntryContext;
   }
 }
-
 const ABORT_DELAY = 5000;
-
 function handleBotRequest(
   request: Request,
   responseStatusCode: number,
@@ -83,7 +75,6 @@ function handleBotRequest(
     setTimeout(abort, ABORT_DELAY);
   });
 }
-
 function handleBrowserRequest(
   request: Request,
   responseStatusCode: number,
@@ -112,7 +103,6 @@ function handleBrowserRequest(
     setTimeout(abort, ABORT_DELAY);
   });
 }
-
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -123,7 +113,6 @@ export default function handleRequest(
     ? handleBotRequest(request, responseStatusCode, responseHeaders, remixContext)
     : handleBrowserRequest(request, responseStatusCode, responseHeaders, remixContext);
 }
-
 export const server = await createHonoServer({
   configure: configureHonoServer,
   getLoadContext: (c: Context, options) => createLoadContext(c, options),

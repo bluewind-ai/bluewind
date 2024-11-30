@@ -1,5 +1,4 @@
 // app/middleware/retrieve-cache.ts
-
 import { eq } from "drizzle-orm";
 
 import { requests } from "~/db/schema";
@@ -12,10 +11,8 @@ export async function retrieveCache(pathname: string) {
     .from(requests)
     .where(eq(requests.pathname, pathname))
     .limit(1);
-
   if (existingRequest.length > 0 && existingRequest[0].response) {
     return JSON.parse(existingRequest[0].response);
   }
-
   return null;
 }

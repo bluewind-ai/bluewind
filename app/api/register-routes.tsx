@@ -1,5 +1,4 @@
 // app/api/register-routes.tsx
-
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 
@@ -21,13 +20,10 @@ import testRoute2 from "./test-route-2";
 const customLogger = (message: string, ...rest: string[]) => {
   // Only log if the message doesn't start with '<--' or '-->'
   if (!message.startsWith("<--") && !message.startsWith("-->")) {
-    console.log(message, ...rest);
   }
 };
-
 export function registerRoutes(server: Hono) {
   server.use("*", logger(customLogger));
-
   server.route("", rootRoute);
   server.route("", resetFactoryRoute);
   server.use("*", mainMiddleware);
