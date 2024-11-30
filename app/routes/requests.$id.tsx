@@ -1,12 +1,14 @@
 // app/routes/requests.$id.tsx
 
 import "@xyflow/react/dist/style.css";
+import "react18-json-view/src/style.css";
 
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
 import { useState } from "react";
+import JsonView from "react18-json-view";
 
 import RequestFlowVisualization from "~/components/RequestFlowVisualization";
 import { requests } from "~/db/schema";
@@ -35,41 +37,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
 function RequestTree({ node }: { node: any }) {
   return (
-    <div className="pl-4 border-l border-gray-200">
-      <div className="py-2">
-        <div className="font-medium">{node.pathname}</div>
-        <div className="text-sm text-gray-500">Created at: {node.createdLocation}</div>
-        {node.response && (
-          <div className="text-sm mt-1 p-2 bg-gray-50 rounded">
-            <div className="font-medium">Response:</div>
-            <pre className="text-xs overflow-x-auto">
-              {typeof node.response === "string"
-                ? node.response
-                : JSON.stringify(node.response, null, 2)}
-            </pre>
-          </div>
-        )}
-        {node.objects.length > 0 && (
-          <div className="text-sm mt-1">
-            <div className="font-medium">Objects:</div>
-            <ul className="list-disc list-inside">
-              {node.objects.map((obj: any, i: number) => (
-                <li key={i}>
-                  {obj.modelName} (Created at: {obj.createdLocation})
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-      {node.children.length > 0 && (
-        <div className="ml-4">
-          {node.children.map((child: any, i: number) => (
-            <RequestTree key={i} node={child} />
-          ))}
-        </div>
-      )}
-    </div>
+    <JsonView src={node} theme="vscode" enableClipboard={true} displaySize={true} collapsed={1} />
   );
 }
 

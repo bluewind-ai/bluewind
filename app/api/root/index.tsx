@@ -1,4 +1,5 @@
 // app/api/root/index.tsx
+
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { join } from "path";
@@ -50,7 +51,13 @@ app.post("/api/run-route/root", async (c) => {
   );
   const treeJson = await treeResponse.json();
   tree = treeJson.tree;
+
+  // Log the tree data that will be used for both
+  console.log("Tree data before writing to cassette:", JSON.stringify(tree, null, 2));
+
   const cassette = JSON.stringify(tree, null, 2);
+  console.log("Cassette data being written:", cassette);
+
   await fetchWithContext(c)("http://localhost:5173/api/run-route/store-cassette", {
     method: "POST",
     headers: {
@@ -76,6 +83,10 @@ app.post("/api/run-route/root", async (c) => {
       responseSizeBytes,
     })
     .where(eq(requests.id, rootRequest.id));
+
+  // Log final response data
+  console.log("Final response data:", JSON.stringify(response, null, 2));
+
   return c.json(response, 200);
 });
 export default app;

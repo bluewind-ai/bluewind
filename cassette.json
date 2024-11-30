@@ -30,7 +30,7 @@
               "createdLocation": "api/routes/index.tsx:38:50",
               "name": "reset-factory",
               "type": "SYSTEM",
-              "requestId": 10,
+              "requestId": 4,
               "metadata": {
                 "label": "Factory Reset",
                 "variant": "destructive",
@@ -53,15 +53,12 @@
           "response": {
             "message": "I worked for 1 second",
             "files": [
-              "CIK0000000003.json",
-              "CIK0000000013.json",
-              "CIK0000000014.json",
-              "... and 903655 more items"
+              "sec-submissions"
             ]
           },
           "durationMsRange": "1001+",
           "requestSizeBytesRange": "< 1 MB",
-          "responseSizeBytesRange": "1 MB+",
+          "responseSizeBytesRange": "< 1 MB",
           "children": [
             {
               "id": "[MASKED]",
@@ -69,15 +66,12 @@
               "createdLocation": "middleware/main.tsx:52:44",
               "response": {
                 "files": [
-                  "CIK0000000003.json",
-                  "CIK0000000013.json",
-                  "CIK0000000014.json",
-                  "... and 903655 more items"
+                  "sec-submissions"
                 ]
               },
               "durationMsRange": "< 1000",
               "requestSizeBytesRange": "< 1 MB",
-              "responseSizeBytesRange": "1 MB+",
+              "responseSizeBytesRange": "< 1 MB",
               "children": [],
               "objects": []
             },
@@ -103,15 +97,12 @@
           "createdLocation": "middleware/main.tsx:52:44",
           "response": {
             "files": [
-              "CIK0000000003.json",
-              "CIK0000000013.json",
-              "CIK0000000014.json",
-              "... and 903655 more items"
+              "sec-submissions"
             ]
           },
           "durationMsRange": "< 1000",
           "requestSizeBytesRange": "< 1 MB",
-          "responseSizeBytesRange": "1 MB+",
+          "responseSizeBytesRange": "< 1 MB",
           "children": [
             {
               "id": "[MASKED]",
@@ -119,15 +110,12 @@
               "createdLocation": "middleware/main.tsx:52:44",
               "response": {
                 "files": [
-                  "CIK0000000003.json",
-                  "CIK0000000013.json",
-                  "CIK0000000014.json",
-                  "... and 903655 more items"
+                  "sec-submissions"
                 ]
               },
               "durationMsRange": "< 1000",
               "requestSizeBytesRange": "< 1 MB",
-              "responseSizeBytesRange": "1 MB+",
+              "responseSizeBytesRange": "< 1 MB",
               "children": [],
               "objects": []
             }

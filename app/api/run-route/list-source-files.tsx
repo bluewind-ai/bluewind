@@ -7,7 +7,7 @@ import { Hono } from "hono";
 const app = new Hono();
 app.post("/api/run-route/list-source-files", async (c) => {
   try {
-    const submissionsPath = resolve("..", "bluewind-data", "sec-submissions");
+    const submissionsPath = resolve("..", "bluewind-data");
     const files = await readdir(submissionsPath);
     return c.json({ files });
   } catch (error) {

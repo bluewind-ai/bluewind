@@ -55,6 +55,7 @@
     "react-dom": "^18.2.0",
     "react-resizable-panels": "^2.1.6",
     "react-router-hono-server": "^1.2.0",
+    "react18-json-view": "^0.2.8",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "ts-morph": "^24.0.0",
