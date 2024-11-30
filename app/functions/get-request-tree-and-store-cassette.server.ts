@@ -30,8 +30,15 @@ const getBytesRange = (bytes: number): string => {
 
 const processNode = (obj: any): any => {
   if (typeof obj !== "object" || obj === null) return obj;
+
+  // Handle arrays - sort if it's an array of nodes (objects with IDs)
   if (Array.isArray(obj)) {
-    return obj.map(processNode);
+    // Sort first if these are node objects (have IDs)
+    const sortedArray =
+      obj.length > 0 && obj[0]?.id !== undefined ? [...obj].sort((a, b) => a.id - b.id) : obj;
+
+    // Then process each item
+    return sortedArray.map(processNode);
   }
 
   const newObj: any = {};
