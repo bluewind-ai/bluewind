@@ -1,9 +1,14 @@
 // app/routes/requests.$id.tsx
+
+import "@xyflow/react/dist/style.css";
+
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
+import { useState } from "react";
 
+import RequestFlowVisualization from "~/components/RequestFlowVisualization";
 import { requests } from "~/db/schema";
 import { fetchWithContext } from "~/lib/fetch-with-context";
 import { db } from "~/middleware/main";
@@ -30,6 +35,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
     return json({ request, tree: null });
   }
 }
+
+// We'll keep this component for reference or as a toggle option
 function RequestTree({ node }: { node: any }) {
   return (
     <div className="pl-4 border-l border-gray-200">
@@ -69,12 +76,15 @@ function RequestTree({ node }: { node: any }) {
     </div>
   );
 }
+
 export default function Request() {
   const { request, tree } = useLoaderData<typeof loader>();
+  const [viewMode, setViewMode] = useState<"tree" | "flow">("flow");
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Request {request.id}</h1>
-      <div className="bg-white shadow rounded-lg p-6 max-h-[80vh] overflow-y-auto">
+      <div className="bg-white shadow rounded-lg p-6">
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 mb-6">
           <dt className="font-semibold">ID:</dt>
           <dd>{request.id}</dd>
@@ -90,9 +100,36 @@ export default function Request() {
         </dl>
 
         <div className="border-t pt-4">
-          <h2 className="text-xl font-semibold mb-4">Request Tree</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Request Tree</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setViewMode("tree")}
+                className={`px-3 py-1 rounded ${
+                  viewMode === "tree" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                Tree View
+              </button>
+              <button
+                onClick={() => setViewMode("flow")}
+                className={`px-3 py-1 rounded ${
+                  viewMode === "flow" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                Flow View
+              </button>
+            </div>
+          </div>
+
           {tree ? (
-            <RequestTree node={tree} />
+            <div className={viewMode === "flow" ? "h-[600px]" : "max-h-[80vh] overflow-y-auto"}>
+              {viewMode === "flow" ? (
+                <RequestFlowVisualization data={tree} />
+              ) : (
+                <RequestTree node={tree} />
+              )}
+            </div>
           ) : (
             <p className="text-gray-500">No tree data available</p>
           )}

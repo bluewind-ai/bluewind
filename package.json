@@ -40,6 +40,7 @@
     "@remix-run/react": "^2.13.1",
     "@remix-run/serve": "^2.13.1",
     "@tanstack/react-table": "^8.20.5",
+    "@xyflow/react": "^12.3.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
