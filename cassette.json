@@ -1,87 +1,33 @@
 {
-  "id": 2398,
+  "id": "[MASKED]",
   "pathname": "/",
   "createdLocation": "api/root/index.tsx:31:44",
   "response": null,
-  "durationMs": 0,
-  "requestSizeBytes": 0,
-  "responseSizeBytes": null,
+  "durationMsRange": "< 1000",
+  "requestSizeBytesRange": "< 1 MB",
+  "responseSizeBytesRange": "< 1 MB",
   "children": [
     {
-      "id": 2399,
+      "id": "[MASKED]",
       "pathname": "/api/run-route/main-flow",
       "createdLocation": "middleware/main.tsx:52:44",
-      "response": { "success": true },
-      "durationMs": 1049,
-      "requestSizeBytes": 0,
-      "responseSizeBytes": 16,
+      "response": {
+        "success": true
+      },
+      "durationMsRange": "1001+",
+      "requestSizeBytesRange": "< 1 MB",
+      "responseSizeBytesRange": "< 1 MB",
       "children": [
         {
-          "id": 2401,
-          "pathname": "/api/run-route/ingest-company-data",
-          "createdLocation": "middleware/main.tsx:52:44",
-          "response": { "message": "I worked for 1 second", "files": ["sec-submissions"] },
-          "durationMs": 1023,
-          "requestSizeBytes": 0,
-          "responseSizeBytes": 63,
-          "children": [
-            {
-              "id": 2402,
-              "pathname": "/api/run-route/list-source-files",
-              "createdLocation": "middleware/main.tsx:52:44",
-              "response": { "files": ["sec-submissions"] },
-              "durationMs": 6,
-              "requestSizeBytes": 0,
-              "responseSizeBytes": 29,
-              "children": [],
-              "objects": []
-            },
-            {
-              "id": 2403,
-              "pathname": "/api/run-route/create-raw-data",
-              "createdLocation": "middleware/main.tsx:52:44",
-              "response": { "success": true },
-              "durationMs": 2,
-              "requestSizeBytes": 0,
-              "responseSizeBytes": 16,
-              "children": [],
-              "objects": []
-            }
-          ],
-          "objects": []
-        },
-        {
-          "id": 2404,
-          "pathname": "/api/test-route",
-          "createdLocation": "middleware/main.tsx:52:44",
-          "response": { "files": ["sec-submissions"] },
-          "durationMs": 7,
-          "requestSizeBytes": 0,
-          "responseSizeBytes": 29,
-          "children": [
-            {
-              "id": 2405,
-              "pathname": "/api/run-route/list-source-files",
-              "createdLocation": "middleware/main.tsx:52:44",
-              "response": { "files": ["sec-submissions"] },
-              "durationMs": 3,
-              "requestSizeBytes": 0,
-              "responseSizeBytes": 29,
-              "children": [],
-              "objects": []
-            }
-          ],
-          "objects": []
-        },
-        {
-          "id": 2400,
+          "id": "[MASKED]",
           "pathname": "/api/routes",
           "createdLocation": "middleware/main.tsx:52:44",
           "response": {
             "success": true,
             "message": "Using existing reset-factory route",
             "function": {
-              "id": 2,
+              "id": "[MASKED]",
+              "createdLocation": "api/routes/index.tsx:38:50",
               "name": "reset-factory",
               "type": "SYSTEM",
               "requestId": 4,
@@ -91,14 +37,89 @@
                 "description": "Reset the entire database to factory settings",
                 "confirmationMessage": "This will delete all data. Are you sure?",
                 "confirmationRequired": true
-              },
-              "createdLocation": "api/routes/index.tsx:38:50"
+              }
             }
           },
-          "durationMs": 5,
-          "requestSizeBytes": 61,
-          "responseSizeBytes": 399,
+          "durationMsRange": "< 1000",
+          "requestSizeBytesRange": "< 1 MB",
+          "responseSizeBytesRange": "< 1 MB",
           "children": [],
+          "objects": []
+        },
+        {
+          "id": "[MASKED]",
+          "pathname": "/api/run-route/ingest-company-data",
+          "createdLocation": "middleware/main.tsx:52:44",
+          "response": {
+            "message": "I worked for 1 second",
+            "files": [
+              "sec-submissions"
+            ]
+          },
+          "durationMsRange": "1001+",
+          "requestSizeBytesRange": "< 1 MB",
+          "responseSizeBytesRange": "< 1 MB",
+          "children": [
+            {
+              "id": "[MASKED]",
+              "pathname": "/api/run-route/list-source-files",
+              "createdLocation": "middleware/main.tsx:52:44",
+              "response": {
+                "files": [
+                  "sec-submissions"
+                ]
+              },
+              "durationMsRange": "< 1000",
+              "requestSizeBytesRange": "< 1 MB",
+              "responseSizeBytesRange": "< 1 MB",
+              "children": [],
+              "objects": []
+            },
+            {
+              "id": "[MASKED]",
+              "pathname": "/api/run-route/create-raw-data",
+              "createdLocation": "middleware/main.tsx:52:44",
+              "response": {
+                "success": true
+              },
+              "durationMsRange": "< 1000",
+              "requestSizeBytesRange": "< 1 MB",
+              "responseSizeBytesRange": "< 1 MB",
+              "children": [],
+              "objects": []
+            }
+          ],
+          "objects": []
+        },
+        {
+          "id": "[MASKED]",
+          "pathname": "/api/test-route",
+          "createdLocation": "middleware/main.tsx:52:44",
+          "response": {
+            "files": [
+              "sec-submissions"
+            ]
+          },
+          "durationMsRange": "< 1000",
+          "requestSizeBytesRange": "< 1 MB",
+          "responseSizeBytesRange": "< 1 MB",
+          "children": [
+            {
+              "id": "[MASKED]",
+              "pathname": "/api/run-route/list-source-files",
+              "createdLocation": "middleware/main.tsx:52:44",
+              "response": {
+                "files": [
+                  "sec-submissions"
+                ]
+              },
+              "durationMsRange": "< 1000",
+              "requestSizeBytesRange": "< 1 MB",
+              "responseSizeBytesRange": "< 1 MB",
+              "children": [],
+              "objects": []
+            }
+          ],
           "objects": []
         }
       ],
