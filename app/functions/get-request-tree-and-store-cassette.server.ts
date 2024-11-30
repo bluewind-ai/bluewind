@@ -122,8 +122,8 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
         responseSizeBytesRange:
           node.data.responseSize !== null ? getBytesRange(node.data.responseSize) : "N/A",
         objects: node.data.objects,
-        // Keep original values for visualization
-        duration: node.data.duration,
+        // Mask duration value in cassette
+        duration: "[MASKED]",
         requestSize: node.data.requestSize,
         responseSize: node.data.responseSize,
       },
