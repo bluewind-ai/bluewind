@@ -25,6 +25,8 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   const pathname = new URL(c.req.url).pathname;
   const parentRequestId = c.req.header("X-Parent-Request-Id");
 
+  console.log("\n\x1b[36m<-- " + c.req.method + " " + pathname + "\x1b[0m\n");
+
   console.log(`[Middleware] Request details:`, {
     url: c.req.url,
     method: c.req.method,
@@ -104,6 +106,18 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   }
 
   const responseSizeBytes = new TextEncoder().encode(finalResponseText).length;
+
+  console.log(
+    "\n\x1b[32m--> " +
+      c.req.method +
+      " " +
+      pathname +
+      " " +
+      c.res.status +
+      " " +
+      durationMs +
+      "ms\x1b[0m\n",
+  );
 
   console.log(`[Middleware] Request completed:`, {
     id: newRequest.id,
