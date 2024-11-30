@@ -47,20 +47,31 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
   const nodes: XYFlowNode[] = [];
   const edges: XYFlowEdge[] = [];
   const levelWidths: { [level: number]: number } = {};
+  const seenPathnames: { [key: string]: number } = {}; // Track position by pathname
 
   const countNodesAtLevel = (node: any, level: number) => {
     levelWidths[level] = (levelWidths[level] || 0) + 1;
-    node.children?.forEach((child: any) => countNodesAtLevel(child, level + 1));
+    if (!seenPathnames[node.pathname]) {
+      seenPathnames[node.pathname] = levelWidths[level] - 1; // Assign position by first occurrence
+    }
+    if (node.children) {
+      // Sort children by pathname to ensure consistent order
+      const sortedChildren = [...node.children].sort((a, b) =>
+        a.pathname.localeCompare(b.pathname),
+      );
+      sortedChildren.forEach((child: any) => countNodesAtLevel(child, level + 1));
+    }
   };
   countNodesAtLevel(requestTree, 0);
 
-  const processNode = (node: any, level: number, index: number) => {
+  const processNode = (node: any, level: number) => {
     const xSpacing = 400;
     const ySpacing = 150;
 
     const levelWidth = levelWidths[level] * xSpacing;
     const startX = -levelWidth / 2;
-    const x = startX + index * xSpacing;
+    // Use consistent position based on first occurrence of pathname
+    const x = startX + seenPathnames[node.pathname] * xSpacing;
     const y = level * ySpacing;
 
     nodes.push({
@@ -78,7 +89,11 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
     });
 
     if (node.children) {
-      node.children.forEach((child: any, childIndex: number) => {
+      // Sort children by pathname for consistent order
+      const sortedChildren = [...node.children].sort((a, b) =>
+        a.pathname.localeCompare(b.pathname),
+      );
+      sortedChildren.forEach((child: any) => {
         edges.push({
           id: `e${node.id}-${child.id}`,
           source: node.id.toString(),
@@ -87,7 +102,7 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
           animated: true,
         });
 
-        processNode(child, level + 1, childIndex);
+        processNode(child, level + 1);
       });
     }
   };
@@ -97,16 +112,8 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
 };
 
 const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
-  // Sort nodes by pathname to ensure consistent order
-  const sortedNodes = [...xyFlowTree.nodes].sort((a, b) =>
-    a.data.pathname.localeCompare(b.data.pathname),
-  );
-
-  // Sort edges by their id to ensure consistent order
-  const sortedEdges = [...xyFlowTree.edges].sort((a, b) => a.id.localeCompare(b.id));
-
   return {
-    nodes: sortedNodes.map((node) => ({
+    nodes: xyFlowTree.nodes.map((node) => ({
       id: "[MASKED]",
       type: "default",
       position: node.position,
@@ -128,7 +135,7 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
         responseSize: node.data.responseSize,
       },
     })),
-    edges: sortedEdges.map((edge) => ({
+    edges: xyFlowTree.edges.map((edge) => ({
       id: `e[MASKED]-[MASKED]`,
       source: "[MASKED]",
       target: "[MASKED]",
