@@ -7,6 +7,7 @@ import {
   Controls,
   Edge,
   Node,
+  Panel,
   ReactFlow,
   useEdgesState,
   useNodesState,
@@ -43,15 +44,12 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
   const createNodesAndEdges = useCallback((requestNode: RequestNode) => {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
-    const yOffset = 0;
-    const xOffset = 0;
 
     const processNode = (node: RequestNode, level: number) => {
-      // Create node
       nodes.push({
         id: node.id.toString(),
         type: "default",
-        position: { x: xOffset, y: level * 150 },
+        position: { x: 0, y: level * 150 },
         data: {
           label: (
             <div className="p-3 min-w-[250px] max-w-[350px]">
@@ -76,7 +74,6 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
         },
       });
 
-      // Process children
       if (node.children.length > 0) {
         const childWidth = 400;
         const startX = (-(node.children.length - 1) * childWidth) / 2;
@@ -99,7 +96,6 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
     };
 
     processNode(data, 0);
-
     return { nodes, edges };
   }, []);
 
@@ -118,12 +114,21 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
           type: "smoothstep",
           animated: true,
         }}
-        nodesDraggable={true}
+        nodesDraggable={false}
         nodesConnectable={false}
-        snapToGrid={true}
+        preventScrolling={false}
+        zoomOnScroll={true}
+        panOnScroll={true}
+        panOnScrollMode="free"
+        selectionOnDrag={false}
+        zoomOnPinch={true}
+        panOnDrag={false}
       >
         <Background />
-        <Controls />
+        <Controls showInteractive={false} />
+        <Panel position="top-left" className="bg-white/75 p-2 rounded text-sm">
+          Scroll to pan, Pinch/Ctrl+Scroll to zoom
+        </Panel>
       </ReactFlow>
     </div>
   );
