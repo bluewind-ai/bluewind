@@ -2,136 +2,80 @@
 
 import "@xyflow/react/dist/style.css";
 
-import {
-  Background,
-  Controls,
-  Edge,
-  Node,
-  Panel,
-  ReactFlow,
-  useEdgesState,
-  useNodesState,
-} from "@xyflow/react";
-import { useCallback } from "react";
-
-interface RequestNode {
-  id: number;
-  pathname: string;
-  createdLocation: string;
-  response: any;
-  durationMs: number;
-  requestSizeBytes: number;
-  responseSizeBytes: number | null;
-  children: RequestNode[];
-  objects: Array<{
-    modelName: string;
-    createdLocation: string;
-  }>;
-}
+import { Background, Controls, Panel, ReactFlow } from "@xyflow/react";
+import { useEffect } from "react";
 
 interface RequestFlowVisualizationProps {
-  data: RequestNode;
-}
-
-function formatSize(bytes: number | null): string {
-  if (bytes === null) return "N/A";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  data: {
+    success: boolean;
+    requestId: number;
+    tree: {
+      nodes: Array<{
+        id: string;
+        type: string;
+        position: { x: number; y: number };
+        data: {
+          label: string;
+          pathname: string;
+          duration: number;
+          requestSize: number;
+          responseSize: number | null;
+          objects: any[];
+        };
+      }>;
+      edges: Array<{
+        id: string;
+        source: string;
+        target: string;
+        type: string;
+        animated: boolean;
+      }>;
+    };
+  };
 }
 
 const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
-  const createNodesAndEdges = useCallback((requestNode: RequestNode) => {
-    const nodes: Node[] = [];
-    const edges: Edge[] = [];
+  useEffect(() => {
+    console.log("Flow received data:", data);
+    console.log("Nodes:", data.tree.nodes);
+    console.log("Edges:", data.tree.edges);
+  }, [data]);
 
-    const processNode = (node: RequestNode, level: number) => {
-      nodes.push({
-        id: node.id.toString(),
-        type: "default",
-        position: { x: 0, y: level * 150 },
-        data: {
-          label: (
-            <div className="p-3 min-w-[250px] max-w-[350px]">
-              <div className="font-bold truncate text-sm">{node.pathname}</div>
-              <div className="text-xs text-gray-600 mt-1 grid grid-cols-2 gap-1">
-                <span>Duration: {node.durationMs}ms</span>
-                <span>Req: {formatSize(node.requestSizeBytes)}</span>
-                <span>Res: {formatSize(node.responseSizeBytes)}</span>
-                {node.objects.length > 0 && (
-                  <span className="col-span-2">
-                    Objects: {node.objects.map((o) => o.modelName).join(", ")}
-                  </span>
-                )}
-              </div>
-            </div>
-          ),
-        },
-        className: "bg-white shadow-lg rounded-lg border border-gray-200",
-        style: {
-          width: 350,
-          padding: 0,
-        },
-      });
-
-      if (node.children.length > 0) {
-        const childWidth = 400;
-        const startX = (-(node.children.length - 1) * childWidth) / 2;
-
-        node.children.forEach((child, index) => {
-          const childXOffset = startX + index * childWidth;
-
-          edges.push({
-            id: `e${node.id}-${child.id}`,
-            source: node.id.toString(),
-            target: child.id.toString(),
+  try {
+    return (
+      <div className="w-full h-full min-h-[600px]" style={{ height: "100%", minHeight: "600px" }}>
+        <ReactFlow
+          nodes={data.tree.nodes}
+          edges={data.tree.edges}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+          defaultEdgeOptions={{
             type: "smoothstep",
             animated: true,
-            style: { stroke: "#666" },
-          });
-
-          processNode(child, level + 1);
-        });
-      }
-    };
-
-    processNode(data, 0);
-    return { nodes, edges };
-  }, []);
-
-  const { nodes, edges } = createNodesAndEdges(data);
-  const [reactFlowNodes, setNodes] = useNodesState(nodes);
-  const [reactFlowEdges, setEdges] = useEdgesState(edges);
-
-  return (
-    <div style={{ width: "100%", height: "800px" }}>
-      <ReactFlow
-        nodes={reactFlowNodes}
-        edges={reactFlowEdges}
-        fitView
-        fitViewOptions={{ padding: 0.2 }}
-        defaultEdgeOptions={{
-          type: "smoothstep",
-          animated: true,
-        }}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        preventScrolling={false}
-        zoomOnScroll={true}
-        panOnScroll={true}
-        panOnScrollMode="free"
-        selectionOnDrag={false}
-        zoomOnPinch={true}
-        panOnDrag={false}
-      >
-        <Background />
-        <Controls showInteractive={false} />
-        <Panel position="top-left" className="bg-white/75 p-2 rounded text-sm">
-          Scroll to pan, Pinch/Ctrl+Scroll to zoom
-        </Panel>
-      </ReactFlow>
-    </div>
-  );
+          }}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          preventScrolling={false}
+          zoomOnScroll={true}
+          panOnScroll={true}
+          panOnScrollMode="free"
+          selectionOnDrag={false}
+          zoomOnPinch={true}
+          panOnDrag={false}
+          onError={(error) => console.error("ReactFlow error:", error)}
+        >
+          <Background />
+          <Controls showInteractive={false} />
+          <Panel position="top-left" className="bg-white/75 p-2 rounded text-sm">
+            Scroll to pan, Pinch/Ctrl+Scroll to zoom
+          </Panel>
+        </ReactFlow>
+      </div>
+    );
+  } catch (error) {
+    console.error("Visualization error:", error);
+    return <div>Error rendering flow: {String(error)}</div>;
+  }
 };
 
 export default RequestFlowVisualization;

@@ -1,130 +1,207 @@
 {
-  "id": "[MASKED]",
-  "pathname": "/",
-  "createdLocation": "api/root/index.tsx:31:44",
-  "response": null,
-  "durationMsRange": "< 1000",
-  "requestSizeBytesRange": "< 1 MB",
-  "responseSizeBytesRange": "< 1 MB",
-  "children": [
+  "nodes": [
     {
       "id": "[MASKED]",
-      "pathname": "/api/run-route/main-flow",
-      "createdLocation": "middleware/main.tsx:52:44",
-      "response": {
-        "success": true
+      "type": "default",
+      "position": {
+        "x": -200,
+        "y": 0
       },
-      "durationMsRange": "1001+",
-      "requestSizeBytesRange": "< 1 MB",
-      "responseSizeBytesRange": "< 1 MB",
-      "children": [
-        {
-          "id": "[MASKED]",
-          "pathname": "/api/routes",
-          "createdLocation": "middleware/main.tsx:52:44",
-          "response": {
-            "success": true,
-            "message": "Using existing reset-factory route",
-            "function": {
-              "id": "[MASKED]",
-              "createdLocation": "api/routes/index.tsx:38:50",
-              "name": "reset-factory",
-              "type": "SYSTEM",
-              "requestId": 4,
-              "metadata": {
-                "label": "Factory Reset",
-                "variant": "destructive",
-                "description": "Reset the entire database to factory settings",
-                "confirmationMessage": "This will delete all data. Are you sure?",
-                "confirmationRequired": true
-              }
-            }
-          },
-          "durationMsRange": "< 1000",
-          "requestSizeBytesRange": "< 1 MB",
-          "responseSizeBytesRange": "< 1 MB",
-          "children": [],
-          "objects": []
-        },
-        {
-          "id": "[MASKED]",
-          "pathname": "/api/run-route/ingest-company-data",
-          "createdLocation": "middleware/main.tsx:52:44",
-          "response": {
-            "message": "I worked for 1 second",
-            "files": [
-              "sec-submissions"
-            ]
-          },
-          "durationMsRange": "1001+",
-          "requestSizeBytesRange": "< 1 MB",
-          "responseSizeBytesRange": "< 1 MB",
-          "children": [
-            {
-              "id": "[MASKED]",
-              "pathname": "/api/run-route/list-source-files",
-              "createdLocation": "middleware/main.tsx:52:44",
-              "response": {
-                "files": [
-                  "sec-submissions"
-                ]
-              },
-              "durationMsRange": "< 1000",
-              "requestSizeBytesRange": "< 1 MB",
-              "responseSizeBytesRange": "< 1 MB",
-              "children": [],
-              "objects": []
-            },
-            {
-              "id": "[MASKED]",
-              "pathname": "/api/run-route/create-raw-data",
-              "createdLocation": "middleware/main.tsx:52:44",
-              "response": {
-                "success": true
-              },
-              "durationMsRange": "< 1000",
-              "requestSizeBytesRange": "< 1 MB",
-              "responseSizeBytesRange": "< 1 MB",
-              "children": [],
-              "objects": []
-            }
-          ],
-          "objects": []
-        },
-        {
-          "id": "[MASKED]",
-          "pathname": "/api/test-route",
-          "createdLocation": "middleware/main.tsx:52:44",
-          "response": {
-            "files": [
-              "sec-submissions"
-            ]
-          },
-          "durationMsRange": "< 1000",
-          "requestSizeBytesRange": "< 1 MB",
-          "responseSizeBytesRange": "< 1 MB",
-          "children": [
-            {
-              "id": "[MASKED]",
-              "pathname": "/api/run-route/list-source-files",
-              "createdLocation": "middleware/main.tsx:52:44",
-              "response": {
-                "files": [
-                  "sec-submissions"
-                ]
-              },
-              "durationMsRange": "< 1000",
-              "requestSizeBytesRange": "< 1 MB",
-              "responseSizeBytesRange": "< 1 MB",
-              "children": [],
-              "objects": []
-            }
-          ],
-          "objects": []
-        }
-      ],
-      "objects": []
+      "data": {
+        "label": "/",
+        "pathname": "/",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "N/A",
+        "objects": [],
+        "duration": 0,
+        "requestSize": 0,
+        "responseSize": null
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": -600,
+        "y": 300
+      },
+      "data": {
+        "label": "/api/routes",
+        "pathname": "/api/routes",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "objects": [],
+        "duration": 6,
+        "requestSize": 61,
+        "responseSize": 399
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": -200,
+        "y": 450
+      },
+      "data": {
+        "label": "/api/run-route/create-raw-data",
+        "pathname": "/api/run-route/create-raw-data",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "objects": [],
+        "duration": 3,
+        "requestSize": 0,
+        "responseSize": 16
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": -200,
+        "y": 300
+      },
+      "data": {
+        "label": "/api/run-route/ingest-company-data",
+        "pathname": "/api/run-route/ingest-company-data",
+        "durationMsRange": "1001+",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "objects": [],
+        "duration": 1016,
+        "requestSize": 0,
+        "responseSize": 63
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": -600,
+        "y": 450
+      },
+      "data": {
+        "label": "/api/run-route/list-source-files",
+        "pathname": "/api/run-route/list-source-files",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "objects": [],
+        "duration": 3,
+        "requestSize": 0,
+        "responseSize": 29
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": -600,
+        "y": 450
+      },
+      "data": {
+        "label": "/api/run-route/list-source-files",
+        "pathname": "/api/run-route/list-source-files",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "objects": [],
+        "duration": 2,
+        "requestSize": 0,
+        "responseSize": 29
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": -200,
+        "y": 150
+      },
+      "data": {
+        "label": "/api/run-route/main-flow",
+        "pathname": "/api/run-route/main-flow",
+        "durationMsRange": "1001+",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "objects": [],
+        "duration": 1045,
+        "requestSize": 0,
+        "responseSize": 16
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 200,
+        "y": 300
+      },
+      "data": {
+        "label": "/api/test-route",
+        "pathname": "/api/test-route",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "objects": [],
+        "duration": 6,
+        "requestSize": 0,
+        "responseSize": 29
+      }
     }
   ],
-  "objects": []
+  "edges": [
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    }
+  ]
 }

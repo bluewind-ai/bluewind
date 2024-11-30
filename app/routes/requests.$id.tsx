@@ -7,8 +7,6 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
-import { readFile } from "fs/promises";
-import { join } from "path";
 import { useState } from "react";
 import JsonView from "react18-json-view";
 
@@ -20,23 +18,15 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const requestId = Number(params.id);
   const [request] = await db.select().from(requests).where(eq(requests.id, requestId)).limit(1);
 
-  console.log("Request from DB:", request);
-
   if (!request) {
     throw new Response("Request not found", { status: 404 });
   }
 
   try {
-    const treeData = await readFile(
-      join(process.cwd(), "data", "requests", `${requestId}.json`),
-      "utf-8",
-    );
-    console.log("Tree data from file:", treeData);
-    const tree = JSON.parse(treeData);
-    console.log("Parsed tree:", tree);
-    return json({ request, tree });
+    const treeData = JSON.parse(request.response);
+    return json({ request, tree: treeData });
   } catch (error) {
-    console.error("Error reading/parsing tree:", error);
+    console.error("Error parsing response:", error);
     return json({ request, tree: null });
   }
 }
@@ -44,9 +34,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
 export default function Request() {
   const { request, tree } = useLoaderData<typeof loader>();
   const [viewMode, setViewMode] = useState<"tree" | "flow">("tree");
-
-  console.log("Component received request:", request);
-  console.log("Component received tree:", tree);
 
   return (
     <div className="p-4">
@@ -75,7 +62,13 @@ export default function Request() {
           </div>
 
           {tree ? (
-            <div className={viewMode === "flow" ? "h-[600px]" : "max-h-[80vh] overflow-y-auto"}>
+            <div
+              className={
+                viewMode === "flow"
+                  ? "h-[600px] border-2 border-gray-200"
+                  : "max-h-[80vh] overflow-y-auto"
+              }
+            >
               {viewMode === "flow" ? (
                 <RequestFlowVisualization data={tree} />
               ) : (

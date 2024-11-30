@@ -7,16 +7,31 @@ import { join } from "path";
 import { requests } from "~/db/schema";
 import { db } from "~/middleware/main";
 
-type RequestTreeNode = {
-  id: number;
-  pathname: string;
-  createdLocation: string;
-  response: any;
-  durationMs: number;
-  requestSizeBytes: number;
-  responseSizeBytes: number | null;
-  children: RequestTreeNode[];
-  objects: any[];
+type XYFlowNode = {
+  id: string;
+  type: "default";
+  position: { x: number; y: number };
+  data: {
+    label: string;
+    pathname: string;
+    duration: number;
+    requestSize: number;
+    responseSize: number | null;
+    objects: any[];
+  };
+};
+
+type XYFlowEdge = {
+  id: string;
+  source: string;
+  target: string;
+  type: "smoothstep";
+  animated: boolean;
+};
+
+type XYFlowTree = {
+  nodes: XYFlowNode[];
+  edges: XYFlowEdge[];
 };
 
 const getDurationRange = (ms: number): string => {
@@ -28,71 +43,103 @@ const getBytesRange = (bytes: number): string => {
   return bytes < MB ? "< 1 MB" : "1 MB+";
 };
 
-const processNode = (obj: any): any => {
-  if (typeof obj !== "object" || obj === null) return obj;
+const createXYFlowTree = (requestTree: any): XYFlowTree => {
+  const nodes: XYFlowNode[] = [];
+  const edges: XYFlowEdge[] = [];
+  const levelWidths: { [level: number]: number } = {};
 
-  // Handle arrays - sort if it's an array of nodes (objects with IDs)
-  if (Array.isArray(obj)) {
-    // Sort first if these are node objects (have IDs)
-    const sortedArray =
-      obj.length > 0 && obj[0]?.id !== undefined ? [...obj].sort((a, b) => a.id - b.id) : obj;
+  const countNodesAtLevel = (node: any, level: number) => {
+    levelWidths[level] = (levelWidths[level] || 0) + 1;
+    node.children?.forEach((child: any) => countNodesAtLevel(child, level + 1));
+  };
+  countNodesAtLevel(requestTree, 0);
 
-    // Then process each item
-    return sortedArray.map(processNode);
-  }
+  const processNode = (node: any, level: number, index: number) => {
+    const xSpacing = 400;
+    const ySpacing = 150;
 
-  const newObj: any = {};
+    const levelWidth = levelWidths[level] * xSpacing;
+    const startX = -levelWidth / 2;
+    const x = startX + index * xSpacing;
+    const y = level * ySpacing;
 
-  // Group node properties together first
-  if (obj.id !== undefined) {
-    newObj.id = "[MASKED]";
-  }
-  if (obj.pathname) {
-    newObj.pathname = obj.pathname.includes("/get-request-tree/")
-      ? obj.pathname.replace(/\/get-request-tree\/\d+/, "/get-request-tree/[MASKED]")
-      : obj.pathname;
-  }
-  if (obj.createdLocation) {
-    newObj.createdLocation = obj.createdLocation;
-  }
-  if (obj.response !== undefined) {
-    newObj.response = processNode(obj.response);
-  }
-  if (obj.durationMs !== undefined) {
-    newObj.durationMsRange = getDurationRange(obj.durationMs);
-  }
-  if (obj.requestSizeBytes !== undefined) {
-    newObj.requestSizeBytesRange = getBytesRange(obj.requestSizeBytes);
-  }
-  if (obj.responseSizeBytes !== undefined) {
-    newObj.responseSizeBytesRange = getBytesRange(obj.responseSizeBytes);
-  }
+    nodes.push({
+      id: node.id.toString(),
+      type: "default",
+      position: { x, y },
+      data: {
+        label: node.pathname,
+        pathname: node.pathname,
+        duration: node.durationMs,
+        requestSize: node.requestSizeBytes,
+        responseSize: node.responseSizeBytes,
+        objects: node.objects || [],
+      },
+    });
 
-  // Then add children and objects
-  if (obj.children) {
-    newObj.children = processNode(obj.children);
-  }
-  if (obj.objects) {
-    newObj.objects = processNode(obj.objects);
-  }
+    if (node.children) {
+      node.children.forEach((child: any, childIndex: number) => {
+        edges.push({
+          id: `e${node.id}-${child.id}`,
+          source: node.id.toString(),
+          target: child.id.toString(),
+          type: "smoothstep",
+          animated: true,
+        });
 
-  // Process any remaining properties
-  for (const key in obj) {
-    if (
-      !newObj.hasOwnProperty(key) &&
-      key !== "durationMs" &&
-      key !== "requestSizeBytes" &&
-      key !== "responseSizeBytes"
-    ) {
-      newObj[key] = processNode(obj[key]);
+        processNode(child, level + 1, childIndex);
+      });
     }
-  }
-  return newObj;
+  };
+
+  processNode(requestTree, 0, 0);
+  return { nodes, edges };
+};
+
+const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
+  // Sort nodes by pathname to ensure consistent order
+  const sortedNodes = [...xyFlowTree.nodes].sort((a, b) =>
+    a.data.pathname.localeCompare(b.data.pathname),
+  );
+
+  // Sort edges by their id to ensure consistent order
+  const sortedEdges = [...xyFlowTree.edges].sort((a, b) => a.id.localeCompare(b.id));
+
+  return {
+    nodes: sortedNodes.map((node) => ({
+      id: "[MASKED]",
+      type: "default",
+      position: node.position,
+      data: {
+        label: node.data.pathname.includes("/get-request-tree/")
+          ? node.data.pathname.replace(/\/get-request-tree\/\d+/, "/get-request-tree/[MASKED]")
+          : node.data.pathname,
+        pathname: node.data.pathname.includes("/get-request-tree/")
+          ? node.data.pathname.replace(/\/get-request-tree\/\d+/, "/get-request-tree/[MASKED]")
+          : node.data.pathname,
+        durationMsRange: getDurationRange(node.data.duration),
+        requestSizeBytesRange: getBytesRange(node.data.requestSize),
+        responseSizeBytesRange:
+          node.data.responseSize !== null ? getBytesRange(node.data.responseSize) : "N/A",
+        objects: node.data.objects,
+        // Keep original values for visualization
+        duration: node.data.duration,
+        requestSize: node.data.requestSize,
+        responseSize: node.data.responseSize,
+      },
+    })),
+    edges: sortedEdges.map((edge) => ({
+      id: `e[MASKED]-[MASKED]`,
+      source: "[MASKED]",
+      target: "[MASKED]",
+      type: "smoothstep",
+      animated: true,
+    })),
+  };
 };
 
 export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
-  // First build the tree
-  async function buildRequestTree(requestId: number): Promise<RequestTreeNode | null> {
+  async function buildRequestTree(requestId: number) {
     const request = await db
       .select()
       .from(requests)
@@ -102,13 +149,11 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
 
     if (!request) return null;
 
-    // Get all child requests
     const childRequests = await db.select().from(requests).where(eq(requests.parentId, requestId));
 
-    // Build child trees recursively, preserving original order
     const children = await Promise.all(
       childRequests.map((child) => buildRequestTree(child.id)),
-    ).then((results) => results.filter((r): r is RequestTreeNode => r !== null));
+    ).then((results) => results.filter((r) => r !== null));
 
     let response = null;
     try {
@@ -117,7 +162,7 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
       console.error(`Failed to parse response for request ${requestId}`);
     }
 
-    const tree: RequestTreeNode = {
+    return {
       id: request.id,
       pathname: request.pathname,
       createdLocation: request.createdLocation,
@@ -128,22 +173,30 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
       children,
       objects: [],
     };
-    return tree;
   }
 
-  // Get the complete tree
   const tree = await buildRequestTree(rootRequestId);
   if (!tree) return null;
 
-  // Store the tree in a file for request viewing
+  const xyFlowTree = createXYFlowTree(tree);
+
+  // Create cassette with the same structure but masked values
+  const maskedTree = createMaskedXYFlowTree(xyFlowTree);
+
+  // Only write the cassette to file
   await writeFile(
-    join(process.cwd(), "data", "requests", `${rootRequestId}.json`),
-    JSON.stringify(tree, null, 2),
+    join(process.cwd(), "cassette.json"),
+    JSON.stringify(maskedTree, null, 2),
     "utf-8",
   );
 
-  // Create cassette version with masking
-  const cassette = processNode(tree);
-  await writeFile(join(process.cwd(), "cassette.json"), JSON.stringify(cassette, null, 2), "utf-8");
-  return tree;
+  // Store the original tree for visualization
+  await db
+    .update(requests)
+    .set({
+      response: JSON.stringify({ tree: xyFlowTree }),
+    })
+    .where(eq(requests.id, rootRequestId));
+
+  return xyFlowTree;
 }
