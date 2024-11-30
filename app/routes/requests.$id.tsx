@@ -29,21 +29,18 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
       return json({ request, tree: null });
     }
     const treeData = await treeResponse.json();
-    return json({ request, tree: treeData.tree });
+
+    // Extract the actual tree data from nested structure if needed
+    const cleanTree = treeData.tree.response?.tree || treeData.tree;
+    return json({ request, tree: cleanTree });
   } catch (error) {
     return json({ request, tree: null });
   }
 }
 
-function RequestTree({ node }: { node: any }) {
-  return (
-    <JsonView src={node} theme="vscode" enableClipboard={true} displaySize={true} collapsed={1} />
-  );
-}
-
 export default function Request() {
   const { request, tree } = useLoaderData<typeof loader>();
-  const [viewMode, setViewMode] = useState<"tree" | "flow">("flow");
+  const [viewMode, setViewMode] = useState<"tree" | "flow">("tree");
 
   return (
     <div className="p-4">
@@ -76,7 +73,15 @@ export default function Request() {
               {viewMode === "flow" ? (
                 <RequestFlowVisualization data={tree} />
               ) : (
-                <RequestTree node={tree} />
+                <JsonView
+                  src={tree}
+                  theme="vscode"
+                  displaySize={true}
+                  enableClipboard={true}
+                  collapseStringsAfterLength={100}
+                  displayObjectSize={true}
+                  collapsed={1}
+                />
               )}
             </div>
           ) : (
