@@ -22,6 +22,9 @@ export async function insertMiddleware(
 
   console.log("[Insert Middleware] Making HTTP request to db-proxy");
 
+  // FIXED: Send data as array if it's an array
+  const values = Array.isArray(data) ? data : { ...data, requestId: c.requestId };
+
   const response = await fetchWithContext(c)("http://localhost:5173/api/db-proxy", {
     method: "POST",
     headers: {
@@ -30,10 +33,7 @@ export async function insertMiddleware(
     body: JSON.stringify({
       operation: "insert",
       table: tableName,
-      values: {
-        ...data,
-        requestId: c.requestId,
-      },
+      values: values,
     }),
   });
 
