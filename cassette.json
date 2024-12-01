@@ -19,9 +19,10 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
+        "response": "[MASKED]",
         "duration": "[MASKED]",
         "requestSize": 0,
-        "responseSize": 2508
+        "responseSize": 3187
       }
     },
     {
@@ -38,6 +39,7 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
+        "response": "[MASKED]",
         "duration": "[MASKED]",
         "requestSize": 0,
         "responseSize": 16
@@ -57,6 +59,7 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
+        "response": "[MASKED]",
         "duration": "[MASKED]",
         "requestSize": 61,
         "responseSize": 399
@@ -76,6 +79,7 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
+        "response": "[MASKED]",
         "duration": "[MASKED]",
         "requestSize": 0,
         "responseSize": 63
@@ -95,6 +99,7 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
+        "response": "[MASKED]",
         "duration": "[MASKED]",
         "requestSize": 0,
         "responseSize": 16
@@ -114,6 +119,7 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
+        "response": "[MASKED]",
         "duration": "[MASKED]",
         "requestSize": 0,
         "responseSize": 29
@@ -133,6 +139,7 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
+        "response": "[MASKED]",
         "duration": "[MASKED]",
         "requestSize": 0,
         "responseSize": 29
@@ -152,6 +159,7 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
+        "response": "[MASKED]",
         "duration": "[MASKED]",
         "requestSize": 0,
         "responseSize": 29

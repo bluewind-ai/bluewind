@@ -1,4 +1,5 @@
 // app/functions/get-request-tree-and-store-cassette.server.ts
+
 import { eq } from "drizzle-orm";
 import { writeFile } from "fs/promises";
 import { join } from "path";
@@ -20,6 +21,7 @@ type XYFlowNode = {
     requestSize: number;
     responseSize: number | null;
     objects: any[];
+    response: any;
   };
 };
 type XYFlowEdge = {
@@ -82,6 +84,7 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
         requestSize: node.requestSizeBytes,
         responseSize: node.responseSizeBytes,
         objects: node.objects || [],
+        response: node.response,
       },
     });
     if (node.children) {
@@ -122,6 +125,7 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
         responseSizeBytesRange:
           node.data.responseSize !== null ? getBytesRange(node.data.responseSize) : "N/A",
         objects: node.data.objects,
+        response: "[MASKED]",
         // Mask duration value in cassette
         duration: "[MASKED]",
         requestSize: node.data.requestSize,
