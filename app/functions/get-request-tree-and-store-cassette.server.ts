@@ -71,9 +71,9 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
     const xSpacing = 400;
     const ySpacing = 150;
     const levelWidth = levelWidths[level] * xSpacing;
-    const startX = -levelWidth / 2;
-    // Use consistent position based on first occurrence of pathname
-    const x = startX + seenPathnames[node.pathname] * xSpacing;
+    const startX = levelWidth / 2 - xSpacing; // Changed this line
+    // Changed this line to subtract instead of add
+    const x = startX - seenPathnames[node.pathname] * xSpacing;
     const y = level * ySpacing;
     nodes.push({
       id: node.id.toString(),

@@ -53,7 +53,7 @@
       "id": "[MASKED]",
       "type": "default",
       "position": {
-        "x": -600,
+        "x": 200,
         "y": 300
       },
       "data": {
@@ -97,7 +97,7 @@
       "id": "[MASKED]",
       "type": "default",
       "position": {
-        "x": 200,
+        "x": -600,
         "y": 450
       },
       "data": {
@@ -141,7 +141,7 @@
       "id": "[MASKED]",
       "type": "default",
       "position": {
-        "x": 200,
+        "x": -600,
         "y": 300
       },
       "data": {
@@ -163,7 +163,7 @@
       "id": "[MASKED]",
       "type": "default",
       "position": {
-        "x": 200,
+        "x": -600,
         "y": 450
       },
       "data": {
