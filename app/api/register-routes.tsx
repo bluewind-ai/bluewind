@@ -12,7 +12,6 @@ import lintRoute from "./lint";
 import mainFlowRoute from "./main-flow";
 import resetFactoryRoute from "./reset-factory";
 import rootRoute from "./root";
-import routesRoute from "./routes";
 import createRawDataRoute from "./run-route/create-raw-data";
 import listSourceFilesRoute from "./run-route/list-source-files";
 import storeCassetteRoute from "./run-route/store-cassette";
@@ -35,7 +34,6 @@ export function registerRoutes(server: Hono) {
   server.use("*", mainMiddleware);
   const routes = [
     mainFlowRoute,
-    routesRoute,
     testRoute,
     testRoute2,
     lintRoute,

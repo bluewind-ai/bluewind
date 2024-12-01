@@ -23,20 +23,6 @@ app.post("/api/run-route/main-flow", async (c) => {
     throw new Error("Failed to initialize setup");
   }
 
-  const resetFactoryResponse = await fetchWithContext(c)("http://localhost:5173/api/routes", {
-    method: "POST",
-    body: JSON.stringify({
-      prompt: "I need you to be able to perform a reset factory",
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!resetFactoryResponse.ok) {
-    throw new Error("Failed to create reset factory route");
-  }
-
   const ingestResponse = await fetchWithContext(c)(
     "http://localhost:5173/api/run-route/ingest-company-data",
     {
