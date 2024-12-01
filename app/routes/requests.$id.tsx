@@ -28,7 +28,7 @@ export default function Request() {
   return (
     <div className="p-4">
       <div className="bg-white shadow rounded-lg p-6">
-        <div className="border-t pt-4">
+        <div className="pt-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Request Tree</h2>
             <div className="flex gap-2">
@@ -49,9 +49,7 @@ export default function Request() {
 
           <div
             className={
-              viewMode === "flow"
-                ? "h-[600px] border-2 border-gray-200"
-                : "max-h-[80vh] overflow-y-auto"
+              viewMode === "flow" ? "border-2 border-gray-200" : "max-h-[80vh] overflow-y-auto"
             }
           >
             {viewMode === "flow" ? (
