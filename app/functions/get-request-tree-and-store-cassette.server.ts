@@ -26,6 +26,7 @@ type XYFlowNode = {
     parentId: number | null;
     objects: any[];
     response: any;
+    payload: any;
   };
 };
 
@@ -127,6 +128,7 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
         parentId: node.parentId,
         objects: node.objects || [],
         response: node.response,
+        payload: node.payload,
       },
     });
 
@@ -180,6 +182,7 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
         objects: node.data.objects,
         response: "[MASKED]",
         duration: "[MASKED]",
+        payload: node.data.payload,
       },
     })),
     edges: xyFlowTree.edges.map((edge) => ({
@@ -217,6 +220,7 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
         pathname: current.pathname,
         createdLocation: current.createdLocation,
         response,
+        payload: current.payload,
         durationMs: current.durationMs,
         requestSizeBytes: current.requestSizeBytes,
         responseSizeBytes: current.responseSizeBytes,
@@ -253,6 +257,7 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
     pathname: request.pathname,
     createdLocation: request.createdLocation,
     response: "[MASKED]",
+    payload: request.payload,
     nodes: maskedTree.nodes,
     edges: maskedTree.edges,
     cacheStatus: request.cacheStatus,
