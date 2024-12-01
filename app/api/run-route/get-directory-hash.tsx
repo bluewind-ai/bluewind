@@ -25,7 +25,6 @@ app.post("/api/run-route/get-directory-hash", async (c) => {
   try {
     await sleep(2000); // Simulate long operation
 
-    const dirPath = resolve("..", "bluewind-data", "sec-submissions");
     const dirStat = await stat(dirPath);
 
     // Get both mtime and ctime for maximum reliability

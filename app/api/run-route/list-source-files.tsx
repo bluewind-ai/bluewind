@@ -13,7 +13,7 @@ app.post("/api/run-route/list-source-files", async (c) => {
   try {
     await sleep(2000); // Sleep for 2 seconds
 
-    const rootPath = resolve("..", "bluewind-data", "sec-submissions");
+    const rootPath = resolve(".");
     const entries = await readdir(rootPath, { withFileTypes: true, recursive: true });
 
     // Filter and format entries to include complete relative paths
