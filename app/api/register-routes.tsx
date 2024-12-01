@@ -1,4 +1,5 @@
 // app/api/register-routes.tsx
+
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 
@@ -14,6 +15,7 @@ import routesRoute from "./routes";
 import createRawDataRoute from "./run-route/create-raw-data";
 import listSourceFilesRoute from "./run-route/list-source-files";
 import storeCassetteRoute from "./run-route/store-cassette";
+import setupRoute from "./setup"; // Add this import
 import testRoute from "./test-route";
 import testRoute2 from "./test-route-2";
 
@@ -22,6 +24,7 @@ const customLogger = (message: string, ...rest: string[]) => {
   if (!message.startsWith("<--") && !message.startsWith("-->")) {
   }
 };
+
 export function registerRoutes(server: Hono) {
   server.use("*", logger(customLogger));
   server.route("", rootRoute);
@@ -38,6 +41,7 @@ export function registerRoutes(server: Hono) {
     storeCassetteRoute,
     listSourceFilesRoute,
     createRawDataRoute,
+    setupRoute, // Add the setup route here
   ];
   routes.forEach((route) => {
     server.route("", route);
