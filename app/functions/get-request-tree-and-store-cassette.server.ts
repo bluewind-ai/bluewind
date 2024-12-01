@@ -186,24 +186,50 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
   if (!tree) return null;
 
   const xyFlowTree = createXYFlowTree(tree);
-
-  // Create cassette with the same structure but masked values
   const maskedTree = createMaskedXYFlowTree(xyFlowTree);
 
-  // Only write the cassette to file
-  await writeFile(
-    join(process.cwd(), "cassette.json"),
-    JSON.stringify(maskedTree, null, 2),
-    "utf-8",
-  );
+  // Get the original request to include all its fields
+  const request = await db
+    .select()
+    .from(requests)
+    .where(eq(requests.id, rootRequestId))
+    .limit(1)
+    .then((rows) => rows[0]);
 
-  // Store the original tree for visualization
+  if (!request) return null;
+
+  // Create full cassette with all request fields
+  const cassette = {
+    id: "[MASKED]",
+    parentId: request.parentId,
+    pathname: request.pathname,
+    createdLocation: request.createdLocation,
+    response: "[MASKED]",
+    nodes: maskedTree.nodes,
+    edges: maskedTree.edges,
+    cacheStatus: request.cacheStatus,
+    createdAt: "[MASKED]",
+    durationMs: "[MASKED]",
+    requestSizeBytes: "[MASKED]",
+    responseSizeBytes: "[MASKED]",
+  };
+
+  // Store the cassette
+  await writeFile(join(process.cwd(), "cassette.json"), JSON.stringify(cassette, null, 2), "utf-8");
+
+  // Update request with the visualization data
   await db
     .update(requests)
     .set({
-      response: JSON.stringify({ tree: xyFlowTree }),
+      nodes: xyFlowTree.nodes,
+      edges: xyFlowTree.edges,
     })
     .where(eq(requests.id, rootRequestId));
 
-  return xyFlowTree;
+  // Return request with the flow data we just generated
+  return {
+    ...request,
+    nodes: xyFlowTree.nodes,
+    edges: xyFlowTree.edges,
+  };
 }

@@ -1,4 +1,9 @@
 {
+  "id": "[MASKED]",
+  "parentId": null,
+  "pathname": "/",
+  "createdLocation": "api/root/index.tsx:31:44",
+  "response": "[MASKED]",
   "nodes": [
     {
       "id": "[MASKED]",
@@ -10,13 +15,13 @@
       "data": {
         "label": "/",
         "pathname": "/",
-        "durationMsRange": "< 1000",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "N/A",
+        "responseSizeBytesRange": "< 1 MB",
         "objects": [],
         "duration": "[MASKED]",
         "requestSize": 0,
-        "responseSize": null
+        "responseSize": 2506
       }
     },
     {
@@ -203,5 +208,10 @@
       "type": "smoothstep",
       "animated": true
     }
-  ]
+  ],
+  "cacheStatus": "SKIP",
+  "createdAt": "[MASKED]",
+  "durationMs": "[MASKED]",
+  "requestSizeBytes": "[MASKED]",
+  "responseSizeBytes": "[MASKED]"
 }

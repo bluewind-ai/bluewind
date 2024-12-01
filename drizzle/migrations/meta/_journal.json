@@ -239,6 +239,13 @@
       "when": 1732990862916,
       "tag": "0033_awesome_avengers",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1733016894185,
+      "tag": "0034_modern_human_torch",
+      "breakpoints": true
     }
   ]
 }

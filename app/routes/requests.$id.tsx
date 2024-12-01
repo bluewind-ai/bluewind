@@ -6,33 +6,25 @@ import "react18-json-view/src/style.css";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { eq } from "drizzle-orm";
 import { useState } from "react";
 import JsonView from "react18-json-view";
 
 import RequestFlowVisualization from "~/components/RequestFlowVisualization";
-import { requests } from "~/db/schema";
-import { db } from "~/middleware/main";
+import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and-store-cassette.server";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const requestId = Number(params.id);
-  const [request] = await db.select().from(requests).where(eq(requests.id, requestId)).limit(1);
+  const request = await getRequestTreeAndStoreCassette(requestId);
 
   if (!request) {
     throw new Response("Request not found", { status: 404 });
   }
 
-  try {
-    const treeData = JSON.parse(request.response);
-    return json({ request, tree: treeData });
-  } catch (error) {
-    console.error("Error parsing response:", error);
-    return json({ request, tree: null });
-  }
+  return json(request);
 }
 
 export default function Request() {
-  const { request, tree } = useLoaderData<typeof loader>();
+  const request = useLoaderData<typeof loader>();
   const [viewMode, setViewMode] = useState<"tree" | "flow">("tree");
 
   return (
@@ -61,31 +53,27 @@ export default function Request() {
             </div>
           </div>
 
-          {tree ? (
-            <div
-              className={
-                viewMode === "flow"
-                  ? "h-[600px] border-2 border-gray-200"
-                  : "max-h-[80vh] overflow-y-auto"
-              }
-            >
-              {viewMode === "flow" ? (
-                <RequestFlowVisualization data={tree} />
-              ) : (
-                <JsonView
-                  src={tree}
-                  theme="vscode"
-                  displaySize={true}
-                  enableClipboard={true}
-                  collapseStringsAfterLength={100}
-                  displayObjectSize={true}
-                  collapsed={1}
-                />
-              )}
-            </div>
-          ) : (
-            <p className="text-gray-500">No tree data available</p>
-          )}
+          <div
+            className={
+              viewMode === "flow"
+                ? "h-[600px] border-2 border-gray-200"
+                : "max-h-[80vh] overflow-y-auto"
+            }
+          >
+            {viewMode === "flow" ? (
+              <RequestFlowVisualization data={request} />
+            ) : (
+              <JsonView
+                src={request}
+                theme="vscode"
+                displaySize={true}
+                enableClipboard={true}
+                collapseStringsAfterLength={100}
+                displayObjectSize={true}
+                collapsed={1}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

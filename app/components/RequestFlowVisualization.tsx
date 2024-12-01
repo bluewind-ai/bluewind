@@ -7,46 +7,52 @@ import { useEffect } from "react";
 
 interface RequestFlowVisualizationProps {
   data: {
-    success: boolean;
-    requestId: number;
-    tree: {
-      nodes: Array<{
-        id: string;
-        type: string;
-        position: { x: number; y: number };
-        data: {
-          label: string;
-          pathname: string;
-          duration: number;
-          requestSize: number;
-          responseSize: number | null;
-          objects: any[];
-        };
-      }>;
-      edges: Array<{
-        id: string;
-        source: string;
-        target: string;
-        type: string;
-        animated: boolean;
-      }>;
-    };
+    id: number;
+    parentId: number | null;
+    pathname: string;
+    createdLocation: string;
+    response: string | null;
+    nodes: Array<{
+      id: string;
+      type: string;
+      position: { x: number; y: number };
+      data: {
+        label: string;
+        pathname: string;
+        duration: number;
+        requestSize: number;
+        responseSize: number | null;
+        objects: any[];
+      };
+    }>;
+    edges: Array<{
+      id: string;
+      source: string;
+      target: string;
+      type: string;
+      animated: boolean;
+    }>;
+    cacheStatus: string;
+    createdAt: string;
+    durationMs: number;
+    requestSizeBytes: number;
+    responseSizeBytes: number | null;
   };
 }
 
 const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
   useEffect(() => {
     console.log("Flow received data:", data);
-    console.log("Nodes:", data.tree.nodes);
-    console.log("Edges:", data.tree.edges);
+    console.log("Nodes:", data.nodes);
+    console.log("Edges:", data.edges);
   }, [data]);
 
   try {
     return (
       <div className="w-full h-full min-h-[600px]" style={{ height: "100%", minHeight: "600px" }}>
         <ReactFlow
-          nodes={data.tree.nodes}
-          edges={data.tree.edges}
+          nodes={data.nodes || []}
+          edges={data.edges || []}
           fitView
           fitViewOptions={{ padding: 0.2 }}
           defaultEdgeOptions={{
