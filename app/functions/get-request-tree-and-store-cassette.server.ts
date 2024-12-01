@@ -61,10 +61,8 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
       seenPathnames[node.pathname] = levelWidths[level] - 1; // Assign position by first occurrence
     }
     if (node.children) {
-      // Sort children by pathname to ensure consistent order
-      const sortedChildren = [...node.children].sort((a, b) =>
-        a.pathname.localeCompare(b.pathname),
-      );
+      // Sort children by ID now, not pathname
+      const sortedChildren = [...node.children].sort((a, b) => a.id - b.id);
       sortedChildren.forEach((child: any) => countNodesAtLevel(child, level + 1));
     }
   };
@@ -96,10 +94,8 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
       },
     });
     if (node.children) {
-      // Sort children by pathname for consistent order
-      const sortedChildren = [...node.children].sort((a, b) =>
-        a.pathname.localeCompare(b.pathname),
-      );
+      // Sort children by ID here too
+      const sortedChildren = [...node.children].sort((a, b) => a.id - b.id);
       sortedChildren.forEach((child: any) => {
         edges.push({
           id: `e${node.id}-${child.id}`,
