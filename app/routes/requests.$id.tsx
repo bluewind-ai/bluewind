@@ -1,5 +1,4 @@
 // app/routes/requests.$id.tsx
-
 import "@xyflow/react/dist/style.css";
 import "react18-json-view/src/style.css";
 
@@ -15,18 +14,14 @@ import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and
 export async function loader({ params }: LoaderFunctionArgs) {
   const requestId = Number(params.id);
   const request = await getRequestTreeAndStoreCassette(requestId);
-
   if (!request) {
     throw new Response("Request not found", { status: 404 });
   }
-
   return json(request);
 }
-
 export default function Request() {
   const request = useLoaderData<typeof loader>();
   const [viewMode, setViewMode] = useState<"tree" | "flow">("tree");
-
   return (
     <div className="p-4">
       <div className="bg-white shadow rounded-lg p-6">
@@ -36,17 +31,13 @@ export default function Request() {
             <div className="flex gap-2">
               <button
                 onClick={() => setViewMode("tree")}
-                className={`px-3 py-1 rounded ${
-                  viewMode === "tree" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"
-                }`}
+                className={`px-3 py-1 rounded ${viewMode === "tree" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"}`}
               >
                 Tree View
               </button>
               <button
                 onClick={() => setViewMode("flow")}
-                className={`px-3 py-1 rounded ${
-                  viewMode === "flow" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"
-                }`}
+                className={`px-3 py-1 rounded ${viewMode === "flow" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"}`}
               >
                 Flow View
               </button>

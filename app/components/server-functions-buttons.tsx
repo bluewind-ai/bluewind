@@ -1,5 +1,4 @@
 // app/components/server-functions-buttons.tsx
-
 import { useNavigate } from "@remix-run/react";
 
 import { Button } from "~/components/ui/button";
@@ -17,7 +16,6 @@ export function ServerFunctionsButtons() {
       }
     } catch (error) {}
   };
-
   return (
     <div className="flex gap-2 p-4 flex-wrap">
       <Button onClick={handleRootClick} variant="default">

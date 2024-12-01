@@ -1,5 +1,4 @@
 // app/api/root/index.tsx
-
 import { eq } from "drizzle-orm";
 import { writeFile } from "fs/promises";
 import { Hono } from "hono";
@@ -29,11 +28,9 @@ app.post("/api/run-route/root", async (c) => {
       durationMs: 0, // Set initial value to satisfy NOT NULL constraint
     })
     .returning();
-
   const startTime = performance.now();
   c.requestId = rootRequest.id;
   let mainFlowError = null;
-
   await writeFile(join(process.cwd(), "cassette.json"), "", "utf-8");
   const mainFlowResponse = await fetchWithContext(c)(
     "http://localhost:5173/api/run-route/main-flow",
@@ -44,10 +41,8 @@ app.post("/api/run-route/root", async (c) => {
   if (!mainFlowResponse.ok) {
     mainFlowError = new Error("Main flow failed");
   }
-
   // Get tree and store both versions
   const tree = await getRequestTreeAndStoreCassette(rootRequest.id);
-
   const endTime = performance.now();
   const durationMs = Math.round(endTime - startTime);
   const response = {
@@ -56,7 +51,6 @@ app.post("/api/run-route/root", async (c) => {
     ...(mainFlowError && { error: String(mainFlowError) }),
     ...(tree && { tree }),
   };
-
   const responseText = JSON.stringify(response);
   const responseSizeBytes = responseText.length;
   await db
@@ -67,8 +61,6 @@ app.post("/api/run-route/root", async (c) => {
       responseSizeBytes,
     })
     .where(eq(requests.id, rootRequest.id));
-
   return c.json(response, 200);
 });
-
 export default app;

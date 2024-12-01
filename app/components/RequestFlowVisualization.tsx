@@ -1,5 +1,4 @@
 // app/components/RequestFlowVisualization.tsx
-
 import "@xyflow/react/dist/style.css";
 
 import { Background, Controls, Panel, ReactFlow } from "@xyflow/react";
@@ -15,7 +14,10 @@ interface RequestFlowVisualizationProps {
     nodes: Array<{
       id: string;
       type: string;
-      position: { x: number; y: number };
+      position: {
+        x: number;
+        y: number;
+      };
       data: {
         label: string;
         pathname: string;
@@ -39,14 +41,8 @@ interface RequestFlowVisualizationProps {
     responseSizeBytes: number | null;
   };
 }
-
 const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
-  useEffect(() => {
-    console.log("Flow received data:", data);
-    console.log("Nodes:", data.nodes);
-    console.log("Edges:", data.edges);
-  }, [data]);
-
+  useEffect(() => {}, [data]);
   try {
     return (
       <div className="w-full h-full min-h-[600px]" style={{ height: "100%", minHeight: "600px" }}>
@@ -79,9 +75,7 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
       </div>
     );
   } catch (error) {
-    console.error("Visualization error:", error);
     return <div>Error rendering flow: {String(error)}</div>;
   }
 };
-
 export default RequestFlowVisualization;

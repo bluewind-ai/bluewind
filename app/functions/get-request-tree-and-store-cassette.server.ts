@@ -1,5 +1,4 @@
 // app/functions/get-request-tree-and-store-cassette.server.ts
-
 import { eq } from "drizzle-orm";
 import { writeFile } from "fs/promises";
 import { join } from "path";
@@ -10,7 +9,10 @@ import { db } from "~/middleware/main";
 type XYFlowNode = {
   id: string;
   type: "default";
-  position: { x: number; y: number };
+  position: {
+    x: number;
+    y: number;
+  };
   data: {
     label: string;
     pathname: string;
@@ -20,7 +22,6 @@ type XYFlowNode = {
     objects: any[];
   };
 };
-
 type XYFlowEdge = {
   id: string;
   source: string;
@@ -28,27 +29,26 @@ type XYFlowEdge = {
   type: "smoothstep";
   animated: boolean;
 };
-
 type XYFlowTree = {
   nodes: XYFlowNode[];
   edges: XYFlowEdge[];
 };
-
 const getDurationRange = (ms: number): string => {
   return ms <= 1000 ? "< 1000" : "1001+";
 };
-
 const getBytesRange = (bytes: number): string => {
   const MB = 1024 * 1024;
   return bytes < MB ? "< 1 MB" : "1 MB+";
 };
-
 const createXYFlowTree = (requestTree: any): XYFlowTree => {
   const nodes: XYFlowNode[] = [];
   const edges: XYFlowEdge[] = [];
-  const levelWidths: { [level: number]: number } = {};
-  const seenPathnames: { [key: string]: number } = {}; // Track position by pathname
-
+  const levelWidths: {
+    [level: number]: number;
+  } = {};
+  const seenPathnames: {
+    [key: string]: number;
+  } = {}; // Track position by pathname
   const countNodesAtLevel = (node: any, level: number) => {
     levelWidths[level] = (levelWidths[level] || 0) + 1;
     if (!seenPathnames[node.pathname]) {
@@ -63,17 +63,14 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
     }
   };
   countNodesAtLevel(requestTree, 0);
-
   const processNode = (node: any, level: number) => {
     const xSpacing = 400;
     const ySpacing = 150;
-
     const levelWidth = levelWidths[level] * xSpacing;
     const startX = -levelWidth / 2;
     // Use consistent position based on first occurrence of pathname
     const x = startX + seenPathnames[node.pathname] * xSpacing;
     const y = level * ySpacing;
-
     nodes.push({
       id: node.id.toString(),
       type: "default",
@@ -87,7 +84,6 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
         objects: node.objects || [],
       },
     });
-
     if (node.children) {
       // Sort children by pathname for consistent order
       const sortedChildren = [...node.children].sort((a, b) =>
@@ -101,16 +97,13 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
           type: "smoothstep",
           animated: true,
         });
-
         processNode(child, level + 1);
       });
     }
   };
-
   processNode(requestTree, 0, 0);
   return { nodes, edges };
 };
-
 const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
   return {
     nodes: xyFlowTree.nodes.map((node) => ({
@@ -144,7 +137,6 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
     })),
   };
 };
-
 export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
   async function buildRequestTree(requestId: number) {
     const request = await db
@@ -153,22 +145,15 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
       .where(eq(requests.id, requestId))
       .limit(1)
       .then((rows) => rows[0]);
-
     if (!request) return null;
-
     const childRequests = await db.select().from(requests).where(eq(requests.parentId, requestId));
-
     const children = await Promise.all(
       childRequests.map((child) => buildRequestTree(child.id)),
     ).then((results) => results.filter((r) => r !== null));
-
     let response = null;
     try {
       response = request.response ? JSON.parse(request.response) : null;
-    } catch (e) {
-      console.error(`Failed to parse response for request ${requestId}`);
-    }
-
+    } catch (e) {}
     return {
       id: request.id,
       pathname: request.pathname,
@@ -181,13 +166,10 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
       objects: [],
     };
   }
-
   const tree = await buildRequestTree(rootRequestId);
   if (!tree) return null;
-
   const xyFlowTree = createXYFlowTree(tree);
   const maskedTree = createMaskedXYFlowTree(xyFlowTree);
-
   // Get the original request to include all its fields
   const request = await db
     .select()
@@ -195,9 +177,7 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
     .where(eq(requests.id, rootRequestId))
     .limit(1)
     .then((rows) => rows[0]);
-
   if (!request) return null;
-
   // Create full cassette with all request fields
   const cassette = {
     id: "[MASKED]",
@@ -213,10 +193,8 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
     requestSizeBytes: "[MASKED]",
     responseSizeBytes: "[MASKED]",
   };
-
   // Store the cassette
   await writeFile(join(process.cwd(), "cassette.json"), JSON.stringify(cassette, null, 2), "utf-8");
-
   // Update request with the visualization data
   await db
     .update(requests)
@@ -225,7 +203,6 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
       edges: xyFlowTree.edges,
     })
     .where(eq(requests.id, rootRequestId));
-
   // Return request with the flow data we just generated
   return {
     ...request,
