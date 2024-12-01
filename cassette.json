@@ -16,7 +16,7 @@
         "label": "/",
         "pathname": "/",
         "createdLocation": "api/root/index.tsx:31:44",
-        "durationMsRange": "< 1000",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "cacheStatus": "SKIP",
@@ -37,8 +37,8 @@
       "data": {
         "label": "/api/run-route/main-flow",
         "pathname": "/api/run-route/main-flow",
-        "createdLocation": "middleware/main.tsx:52:44",
-        "durationMsRange": "< 1000",
+        "createdLocation": "middleware/main.tsx:53:44",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "cacheStatus": "SKIP",
@@ -59,7 +59,7 @@
       "data": {
         "label": "/api/setup/initialize",
         "pathname": "/api/setup/initialize",
-        "createdLocation": "middleware/main.tsx:52:44",
+        "createdLocation": "middleware/main.tsx:53:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -81,8 +81,8 @@
       "data": {
         "label": "/api/run-route/ingest-company-data",
         "pathname": "/api/run-route/ingest-company-data",
-        "createdLocation": "middleware/main.tsx:52:44",
-        "durationMsRange": "< 1000",
+        "createdLocation": "middleware/main.tsx:53:44",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "cacheStatus": "SKIP",
@@ -101,13 +101,13 @@
         "y": 400
       },
       "data": {
-        "label": "/api/run-route/list-source-files",
-        "pathname": "/api/run-route/list-source-files",
-        "createdLocation": "middleware/main.tsx:52:44",
-        "durationMsRange": "< 1000",
+        "label": "/api/run-route/get-directory-hash",
+        "pathname": "/api/run-route/get-directory-hash",
+        "createdLocation": "middleware/main.tsx:53:44",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
-        "cacheStatus": "HIT",
+        "cacheStatus": "SKIP",
         "createdAt": "[MASKED]",
         "parentId": "[MASKED]",
         "objects": [],
@@ -123,31 +123,9 @@
         "y": 500
       },
       "data": {
-        "label": "/api/run-route/create-raw-data",
-        "pathname": "/api/run-route/create-raw-data",
-        "createdLocation": "middleware/main.tsx:52:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 800,
-        "y": 600
-      },
-      "data": {
         "label": "/api/run-route/list-source-files",
         "pathname": "/api/run-route/list-source-files",
-        "createdLocation": "middleware/main.tsx:52:44",
+        "createdLocation": "middleware/main.tsx:53:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -163,13 +141,13 @@
       "id": "[MASKED]",
       "type": "default",
       "position": {
-        "x": 800,
-        "y": 700
+        "x": 400,
+        "y": 600
       },
       "data": {
-        "label": "/api/db-proxy",
-        "pathname": "/api/db-proxy",
-        "createdLocation": "middleware/main.tsx:52:44",
+        "label": "/api/test-route",
+        "pathname": "/api/test-route",
+        "createdLocation": "middleware/main.tsx:53:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -185,13 +163,35 @@
       "id": "[MASKED]",
       "type": "default",
       "position": {
-        "x": 400,
+        "x": 600,
+        "y": 700
+      },
+      "data": {
+        "label": "/api/test-request-to-proxy",
+        "pathname": "/api/test-request-to-proxy",
+        "createdLocation": "middleware/main.tsx:53:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 800,
         "y": 800
       },
       "data": {
-        "label": "/api/test-route",
-        "pathname": "/api/test-route",
-        "createdLocation": "middleware/main.tsx:52:44",
+        "label": "/api/db-proxy",
+        "pathname": "/api/db-proxy",
+        "createdLocation": "middleware/main.tsx:53:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -211,9 +211,9 @@
         "y": 900
       },
       "data": {
-        "label": "/api/test-request-to-proxy",
-        "pathname": "/api/test-request-to-proxy",
-        "createdLocation": "middleware/main.tsx:52:44",
+        "label": "/api/test-drizzle-proxy",
+        "pathname": "/api/test-drizzle-proxy",
+        "createdLocation": "middleware/main.tsx:53:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -235,51 +235,7 @@
       "data": {
         "label": "/api/db-proxy",
         "pathname": "/api/db-proxy",
-        "createdLocation": "middleware/main.tsx:52:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 600,
-        "y": 1100
-      },
-      "data": {
-        "label": "/api/test-drizzle-proxy",
-        "pathname": "/api/test-drizzle-proxy",
-        "createdLocation": "middleware/main.tsx:52:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 800,
-        "y": 1200
-      },
-      "data": {
-        "label": "/api/db-proxy",
-        "pathname": "/api/db-proxy",
-        "createdLocation": "middleware/main.tsx:52:44",
+        "createdLocation": "middleware/main.tsx:53:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -293,20 +249,6 @@
     }
   ],
   "edges": [
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
     {
       "id": "e[MASKED]-[MASKED]",
       "source": "[MASKED]",

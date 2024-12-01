@@ -24,7 +24,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   c.queries = [];
   const pathname = new URL(c.req.url).pathname;
   const parentRequestId = c.req.header("X-Parent-Request-Id");
-
+  console.log(`[Middleware] Recdscdscdsqucdseccdsdcscsdcsdst started:`);
   // eslint-disable-next-line
   console.log("\n\x1b[36m<-- " + c.req.method + " " + pathname + "\x1b[0m\n");
   // eslint-disable-next-line

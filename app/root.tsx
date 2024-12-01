@@ -20,6 +20,8 @@ import { type NavigationNode } from "./components/navigation-tree";
 import { ServerFunctionsButtons } from "./components/server-functions-buttons";
 import { loadNavigationData } from "./functions/load-navigation-data.server";
 
+("cdscds");
+
 function Document({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
