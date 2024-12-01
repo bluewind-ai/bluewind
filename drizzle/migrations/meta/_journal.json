@@ -246,6 +246,13 @@
       "when": 1733016894185,
       "tag": "0034_modern_human_torch",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1733084191301,
+      "tag": "0035_common_aaron_stack",
+      "breakpoints": true
     }
   ]
 }

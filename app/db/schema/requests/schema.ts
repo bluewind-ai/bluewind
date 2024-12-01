@@ -1,4 +1,5 @@
 // app/db/schema/requests/schema.ts
+
 import { relations } from "drizzle-orm";
 import { integer, jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
@@ -11,6 +12,7 @@ export const requests = pgTable("requests", {
   pathname: text("pathname").notNull(),
   createdLocation: text("created_location").notNull(),
   response: text("response"),
+  payload: jsonb("payload"), // Request body/payload
   nodes: jsonb("nodes"), // Using JSONB for better performance and querying
   edges: jsonb("edges"), // Using JSONB for better performance and querying
   cacheStatus: text("cache_status").notNull(),
@@ -19,6 +21,7 @@ export const requests = pgTable("requests", {
   requestSizeBytes: integer("request_size_bytes").notNull(),
   responseSizeBytes: integer("response_size_bytes"),
 });
+
 // Define the node and edge types that match our current cassette structure
 const FlowNode = z.object({
   id: z.string(),
@@ -39,6 +42,7 @@ const FlowNode = z.object({
     responseSize: z.number().nullable(),
   }),
 });
+
 const FlowEdge = z.object({
   id: z.string(),
   source: z.string(),
@@ -46,12 +50,14 @@ const FlowEdge = z.object({
   type: z.string(),
   animated: z.boolean(),
 });
+
 export const RequestSchema = z.object({
   id: z.number(),
   parentId: z.number().nullable(),
   pathname: z.string(),
   createdLocation: z.string(),
   response: z.string().nullable(),
+  payload: z.any().nullable(), // Request payload schema
   nodes: z.array(FlowNode).nullable(), // Now directly an array of nodes
   edges: z.array(FlowEdge).nullable(), // Now directly an array of edges
   cacheStatus: z.string(),
@@ -60,9 +66,11 @@ export const RequestSchema = z.object({
   requestSizeBytes: z.number(),
   responseSizeBytes: z.number().nullable(),
 });
+
 export type CreateRequest = z.infer<typeof RequestSchema>;
 export type FlowNode = z.infer<typeof FlowNode>;
 export type FlowEdge = z.infer<typeof FlowEdge>;
+
 export const requestsRelations = relations(requests, ({ many }) => ({
   serverFunctions: many(serverFunctions),
 }));

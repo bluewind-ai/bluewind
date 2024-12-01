@@ -35,6 +35,18 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   });
   const requestBody = await c.req.text();
   const requestSizeBytes = new TextEncoder().encode(requestBody).length;
+
+  // Parse the request body as JSON if possible
+  let parsedPayload = null;
+  if (requestBody) {
+    try {
+      parsedPayload = JSON.parse(requestBody);
+      console.log(`[Middleware] Storing payload in database:`, parsedPayload);
+    } catch {
+      console.log("[Middleware] Request body is not valid JSON");
+    }
+  }
+
   if (pathname.startsWith("/api/") && !parentRequestId) {
     throw new Error("No parent request ID provided");
   }
@@ -53,6 +65,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       pathname,
       createdLocation: getCurrentLocation(),
       response: cachedResponse ? JSON.stringify(cachedResponse) : null,
+      payload: parsedPayload,
       cacheStatus: cachedResponse ? "HIT" : shouldUseCache ? "MISS" : "SKIP",
       durationMs: 0,
       requestSizeBytes,
