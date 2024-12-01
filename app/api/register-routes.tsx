@@ -13,8 +13,9 @@ import mainFlowRoute from "./main-flow";
 import resetFactoryRoute from "./reset-factory";
 import rootRoute from "./root";
 import createRawDataRoute from "./run-route/create-raw-data";
-import getDirectoryHashRoute from "./run-route/get-directory-hash"; // Add this import
+import getDirectoryHashRoute from "./run-route/get-directory-hash";
 import listSourceFilesRoute from "./run-route/list-source-files";
+import loadRoutesRoute from "./run-route/load-routes"; // Add this import
 import storeCassetteRoute from "./run-route/store-cassette";
 import setupRoute from "./setup";
 import testDrizzleProxyRoute from "./test-drizzle-proxy";
@@ -47,7 +48,8 @@ export function registerRoutes(server: Hono) {
     testRequestToProxyRoute,
     testDrizzleProxyRoute,
     dbProxyRoute,
-    getDirectoryHashRoute, // Add this route
+    getDirectoryHashRoute,
+    loadRoutesRoute, // Add this route
   ];
   routes.forEach((route) => {
     server.route("", route);

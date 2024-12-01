@@ -79,8 +79,31 @@
       "id": "[MASKED]",
       "type": "default",
       "position": {
-        "x": 400,
+        "x": 600,
         "y": 300
+      },
+      "data": {
+        "label": "/api/run-route/load-routes",
+        "pathname": "/api/run-route/load-routes",
+        "createdLocation": "middleware/main.tsx:62:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 400,
+        "y": 400
       },
       "data": {
         "label": "/api/run-route/ingest-company-data",
@@ -103,7 +126,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 400
+        "y": 500
       },
       "data": {
         "label": "/api/run-route/get-directory-hash",
@@ -126,7 +149,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 500
+        "y": 600
       },
       "data": {
         "label": "/api/run-route/list-source-files",
@@ -149,7 +172,7 @@
       "type": "default",
       "position": {
         "x": 400,
-        "y": 600
+        "y": 700
       },
       "data": {
         "label": "/api/test-route",
@@ -172,7 +195,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 700
+        "y": 800
       },
       "data": {
         "label": "/api/test-request-to-proxy",
@@ -195,7 +218,7 @@
       "type": "default",
       "position": {
         "x": 800,
-        "y": 800
+        "y": 900
       },
       "data": {
         "label": "/api/db-proxy",
@@ -218,7 +241,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 900
+        "y": 1000
       },
       "data": {
         "label": "/api/test-drizzle-proxy",
@@ -241,7 +264,7 @@
       "type": "default",
       "position": {
         "x": 800,
-        "y": 1000
+        "y": 1100
       },
       "data": {
         "label": "/api/db-proxy",
@@ -261,6 +284,13 @@
     }
   ],
   "edges": [
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
     {
       "id": "e[MASKED]-[MASKED]",
       "source": "[MASKED]",

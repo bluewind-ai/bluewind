@@ -7,6 +7,7 @@ import { objects } from "~/db/schema";
 import { models } from "~/db/schema/models/schema";
 import { serverFunctions } from "~/db/schema/server-functions/schema";
 import { TABLES } from "~/db/schema/table-models";
+import { fetchWithContext } from "~/lib/fetch-with-context";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
 
@@ -94,6 +95,18 @@ app.post("/api/setup/initialize", async (c) => {
 
   if (objectsToCreate.length > 0) {
     await db.insert(objects).values(objectsToCreate);
+  }
+
+  // Call load-routes using fetchWithContext
+  const loadRoutesResponse = await fetchWithContext(c)(
+    "http://localhost:5173/api/run-route/load-routes",
+    {
+      method: "POST",
+    },
+  );
+
+  if (!loadRoutesResponse.ok) {
+    throw new Error("Failed to load routes");
   }
 
   return c.json({ success: true });
