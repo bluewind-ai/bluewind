@@ -1,6 +1,6 @@
 {
   "id": "[MASKED]",
-  "parentId": null,
+  "parentId": "[MASKED]",
   "pathname": "/",
   "createdLocation": "api/root/index.tsx:31:44",
   "response": "[MASKED]",
@@ -15,9 +15,13 @@
       "data": {
         "label": "/",
         "pathname": "/",
+        "createdLocation": "api/root/index.tsx:31:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]"
@@ -33,9 +37,13 @@
       "data": {
         "label": "/api/run-route/main-flow",
         "pathname": "/api/run-route/main-flow",
+        "createdLocation": "middleware/main.tsx:52:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]"
@@ -51,9 +59,13 @@
       "data": {
         "label": "/api/routes",
         "pathname": "/api/routes",
+        "createdLocation": "middleware/main.tsx:52:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]"
@@ -69,9 +81,13 @@
       "data": {
         "label": "/api/run-route/ingest-company-data",
         "pathname": "/api/run-route/ingest-company-data",
+        "createdLocation": "middleware/main.tsx:52:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]"
@@ -87,9 +103,13 @@
       "data": {
         "label": "/api/run-route/create-raw-data",
         "pathname": "/api/run-route/create-raw-data",
+        "createdLocation": "middleware/main.tsx:52:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]"
@@ -105,9 +125,13 @@
       "data": {
         "label": "/api/run-route/list-source-files",
         "pathname": "/api/run-route/list-source-files",
+        "createdLocation": "middleware/main.tsx:52:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "HIT",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]"
@@ -123,9 +147,13 @@
       "data": {
         "label": "/api/test-route",
         "pathname": "/api/test-route",
+        "createdLocation": "middleware/main.tsx:52:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]"
@@ -141,9 +169,13 @@
       "data": {
         "label": "/api/run-route/list-source-files",
         "pathname": "/api/run-route/list-source-files",
+        "createdLocation": "middleware/main.tsx:52:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "HIT",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]"

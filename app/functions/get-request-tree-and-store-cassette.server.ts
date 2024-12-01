@@ -17,9 +17,13 @@ type XYFlowNode = {
   data: {
     label: string;
     pathname: string;
+    createdLocation: string;
     duration: number;
     requestSize: number;
     responseSize: number | null;
+    cacheStatus: string;
+    createdAt: Date;
+    parentId: number | null;
     objects: any[];
     response: any;
   };
@@ -80,9 +84,13 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
       data: {
         label: node.pathname,
         pathname: node.pathname,
+        createdLocation: node.createdLocation,
         duration: node.durationMs,
         requestSize: node.requestSizeBytes,
         responseSize: node.responseSizeBytes,
+        cacheStatus: node.cacheStatus,
+        createdAt: node.createdAt,
+        parentId: node.parentId,
         objects: node.objects || [],
         response: node.response,
       },
@@ -120,13 +128,16 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
         pathname: node.data.pathname.includes("/get-request-tree/")
           ? node.data.pathname.replace(/\/get-request-tree\/\d+/, "/get-request-tree/[MASKED]")
           : node.data.pathname,
+        createdLocation: node.data.createdLocation,
         durationMsRange: getDurationRange(node.data.duration),
         requestSizeBytesRange: getBytesRange(node.data.requestSize),
         responseSizeBytesRange:
           node.data.responseSize !== null ? getBytesRange(node.data.responseSize) : "N/A",
+        cacheStatus: node.data.cacheStatus,
+        createdAt: "[MASKED]",
+        parentId: "[MASKED]",
         objects: node.data.objects,
         response: "[MASKED]",
-        // Mask duration value in cassette
         duration: "[MASKED]",
       },
     })),
@@ -164,6 +175,9 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
       durationMs: request.durationMs,
       requestSizeBytes: request.requestSizeBytes,
       responseSizeBytes: request.responseSizeBytes,
+      cacheStatus: request.cacheStatus,
+      createdAt: request.createdAt,
+      parentId: request.parentId,
       children,
       objects: [],
     };
@@ -183,7 +197,7 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
   // Create full cassette with all request fields
   const cassette = {
     id: "[MASKED]",
-    parentId: request.parentId,
+    parentId: "[MASKED]",
     pathname: request.pathname,
     createdLocation: request.createdLocation,
     response: "[MASKED]",
