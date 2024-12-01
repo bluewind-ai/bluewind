@@ -30,6 +30,7 @@ interface RequestFlowVisualizationProps {
         cacheStatus: string;
         createdAt: string;
         response: any;
+        payload: any;
       };
     }>;
     edges: Array<{
@@ -56,6 +57,7 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
   const onNodeClick = useCallback((event: React.MouseEvent, node: FlowNode) => {
     event.preventDefault();
     event.stopPropagation();
+    console.log("[RequestFlowVisualization] Node clicked with payload:", node.data.payload);
     setSelectedNode((current) => (current?.id === node.id ? null : node));
   }, []);
 
@@ -124,6 +126,14 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
               <div>
                 <span className="font-medium">Location:</span> {selectedNode.data.createdLocation}
               </div>
+              {selectedNode.data.payload && (
+                <div>
+                  <h4 className="font-medium mt-4 mb-2">Payload</h4>
+                  <pre className="bg-gray-50 p-2 rounded text-sm overflow-auto">
+                    {JSON.stringify(selectedNode.data.payload, null, 2)}
+                  </pre>
+                </div>
+              )}
               {selectedNode.data.response && (
                 <div>
                   <h4 className="font-medium mt-4 mb-2">Response</h4>
