@@ -1,25 +1,25 @@
 // app/functions/load-navigation-data.server.ts
+
 import { sql } from "drizzle-orm";
 
 import { type NavigationNode } from "~/components/navigation-tree";
 import * as schema from "~/db/schema";
 import { TableModel } from "~/db/schema/table-models";
 import { ExtendedContext } from "~/middleware";
+import { db } from "~/middleware/main";
 
 import { createNavigationTrees } from "./create-navigation-trees.server";
 
 export async function loadNavigationData(request: ExtendedContext) {
-  if (!request.db) {
-    throw new Error("Database connection not available on request object");
-  }
   const [users, sessions, serverFunctions, objects, requests, models] = await Promise.all([
-    request.db.select({ count: sql<number>`count(*)` }).from(schema.users),
-    request.db.select({ count: sql<number>`count(*)` }).from(schema.sessions),
-    request.db.select({ count: sql<number>`count(*)` }).from(schema.serverFunctions),
-    request.db.select({ count: sql<number>`count(*)` }).from(schema.objects),
-    request.db.select({ count: sql<number>`count(*)` }).from(schema.requests),
-    request.db.select({ count: sql<number>`count(*)` }).from(schema.models),
+    db.select({ count: sql<number>`count(*)` }).from(schema.users),
+    db.select({ count: sql<number>`count(*)` }).from(schema.sessions),
+    db.select({ count: sql<number>`count(*)` }).from(schema.serverFunctions),
+    db.select({ count: sql<number>`count(*)` }).from(schema.objects),
+    db.select({ count: sql<number>`count(*)` }).from(schema.requests),
+    db.select({ count: sql<number>`count(*)` }).from(schema.models),
   ]);
+
   const counts = {
     [TableModel.USERS]: users[0].count,
     [TableModel.SESSIONS]: sessions[0].count,
@@ -28,18 +28,22 @@ export async function loadNavigationData(request: ExtendedContext) {
     [TableModel.REQUESTS]: requests[0].count,
     [TableModel.MODELS]: models[0].count,
   };
-  const { backOfficeData, apps } = await createNavigationTrees(request.db, {
+
+  const { backOfficeData, apps } = await createNavigationTrees(db, {
     navigationName: "Objects",
     counts,
   });
-  const requestsData = await request.db.query.requests.findMany({
+
+  const requestsData = await db.query.requests.findMany({
     orderBy: [schema.requests.id],
   });
+
   const renderableRequests = requestsData.map((request) => ({
     id: request.id,
     requestId: request.requestId,
     pathname: request.pathname,
   }));
+
   const navigationData: NavigationNode = {
     id: 0,
     name: "Requests",
@@ -54,6 +58,7 @@ export async function loadNavigationData(request: ExtendedContext) {
     })),
     counts,
   };
+
   return {
     navigationData,
     apps,

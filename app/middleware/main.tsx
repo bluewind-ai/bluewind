@@ -1,4 +1,5 @@
 // app/middleware/main.tsx
+
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -16,12 +17,14 @@ const baseDb = drizzle(postgres(connectionString), {
   schema,
 });
 export const db = baseDb;
+
 export async function mainMiddleware(context: Context, next: () => Promise<void>) {
   const startTime = performance.now();
   const c = context as unknown as ExtendedContext;
   c.queries = [];
   const pathname = new URL(c.req.url).pathname;
   const parentRequestId = c.req.header("X-Parent-Request-Id");
+
   // eslint-disable-next-line
   console.log("\n\x1b[36m<-- " + c.req.method + " " + pathname + "\x1b[0m\n");
   // eslint-disable-next-line

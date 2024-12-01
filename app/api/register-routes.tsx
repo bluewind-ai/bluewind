@@ -5,6 +5,7 @@ import { logger } from "hono/logger";
 
 import { mainMiddleware } from "~/middleware/main";
 
+import dbProxyRoute from "./db-proxy"; // Add this import
 import getRequestTreeRoute from "./get-request-tree";
 import ingestCompanyDataRoute from "./ingest-company-data";
 import lintRoute from "./lint";
@@ -15,7 +16,9 @@ import routesRoute from "./routes";
 import createRawDataRoute from "./run-route/create-raw-data";
 import listSourceFilesRoute from "./run-route/list-source-files";
 import storeCassetteRoute from "./run-route/store-cassette";
-import setupRoute from "./setup"; // Add this import
+import setupRoute from "./setup";
+import testDrizzleProxyRoute from "./test-drizzle-proxy";
+import testRequestToProxyRoute from "./test-request-to-proxy";
 import testRoute from "./test-route";
 import testRoute2 from "./test-route-2";
 
@@ -41,7 +44,10 @@ export function registerRoutes(server: Hono) {
     storeCassetteRoute,
     listSourceFilesRoute,
     createRawDataRoute,
-    setupRoute, // Add the setup route here
+    setupRoute,
+    testRequestToProxyRoute,
+    testDrizzleProxyRoute,
+    dbProxyRoute, // Add this route
   ];
   routes.forEach((route) => {
     server.route("", route);

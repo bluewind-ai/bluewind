@@ -1,6 +1,7 @@
 // app/middleware/index.ts
+
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { Context } from "hono"; // Remove the 'type' import
+import { Context } from "hono";
 
 import * as schema from "~/db/schema";
 
@@ -14,6 +15,7 @@ export interface DrizzleQuery {
 }
 export type DbClient = PostgresJsDatabase<typeof schema>;
 type DbInsertFunction = (...args: any[]) => any;
+
 export function createDbProxy<
   T extends {
     insert: DbInsertFunction;
@@ -35,7 +37,21 @@ export function createDbProxy<
             const drizzleNameSymbol = symbols.find((s) => s.description === "drizzle:Name");
             if (drizzleNameSymbol) {
               const tableName = (tableArg as any)[drizzleNameSymbol];
-              return insertMiddleware(this || target, value as any, tableName, context, args);
+              return {
+                values(data: any) {
+                  return {
+                    async returning() {
+                      return await insertMiddleware(
+                        this || target,
+                        value,
+                        tableName,
+                        context,
+                        data,
+                      );
+                    },
+                  };
+                },
+              };
             }
           }
         }
@@ -73,14 +89,16 @@ export function createDbProxy<
     },
   });
 }
+
 export type ExtendedContext = Context & {
   db: DbClient;
   queries: DrizzleQuery[];
   requestId: number;
   functionCallId?: number;
-  requestTime: string; // Added
-  url: string; // Added
+  requestTime: string;
+  url: string;
 };
+
 declare module "@remix-run/node" {
   interface AppLoadContext extends ExtendedContext {}
 }
