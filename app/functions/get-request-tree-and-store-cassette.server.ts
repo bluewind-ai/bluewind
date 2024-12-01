@@ -128,8 +128,6 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
         response: "[MASKED]",
         // Mask duration value in cassette
         duration: "[MASKED]",
-        requestSize: node.data.requestSize,
-        responseSize: node.data.responseSize,
       },
     })),
     edges: xyFlowTree.edges.map((edge) => ({
@@ -194,8 +192,6 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
     cacheStatus: request.cacheStatus,
     createdAt: "[MASKED]",
     durationMs: "[MASKED]",
-    requestSizeBytes: "[MASKED]",
-    responseSizeBytes: "[MASKED]",
   };
   // Store the cassette
   await writeFile(join(process.cwd(), "cassette.json"), JSON.stringify(cassette, null, 2), "utf-8");

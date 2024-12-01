@@ -20,9 +20,7 @@
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
         "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "requestSize": 0,
-        "responseSize": 3187
+        "duration": "[MASKED]"
       }
     },
     {
@@ -40,9 +38,7 @@
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
         "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "requestSize": 0,
-        "responseSize": 16
+        "duration": "[MASKED]"
       }
     },
     {
@@ -60,9 +56,7 @@
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
         "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "requestSize": 61,
-        "responseSize": 399
+        "duration": "[MASKED]"
       }
     },
     {
@@ -80,9 +74,7 @@
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
         "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "requestSize": 0,
-        "responseSize": 63
+        "duration": "[MASKED]"
       }
     },
     {
@@ -100,9 +92,7 @@
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
         "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "requestSize": 0,
-        "responseSize": 16
+        "duration": "[MASKED]"
       }
     },
     {
@@ -120,9 +110,7 @@
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
         "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "requestSize": 0,
-        "responseSize": 29
+        "duration": "[MASKED]"
       }
     },
     {
@@ -140,9 +128,7 @@
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
         "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "requestSize": 0,
-        "responseSize": 29
+        "duration": "[MASKED]"
       }
     },
     {
@@ -160,9 +146,7 @@
         "responseSizeBytesRange": "< 1 MB",
         "objects": [],
         "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "requestSize": 0,
-        "responseSize": 29
+        "duration": "[MASKED]"
       }
     }
   ],
@@ -219,7 +203,5 @@
   ],
   "cacheStatus": "SKIP",
   "createdAt": "[MASKED]",
-  "durationMs": "[MASKED]",
-  "requestSizeBytes": "[MASKED]",
-  "responseSizeBytes": "[MASKED]"
+  "durationMs": "[MASKED]"
 }
