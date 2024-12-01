@@ -3,7 +3,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
 
-import { rawData, users } from "~/db/schema";
+import { rawData, sourceMappings,users } from "~/db/schema";
 import { db } from "~/middleware/main";
 
 const app = new Hono();
@@ -34,6 +34,17 @@ app.post("/api/db-proxy", async (c) => {
             console.log("[db-proxy] Attempting raw_data insert with values:", values);
             try {
               const result = await db.insert(rawData).values(values).returning();
+              console.log("[db-proxy] Insert successful:", result);
+              return c.json({ success: true, data: result });
+            } catch (insertError) {
+              console.error("[db-proxy] Insert error:", insertError);
+              throw insertError;
+            }
+          }
+          case "source_mappings": {
+            console.log("[db-proxy] Attempting source_mappings insert with values:", values);
+            try {
+              const result = await db.insert(sourceMappings).values(values).returning();
               console.log("[db-proxy] Insert successful:", result);
               return c.json({ success: true, data: result });
             } catch (insertError) {
