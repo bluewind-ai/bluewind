@@ -1,0 +1,11 @@
+// Connect to parent
+
+if (parentId) {
+  edges.push({
+    id: `e${parentId}-${currentNodeId}`,
+    source: parentId,
+    target: currentNodeId,
+    type: "smoothstep",
+    animated: true,
+  });
+}

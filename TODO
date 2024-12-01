@@ -291,3 +291,13 @@ if fetch use, return error
 
 
 createdlocation
+
+
+a
+├─b
+│ ├─c
+│ ├─d
+│ │
+│ e
+│ ├─f
+│ └─g
