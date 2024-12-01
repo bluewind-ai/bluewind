@@ -182,7 +182,7 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
         objects: node.data.objects,
         response: "[MASKED]",
         duration: "[MASKED]",
-        payload: node.data.payload,
+        payload: "[MASKED]",
       },
     })),
     edges: xyFlowTree.edges.map((edge) => ({
@@ -257,7 +257,7 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
     pathname: request.pathname,
     createdLocation: request.createdLocation,
     response: "[MASKED]",
-    payload: request.payload,
+    payload: "[MASKED]",
     nodes: maskedTree.nodes,
     edges: maskedTree.edges,
     cacheStatus: request.cacheStatus,

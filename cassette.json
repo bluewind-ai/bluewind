@@ -4,7 +4,7 @@
   "pathname": "/",
   "createdLocation": "api/root/index.tsx:31:44",
   "response": "[MASKED]",
-  "payload": null,
+  "payload": "[MASKED]",
   "nodes": [
     {
       "id": "[MASKED]",
@@ -26,7 +26,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": null
+        "payload": "[MASKED]"
       }
     },
     {
@@ -49,7 +49,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": null
+        "payload": "[MASKED]"
       }
     },
     {
@@ -72,7 +72,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": null
+        "payload": "[MASKED]"
       }
     },
     {
@@ -95,7 +95,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": null
+        "payload": "[MASKED]"
       }
     },
     {
@@ -118,7 +118,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": null
+        "payload": "[MASKED]"
       }
     },
     {
@@ -141,10 +141,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": {
-          "mtime": 1732662098365.5095,
-          "directory": "../bluewind-data/sec-submissions"
-        }
+        "payload": "[MASKED]"
       }
     },
     {
@@ -167,7 +164,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": null
+        "payload": "[MASKED]"
       }
     },
     {
@@ -190,9 +187,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": {
-          "requestId": 7102
-        }
+        "payload": "[MASKED]"
       }
     },
     {
@@ -215,16 +210,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": {
-          "table": "users",
-          "values": {
-            "name": "Test User",
-            "email": "test@example.com",
-            "createdAt": "2024-12-01T20:52:19.959Z",
-            "requestId": 7102
-          },
-          "operation": "insert"
-        }
+        "payload": "[MASKED]"
       }
     },
     {
@@ -247,9 +233,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": {
-          "requestId": 7102
-        }
+        "payload": "[MASKED]"
       }
     },
     {
@@ -272,16 +256,7 @@
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
-        "payload": {
-          "table": "users",
-          "values": {
-            "name": "Test User via Drizzle",
-            "email": "test-drizzle@example.com",
-            "createdAt": "2024-12-01T20:52:19.967Z",
-            "requestId": 7105
-          },
-          "operation": "insert"
-        }
+        "payload": "[MASKED]"
       }
     }
   ],
