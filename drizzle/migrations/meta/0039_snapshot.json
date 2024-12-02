@@ -1,6 +1,6 @@
 {
-  "id": "2377d2d3-85a1-465f-87ae-84937173538a",
-  "prevId": "0ce17fde-9e73-454d-a906-b9afbcd55dd5",
+  "id": "b2e26c52-bda6-4e01-be3d-b3910f20ecdf",
+  "prevId": "2377d2d3-85a1-465f-87ae-84937173538a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -187,6 +187,12 @@
         "route_id": {
           "name": "route_id",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "route_hash": {
+          "name": "route_hash",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },

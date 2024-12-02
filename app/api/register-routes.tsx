@@ -29,29 +29,50 @@ const customLogger = (message: string, ...rest: string[]) => {
   }
 };
 
+export const appRoutes = {
+  createRawData: createRawDataRoute,
+  dbProxy: dbProxyRoute,
+  getDirectoryHash: getDirectoryHashRoute,
+  getRequestTree: getRequestTreeRoute,
+  ingestCompanyData: ingestCompanyDataRoute,
+  lint: lintRoute,
+  listSourceFiles: listSourceFilesRoute,
+  loadRoutes: loadRoutesRoute,
+  mainFlow: mainFlowRoute,
+  resetFactory: resetFactoryRoute,
+  root: rootRoute,
+  setup: setupRoute,
+  storeCassette: storeCassetteRoute,
+  testDrizzleProxy: testDrizzleProxyRoute,
+  testRequestToProxy: testRequestToProxyRoute,
+  testRoute: testRoute,
+  testRoute2: testRoute2,
+};
+
+export const routesArray = [
+  mainFlowRoute,
+  testRoute,
+  testRoute2,
+  lintRoute,
+  ingestCompanyDataRoute,
+  getRequestTreeRoute,
+  storeCassetteRoute,
+  listSourceFilesRoute,
+  createRawDataRoute,
+  setupRoute,
+  testRequestToProxyRoute,
+  testDrizzleProxyRoute,
+  dbProxyRoute,
+  getDirectoryHashRoute,
+  loadRoutesRoute,
+];
+
 export function registerRoutes(server: Hono) {
   server.use("*", logger(customLogger));
   server.route("", rootRoute);
   server.route("", resetFactoryRoute);
   server.use("*", mainMiddleware);
-  const routes = [
-    mainFlowRoute,
-    testRoute,
-    testRoute2,
-    lintRoute,
-    ingestCompanyDataRoute,
-    getRequestTreeRoute,
-    storeCassetteRoute,
-    listSourceFilesRoute,
-    createRawDataRoute,
-    setupRoute,
-    testRequestToProxyRoute,
-    testDrizzleProxyRoute,
-    dbProxyRoute,
-    getDirectoryHashRoute,
-    loadRoutesRoute, // Add this route
-  ];
-  routes.forEach((route) => {
+  routesArray.forEach((route) => {
     server.route("", route);
   });
   server.use("*", async (c, next) => {

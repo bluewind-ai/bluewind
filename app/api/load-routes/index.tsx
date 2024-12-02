@@ -12,6 +12,8 @@ import { routes as routesTable } from "~/db/schema/routes/schema";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
 
+import { appRoutes } from "../register-routes";
+
 const app = new Hono();
 
 async function generateHashFromFile(filePath: string): Promise<string> {
@@ -136,6 +138,8 @@ app.post("/api/load-routes", async (c) => {
   return c.json({
     success: true,
     routes: routePaths,
+    routesHash: Object.fromEntries(routeHashes),
+    appRoutesMap: appRoutes,
   });
 });
 
