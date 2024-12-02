@@ -2,8 +2,6 @@
 
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
-// app/api/main-flow/index.tsx
-import { Hono } from "hono";
 
 import { objects } from "~/db/schema";
 import { models } from "~/db/schema/models/schema";
@@ -21,7 +19,6 @@ app.post("/api/setup/initialize", async (c) => {
     throw new Error("No parent request ID provided");
   }
 
-  // 1. Model Management
   const existingModels = await db.select().from(models);
   const existingModelNames = new Set(existingModels.map((m) => m.pluralName));
   const missingModels = Object.entries(TABLES)
@@ -49,7 +46,6 @@ app.post("/api/setup/initialize", async (c) => {
     throw new Error("Required models not found");
   }
 
-  // 2. Root Server Function Setup
   const existingRootFunction = await db
     .select()
     .from(serverFunctions)
@@ -99,56 +95,12 @@ app.post("/api/setup/initialize", async (c) => {
     await db.insert(objects).values(objectsToCreate);
   }
 
-  return c.json({ success: true });
-});
-
-export default app;
-
-const app = new Hono();
-
-app.post("/api/run-route/main-flow", async (c) => {
-  const setupResponse = await fetchWithContext(c)("http://localhost:5173/api/setup/initialize", {
-    method: "POST",
-    headers: {
-      "X-Parent-Request-Id": c.req.header("X-Parent-Request-Id"),
-    },
-  });
-
-  if (!setupResponse.ok) {
-    throw new Error("Failed to initialize setup");
-  }
-
-  const resetFactoryResponse = await fetchWithContext(c)("http://localhost:5173/api/routes", {
-    method: "POST",
-    body: JSON.stringify({
-      prompt: "I need you to be able to perform a reset factory",
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!resetFactoryResponse.ok) {
-    throw new Error("Failed to create reset factory route");
-  }
-
-  const ingestResponse = await fetchWithContext(c)(
-    "http://localhost:5173/api/run-route/ingest-company-data",
-    {
-      method: "POST",
-    },
-  );
-
-  if (!ingestResponse.ok) {
-    throw new Error("Failed to ingest company data");
-  }
-
-  const testResponse = await fetchWithContext(c)("http://localhost:5173/api/test-route", {
+  const loadRoutesResponse = await fetchWithContext(c)("http://localhost:5173/api/load-routes", {
     method: "POST",
   });
 
-  if (!testResponse.ok) {
-    throw new Error("Failed to call test route");
+  if (!loadRoutesResponse.ok) {
+    throw new Error("Failed to load routes");
   }
 
   return c.json({ success: true });

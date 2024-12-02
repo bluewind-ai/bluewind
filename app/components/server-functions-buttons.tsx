@@ -7,7 +7,7 @@ export function ServerFunctionsButtons() {
   const navigate = useNavigate();
   const handleRootClick = async () => {
     try {
-      const response = await fetch("http://localhost:5173/api/run-route/root", {
+      const response = await fetch("http://localhost:5173/api/root", {
         method: "POST",
       });
       const data = await response.json();

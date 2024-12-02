@@ -47,7 +47,7 @@ const processResponse = (response: string | null): any => {
   }
 };
 const app = new Hono();
-app.get("/api/run-route/get-request-tree/:requestId", async (c) => {
+app.get("/api/get-request-tree/:requestId", async (c) => {
   const requestId = parseInt(c.req.param("requestId"));
   const currentRequest = await db
     .select()

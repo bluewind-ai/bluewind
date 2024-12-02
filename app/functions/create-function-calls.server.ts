@@ -2,7 +2,7 @@
 // import { redirect } from "@remix-run/node";
 // import { sql } from "drizzle-orm";
 // import { hc } from "hono/client";
-// import type { ResetFactoryRouteType } from "~/api/run-route/reset-factory";
+// import type { ResetFactoryRouteType } from "~/api/reset-factory";
 // import { functionCalls, objects, serverFunctions } from "~/db/schema";
 // import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 // import { ServerFunctionType } from "~/db/schema/server-functions/schema";

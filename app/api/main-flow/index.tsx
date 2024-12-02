@@ -6,7 +6,7 @@ import { fetchWithContext } from "~/lib/fetch-with-context";
 
 const app = new Hono();
 
-app.post("/api/run-route/main-flow", async (c) => {
+app.post("/api/main-flow", async (c) => {
   const parentRequestId = c.req.header("X-Parent-Request-Id");
   if (!parentRequestId) {
     throw new Error("No parent request ID provided");
@@ -24,7 +24,7 @@ app.post("/api/run-route/main-flow", async (c) => {
   }
 
   const ingestResponse = await fetchWithContext(c)(
-    "http://localhost:5173/api/run-route/ingest-company-data",
+    "http://localhost:5173/api/ingest-company-data",
     {
       method: "POST",
     },

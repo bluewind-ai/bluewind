@@ -1,4 +1,4 @@
-// app/api/run-route/get-directory-hash.tsx
+// app/api/get-directory-hash/index.tsx
 
 import { stat } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -21,16 +21,15 @@ const formatDate = (timestamp: number) => {
 };
 
 const app = new Hono();
-app.post("/api/run-route/get-directory-hash", async (c) => {
+app.post("/api/get-directory-hash", async (c) => {
   try {
-    await sleep(2000); // Simulate long operation
+    await sleep(2000);
 
     const dirPath = resolve("app");
     const dirStat = await stat(dirPath);
 
-    // Get both mtime and ctime for maximum reliability
-    const mtime = dirStat.mtimeMs; // modification time in milliseconds
-    const ctime = dirStat.ctimeMs; // change time in milliseconds
+    const mtime = dirStat.mtimeMs;
+    const ctime = dirStat.ctimeMs;
 
     return c.json({
       mtime: formatDate(mtime),

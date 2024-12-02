@@ -6,7 +6,7 @@ import { TABLES } from "~/db/schema/table-models";
 import { db } from "~/middleware/main";
 
 const app = new Hono();
-app.post("/api/run-route/reset-factory", async (c) => {
+app.post("/api/reset-factory", async (c) => {
   try {
     await db.transaction(async (tx) => {
       await tx.execute(sql`SET CONSTRAINTS ALL DEFERRED`);

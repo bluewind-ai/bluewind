@@ -1,4 +1,5 @@
-// app/api/run-route/store-cassette.tsx
+// app/api/store-cassettes/index.tsx
+
 import { Hono } from "hono";
 import { join } from "path";
 
@@ -17,7 +18,7 @@ const processNode = (obj: any): any => {
     return obj.map(processNode);
   }
   const newObj: any = {};
-  // Group node properties together first
+
   if (obj.id !== undefined) {
     newObj.id = "[MASKED]";
   }
@@ -41,14 +42,14 @@ const processNode = (obj: any): any => {
   if (obj.responseSizeBytes !== undefined) {
     newObj.responseSizeBytesRange = getBytesRange(obj.responseSizeBytes);
   }
-  // Then add children and objects
+
   if (obj.children) {
     newObj.children = processNode(obj.children);
   }
   if (obj.objects) {
     newObj.objects = processNode(obj.objects);
   }
-  // Process any remaining properties
+
   for (const key in obj) {
     if (
       !newObj.hasOwnProperty(key) &&
@@ -62,7 +63,7 @@ const processNode = (obj: any): any => {
   return newObj;
 };
 const app = new Hono();
-app.post("/api/run-route/store-cassette", async (c) => {
+app.post("/api/store-cassette", async (c) => {
   const { cassette } = await c.req.json();
   const data = typeof cassette === "string" ? JSON.parse(cassette) : cassette;
   const processedCassette = processNode(data);

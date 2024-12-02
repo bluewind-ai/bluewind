@@ -37,8 +37,8 @@
         "y": 100
       },
       "data": {
-        "label": "/api/run-route/main-flow",
-        "pathname": "/api/run-route/main-flow",
+        "label": "/api/main-flow",
+        "pathname": "/api/main-flow",
         "createdLocation": "middleware/main.tsx:62:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
@@ -83,8 +83,8 @@
         "y": 300
       },
       "data": {
-        "label": "/api/run-route/load-routes",
-        "pathname": "/api/run-route/load-routes",
+        "label": "/api/load-routes",
+        "pathname": "/api/load-routes",
         "createdLocation": "middleware/main.tsx:62:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
@@ -106,8 +106,8 @@
         "y": 400
       },
       "data": {
-        "label": "/api/run-route/ingest-company-data",
-        "pathname": "/api/run-route/ingest-company-data",
+        "label": "/api/ingest-company-data",
+        "pathname": "/api/ingest-company-data",
         "createdLocation": "middleware/main.tsx:62:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
@@ -129,8 +129,8 @@
         "y": 500
       },
       "data": {
-        "label": "/api/run-route/get-directory-hash",
-        "pathname": "/api/run-route/get-directory-hash",
+        "label": "/api/get-directory-hash",
+        "pathname": "/api/get-directory-hash",
         "createdLocation": "middleware/main.tsx:62:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
@@ -152,8 +152,8 @@
         "y": 600
       },
       "data": {
-        "label": "/api/run-route/list-source-files",
-        "pathname": "/api/run-route/list-source-files",
+        "label": "/api/list-source-files",
+        "pathname": "/api/list-source-files",
         "createdLocation": "middleware/main.tsx:62:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",

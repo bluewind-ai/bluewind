@@ -1,4 +1,4 @@
-// app/api/run-route/create-raw-data.tsx
+// app/api/create-raw-data/create-raw-data.tsx
 
 import { Hono } from "hono";
 
@@ -7,17 +7,14 @@ import { fetchWithContext } from "~/lib/fetch-with-context";
 
 const app = new Hono();
 
-app.post("/api/run-route/create-raw-data", async (c) => {
+app.post("/api/create-raw-data", async (c) => {
   try {
-    const files = (await fetchWithContext(c)(
-      "http://localhost:5173/api/run-route/list-source-files",
-      {
-        method: "POST",
-        headers: {
-          "X-Parent-Request-Id": String(c.requestId),
-        },
+    const files = (await fetchWithContext(c)("http://localhost:5173/api/list-source-files", {
+      method: "POST",
+      headers: {
+        "X-Parent-Request-Id": String(c.requestId),
       },
-    ).then((r) => r.json())) as { files: string[] };
+    }).then((r) => r.json())) as { files: string[] };
 
     console.log("[create-raw-data] Files from list-source-files:", files);
 
@@ -28,7 +25,6 @@ app.post("/api/run-route/create-raw-data", async (c) => {
 
     console.log("[create-raw-data] Mapped values:", mappedValues);
 
-    // Insert each file path into raw_data
     const result = await c.db.insert(rawData).values(mappedValues).returning();
 
     return c.json({

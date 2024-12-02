@@ -1,4 +1,4 @@
-// app/api/run-route/list-source-files.tsx
+// app/api/list-source-files/index.tsx
 
 import { relative, resolve } from "node:path";
 
@@ -9,16 +9,15 @@ import { readdir } from "~/lib/intercepted-fs";
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const app = new Hono();
-app.post("/api/run-route/list-source-files", async (c) => {
+app.post("/api/list-source-files", async (c) => {
   try {
-    await sleep(2000); // Sleep for 2 seconds
+    await sleep(2000);
 
     const rootPath = resolve(".");
     const entries = await readdir(rootPath, { withFileTypes: true, recursive: true });
 
-    // Filter and format entries to include complete relative paths
     const files = entries
-      .filter((entry) => entry.isFile()) // Only include files, not directories
+      .filter((entry) => entry.isFile())
       .map((entry) => {
         const fullPath = resolve(rootPath, entry.path, entry.name);
         return relative(rootPath, fullPath);

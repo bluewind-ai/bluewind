@@ -12,7 +12,7 @@ import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
 
 const app = new Hono();
-app.post("/api/run-route/root", async (c) => {
+app.post("/api/root", async (c) => {
   // Do setup work before starting timer
   await migrateModels();
   const parentRequestId = c.req.header("X-Parent-Request-Id");
@@ -32,12 +32,9 @@ app.post("/api/run-route/root", async (c) => {
   c.requestId = rootRequest.id;
   let mainFlowError = null;
   await writeFile(join(process.cwd(), "cassette.json"), "", "utf-8");
-  const mainFlowResponse = await fetchWithContext(c)(
-    "http://localhost:5173/api/run-route/main-flow",
-    {
-      method: "POST",
-    },
-  );
+  const mainFlowResponse = await fetchWithContext(c)("http://localhost:5173/api/main-flow", {
+    method: "POST",
+  });
   if (!mainFlowResponse.ok) {
     mainFlowError = new Error("Main flow failed");
   }
