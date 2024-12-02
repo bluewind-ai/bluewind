@@ -23,7 +23,8 @@ export const requests = pgTable("requests", {
   durationMs: integer("duration_ms").notNull(),
   requestSizeBytes: integer("request_size_bytes").notNull(),
   responseSizeBytes: integer("response_size_bytes"),
-  responseStatus: integer("response_status"), // Add this
+  responseStatus: integer("response_status"),
+  nodeColor: text("node_color"),
 });
 
 // Define the node and edge types that match our current cassette structure
@@ -44,7 +45,8 @@ const FlowNode = z.object({
     duration: z.string(),
     requestSize: z.number(),
     responseSize: z.number().nullable(),
-    responseStatus: z.number().optional(), // Add this
+    responseStatus: z.number().optional(),
+    color: z.string().optional(),
   }),
 });
 
@@ -72,7 +74,8 @@ export const RequestSchema = z.object({
   durationMs: z.number(),
   requestSizeBytes: z.number(),
   responseSizeBytes: z.number().nullable(),
-  responseStatus: z.number().nullable(), // Add this
+  responseStatus: z.number().nullable(),
+  nodeColor: z.string().nullable(),
 });
 
 export type CreateRequest = z.infer<typeof RequestSchema>;

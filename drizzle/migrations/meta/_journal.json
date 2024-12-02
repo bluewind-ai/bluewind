@@ -288,6 +288,13 @@
       "when": 1733172228691,
       "tag": "0040_striped_mephistopheles",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1733173710752,
+      "tag": "0041_vengeful_blob",
+      "breakpoints": true
     }
   ]
 }
