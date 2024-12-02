@@ -1,4 +1,5 @@
 // app/functions/get-request-tree-and-store-cassette.server.ts
+
 import { eq } from "drizzle-orm";
 import { writeFile } from "fs/promises";
 import { join } from "path";
@@ -20,6 +21,7 @@ type XYFlowNode = {
     duration: number;
     requestSize: number;
     responseSize: number | null;
+    responseStatus: number | null;
     cacheStatus: string;
     createdAt: Date;
     parentId: number | null;
@@ -107,6 +109,7 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
         duration: node.durationMs,
         requestSize: node.requestSizeBytes,
         responseSize: node.responseSizeBytes,
+        responseStatus: node.responseStatus,
         cacheStatus: node.cacheStatus,
         createdAt: node.createdAt,
         parentId: node.parentId,
@@ -153,6 +156,7 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
         requestSizeBytesRange: getBytesRange(node.data.requestSize),
         responseSizeBytesRange:
           node.data.responseSize !== null ? getBytesRange(node.data.responseSize) : "N/A",
+        responseStatus: node.data.responseStatus,
         cacheStatus: node.data.cacheStatus,
         createdAt: "[MASKED]",
         parentId: "[MASKED]",
@@ -196,6 +200,7 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
         durationMs: current.durationMs,
         requestSizeBytes: current.requestSizeBytes,
         responseSizeBytes: current.responseSizeBytes,
+        responseStatus: current.responseStatus,
         cacheStatus: current.cacheStatus,
         createdAt: current.createdAt,
         parentId: current.parentId,
@@ -229,6 +234,7 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
     cacheStatus: request.cacheStatus,
     createdAt: "[MASKED]",
     durationMs: "[MASKED]",
+    responseStatus: request.responseStatus,
   };
   await writeFile(join(process.cwd(), "cassette.json"), JSON.stringify(cassette, null, 2), "utf-8");
   await db
