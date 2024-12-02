@@ -18,6 +18,7 @@ export const serverFunctions = pgTable("server_functions", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
   type: serverFunctionTypeEnum("type").notNull(),
+  hash: text("hash").notNull(), // Added hash column
   requestId: integer("request_id")
     .references(() => requests.id, { onDelete: "cascade" })
     .notNull(),

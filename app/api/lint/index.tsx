@@ -6,6 +6,7 @@ import { readdir, readFile } from "../../lib/intercepted-fs";
 
 const app = new Hono();
 async function findFilesRecursively(dir: string): Promise<string[]> {
+  console.log("dir", dir);
   const entries = await readdir(dir, { withFileTypes: true });
   const files = await Promise.all(
     entries.map((entry) => {

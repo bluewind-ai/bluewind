@@ -1,0 +1,1 @@
+ALTER TABLE "server_functions" ADD COLUMN "hash" text NOT NULL;

@@ -1,6 +1,7 @@
 // app/api/load-routes/index.tsx
 
-import { readdir, stat } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { readdir, readFile,stat } from "node:fs/promises";
 import { join, relative } from "node:path";
 
 import { eq } from "drizzle-orm";
@@ -12,6 +13,16 @@ import { db } from "~/middleware/main";
 
 const app = new Hono();
 
+async function generateHashFromFile(filePath: string): Promise<string> {
+  try {
+    const content = await readFile(filePath, "utf-8");
+    return createHash("sha256").update(content).digest("hex");
+  } catch (error) {
+    console.error(`Error reading file ${filePath}:`, error);
+    throw error;
+  }
+}
+
 app.post("/api/load-routes", async (c) => {
   console.log("[setup] Loading routes...");
   const apiPath = join(process.cwd(), "app/api");
@@ -22,6 +33,7 @@ app.post("/api/load-routes", async (c) => {
   console.log("[setup] Found directory entries:", entries);
 
   const routes: string[] = [];
+  const routeHashes = new Map<string, string>();
 
   // Process each entry
   for (const entry of entries) {
@@ -37,7 +49,10 @@ app.post("/api/load-routes", async (c) => {
         const subEntries = await readdir(fullPath);
         if (subEntries.includes("index.tsx")) {
           const relativePath = relative(apiPath, fullPath);
+          const indexPath = join(fullPath, "index.tsx");
+          const hash = await generateHashFromFile(indexPath);
           routes.push(relativePath);
+          routeHashes.set(relativePath, hash);
         }
       }
     } catch (error) {
@@ -48,9 +63,11 @@ app.post("/api/load-routes", async (c) => {
 
   console.log("[setup] Final routes:", routes);
 
-  // For each route, create a server function if it doesn't exist
+  // For each route, create or update server function
   for (const route of routes) {
-    // Check if server function already exists
+    const newHash = routeHashes.get(route)!;
+
+    // Check if server function exists
     const existing = await db
       .select()
       .from(serverFunctions)
@@ -61,7 +78,8 @@ app.post("/api/load-routes", async (c) => {
       // Create new server function
       await db.insert(serverFunctions).values({
         name: route,
-        type: "API", // Use string literal instead of enum property
+        type: "API",
+        hash: newHash,
         requestId: c.requestId,
         metadata: {
           label: route.charAt(0).toUpperCase() + route.slice(1).replace(/-/g, " "),
@@ -69,6 +87,16 @@ app.post("/api/load-routes", async (c) => {
         },
         createdLocation: getCurrentLocation(),
       });
+    } else if (existing[0].hash !== newHash) {
+      // Update hash if it changed
+      await db
+        .update(serverFunctions)
+        .set({
+          hash: newHash,
+          requestId: c.requestId, // Update requestId to latest
+          createdLocation: getCurrentLocation(), // Update location too
+        })
+        .where(eq(serverFunctions.name, route));
     }
   }
 

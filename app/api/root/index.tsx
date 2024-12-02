@@ -1,9 +1,13 @@
 // app/api/root/index.tsx
+
+import { createHash } from "node:crypto";
+
 import { eq } from "drizzle-orm";
 import { writeFile } from "fs/promises";
 import { Hono } from "hono";
 import { join } from "path";
 
+import { serverFunctions } from "~/db/schema";
 import { requests } from "~/db/schema/requests/schema";
 import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and-store-cassette.server";
 import { migrateModels } from "~/functions/server.migrate";
@@ -12,8 +16,14 @@ import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
 
 const app = new Hono();
+
+function generateHash(route: string): string {
+  return createHash("sha256").update(route).digest("hex");
+}
+
 app.post("/api/root", async (c) => {
   // Do setup work before starting timer
+  console.log("Root request receivedcdscds");
   await migrateModels();
   const parentRequestId = c.req.header("X-Parent-Request-Id");
   const requestSizeBytes = (await c.req.text()).length;
@@ -32,6 +42,30 @@ app.post("/api/root", async (c) => {
   c.requestId = rootRequest.id;
   let mainFlowError = null;
   await writeFile(join(process.cwd(), "cassette.json"), "", "utf-8");
+
+  // Check if root server function exists first
+  const existing = await db
+    .select()
+    .from(serverFunctions)
+    .where(eq(serverFunctions.name, "root"))
+    .limit(1);
+
+  // Only create if it doesn't exist
+  if (existing.length === 0) {
+    await db.insert(serverFunctions).values({
+      name: "root",
+      type: "SYSTEM",
+      hash: generateHash("root"),
+      requestId: rootRequest.id,
+      metadata: {
+        label: "Root",
+        variant: "default",
+        description: "Root server function",
+      },
+      createdLocation: getCurrentLocation(),
+    });
+  }
+
   const mainFlowResponse = await fetchWithContext(c)("http://localhost:5173/api/main-flow", {
     method: "POST",
   });
@@ -60,4 +94,5 @@ app.post("/api/root", async (c) => {
     .where(eq(requests.id, rootRequest.id));
   return c.json(response, 200);
 });
+
 export default app;
