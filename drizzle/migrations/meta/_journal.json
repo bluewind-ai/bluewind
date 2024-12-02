@@ -281,6 +281,13 @@
       "when": 1733152853503,
       "tag": "0039_careless_nuke",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1733172228691,
+      "tag": "0040_striped_mephistopheles",
+      "breakpoints": true
     }
   ]
 }
