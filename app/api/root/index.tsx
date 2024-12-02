@@ -35,6 +35,7 @@ app.post("/api/root", async (c) => {
       cacheStatus: "SKIP",
       requestSizeBytes,
       durationMs: 0,
+      responseStatus: null,
     })
     .returning();
   const startTime = performance.now();
@@ -100,15 +101,17 @@ app.post("/api/root", async (c) => {
   };
   const responseText = JSON.stringify(response);
   const responseSizeBytes = responseText.length;
+  const responseStatus = mainFlowError ? 500 : 200;
   await db
     .update(requests)
     .set({
       durationMs,
       response: responseText,
       responseSizeBytes,
+      responseStatus,
     })
     .where(eq(requests.id, rootRequest.id));
-  return c.json(response, 200);
+  return c.json(response, responseStatus);
 });
 
 export default app;

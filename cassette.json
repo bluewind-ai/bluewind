@@ -20,7 +20,7 @@
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": null,
+        "responseStatus": 200,
         "cacheStatus": "SKIP",
         "createdAt": "[MASKED]",
         "parentId": "[MASKED]",
@@ -346,5 +346,5 @@
   "cacheStatus": "SKIP",
   "createdAt": "[MASKED]",
   "durationMs": "[MASKED]",
-  "responseStatus": null
+  "responseStatus": 200
 }
