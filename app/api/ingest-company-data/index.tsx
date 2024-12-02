@@ -11,17 +11,16 @@ app.post("/api/ingest-company-data", async (c) => {
     method: "POST",
   }).then((r) => r.json());
 
-  // Then get the file list with the directory info
-  // const filesResponse = await fetchWithContext(c)("http://localhost:5173/api/list-source-files", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({
-  //     mtime: hashResponse.mtimeRaw,
-  //     directory: hashResponse.directory,
-  //   }),
-  // }).then((r) => r.json());
+  const filesResponse = await fetchWithContext(c)("http://localhost:5173/api/list-source-files", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      mtime: hashResponse.mtimeRaw,
+      directory: hashResponse.directory,
+    }),
+  }).then((r) => r.json());
 
   return c.json({
     message: "Directory processed",

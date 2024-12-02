@@ -8,6 +8,7 @@ import postgres from "postgres";
 import { requests } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { getCurrentLocation } from "~/lib/location-tracker";
+import { serverFunctionsList } from "~/lib/server-functions";
 
 import { createDbProxy, ExtendedContext } from ".";
 import { retrieveCache } from "./retrieve-cache";
@@ -17,6 +18,8 @@ const baseDb = drizzle(postgres(connectionString), {
   schema,
 });
 export const db = baseDb;
+
+const serverFunctionPaths = ["/api/test-new-middleware"];
 
 export async function mainMiddleware(context: Context, next: () => Promise<void>) {
   const startTime = performance.now();
@@ -89,6 +92,29 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  if (serverFunctionPaths.includes(pathname)) {
+    const { args } = parsedPayload;
+    const functionName = "testNewMiddleware"; // Hardcode for now
+    const result = await serverFunctionsList[functionName](...args);
+
+    const endTime = performance.now();
+    const durationMs = Math.round(endTime - startTime);
+    const resultText = JSON.stringify(result);
+    const responseSizeBytes = new TextEncoder().encode(resultText).length;
+
+    await db
+      .update(requests)
+      .set({
+        response: resultText,
+        durationMs,
+        responseSizeBytes,
+      })
+      .where(eq(requests.id, newRequest.id));
+
+    return c.json(result);
+  }
+
   const dbWithProxy = createDbProxy(db, c);
   c.db = dbWithProxy;
   await next();

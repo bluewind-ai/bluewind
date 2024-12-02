@@ -2,7 +2,9 @@
 
 import { testNewMiddleware } from "~/functions/test-new-middleware.get.server";
 
-type ServerFunction = (...args: any[]) => Promise<any>;
+const serverFunctionsList = {
+  testNewMiddleware,
+} as const;
 
 function wrapServerFunction(name: string, fn: ServerFunction): ServerFunction {
   const method = name.includes(".get.") ? "GET" : "POST";
@@ -15,9 +17,7 @@ function wrapServerFunction(name: string, fn: ServerFunction): ServerFunction {
   };
 }
 
-const serverFunctionsList = {
-  testNewMiddleware,
-} as const;
+export { serverFunctionsList };
 
 export const serverFn = Object.fromEntries(
   Object.entries(serverFunctionsList).map(([name, fn]) => [name, wrapServerFunction(name, fn)]),
