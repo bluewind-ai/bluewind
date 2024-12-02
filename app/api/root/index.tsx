@@ -23,7 +23,7 @@ function generateHash(route: string): string {
 }
 
 app.post("/api/root", async (c) => {
-  console.log("Root request receivedcdscds");
+  console.log("Root reqcdscuest receivedcdscds");
   await migrateModels();
   const parentRequestId = c.req.header("X-Parent-Request-Id");
   const requestSizeBytes = (await c.req.text()).length;

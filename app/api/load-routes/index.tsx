@@ -8,6 +8,7 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 
 import { serverFunctions } from "~/db/schema";
+import { routes as routesTable } from "~/db/schema/routes/schema";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
 
@@ -32,7 +33,7 @@ app.post("/api/load-routes", async (c) => {
   const entries = await readdir(apiPath);
   console.log("[setup] Found directory entries:", entries);
 
-  const routes: string[] = [];
+  const routePaths: string[] = [];
   const routeHashes = new Map<string, string>();
 
   // Process each entry
@@ -51,7 +52,7 @@ app.post("/api/load-routes", async (c) => {
           const relativePath = relative(apiPath, fullPath);
           const indexPath = join(fullPath, "index.tsx");
           const hash = await generateHashFromFile(indexPath);
-          routes.push(relativePath);
+          routePaths.push(relativePath);
           routeHashes.set(relativePath, hash);
         }
       }
@@ -61,48 +62,80 @@ app.post("/api/load-routes", async (c) => {
     }
   }
 
-  console.log("[setup] Final routes:", routes);
+  console.log("[setup] Final routes:", routePaths);
 
-  // For each route, create or update server function
-  for (const route of routes) {
-    const newHash = routeHashes.get(route)!;
+  // For each route, create or update both server function and route
+  for (const routePath of routePaths) {
+    const newHash = routeHashes.get(routePath)!;
 
     // Check if server function exists
-    const existing = await db
+    const existingServerFunction = await db
       .select()
       .from(serverFunctions)
-      .where(eq(serverFunctions.name, route))
+      .where(eq(serverFunctions.name, routePath))
       .limit(1);
 
-    if (existing.length === 0) {
+    if (existingServerFunction.length === 0) {
       // Create new server function
       await db.insert(serverFunctions).values({
-        name: route,
+        name: routePath,
         type: "API",
         hash: newHash,
         requestId: c.requestId,
         metadata: {
-          label: route.charAt(0).toUpperCase() + route.slice(1).replace(/-/g, " "),
+          label: routePath.charAt(0).toUpperCase() + routePath.slice(1).replace(/-/g, " "),
           variant: "default",
         },
         createdLocation: getCurrentLocation(),
       });
-    } else if (existing[0].hash !== newHash) {
+    } else if (existingServerFunction[0].hash !== newHash) {
       // Update hash if it changed
       await db
         .update(serverFunctions)
         .set({
           hash: newHash,
-          requestId: c.requestId, // Update requestId to latest
-          createdLocation: getCurrentLocation(), // Update location too
+          requestId: c.requestId,
+          createdLocation: getCurrentLocation(),
         })
-        .where(eq(serverFunctions.name, route));
+        .where(eq(serverFunctions.name, routePath));
+    }
+
+    // Check if route exists
+    const existingRoute = await db
+      .select()
+      .from(routesTable)
+      .where(eq(routesTable.name, routePath))
+      .limit(1);
+
+    if (existingRoute.length === 0) {
+      // Create new route
+      await db.insert(routesTable).values({
+        name: routePath,
+        type: "API",
+        hash: newHash,
+        requestId: c.requestId,
+        metadata: {
+          label: routePath.charAt(0).toUpperCase() + routePath.slice(1).replace(/-/g, " "),
+          variant: "default",
+        },
+        createdLocation: getCurrentLocation(),
+      });
+    } else if (existingRoute[0].hash !== newHash) {
+      // Update hash if it changed
+      await db
+        .update(routesTable)
+        .set({
+          hash: newHash,
+          requestId: c.requestId,
+          createdLocation: getCurrentLocation(),
+        })
+        .where(eq(routesTable.name, routePath));
     }
   }
 
   return c.json({
     success: true,
-    routes,
+    routes: routePaths,
   });
 });
 
