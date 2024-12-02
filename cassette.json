@@ -198,8 +198,8 @@
         "y": 800
       },
       "data": {
-        "label": "/api/test-new-middleware",
-        "pathname": "/api/test-new-middleware",
+        "label": "/api/listSourceFiles",
+        "pathname": "/api/listSourceFiles",
         "createdLocation": "middleware/main.tsx:65:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",

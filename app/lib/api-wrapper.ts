@@ -8,7 +8,7 @@ export function wrapServerFunction(name: string, fn: ServerFunction): ServerFunc
 
     const headers = new Headers();
     headers.set("X-Parent-Request-Id", requestId.toString());
-    const urlPath = "test-new-middleware";
+    const urlPath = name.replace(/\.(get|post)\.server$/, "");
 
     const result = await fetch(`http://localhost:5173/api/${urlPath}`, {
       method,
