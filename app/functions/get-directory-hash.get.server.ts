@@ -2,7 +2,6 @@
 import { stat } from "node:fs/promises";
 import { resolve } from "node:path";
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const formatDate = (timestamp: number) => {
   return new Date(timestamp).toLocaleString("en-US", {
     timeZone: "UTC",
@@ -17,7 +16,6 @@ const formatDate = (timestamp: number) => {
 };
 export async function getDirectoryHash(c: any) {
   try {
-    await sleep(2000);
     const dirPath = resolve("app");
     const dirStat = await stat(dirPath);
     const mtime = dirStat.mtimeMs;
