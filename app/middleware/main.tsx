@@ -1,4 +1,5 @@
 // app/middleware/main.tsx
+
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -62,6 +63,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       cacheStatus: cachedResponse ? "HIT" : shouldUseCache ? "MISS" : "SKIP",
       durationMs: 0,
       requestSizeBytes,
+      responseStatus: null,
     })
     .returning();
   // eslint-disable-next-line
@@ -76,7 +78,11 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     const responseSizeBytes = new TextEncoder().encode(JSON.stringify(cachedResponse)).length;
     await db
       .update(requests)
-      .set({ durationMs, responseSizeBytes })
+      .set({
+        durationMs,
+        responseSizeBytes,
+        responseStatus: 200,
+      })
       .where(eq(requests.id, newRequest.id));
     return new Response(JSON.stringify(cachedResponse), {
       headers: { "Content-Type": "application/json" },
@@ -95,6 +101,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         response: resultText,
         durationMs,
         responseSizeBytes,
+        responseStatus: 200,
       })
       .where(eq(requests.id, newRequest.id));
     return c.json(result);
@@ -146,6 +153,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       response: finalResponseText,
       durationMs,
       responseSizeBytes,
+      responseStatus: c.res.status,
     })
     .where(eq(requests.id, newRequest.id));
 }
