@@ -125,8 +125,31 @@
       "id": "[MASKED]",
       "type": "default",
       "position": {
-        "x": 400,
+        "x": 800,
         "y": 500
+      },
+      "data": {
+        "label": "/api/test-new-middleware",
+        "pathname": "/api/test-new-middleware",
+        "createdLocation": "middleware/main.tsx:65:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 400,
+        "y": 600
       },
       "data": {
         "label": "/api/ingest-company-data",
@@ -149,7 +172,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 600
+        "y": 700
       },
       "data": {
         "label": "/api/get-directory-hash",
@@ -172,7 +195,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 700
+        "y": 800
       },
       "data": {
         "label": "/api/list-source-files",
@@ -195,7 +218,7 @@
       "type": "default",
       "position": {
         "x": 400,
-        "y": 800
+        "y": 900
       },
       "data": {
         "label": "/api/test-route",
@@ -212,9 +235,46 @@
         "duration": "[MASKED]",
         "payload": "[MASKED]"
       }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 600,
+        "y": 1000
+      },
+      "data": {
+        "label": "/api/test-new-middleware",
+        "pathname": "/api/test-new-middleware",
+        "createdLocation": "middleware/main.tsx:65:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
     }
   ],
   "edges": [
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
     {
       "id": "e[MASKED]-[MASKED]",
       "source": "[MASKED]",

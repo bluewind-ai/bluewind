@@ -7,7 +7,7 @@ import { serverFn } from "~/lib/server-functions";
 const app = new Hono();
 
 app.post("/api/test-route", async (c) => {
-  return c.json(await serverFn.testNewMiddleware(c.requestId));
+  return c.json(await serverFn.testNewMiddleware(c));
 });
 
 export default app;

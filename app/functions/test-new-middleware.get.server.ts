@@ -1,7 +1,7 @@
 // app/functions/test-new-middleware.get.server.ts
 
-export async function testNewMiddleware(requestId: number) {
+export async function testNewMiddleware(c) {
   return {
-    tested: true,
+    tested: c.requestId,
   };
 }
