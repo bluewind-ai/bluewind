@@ -3,14 +3,11 @@
 import { createHash } from "node:crypto";
 
 import { eq } from "drizzle-orm";
-import { writeFile } from "fs/promises";
 import { Hono } from "hono";
-import { join } from "path";
 
 import { serverFunctions } from "~/db/schema";
 import { requests } from "~/db/schema/requests/schema";
 import { routes } from "~/db/schema/routes/schema";
-import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and-store-cassette.server";
 import { migrateModels } from "~/functions/server.migrate";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { serverFn } from "~/lib/server-functions";
@@ -41,7 +38,6 @@ app.post("/api/root", async (c) => {
   const startTime = performance.now();
   c.requestId = rootRequest.id;
   let mainFlowError = null;
-  await writeFile(join(process.cwd(), "cassette.json"), "", "utf-8");
 
   // Check if root server function exists
   const existingServerFunction = await db
@@ -90,14 +86,12 @@ app.post("/api/root", async (c) => {
     mainFlowError = error;
   }
 
-  const tree = await getRequestTreeAndStoreCassette(rootRequest.id);
   const endTime = performance.now();
   const durationMs = Math.round(endTime - startTime);
   const response = {
     success: !mainFlowError,
     requestId: rootRequest.id,
     ...(mainFlowError && { error: String(mainFlowError) }),
-    ...(tree && { tree }),
   };
   const responseText = JSON.stringify(response);
   const responseSizeBytes = responseText.length;

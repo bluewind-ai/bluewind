@@ -2,7 +2,7 @@
   "id": "[MASKED]",
   "parentId": "[MASKED]",
   "pathname": "/",
-  "createdLocation": "api/root/index.tsx:40:45",
+  "createdLocation": "api/root/index.tsx:34:44",
   "response": "[MASKED]",
   "payload": "[MASKED]",
   "nodes": [
@@ -16,7 +16,7 @@
       "data": {
         "label": "/",
         "pathname": "/",
-        "createdLocation": "api/root/index.tsx:40:45",
+        "createdLocation": "api/root/index.tsx:34:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -40,7 +40,7 @@
       "data": {
         "label": "/api/main-flow",
         "pathname": "/api/main-flow",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -64,7 +64,7 @@
       "data": {
         "label": "/api/setup-initialize",
         "pathname": "/api/setup-initialize",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -88,7 +88,7 @@
       "data": {
         "label": "/api/load-routes",
         "pathname": "/api/load-routes",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -112,7 +112,7 @@
       "data": {
         "label": "/api/ingest-company-data",
         "pathname": "/api/ingest-company-data",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -136,7 +136,7 @@
       "data": {
         "label": "/api/get-directory-hash",
         "pathname": "/api/get-directory-hash",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -160,7 +160,7 @@
       "data": {
         "label": "/api/list-source-files",
         "pathname": "/api/list-source-files",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -184,7 +184,7 @@
       "data": {
         "label": "/api/test-route",
         "pathname": "/api/test-route",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -208,7 +208,7 @@
       "data": {
         "label": "/api/ingest-company-data",
         "pathname": "/api/ingest-company-data",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -232,7 +232,7 @@
       "data": {
         "label": "/api/get-directory-hash",
         "pathname": "/api/get-directory-hash",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -256,7 +256,7 @@
       "data": {
         "label": "/api/list-source-files",
         "pathname": "/api/list-source-files",
-        "createdLocation": "middleware/main.tsx:61:44",
+        "createdLocation": "middleware/main.tsx:63:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",

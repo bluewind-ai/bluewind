@@ -7,6 +7,7 @@ import postgres from "postgres";
 
 import { requests } from "~/db/schema";
 import * as schema from "~/db/schema";
+import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and-store-cassette.server";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { handlersByPath } from "~/lib/server-function-utils";
 
@@ -156,4 +157,8 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       responseStatus: c.res.status,
     })
     .where(eq(requests.id, newRequest.id));
+
+  if (pathname === "/api/root") {
+    await getRequestTreeAndStoreCassette(newRequest.id);
+  }
 }
