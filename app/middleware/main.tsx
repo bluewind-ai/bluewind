@@ -7,8 +7,8 @@ import postgres from "postgres";
 
 import { requests } from "~/db/schema";
 import * as schema from "~/db/schema";
+import { testNewMiddleware } from "~/functions/test-new-middleware.get.server";
 import { getCurrentLocation } from "~/lib/location-tracker";
-import { serverFunctionsList } from "~/lib/server-functions";
 
 import { createDbProxy, ExtendedContext } from ".";
 import { retrieveCache } from "./retrieve-cache";
@@ -94,9 +94,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   }
 
   if (serverFunctionPaths.includes(pathname)) {
-    const { args } = parsedPayload;
-    const functionName = "testNewMiddleware"; // Hardcode for now
-    const result = await serverFunctionsList[functionName](...args);
+    const result = await testNewMiddleware(c);
 
     const endTime = performance.now();
     const durationMs = Math.round(endTime - startTime);
