@@ -1,5 +1,4 @@
 // app/functions/load-navigation-data.server.ts
-
 import { sql } from "drizzle-orm";
 
 import { type NavigationNode } from "~/components/navigation-tree";
@@ -19,7 +18,6 @@ export async function loadNavigationData(request: ExtendedContext) {
     db.select({ count: sql<number>`count(*)` }).from(schema.requests),
     db.select({ count: sql<number>`count(*)` }).from(schema.models),
   ]);
-
   const counts = {
     [TableModel.USERS]: users[0].count,
     [TableModel.SESSIONS]: sessions[0].count,
@@ -28,22 +26,18 @@ export async function loadNavigationData(request: ExtendedContext) {
     [TableModel.REQUESTS]: requests[0].count,
     [TableModel.MODELS]: models[0].count,
   };
-
   const { backOfficeData, apps } = await createNavigationTrees(db, {
     navigationName: "Objects",
     counts,
   });
-
   const requestsData = await db.query.requests.findMany({
     orderBy: [schema.requests.id],
   });
-
   const renderableRequests = requestsData.map((request) => ({
     id: request.id,
     requestId: request.requestId,
     pathname: request.pathname,
   }));
-
   const navigationData: NavigationNode = {
     id: 0,
     name: "Requests",
@@ -58,7 +52,6 @@ export async function loadNavigationData(request: ExtendedContext) {
     })),
     counts,
   };
-
   return {
     navigationData,
     apps,

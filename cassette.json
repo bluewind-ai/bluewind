@@ -2,7 +2,7 @@
   "id": "[MASKED]",
   "parentId": "[MASKED]",
   "pathname": "/",
-  "createdLocation": "api/root/index.tsx:41:45",
+  "createdLocation": "api/root/index.tsx:40:45",
   "response": "[MASKED]",
   "payload": "[MASKED]",
   "nodes": [
@@ -16,7 +16,7 @@
       "data": {
         "label": "/",
         "pathname": "/",
-        "createdLocation": "api/root/index.tsx:41:45",
+        "createdLocation": "api/root/index.tsx:40:45",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -39,7 +39,7 @@
       "data": {
         "label": "/api/main-flow",
         "pathname": "/api/main-flow",
-        "createdLocation": "middleware/main.tsx:65:44",
+        "createdLocation": "middleware/main.tsx:61:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -60,9 +60,9 @@
         "y": 200
       },
       "data": {
-        "label": "/api/setup/initialize",
-        "pathname": "/api/setup/initialize",
-        "createdLocation": "middleware/main.tsx:65:44",
+        "label": "/api/setup-initialize",
+        "pathname": "/api/setup-initialize",
+        "createdLocation": "middleware/main.tsx:61:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -85,7 +85,7 @@
       "data": {
         "label": "/api/load-routes",
         "pathname": "/api/load-routes",
-        "createdLocation": "middleware/main.tsx:65:44",
+        "createdLocation": "middleware/main.tsx:61:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -108,7 +108,7 @@
       "data": {
         "label": "/api/ingest-company-data",
         "pathname": "/api/ingest-company-data",
-        "createdLocation": "middleware/main.tsx:65:44",
+        "createdLocation": "middleware/main.tsx:61:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -131,7 +131,7 @@
       "data": {
         "label": "/api/get-directory-hash",
         "pathname": "/api/get-directory-hash",
-        "createdLocation": "middleware/main.tsx:65:44",
+        "createdLocation": "middleware/main.tsx:61:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -154,7 +154,7 @@
       "data": {
         "label": "/api/list-source-files",
         "pathname": "/api/list-source-files",
-        "createdLocation": "middleware/main.tsx:65:44",
+        "createdLocation": "middleware/main.tsx:61:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -177,7 +177,7 @@
       "data": {
         "label": "/api/test-route",
         "pathname": "/api/test-route",
-        "createdLocation": "middleware/main.tsx:65:44",
+        "createdLocation": "middleware/main.tsx:61:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -198,9 +198,55 @@
         "y": 800
       },
       "data": {
+        "label": "/api/ingest-company-data",
+        "pathname": "/api/ingest-company-data",
+        "createdLocation": "middleware/main.tsx:61:44",
+        "durationMsRange": "1001+",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 800,
+        "y": 900
+      },
+      "data": {
+        "label": "/api/get-directory-hash",
+        "pathname": "/api/get-directory-hash",
+        "createdLocation": "middleware/main.tsx:61:44",
+        "durationMsRange": "1001+",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 800,
+        "y": 1000
+      },
+      "data": {
         "label": "/api/list-source-files",
         "pathname": "/api/list-source-files",
-        "createdLocation": "middleware/main.tsx:65:44",
+        "createdLocation": "middleware/main.tsx:61:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -215,6 +261,20 @@
     }
   ],
   "edges": [
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
     {
       "id": "e[MASKED]-[MASKED]",
       "source": "[MASKED]",

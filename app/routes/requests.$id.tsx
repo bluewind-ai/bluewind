@@ -1,5 +1,4 @@
 // app/routes/requests.$id.tsx
-
 import "@xyflow/react/dist/style.css";
 import "react18-json-view/src/style.css";
 
@@ -20,11 +19,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
   return json(request);
 }
-
 export default function Request() {
   const request = useLoaderData<typeof loader>();
   const [viewMode, setViewMode] = useState<"tree" | "flow">("flow");
-
   return (
     <div className="p-4">
       <div className="bg-white shadow rounded-lg p-6">

@@ -1,14 +1,11 @@
 // app/api/test-request-to-proxy/index.tsx
-
 import { Hono } from "hono";
 
 import { fetchWithContext } from "~/lib/fetch-with-context";
 
 const app = new Hono();
-
 app.post("/api/test-request-to-proxy", async (c) => {
   const { requestId } = await c.req.json();
-
   const response = await fetchWithContext(c)("http://localhost:5173/api/db-proxy", {
     method: "POST",
     headers: {
@@ -25,8 +22,6 @@ app.post("/api/test-request-to-proxy", async (c) => {
       },
     }),
   });
-
   return c.json(await response.json());
 });
-
 export default app;

@@ -1,5 +1,4 @@
 // app/functions/get-request-tree-and-store-cassette.server.ts
-
 import { eq } from "drizzle-orm";
 import { writeFile } from "fs/promises";
 import { join } from "path";
@@ -29,7 +28,6 @@ type XYFlowNode = {
     payload: any;
   };
 };
-
 type XYFlowEdge = {
   id: string;
   source: string;
@@ -37,25 +35,20 @@ type XYFlowEdge = {
   type: "smoothstep";
   animated: boolean;
 };
-
 type XYFlowTree = {
   nodes: XYFlowNode[];
   edges: XYFlowEdge[];
 };
-
 const getDurationRange = (ms: number): string => {
   return ms <= 1000 ? "< 1000" : "1001+";
 };
-
 const getBytesRange = (bytes: number): string => {
   const MB = 1024 * 1024;
   return bytes < MB ? "< 1 MB" : "1 MB+";
 };
-
 const createDebugAsciiTree = (tree: any): string => {
   const processNode = (node: any, prefix: string = "", isLast: boolean = true) => {
     let result = prefix + (isLast ? "└─" : "├─") + node.pathname + "\n";
-
     if (node.children && node.children.length > 0) {
       node.children.forEach((child: any, index: number) => {
         const childPrefix = prefix + (isLast ? "  " : "│ ");
@@ -65,7 +58,6 @@ const createDebugAsciiTree = (tree: any): string => {
     }
     return result;
   };
-
   return (
     tree.pathname +
     "\n" +
@@ -76,7 +68,6 @@ const createDebugAsciiTree = (tree: any): string => {
       .join("")
   );
 };
-
 const createEdge = (source: string, target: string): XYFlowEdge => ({
   id: `e${source}-${target}`,
   source,
@@ -84,31 +75,24 @@ const createEdge = (source: string, target: string): XYFlowEdge => ({
   type: "smoothstep",
   animated: true,
 });
-
 const createXYFlowTree = (requestTree: any): XYFlowTree => {
   const nodes: XYFlowNode[] = [];
   const edges: XYFlowEdge[] = [];
   const nodesByParent: Map<number | null, any[]> = new Map();
-
   const groupNodes = (node: any) => {
     const parentId = node.parentId;
     if (!nodesByParent.has(parentId)) {
       nodesByParent.set(parentId, []);
     }
     nodesByParent.get(parentId)!.push(node);
-
     if (node.children) {
       node.children.forEach(groupNodes);
     }
   };
-
   groupNodes(requestTree);
-
   let currentY = 0;
-
   const processNode = (node: any, level: number) => {
     const currentNodeId = node.id.toString();
-
     nodes.push({
       id: currentNodeId,
       type: "default",
@@ -131,21 +115,16 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
         payload: node.payload,
       },
     });
-
     currentY += 100;
-
     const siblings = nodesByParent.get(node.parentId) || [];
     const siblingIndex = siblings.findIndex((s) => s.id === node.id);
-
     if (siblingIndex < siblings.length - 1) {
       const nextSibling = siblings[siblingIndex + 1];
       edges.push(createEdge(currentNodeId, nextSibling.id.toString()));
     }
-
     if (node.children && node.children.length > 0) {
       const firstChild = node.children.sort((a, b) => a.id - b.id)[0];
       edges.push(createEdge(currentNodeId, firstChild.id.toString()));
-
       node.children
         .sort((a, b) => a.id - b.id)
         .forEach((child) => {
@@ -153,11 +132,9 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
         });
     }
   };
-
   processNode(requestTree, 0);
   return { nodes, edges };
 };
-
 const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
   return {
     nodes: xyFlowTree.nodes.map((node) => ({
@@ -194,27 +171,22 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
     })),
   };
 };
-
 export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
   async function buildRequestTree(requestId: number) {
     const allRequests = await db.select().from(requests);
     const requestMap = new Map(allRequests.map((r) => [r.id, r]));
-
     const buildTree = (currentId: number): any => {
       const current = requestMap.get(currentId);
       if (!current) return null;
-
       const children = allRequests
         .filter((r) => r.parentId === currentId)
         .sort((a, b) => a.id - b.id)
         .map((r) => buildTree(r.id))
         .filter((r) => r !== null);
-
       let response = null;
       try {
         response = current.response ? JSON.parse(current.response) : null;
       } catch (e) {}
-
       return {
         id: current.id,
         pathname: current.pathname,
@@ -231,17 +203,11 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
         objects: [],
       };
     };
-
     return buildTree(requestId);
   }
-
   const tree = await buildRequestTree(rootRequestId);
   if (!tree) return null;
-
   const asciiTree = createDebugAsciiTree(tree);
-  console.log("Tree Structure:");
-  console.log(asciiTree);
-
   const xyFlowTree = createXYFlowTree(tree);
   const maskedTree = createMaskedXYFlowTree(xyFlowTree);
   const request = await db

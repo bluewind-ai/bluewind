@@ -1,50 +1,38 @@
-// app/api/load-routes/index.tsx
-
+// app/functions/load-routes.get.server.ts
 import { createHash } from "node:crypto";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative } from "node:path";
 
 import { eq } from "drizzle-orm";
-import { Hono } from "hono";
 
 import { serverFunctions } from "~/db/schema";
 import { routes as routesTable } from "~/db/schema/routes/schema";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { db } from "~/middleware/main";
 
-import { appRoutes } from "../register-routes";
-
-const app = new Hono();
+import { appRoutes } from "../api/register-routes";
 
 async function generateHashFromFile(filePath: string): Promise<string> {
   try {
     const content = await readFile(filePath, "utf-8");
-    return createHash("sha256").update(content).digest("hex");
+    const hash = createHash("sha256").update(content).digest("hex");
+    return hash;
   } catch (error) {
-    console.error(`Error reading file ${filePath}:`, error);
     throw error;
   }
 }
-
-app.post("/api/load-routes", async (c) => {
-  console.log("[setup] Loading routes...");
+export async function loadRoutes(c: any) {
   const apiPath = join(process.cwd(), "app/api");
-  console.log("[setup] API path:", apiPath);
-
   // Get all entries in the api directory
   const entries = await readdir(apiPath);
-  console.log("[setup] Found directory entries:", entries);
-
   const routePaths: string[] = [];
   const routeHashes = new Map<string, string>();
-
   // Process each entry
   for (const entry of entries) {
-    if (entry === "node_modules" || entry.startsWith(".")) continue;
-
+    if (entry === "node_modules" || entry.startsWith(".")) {
+      continue;
+    }
     const fullPath = join(apiPath, entry);
-    console.log("[setup] Checking path:", fullPath);
-
     try {
       // Only try to read directories
       const stats = await stat(fullPath);
@@ -58,25 +46,17 @@ app.post("/api/load-routes", async (c) => {
           routeHashes.set(relativePath, hash);
         }
       }
-    } catch (error) {
-      // Log error but continue processing other entries
-      console.log(`[setup] Error checking ${entry}:`, error);
-    }
+    } catch (error) {}
   }
-
-  console.log("[setup] Final routes:", routePaths);
-
   // For each route, create or update both server function and route
   for (const routePath of routePaths) {
     const newHash = routeHashes.get(routePath)!;
-
     // Check if server function exists
     const existingServerFunction = await db
       .select()
       .from(serverFunctions)
       .where(eq(serverFunctions.name, routePath))
       .limit(1);
-
     if (existingServerFunction.length === 0) {
       // Create new server function
       await db.insert(serverFunctions).values({
@@ -101,14 +81,12 @@ app.post("/api/load-routes", async (c) => {
         })
         .where(eq(serverFunctions.name, routePath));
     }
-
     // Check if route exists
     const existingRoute = await db
       .select()
       .from(routesTable)
       .where(eq(routesTable.name, routePath))
       .limit(1);
-
     if (existingRoute.length === 0) {
       // Create new route
       await db.insert(routesTable).values({
@@ -134,13 +112,11 @@ app.post("/api/load-routes", async (c) => {
         .where(eq(routesTable.name, routePath));
     }
   }
-
-  return c.json({
+  const result = {
     success: true,
     routes: routePaths,
     routesHash: Object.fromEntries(routeHashes),
     appRoutesMap: appRoutes,
-  });
-});
-
-export default app;
+  };
+  return result;
+}

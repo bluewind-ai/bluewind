@@ -1,5 +1,4 @@
 // app/middleware/check-test-route.tsx
-
 import { eq } from "drizzle-orm";
 
 import { requests } from "~/db/schema";
@@ -11,14 +10,11 @@ export async function checkIfTestRouteConvertedToHttpProperly(
   parentRequestId: string | null,
 ) {
   if (!parentRequestId) return false;
-
   const parentRequest = await db
     .select()
     .from(requests)
     .where(eq(requests.id, parseInt(parentRequestId)))
     .limit(1);
-
   if (parentRequest.length === 0) return false;
-
   return parentRequest[0].pathname.includes("test-route");
 }

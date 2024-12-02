@@ -1,5 +1,4 @@
 // app/db/schema/source-mappings/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text } from "drizzle-orm/pg-core";
 
@@ -12,7 +11,6 @@ export const sourceMappings = pgTable("source_mappings", {
     .references(() => requests.id, { onDelete: "cascade" })
     .notNull(),
 });
-
 export type SourceMapping = typeof sourceMappings.$inferSelect;
 export const sourceMappingsRelations = relations(sourceMappings, ({ one }) => ({
   request: one(requests, {

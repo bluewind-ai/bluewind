@@ -1,5 +1,4 @@
 // app/db/schema/routes/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, jsonb, pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
 

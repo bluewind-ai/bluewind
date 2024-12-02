@@ -12,8 +12,8 @@ import { requests } from "~/db/schema/requests/schema";
 import { routes } from "~/db/schema/routes/schema";
 import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and-store-cassette.server";
 import { migrateModels } from "~/functions/server.migrate";
-import { fetchWithContext } from "~/lib/fetch-with-context";
 import { getCurrentLocation } from "~/lib/location-tracker";
+import { serverFn } from "~/lib/server-functions";
 import { db } from "~/middleware/main";
 
 const app = new Hono();
@@ -23,7 +23,6 @@ function generateHash(route: string): string {
 }
 
 app.post("/api/root", async (c) => {
-  console.log("Root reqcdscuest receivedcdscds");
   await migrateModels();
   const parentRequestId = c.req.header("X-Parent-Request-Id");
   const requestSizeBytes = (await c.req.text()).length;
@@ -84,12 +83,12 @@ app.post("/api/root", async (c) => {
     });
   }
 
-  const mainFlowResponse = await fetchWithContext(c)("http://localhost:5173/api/main-flow", {
-    method: "POST",
-  });
-  if (!mainFlowResponse.ok) {
-    mainFlowError = new Error("Main flow failed");
+  try {
+    await serverFn.mainFlow(c);
+  } catch (error) {
+    mainFlowError = error;
   }
+
   const tree = await getRequestTreeAndStoreCassette(rootRequest.id);
   const endTime = performance.now();
   const durationMs = Math.round(endTime - startTime);

@@ -1,5 +1,4 @@
 // app/components/RequestFlowVisualization.tsx
-
 import "@xyflow/react/dist/style.css";
 
 import { Background, Controls, Node, Panel, ReactFlow } from "@xyflow/react";
@@ -47,20 +46,15 @@ interface RequestFlowVisualizationProps {
     responseSizeBytes: number | null;
   };
 }
-
 type NodeData = RequestFlowVisualizationProps["data"]["nodes"][0]["data"];
 type FlowNode = Node<NodeData>;
-
 const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
   const [selectedNode, setSelectedNode] = useState<FlowNode | null>(null);
-
   const onNodeClick = useCallback((event: React.MouseEvent, node: FlowNode) => {
     event.preventDefault();
     event.stopPropagation();
-    console.log("[RequestFlowVisualization] Node clicked with payload:", node.data.payload);
     setSelectedNode((current) => (current?.id === node.id ? null : node));
   }, []);
-
   try {
     return (
       <div className="relative flex w-full h-[600px]">
@@ -151,5 +145,4 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
     return <div>Error rendering flow: {String(error)}</div>;
   }
 };
-
 export default RequestFlowVisualization;

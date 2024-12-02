@@ -1,5 +1,4 @@
 // app/api/store-cassettes/index.tsx
-
 import { Hono } from "hono";
 import { join } from "path";
 
@@ -18,7 +17,6 @@ const processNode = (obj: any): any => {
     return obj.map(processNode);
   }
   const newObj: any = {};
-
   if (obj.id !== undefined) {
     newObj.id = "[MASKED]";
   }
@@ -42,14 +40,12 @@ const processNode = (obj: any): any => {
   if (obj.responseSizeBytes !== undefined) {
     newObj.responseSizeBytesRange = getBytesRange(obj.responseSizeBytes);
   }
-
   if (obj.children) {
     newObj.children = processNode(obj.children);
   }
   if (obj.objects) {
     newObj.objects = processNode(obj.objects);
   }
-
   for (const key in obj) {
     if (
       !newObj.hasOwnProperty(key) &&
