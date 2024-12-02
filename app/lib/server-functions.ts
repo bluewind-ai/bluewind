@@ -1,38 +1,24 @@
 // app/lib/server-functions.ts
-import { bootstrap } from "~/functions/bootstrap.server";
-import { generateRoutes } from "~/functions/generate-routes.server";
-import { goNext } from "~/functions/go-next.server";
-import { loadNavigationData } from "~/functions/load-navigation-data.server";
-import { updateFiles } from "~/functions/update-files.server";
-import type { ExtendedContext } from "~/middleware";
 
-import type { ServerFunctionName } from "./server-functions-types";
+import { testNewMiddleware } from "~/functions/test-new-middleware.get.server";
 
-export const SERVER_FUNCTIONS_HANDLERS: Record<
-  ServerFunctionName,
-  {
-    handler: (context: ExtendedContext) => Promise<void>;
-  }
-> = {
-  bootstrap: {
-    handler: bootstrap,
-  },
-  updateFiles: {
-    handler: updateFiles,
-  },
-  generateRoutes: {
-    handler: async (_request: ExtendedContext) => {
-      await generateRoutes();
-    },
-  },
-  loadNavigationData: {
-    handler: async (request: ExtendedContext) => {
-      await loadNavigationData(request);
-    },
-  },
-  goNext: {
-    handler: async (request: ExtendedContext) => {
-      await goNext(request);
-    },
-  },
-};
+type ServerFunction = (...args: any[]) => Promise<any>;
+
+function wrapServerFunction(name: string, fn: ServerFunction): ServerFunction {
+  const method = name.includes(".get.") ? "GET" : "POST";
+
+  return async (...args: any[]) => {
+    console.log(`[ServerFn] Calling ${name} (${method}) with args:`, args);
+    const result = await fn(...args);
+    console.log(`[ServerFn] ${name} returned:`, result);
+    return result;
+  };
+}
+
+const serverFunctionsList = {
+  testNewMiddleware,
+} as const;
+
+export const serverFn = Object.fromEntries(
+  Object.entries(serverFunctionsList).map(([name, fn]) => [name, wrapServerFunction(name, fn)]),
+);
