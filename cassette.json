@@ -178,7 +178,7 @@
         "label": "/api/test-route",
         "pathname": "/api/test-route",
         "createdLocation": "middleware/main.tsx:65:44",
-        "durationMsRange": "< 1000",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "cacheStatus": "SKIP",
@@ -198,10 +198,10 @@
         "y": 800
       },
       "data": {
-        "label": "/api/listSourceFiles",
-        "pathname": "/api/listSourceFiles",
+        "label": "/api/list-source-files",
+        "pathname": "/api/list-source-files",
         "createdLocation": "middleware/main.tsx:65:44",
-        "durationMsRange": "< 1000",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "cacheStatus": "SKIP",
