@@ -4,11 +4,13 @@ import { relations } from "drizzle-orm";
 import { integer, jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
+import { routes } from "../routes/schema";
 import { serverFunctions } from "../server-functions/schema";
 
 export const requests = pgTable("requests", {
   id: serial("id").primaryKey(),
   parentId: integer("parent_id"),
+  routeId: integer("route_id").references(() => routes.id),
   pathname: text("pathname").notNull(),
   createdLocation: text("created_location").notNull(),
   response: text("response"),
@@ -54,6 +56,7 @@ const FlowEdge = z.object({
 export const RequestSchema = z.object({
   id: z.number(),
   parentId: z.number().nullable(),
+  routeId: z.number().nullable(),
   pathname: z.string(),
   createdLocation: z.string(),
   response: z.string().nullable(),
@@ -71,6 +74,10 @@ export type CreateRequest = z.infer<typeof RequestSchema>;
 export type FlowNode = z.infer<typeof FlowNode>;
 export type FlowEdge = z.infer<typeof FlowEdge>;
 
-export const requestsRelations = relations(requests, ({ many }) => ({
+export const requestsRelations = relations(requests, ({ many, one }) => ({
   serverFunctions: many(serverFunctions),
+  route: one(routes, {
+    fields: [requests.routeId],
+    references: [routes.id],
+  }),
 }));

@@ -267,6 +267,13 @@
       "when": 1733110415531,
       "tag": "0037_famous_zarda",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1733111246548,
+      "tag": "0038_living_exiles",
+      "breakpoints": true
     }
   ]
 }
