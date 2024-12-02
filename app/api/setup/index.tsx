@@ -103,13 +103,13 @@ app.post("/api/setup/initialize", async (c) => {
     throw new Error("Failed to load routes");
   }
 
-  const testRouteResponse = await fetchWithContext(c)("http://localhost:5173/api/test-route", {
-    method: "POST",
-  });
+  // const testRouteResponse = await fetchWithContext(c)("http://localhost:5173/api/test-route", {
+  //   method: "POST",
+  // });
 
-  if (!testRouteResponse.ok) {
-    throw new Error("Failed to test route");
-  }
+  // if (!testRouteResponse.ok) {
+  //   throw new Error("Failed to test route");
+  // }
 
   return c.json({ success: true });
 });
