@@ -1,7 +1,7 @@
 // app/api/load-routes/index.tsx
 
 import { createHash } from "node:crypto";
-import { readdir, readFile,stat } from "node:fs/promises";
+import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative } from "node:path";
 
 import { eq } from "drizzle-orm";

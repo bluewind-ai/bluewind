@@ -2,7 +2,7 @@
   "id": "[MASKED]",
   "parentId": "[MASKED]",
   "pathname": "/",
-  "createdLocation": "api/root/index.tsx:39:45",
+  "createdLocation": "api/root/index.tsx:41:45",
   "response": "[MASKED]",
   "payload": "[MASKED]",
   "nodes": [
@@ -16,7 +16,7 @@
       "data": {
         "label": "/",
         "pathname": "/",
-        "createdLocation": "api/root/index.tsx:39:45",
+        "createdLocation": "api/root/index.tsx:41:45",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",

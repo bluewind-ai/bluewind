@@ -1,4 +1,5 @@
 // app/db/schema/index.ts
+
 // Function Calls
 // Models
 import { modelEnum, models } from "./models/schema";
@@ -8,6 +9,8 @@ import { objects, objectsRelations } from "./objects/schema";
 import { rawData, rawDataRelations } from "./raw-data/schema";
 // Requests
 import { requests, requestsRelations } from "./requests/schema";
+// Routes
+import { routes, routesRelations, routeTypeEnum } from "./routes/schema";
 // Server Functions
 import {
   serverFunctions,
@@ -28,6 +31,9 @@ export {
   rawDataRelations,
   requests,
   requestsRelations,
+  routes,
+  routesRelations,
+  routeTypeEnum,
   serverFunctions,
   serverFunctionsRelations,
   serverFunctionTypeEnum,
@@ -42,6 +48,7 @@ export const schema = {
   objects,
   rawData,
   requests,
+  routes,
   serverFunctions,
   sessions,
   users,
@@ -49,12 +56,14 @@ export const schema = {
     objects: objectsRelations,
     rawData: rawDataRelations,
     requests: requestsRelations,
+    routes: routesRelations,
     serverFunctions: serverFunctionsRelations,
     sessions: sessionsRelations,
     users: usersRelations,
   },
   enums: {
     model: modelEnum,
+    routeType: routeTypeEnum,
     serverFunctionType: serverFunctionTypeEnum,
   },
 };

@@ -9,6 +9,7 @@ import { join } from "path";
 
 import { serverFunctions } from "~/db/schema";
 import { requests } from "~/db/schema/requests/schema";
+import { routes } from "~/db/schema/routes/schema";
 import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and-store-cassette.server";
 import { migrateModels } from "~/functions/server.migrate";
 import { fetchWithContext } from "~/lib/fetch-with-context";
@@ -22,7 +23,6 @@ function generateHash(route: string): string {
 }
 
 app.post("/api/root", async (c) => {
-  // Do setup work before starting timer
   console.log("Root request receivedcdscds");
   await migrateModels();
   const parentRequestId = c.req.header("X-Parent-Request-Id");
@@ -35,7 +35,7 @@ app.post("/api/root", async (c) => {
       createdLocation: getCurrentLocation(),
       cacheStatus: "SKIP",
       requestSizeBytes,
-      durationMs: 0, // Set initial value to satisfy NOT NULL constraint
+      durationMs: 0,
     })
     .returning();
   const startTime = performance.now();
@@ -43,15 +43,15 @@ app.post("/api/root", async (c) => {
   let mainFlowError = null;
   await writeFile(join(process.cwd(), "cassette.json"), "", "utf-8");
 
-  // Check if root server function exists first
-  const existing = await db
+  // Check if root server function exists
+  const existingServerFunction = await db
     .select()
     .from(serverFunctions)
     .where(eq(serverFunctions.name, "root"))
     .limit(1);
 
-  // Only create if it doesn't exist
-  if (existing.length === 0) {
+  // Create server function if it doesn't exist
+  if (existingServerFunction.length === 0) {
     await db.insert(serverFunctions).values({
       name: "root",
       type: "SYSTEM",
@@ -66,13 +66,30 @@ app.post("/api/root", async (c) => {
     });
   }
 
+  // Check if root route exists
+  const existingRoute = await db.select().from(routes).where(eq(routes.name, "root")).limit(1);
+
+  // Create route if it doesn't exist
+  if (existingRoute.length === 0) {
+    await db.insert(routes).values({
+      name: "root",
+      type: "SYSTEM",
+      hash: generateHash("root"),
+      requestId: rootRequest.id,
+      metadata: {
+        label: "Root",
+        variant: "default",
+      },
+      createdLocation: getCurrentLocation(),
+    });
+  }
+
   const mainFlowResponse = await fetchWithContext(c)("http://localhost:5173/api/main-flow", {
     method: "POST",
   });
   if (!mainFlowResponse.ok) {
     mainFlowError = new Error("Main flow failed");
   }
-  // Get tree and store both versions
   const tree = await getRequestTreeAndStoreCassette(rootRequest.id);
   const endTime = performance.now();
   const durationMs = Math.round(endTime - startTime);
