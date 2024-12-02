@@ -13,7 +13,7 @@ app.post("/api/list-source-files", async (c) => {
   try {
     await sleep(2000);
 
-    const rootPath = resolve(".");
+    const rootPath = resolve("app"); // Changed from "." to "app"
     const entries = await readdir(rootPath, { withFileTypes: true, recursive: true });
 
     const files = entries
