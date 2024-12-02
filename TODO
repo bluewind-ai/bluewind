@@ -305,3 +305,4 @@ a
 remove try catch, || null and defensive programming in general: hit the error.
 root should be server function
 get rid of server_functions as tables? maybe not
+get rid of success true

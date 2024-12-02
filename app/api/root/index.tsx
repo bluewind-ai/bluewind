@@ -37,7 +37,6 @@ app.post("/api/root", async (c) => {
     .returning();
   const startTime = performance.now();
   c.requestId = rootRequest.id;
-  let mainFlowError = null;
 
   // Check if root server function exists
   const existingServerFunction = await db
@@ -80,32 +79,28 @@ app.post("/api/root", async (c) => {
     });
   }
 
-  try {
-    await serverFn.mainFlow(c);
-  } catch (error) {
-    mainFlowError = error;
-  }
+  await serverFn.mainFlow(c);
 
   const endTime = performance.now();
   const durationMs = Math.round(endTime - startTime);
   const response = {
-    success: !mainFlowError,
+    success: true,
     requestId: rootRequest.id,
-    ...(mainFlowError && { error: String(mainFlowError) }),
   };
   const responseText = JSON.stringify(response);
   const responseSizeBytes = responseText.length;
-  const responseStatus = mainFlowError ? 500 : 200;
+
   await db
     .update(requests)
     .set({
       durationMs,
       response: responseText,
       responseSizeBytes,
-      responseStatus,
+      responseStatus: 200,
     })
     .where(eq(requests.id, rootRequest.id));
-  return c.json(response, responseStatus);
+
+  return c.json(response);
 });
 
 export default app;
