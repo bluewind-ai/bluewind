@@ -1,5 +1,7 @@
 // app/lib/server-functions.ts
 
+import { chat } from "~/functions/chat.server";
+import { evalNewPatientBookingFlow } from "~/functions/eval-new-patient-booking-flow";
 import { getDirectoryHash } from "~/functions/get-directory-hash.get.server";
 import { ingestCompanyData } from "~/functions/ingest-company-data.get.server";
 import { listSourceFiles } from "~/functions/list-source-files.get.server";
@@ -22,6 +24,8 @@ export const functions = {
   mainFlow,
   testRoute,
   root,
+  chat,
+  evalNewPatientBookingFlow,
 } as const;
 
 export const serverFn = Object.fromEntries(

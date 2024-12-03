@@ -6,5 +6,6 @@ export async function mainFlow(c: any) {
   await serverFn.setupInitialize(c);
   await serverFn.ingestCompanyData(c);
   await serverFn.testRoute(c);
+  await serverFn.evalNewPatientBookingFlow(c);
   return { success: true };
 }
