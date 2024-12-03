@@ -293,9 +293,195 @@
         "duration": "[MASKED]",
         "payload": "[MASKED]"
       }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 600,
+        "y": 1200
+      },
+      "data": {
+        "label": "/api/chat",
+        "pathname": "/api/chat",
+        "createdLocation": "middleware/main.tsx:65:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 600,
+        "y": 1300
+      },
+      "data": {
+        "label": "/api/chat",
+        "pathname": "/api/chat",
+        "createdLocation": "middleware/main.tsx:65:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 600,
+        "y": 1400
+      },
+      "data": {
+        "label": "/api/chat",
+        "pathname": "/api/chat",
+        "createdLocation": "middleware/main.tsx:65:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 600,
+        "y": 1500
+      },
+      "data": {
+        "label": "/api/chat",
+        "pathname": "/api/chat",
+        "createdLocation": "middleware/main.tsx:65:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 600,
+        "y": 1600
+      },
+      "data": {
+        "label": "/api/chat",
+        "pathname": "/api/chat",
+        "createdLocation": "middleware/main.tsx:65:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 600,
+        "y": 1700
+      },
+      "data": {
+        "label": "/api/chat",
+        "pathname": "/api/chat",
+        "createdLocation": "middleware/main.tsx:65:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]"
+      }
     }
   ],
   "edges": [
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
     {
       "id": "e[MASKED]-[MASKED]",
       "source": "[MASKED]",

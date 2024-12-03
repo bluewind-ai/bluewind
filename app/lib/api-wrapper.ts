@@ -1,7 +1,11 @@
 // app/lib/api-wrapper.ts
+
 export function wrapServerFunction(name: string, fn: ServerFunction): ServerFunction {
   const method = name.includes(".get.") ? "GET" : "POST";
   return async (context: any, payload?: any) => {
+    if (!context?.requestId) {
+      throw new Error("Context must have a requestId");
+    }
     const requestId = context.requestId;
     const headers = new Headers();
     headers.set("X-Parent-Request-Id", requestId.toString());
