@@ -6,9 +6,14 @@ export const chatInputSchema = z.object({
   input: z.string(),
 });
 
-export type ChatInput = z.infer<typeof chatInputSchema>;
+export const chatOutputSchema = z.object({
+  response: z.string(),
+});
 
-export async function chat(c: any, input: ChatInput) {
+export type ChatInput = z.infer<typeof chatInputSchema>;
+export type ChatOutput = z.infer<typeof chatOutputSchema>;
+
+export async function chat(_c: any, input: ChatInput): Promise<ChatOutput> {
   const responses = {
     "Hi, I'd like to book an appointment": "Welcome! Are you a new patient or an existing patient?",
     "I'm a new patient":
@@ -22,6 +27,7 @@ export async function chat(c: any, input: ChatInput) {
       "Perfect! I've booked your appointment for Monday, December 4th at 10:00 AM. You'll receive a confirmation email shortly with all the details. Please arrive 15 minutes early to complete any remaining paperwork. Is there anything else you need help with?",
   };
 
-  const response = responses[input.input] || "I'm sorry, I didn't understand that.";
-  return c.json({ response });
+  return {
+    response: responses[input.input] || "I'm sorry, I didn't understand that.",
+  };
 }
