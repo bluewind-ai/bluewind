@@ -11,6 +11,7 @@ import { root } from "~/functions/root.server";
 import { setupInitialize } from "~/functions/setup-initialize.get.server";
 import { testNewMiddleware } from "~/functions/test-new-middleware.get.server";
 import { testRoute } from "~/functions/test-route.get.server";
+import { twilio } from "~/functions/twilio.get.server";
 
 import { wrapServerFunction } from "./api-wrapper";
 
@@ -26,6 +27,7 @@ export const functions = {
   root,
   chat,
   evalNewPatientBookingFlow,
+  twilio,
 } as const;
 
 export const serverFn = {
