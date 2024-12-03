@@ -1,4 +1,7 @@
 // app/functions/setup-initialize.get.server.ts
+
+import { createHash } from "node:crypto";
+
 import { eq } from "drizzle-orm";
 
 import { objects } from "~/db/schema";
@@ -8,6 +11,10 @@ import { TABLES } from "~/db/schema/table-models";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { serverFn } from "~/lib/server-functions";
 import { db } from "~/middleware/main";
+
+function generateHash(route: string): string {
+  return createHash("sha256").update(route).digest("hex");
+}
 
 export async function setupInitialize(c: any) {
   const existingModels = await db.select().from(models);
@@ -45,6 +52,7 @@ export async function setupInitialize(c: any) {
       .values({
         name: "root",
         type: "SYSTEM",
+        hash: generateHash("root"),
         requestId: c.requestId,
         metadata: {
           variant: "default",
