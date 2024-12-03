@@ -1,8 +1,12 @@
 // app/functions/chat.server.ts
 
-type ChatInput = {
-  input: string;
-};
+import { z } from "zod";
+
+export const chatInputSchema = z.object({
+  input: z.string(),
+});
+
+export type ChatInput = z.infer<typeof chatInputSchema>;
 
 export async function chat(c: any) {
   try {

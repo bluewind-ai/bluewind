@@ -1,6 +1,6 @@
 // app/lib/server-functions.ts
 
-import { chat } from "~/functions/chat.server";
+import { chat, type ChatInput,chatInputSchema } from "~/functions/chat.server";
 import { evalNewPatientBookingFlow } from "~/functions/eval-new-patient-booking-flow";
 import { getDirectoryHash } from "~/functions/get-directory-hash.get.server";
 import { ingestCompanyData } from "~/functions/ingest-company-data.get.server";
@@ -28,6 +28,13 @@ export const functions = {
   evalNewPatientBookingFlow,
 } as const;
 
-export const serverFn = Object.fromEntries(
-  Object.entries(functions).map(([name, fn]) => [name, wrapServerFunction(name, fn)]),
-);
+export const serverFn = {
+  ...Object.fromEntries(
+    Object.entries(functions).map(([name, fn]) => [name, wrapServerFunction(name, fn)]),
+  ),
+  schemas: {
+    chat: chatInputSchema,
+  },
+};
+
+export type { ChatInput };
