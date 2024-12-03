@@ -293,6 +293,7 @@ if fetch use, return error
 createdlocation
 
 
+
 a
 ├─b
 │ ├─c
@@ -306,3 +307,4 @@ remove try catch, || null and defensive programming in general: hit the error.
 root should be server function
 get rid of server_functions as tables? maybe not
 get rid of success true
+try to put server function utils with the lib

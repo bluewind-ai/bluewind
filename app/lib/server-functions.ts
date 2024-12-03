@@ -5,6 +5,7 @@ import { ingestCompanyData } from "~/functions/ingest-company-data.get.server";
 import { listSourceFiles } from "~/functions/list-source-files.get.server";
 import { loadRoutes } from "~/functions/load-routes.get.server";
 import { mainFlow } from "~/functions/main-flow.get.server";
+import { root } from "~/functions/root.server";
 import { setupInitialize } from "~/functions/setup-initialize.get.server";
 import { testNewMiddleware } from "~/functions/test-new-middleware.get.server";
 import { testRoute } from "~/functions/test-route.get.server";
@@ -20,6 +21,7 @@ export const functions = {
   setupInitialize,
   mainFlow,
   testRoute,
+  root,
 } as const;
 
 export const serverFn = Object.fromEntries(

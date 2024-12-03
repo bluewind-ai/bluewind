@@ -1,4 +1,5 @@
 // app/lib/server-function-utils.ts
+
 import { functions } from "./server-functions";
 
 export const handlersByPath = Object.fromEntries(

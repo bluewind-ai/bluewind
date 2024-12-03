@@ -9,7 +9,6 @@ import dbProxyRoute from "./db-proxy";
 import getRequestTreeRoute from "./get-request-tree";
 import lintRoute from "./lint";
 import resetFactoryRoute from "./reset-factory";
-import rootRoute from "./root";
 import storeCassetteRoute from "./store-cassettes";
 import testDrizzleProxyRoute from "./test-drizzle-proxy";
 import testRequestToProxyRoute from "./test-request-to-proxy";
@@ -27,7 +26,6 @@ export const appRoutes = {
   getRequestTree: getRequestTreeRoute,
   lint: lintRoute,
   resetFactory: resetFactoryRoute,
-  root: rootRoute,
   storeCassette: storeCassetteRoute,
   testDrizzleProxy: testDrizzleProxyRoute,
   testRequestToProxy: testRequestToProxyRoute,
@@ -47,7 +45,6 @@ export const routesArray = [
 ];
 export function registerRoutes(server: Hono) {
   server.use("*", logger(customLogger));
-  server.route("", rootRoute);
   server.route("", resetFactoryRoute);
   server.use("*", mainMiddleware);
   routesArray.forEach((route) => {

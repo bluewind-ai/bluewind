@@ -8,6 +8,7 @@ import postgres from "postgres";
 import { requests } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and-store-cassette.server";
+import { root } from "~/functions/root.server";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { handlersByPath } from "~/lib/server-function-utils";
 
@@ -42,7 +43,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       parsedPayload = JSON.parse(requestBody);
     } catch {}
   }
-  if (pathname.startsWith("/api/") && !parentRequestId) {
+  if (pathname.startsWith("/api/") && pathname !== "/api/root" && !parentRequestId) {
     throw new Error("No parent request ID provided");
   }
   const shouldUseCache = c.req.header("Cache-Control") === "only-if-cached";
@@ -89,6 +90,25 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  if (pathname === "/api/root") {
+    const result = await root(c);
+    const endTime = performance.now();
+    const durationMs = Math.round(endTime - startTime);
+    const resultText = JSON.stringify(result);
+    const responseSizeBytes = new TextEncoder().encode(resultText).length;
+    await db
+      .update(requests)
+      .set({
+        response: resultText,
+        durationMs,
+        responseSizeBytes,
+        responseStatus: 200,
+      })
+      .where(eq(requests.id, newRequest.id));
+    return c.json(result);
+  }
+
   const handler = handlersByPath[pathname];
   if (handler) {
     const result = await handler(c);
