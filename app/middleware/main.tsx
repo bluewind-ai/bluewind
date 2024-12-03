@@ -11,6 +11,7 @@ import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and
 import { root } from "~/functions/root.server";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { handlersByPath } from "~/lib/server-function-utils";
+import { serverFn } from "~/lib/server-functions";
 
 import { createDbProxy, ExtendedContext } from ".";
 import { retrieveCache } from "./retrieve-cache";
@@ -111,7 +112,23 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
 
   const handler = handlersByPath[pathname];
   if (handler) {
-    const result = await handler(c);
+    // Extract the endpoint name from pathname to lookup schema
+    const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
+
+    let validatedPayload = parsedPayload;
+    // If there's a schema for this endpoint, validate the payload
+    if (serverFn.schemas?.[endpointName]) {
+      console.log(`[Middleware] Validating payload with ${endpointName}Schema...`);
+      try {
+        validatedPayload = serverFn.schemas[endpointName].parse(parsedPayload);
+        console.log(`[Middleware] Payload validated successfully:`, validatedPayload);
+      } catch (error) {
+        console.error(`[Middleware] Payload validation failed:`, error);
+        return c.json({ error: "Invalid request payload", details: error }, 400);
+      }
+    }
+
+    const result = await handler(c, validatedPayload);
     const endTime = performance.now();
     const durationMs = Math.round(endTime - startTime);
     const resultText = JSON.stringify(result);
