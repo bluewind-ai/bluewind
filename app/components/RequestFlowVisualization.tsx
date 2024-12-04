@@ -1,8 +1,11 @@
 // app/components/RequestFlowVisualization.tsx
+
 import "@xyflow/react/dist/style.css";
 
 import { Background, Controls, Node, Panel, ReactFlow } from "@xyflow/react";
 import { useCallback, useState } from "react";
+
+import { ServerFunctionsReplayButton } from "~/components/ServerFunctionsReplayButton";
 
 interface RequestFlowVisualizationProps {
   data: {
@@ -55,6 +58,7 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
     event.stopPropagation();
     setSelectedNode((current) => (current?.id === node.id ? null : node));
   }, []);
+
   try {
     return (
       <div className="relative flex w-full h-[600px]">
@@ -136,6 +140,7 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
                   </pre>
                 </div>
               )}
+              <ServerFunctionsReplayButton requestId={parseInt(selectedNode.id)} />
             </div>
           </div>
         )}
