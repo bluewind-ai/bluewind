@@ -1,5 +1,4 @@
 // app/functions/main-flow.get.server.ts
-
 import { desc, eq } from "drizzle-orm";
 
 import { requests } from "~/db/schema";
@@ -11,7 +10,6 @@ export async function mainFlow(c: any) {
   await serverFn.ingestCompanyData(c);
   await serverFn.testRoute(c);
   const bookingResult = await serverFn.evalNewPatientBookingFlow(c);
-
   const lastBookingRequest = await db
     .select()
     .from(requests)
@@ -19,10 +17,8 @@ export async function mainFlow(c: any) {
     .orderBy(desc(requests.createdAt))
     .limit(1)
     .then((rows) => rows[0]);
-
   if (lastBookingRequest) {
     await serverFn.replay(c, { requestId: lastBookingRequest.id });
   }
-
   return { bookingResult };
 }

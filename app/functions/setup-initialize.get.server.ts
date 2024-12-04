@@ -1,5 +1,4 @@
 // app/functions/setup-initialize.get.server.ts
-
 import { createHash } from "node:crypto";
 
 import { eq } from "drizzle-orm";
@@ -15,7 +14,6 @@ import { db } from "~/middleware/main";
 function generateHash(route: string): string {
   return createHash("sha256").update(route).digest("hex");
 }
-
 export async function setupInitialize(c: any) {
   const existingModels = await db.select().from(models);
   const existingModelNames = new Set(existingModels.map((m) => m.pluralName));

@@ -1,5 +1,4 @@
 // app/functions/chat.server.ts
-
 import { z } from "zod";
 
 export const chatInputSchema = z
@@ -8,17 +7,14 @@ export const chatInputSchema = z
     requestId: z.string().optional(),
   })
   .strict();
-
 export const chatOutputSchema = z
   .object({
     response: z.string(),
     requestId: z.string(),
   })
   .strict();
-
 export type ChatInput = z.infer<typeof chatInputSchema>;
 export type ChatOutput = z.infer<typeof chatOutputSchema>;
-
 export async function chat(_c: any, input: ChatInput): Promise<ChatOutput> {
   const responses = {
     "Hi, I'd like to book an appointment": "Welcome! Are you a new patient or an existing patient?",
@@ -32,7 +28,6 @@ export async function chat(_c: any, input: ChatInput): Promise<ChatOutput> {
     "Monday at 10:00 AM works for me":
       "Perfect! I've booked your appointment for Monday, December 4th at 10:00 AM. You'll receive a confirmation email shortly with all the details. Please arrive 15 minutes early to complete any remaining paperwork. Is there anything else you need help with?",
   };
-
   return {
     response: responses[input.input] || "I'm sorry, I didn't understand that.",
     requestId: input.requestId || crypto.randomUUID(),

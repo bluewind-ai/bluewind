@@ -1,5 +1,4 @@
 // app/components/ServerFunctionsReplayButton.tsx
-
 import { useNavigate } from "@remix-run/react";
 
 import { Button } from "~/components/ui/button";
@@ -7,10 +6,8 @@ import { Button } from "~/components/ui/button";
 interface ServerFunctionsReplayButtonProps {
   requestId: number;
 }
-
 export function ServerFunctionsReplayButton({ requestId }: ServerFunctionsReplayButtonProps) {
   const navigate = useNavigate();
-
   const handleReplayClick = async () => {
     try {
       const response = await fetch("http://localhost:5173/api/replay", {
@@ -22,20 +19,14 @@ export function ServerFunctionsReplayButton({ requestId }: ServerFunctionsReplay
         body: JSON.stringify({ requestId }),
       });
       const data = await response.json();
-      console.log("Replay response:", data);
-
       if (data.replayedRequest?.id) {
-        console.log("Navigating to:", `/requests/${data.replayedRequest.id}`);
         // Add small delay before navigation
         setTimeout(() => {
           window.location.href = `/requests/${data.replayedRequest.id}`;
         }, 100);
       }
-    } catch (error) {
-      console.error("Replay error:", error);
-    }
+    } catch (error) {}
   };
-
   return (
     <Button onClick={handleReplayClick} variant="default" className="w-full">
       Replay

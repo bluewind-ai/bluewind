@@ -1,5 +1,4 @@
 // app/db/schema/requests/schema.ts
-
 import { relations } from "drizzle-orm";
 import { integer, jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
@@ -26,7 +25,6 @@ export const requests = pgTable("requests", {
   responseStatus: integer("response_status"),
   nodeColor: text("node_color"),
 });
-
 // Define the node and edge types that match our current cassette structure
 const FlowNode = z.object({
   id: z.string(),
@@ -49,7 +47,6 @@ const FlowNode = z.object({
     color: z.string().optional(),
   }),
 });
-
 const FlowEdge = z.object({
   id: z.string(),
   source: z.string(),
@@ -57,7 +54,6 @@ const FlowEdge = z.object({
   type: z.string(),
   animated: z.boolean(),
 });
-
 export const RequestSchema = z.object({
   id: z.number(),
   parentId: z.number().nullable(),
@@ -77,11 +73,9 @@ export const RequestSchema = z.object({
   responseStatus: z.number().nullable(),
   nodeColor: z.string().nullable(),
 });
-
 export type CreateRequest = z.infer<typeof RequestSchema>;
 export type FlowNode = z.infer<typeof FlowNode>;
 export type FlowEdge = z.infer<typeof FlowEdge>;
-
 export const requestsRelations = relations(requests, ({ many, one }) => ({
   serverFunctions: many(serverFunctions),
   route: one(routes, {

@@ -1,5 +1,4 @@
 // app/components/RequestFlowVisualization.tsx
-
 import "@xyflow/react/dist/style.css";
 
 import { Background, Controls, Node, Panel, ReactFlow } from "@xyflow/react";
@@ -58,7 +57,6 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
     event.stopPropagation();
     setSelectedNode((current) => (current?.id === node.id ? null : node));
   }, []);
-
   try {
     return (
       <div className="relative flex w-full h-[600px]">

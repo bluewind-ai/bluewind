@@ -1,5 +1,4 @@
 // app/middleware/main.tsx
-
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -91,7 +90,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       headers: { "Content-Type": "application/json" },
     });
   }
-
   if (pathname === "/api/root") {
     const result = await root(c);
     const endTime = performance.now();
@@ -112,26 +110,19 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     }
     return c.json(result);
   }
-
   const handler = handlersByPath[pathname];
   if (handler) {
     // Extract the endpoint name from pathname to lookup schema
     const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
-
     let validatedPayload = parsedPayload;
     // If there's a schema for this endpoint, validate the payload
     if (serverFn.schemas?.[endpointName]) {
-      console.log(`[Middleware] Validating payload with ${endpointName}Schema...`);
-      console.log(`[Middleware] Raw payload before validation:`, parsedPayload); // Added
       try {
         validatedPayload = serverFn.schemas[endpointName].parse(parsedPayload);
-        console.log(`[Middleware] Payload validated successfully:`, validatedPayload);
       } catch (error) {
-        console.error(`[Middleware] Payload validation failed:`, error);
         return c.json({ error: "Invalid request payload", details: error }, 400);
       }
     }
-
     const result = await handler(c, validatedPayload);
     const endTime = performance.now();
     const durationMs = Math.round(endTime - startTime);
@@ -201,7 +192,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       responseStatus: c.res.status,
     })
     .where(eq(requests.id, newRequest.id));
-
   if (pathname.startsWith("/api/")) {
     await getRequestTreeAndStoreCassette(newRequest.id);
   }

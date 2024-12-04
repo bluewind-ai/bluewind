@@ -1,5 +1,4 @@
 // app/lib/api-wrapper.ts
-
 export function wrapServerFunction(name: string, fn: ServerFunction): ServerFunction {
   const method = name.includes(".get.") ? "GET" : "POST";
   return async (context: any, payload?: any) => {
@@ -12,17 +11,11 @@ export function wrapServerFunction(name: string, fn: ServerFunction): ServerFunc
     const urlPath = name
       .replace(/\.(get|post)\.server$/, "")
       .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-
-    console.log("wrapServerFunction input payload:", payload);
-
     // Replace undefined with null in the entire payload recursively
     const payloadWithNulls = payload
       ? JSON.parse(JSON.stringify(payload, (_key, value) => (value === undefined ? null : value)))
       : {};
-
     const body = JSON.stringify(payloadWithNulls);
-    console.log("wrapServerFunction stringified body:", body);
-
     const result = await fetch(`http://localhost:5173/api/${urlPath}`, {
       method,
       headers,
