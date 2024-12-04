@@ -15,7 +15,10 @@ export function ServerFunctionsReplayButton({ requestId }: ServerFunctionsReplay
     try {
       const response = await fetch("http://localhost:5173/api/replay", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parent-Request-Id": requestId.toString(),
+        },
         body: JSON.stringify({ requestId }),
       });
       const data = await response.json();
