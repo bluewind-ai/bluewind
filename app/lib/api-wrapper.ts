@@ -12,10 +12,21 @@ export function wrapServerFunction(name: string, fn: ServerFunction): ServerFunc
     const urlPath = name
       .replace(/\.(get|post)\.server$/, "")
       .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+
+    console.log("wrapServerFunction input payload:", payload);
+
+    // Replace undefined with null in the entire payload recursively
+    const payloadWithNulls = payload
+      ? JSON.parse(JSON.stringify(payload, (_key, value) => (value === undefined ? null : value)))
+      : {};
+
+    const body = JSON.stringify(payloadWithNulls);
+    console.log("wrapServerFunction stringified body:", body);
+
     const result = await fetch(`http://localhost:5173/api/${urlPath}`, {
       method,
       headers,
-      body: JSON.stringify(payload || {}),
+      body,
     }).then((r) => r.json());
     return result;
   };

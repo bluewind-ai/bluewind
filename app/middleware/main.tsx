@@ -122,6 +122,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     // If there's a schema for this endpoint, validate the payload
     if (serverFn.schemas?.[endpointName]) {
       console.log(`[Middleware] Validating payload with ${endpointName}Schema...`);
+      console.log(`[Middleware] Raw payload before validation:`, parsedPayload); // Added
       try {
         validatedPayload = serverFn.schemas[endpointName].parse(parsedPayload);
         console.log(`[Middleware] Payload validated successfully:`, validatedPayload);

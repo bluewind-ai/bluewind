@@ -2,13 +2,19 @@
 
 import { z } from "zod";
 
-export const chatInputSchema = z.object({
-  input: z.string(),
-});
+export const chatInputSchema = z
+  .object({
+    input: z.string(),
+    requestId: z.string().optional(),
+  })
+  .strict();
 
-export const chatOutputSchema = z.object({
-  response: z.string(),
-});
+export const chatOutputSchema = z
+  .object({
+    response: z.string(),
+    requestId: z.string(),
+  })
+  .strict();
 
 export type ChatInput = z.infer<typeof chatInputSchema>;
 export type ChatOutput = z.infer<typeof chatOutputSchema>;
@@ -29,5 +35,6 @@ export async function chat(_c: any, input: ChatInput): Promise<ChatOutput> {
 
   return {
     response: responses[input.input] || "I'm sorry, I didn't understand that.",
+    requestId: input.requestId || crypto.randomUUID(),
   };
 }
