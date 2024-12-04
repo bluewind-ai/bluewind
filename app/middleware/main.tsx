@@ -1,4 +1,5 @@
 // app/middleware/main.tsx
+
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -124,6 +125,20 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       }
     }
     const result = await handler(c, validatedPayload);
+
+    // Validate the output if we have an output schema
+    if (serverFn.outputSchemas?.[endpointName]) {
+      console.log(`[Middleware] Validating response with ${endpointName}OutputSchema...`);
+      console.log(`[Middleware] Raw response before validation:`, result);
+      try {
+        serverFn.outputSchemas[endpointName].parse(result);
+        console.log(`[Middleware] Response validation successful`);
+      } catch (error) {
+        console.error(`[Middleware] Response validation failed:`, error);
+        return c.json({ error: "Invalid response payload", details: error }, 500);
+      }
+    }
+
     const endTime = performance.now();
     const durationMs = Math.round(endTime - startTime);
     const resultText = JSON.stringify(result);
