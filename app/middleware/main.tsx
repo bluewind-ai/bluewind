@@ -107,6 +107,9 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         responseStatus: 200,
       })
       .where(eq(requests.id, newRequest.id));
+    if (pathname.startsWith("/api/")) {
+      await getRequestTreeAndStoreCassette(newRequest.id);
+    }
     return c.json(result);
   }
 
@@ -142,6 +145,9 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         responseStatus: 200,
       })
       .where(eq(requests.id, newRequest.id));
+    if (pathname.startsWith("/api/")) {
+      await getRequestTreeAndStoreCassette(newRequest.id);
+    }
     return c.json(result);
   }
   const dbWithProxy = createDbProxy(db, c);
@@ -195,7 +201,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     })
     .where(eq(requests.id, newRequest.id));
 
-  if (pathname === "/api/root") {
+  if (pathname.startsWith("/api/")) {
     await getRequestTreeAndStoreCassette(newRequest.id);
   }
 }
