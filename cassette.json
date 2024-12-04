@@ -449,7 +449,7 @@
         "label": "/api/replay",
         "pathname": "/api/replay",
         "createdLocation": "middleware/main.tsx:67:44",
-        "durationMsRange": "< 1000",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "responseStatus": 200,

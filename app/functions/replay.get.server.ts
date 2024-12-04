@@ -31,7 +31,9 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     throw new Error(`No request found with ID ${input.requestId}`);
   }
 
+  console.log("Original request:", request);
   const result = await serverFn.evalNewPatientBookingFlow(c, request.payload);
+  console.log("Result:", result);
 
   const replayedRequest = await db
     .select()
@@ -39,6 +41,8 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     .where(eq(requests.parentId, c.requestId))
     .limit(1)
     .then((rows) => rows[0]);
+
+  console.log("Replayed request:", replayedRequest);
 
   return { result, replayedRequest };
 }
