@@ -16,6 +16,8 @@ import { serverFn } from "~/lib/server-functions";
 import { createDbProxy, ExtendedContext } from ".";
 import { retrieveCache } from "./retrieve-cache";
 
+const VALIDATED_PATHS = ["/api/chat"];
+
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 const baseDb = drizzle(postgres(connectionString), {
   schema,
@@ -113,21 +115,26 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   }
   const handler = handlersByPath[pathname];
   if (handler) {
-    // Extract the endpoint name from pathname to lookup schema
-    const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
     let validatedPayload = parsedPayload;
-    // If there's a schema for this endpoint, validate the payload
-    if (serverFn.schemas?.[endpointName]) {
+
+    // Only validate for specific paths
+    if (VALIDATED_PATHS.includes(pathname)) {
+      const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
+      console.log("[Middleware] About to validate payload for chat:", parsedPayload); // Added debug
       try {
         validatedPayload = serverFn.schemas[endpointName].parse(parsedPayload);
+        console.log("[Middleware] Validation successful"); // Added debug
       } catch (error) {
+        console.error("[Middleware] Validation failed:", error); // Added debug
         return c.json({ error: "Invalid request payload", details: error }, 400);
       }
     }
+
     const result = await handler(c, validatedPayload);
 
-    // Validate the output if we have an output schema
-    if (serverFn.outputSchemas?.[endpointName]) {
+    // Also validate output for the same paths
+    if (VALIDATED_PATHS.includes(pathname)) {
+      const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
       console.log(`[Middleware] Validating response with ${endpointName}OutputSchema...`);
       console.log(`[Middleware] Raw response before validation:`, result);
       try {
