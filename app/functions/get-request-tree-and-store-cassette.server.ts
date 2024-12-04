@@ -236,7 +236,13 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
     durationMs: "[MASKED]",
     responseStatus: request.responseStatus,
   };
-  await writeFile(join(process.cwd(), "cassette.json"), JSON.stringify(cassette, null, 2), "utf-8");
+  if (request.pathname === "/api/root") {
+    await writeFile(
+      join(process.cwd(), "cassette.json"),
+      JSON.stringify(cassette, null, 2),
+      "utf-8",
+    );
+  }
   await db
     .update(requests)
     .set({
