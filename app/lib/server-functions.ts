@@ -1,5 +1,7 @@
 // app/lib/server-functions.ts
 
+import { z } from "zod";
+
 import { chat, type ChatInput, chatInputSchema, chatOutputSchema } from "~/functions/chat.server";
 import { evalNewPatientBookingFlow } from "~/functions/eval-new-patient-booking-flow";
 import { getDirectoryHash } from "~/functions/get-directory-hash.get.server";
@@ -15,6 +17,13 @@ import { testRoute } from "~/functions/test-route.get.server";
 import { twilio } from "~/functions/twilio.get.server";
 
 import { wrapServerFunction } from "./api-wrapper";
+
+// Schemas for eval-new-patient-booking-flow
+const evalNewPatientBookingFlowInputSchema = z.object({});
+const evalNewPatientBookingFlowOutputSchema = z.object({
+  success: z.boolean(),
+  requestId: z.number(),
+});
 
 export const functions = {
   testNewMiddleware,
@@ -38,9 +47,11 @@ export const serverFn = {
   ),
   schemas: {
     chat: chatInputSchema,
+    evalnewpatientbookingflow: evalNewPatientBookingFlowInputSchema,
   },
   outputSchemas: {
     chat: chatOutputSchema,
+    evalnewpatientbookingflow: evalNewPatientBookingFlowOutputSchema,
   },
 };
 

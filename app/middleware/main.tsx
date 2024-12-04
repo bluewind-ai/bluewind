@@ -16,7 +16,7 @@ import { serverFn } from "~/lib/server-functions";
 import { createDbProxy, ExtendedContext } from ".";
 import { retrieveCache } from "./retrieve-cache";
 
-const VALIDATED_PATHS = ["/api/chat"];
+const VALIDATED_PATHS = ["/api/chat", "/api/eval-new-patient-booking-flow"];
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 const baseDb = drizzle(postgres(connectionString), {
@@ -121,14 +121,14 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     if (VALIDATED_PATHS.includes(pathname)) {
       const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
       // eslint-disable-next-line
-      console.log("[Middleware] About to validate payload for chat:", parsedPayload); // Added debug
+      console.log(`[Middleware] About to validate payload for ${endpointName}:`, parsedPayload);
       try {
         validatedPayload = serverFn.schemas[endpointName].parse(parsedPayload);
         // eslint-disable-next-line
-        console.log("[Middleware] Validation successful"); // Added debug
+        console.log("[Middleware] Validation successful");
       } catch (error) {
         // eslint-disable-next-line
-        console.error("[Middleware] Validation failed:", error); // Added debug
+        console.error("[Middleware] Validation failed:", error);
         return c.json({ error: "Invalid request payload", details: error }, 400);
       }
     }

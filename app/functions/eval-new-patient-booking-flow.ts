@@ -1,5 +1,15 @@
 // app/functions/eval-new-patient-booking-flow.ts
+
+import { z } from "zod";
+
 import { serverFn } from "~/lib/server-functions";
+
+// Schemas for the function
+export const evalNewPatientBookingFlowInputSchema = z.object({});
+export const evalNewPatientBookingFlowOutputSchema = z.object({
+  success: z.boolean(),
+  requestId: z.number(),
+});
 
 export async function evalNewPatientBookingFlow(c: any) {
   try {
@@ -27,7 +37,11 @@ export async function evalNewPatientBookingFlow(c: any) {
       requestId: response5.requestId,
       input: "Monday at 10:00 AM works for me",
     });
-    return c.json({ success: true, requestId: response6.requestId });
+    // Return object directly instead of using c.json()
+    return {
+      success: true,
+      requestId: parseInt(response6.requestId),
+    };
   } catch (error) {
     throw error;
   }
