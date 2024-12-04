@@ -3,40 +3,40 @@
 import { serverFn } from "~/lib/server-functions";
 
 export async function evalNewPatientBookingFlow(c: any) {
-  console.log("Starting evalNewPatientBookingFlow");
-  const conversation = [];
-
-  async function processMessage(input: string) {
-    console.log("processMessage input:", input);
-    try {
-      console.log("Making request with input:", { input });
-      const response = await serverFn.chat(c, { input });
-      console.log("Chat response received:", response);
-
-      conversation.push(
-        { role: "patient", message: input },
-        { role: "ai", message: response.response },
-      );
-      return response.response;
-    } catch (error) {
-      console.error("Error in processMessage:", error);
-      throw error;
-    }
-  }
-
   try {
-    console.log("Starting conversation flow");
-    await processMessage("Hi, I'd like to book an appointment");
-    await processMessage("I'm a new patient");
-    await processMessage("John Smith, 01/15/1980, (555) 123-4567");
-    await processMessage("I need a general checkup");
-    await processMessage("Yes, I have Blue Cross Blue Shield");
-    await processMessage("Monday at 10:00 AM works for me");
+    // Each chat call gets back a requestId that we need to pass to the next call
+    const response1 = await serverFn.chat(c, {
+      input: "Hi, I'd like to book an appointment"
+    });
 
-    console.log("Final conversation:", conversation);
-    return c.json(conversation);
+    const response2 = await serverFn.chat(c, {
+      requestId: response1.requestId,
+      input: "I'm a new patient"
+    });
+
+    const response3 = await serverFn.chat(c, {
+      requestId: response2.requestId,
+      input: "John Smith, 01/15/1980, (555) 123-4567"
+    });
+
+    const response4 = await serverFn.chat(c, {
+      requestId: response3.requestId,
+      input: "I need a general checkup"
+    });
+
+    const response5 = await serverFn.chat(c, {
+      requestId: response4.requestId,
+      input: "Yes, I have Blue Cross Blue Shield"
+    });
+
+    const response6 = await serverFn.chat(c, {
+      requestId: response5.requestId,
+      input: "Monday at 10:00 AM works for me"
+    });
+
+    return c.json({ success: true, requestId: response6.requestId });
   } catch (error) {
-    console.error("Error in evalNewPatientBookingFlow:", error);
+    console.error("Error in flow:", error);
     throw error;
   }
 }
