@@ -2,7 +2,7 @@
   "id": "[MASKED]",
   "parentId": "[MASKED]",
   "pathname": "/api/root",
-  "createdLocation": "middleware/main.tsx:68:44",
+  "createdLocation": "middleware/main.tsx:82:44",
   "response": "[MASKED]",
   "payload": "[MASKED]",
   "nodes": [
@@ -16,7 +16,7 @@
       "data": {
         "label": "/api/root",
         "pathname": "/api/root",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -40,7 +40,7 @@
       "data": {
         "label": "/api/main-flow",
         "pathname": "/api/main-flow",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -64,7 +64,7 @@
       "data": {
         "label": "/api/setup-initialize",
         "pathname": "/api/setup-initialize",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -88,7 +88,7 @@
       "data": {
         "label": "/api/load-routes",
         "pathname": "/api/load-routes",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -112,7 +112,7 @@
       "data": {
         "label": "/api/ingest-company-data",
         "pathname": "/api/ingest-company-data",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -136,7 +136,7 @@
       "data": {
         "label": "/api/get-directory-hash",
         "pathname": "/api/get-directory-hash",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -160,7 +160,7 @@
       "data": {
         "label": "/api/list-source-files",
         "pathname": "/api/list-source-files",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -184,8 +184,8 @@
       "data": {
         "label": "/api/test-route",
         "pathname": "/api/test-route",
-        "createdLocation": "middleware/main.tsx:68:44",
-        "durationMsRange": "< 1000",
+        "createdLocation": "middleware/main.tsx:82:44",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "responseStatus": 200,
@@ -208,7 +208,7 @@
       "data": {
         "label": "/api/ingest-company-data",
         "pathname": "/api/ingest-company-data",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -232,7 +232,7 @@
       "data": {
         "label": "/api/get-directory-hash",
         "pathname": "/api/get-directory-hash",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -256,7 +256,7 @@
       "data": {
         "label": "/api/list-source-files",
         "pathname": "/api/list-source-files",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -280,11 +280,11 @@
       "data": {
         "label": "/api/eval-new-patient-booking-flow",
         "pathname": "/api/eval-new-patient-booking-flow",
-        "createdLocation": "middleware/main.tsx:68:44",
-        "durationMsRange": "< 1000",
+        "createdLocation": "middleware/main.tsx:82:44",
+        "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "N/A",
-        "responseStatus": null,
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
         "cacheStatus": "SKIP",
         "createdAt": "[MASKED]",
         "parentId": "[MASKED]",
@@ -304,7 +304,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -328,7 +328,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -352,7 +352,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -376,7 +376,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -400,7 +400,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -424,7 +424,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -448,7 +448,7 @@
       "data": {
         "label": "/api/replay",
         "pathname": "/api/replay",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -472,7 +472,7 @@
       "data": {
         "label": "/api/eval-new-patient-booking-flow",
         "pathname": "/api/eval-new-patient-booking-flow",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "1001+",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -496,7 +496,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -520,7 +520,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -544,7 +544,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -568,7 +568,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -592,7 +592,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
@@ -616,7 +616,7 @@
       "data": {
         "label": "/api/chat",
         "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:68:44",
+        "createdLocation": "middleware/main.tsx:82:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",

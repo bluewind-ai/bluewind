@@ -16,7 +16,21 @@ import { serverFn } from "~/lib/server-functions";
 import { createDbProxy, ExtendedContext } from ".";
 import { retrieveCache } from "./retrieve-cache";
 
-const VALIDATED_PATHS = ["/api/chat", "/api/eval-new-patient-booking-flow"];
+const VALIDATED_PATHS = [
+  "/api/test-new-middleware",
+  "/api/list-source-files",
+  "/api/get-directory-hash",
+  "/api/ingest-company-data",
+  "/api/load-routes",
+  "/api/setup-initialize",
+  "/api/main-flow",
+  "/api/test-route",
+  "/api/root",
+  "/api/chat",
+  "/api/eval-new-patient-booking-flow",
+  "/api/twilio",
+  "/api/replay",
+];
 
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 const baseDb = drizzle(postgres(connectionString), {

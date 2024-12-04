@@ -1,7 +1,9 @@
 // app/functions/setup-initialize.get.server.ts
+
 import { createHash } from "node:crypto";
 
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 
 import { objects } from "~/db/schema";
 import { models } from "~/db/schema/models/schema";
@@ -11,10 +13,23 @@ import { getCurrentLocation } from "~/lib/location-tracker";
 import { serverFn } from "~/lib/server-functions";
 import { db } from "~/middleware/main";
 
+export const setupInitializeInputSchema = z.object({});
+
+export const setupInitializeOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+export type SetupInitializeInput = z.infer<typeof setupInitializeInputSchema>;
+export type SetupInitializeOutput = z.infer<typeof setupInitializeOutputSchema>;
+
 function generateHash(route: string): string {
   return createHash("sha256").update(route).digest("hex");
 }
-export async function setupInitialize(c: any) {
+
+export async function setupInitialize(
+  c: any,
+  input: SetupInitializeInput,
+): Promise<SetupInitializeOutput> {
   const existingModels = await db.select().from(models);
   const existingModelNames = new Set(existingModels.map((m) => m.pluralName));
   const missingModels = Object.entries(TABLES)

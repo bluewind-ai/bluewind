@@ -1,6 +1,23 @@
 // app/functions/get-directory-hash.get.server.ts
+
 import { stat } from "node:fs/promises";
 import { resolve } from "node:path";
+
+import { z } from "zod";
+
+// Schema definitions
+export const getDirectoryHashInputSchema = z.object({});
+
+export const getDirectoryHashOutputSchema = z.object({
+  mtime: z.string(),
+  ctime: z.string(),
+  mtimeRaw: z.number(),
+  ctimeRaw: z.number(),
+  directory: z.string(),
+});
+
+export type GetDirectoryHashInput = z.infer<typeof getDirectoryHashInputSchema>;
+export type GetDirectoryHashOutput = z.infer<typeof getDirectoryHashOutputSchema>;
 
 const formatDate = (timestamp: number) => {
   return new Date(timestamp).toLocaleString("en-US", {
@@ -14,7 +31,11 @@ const formatDate = (timestamp: number) => {
     second: "2-digit",
   });
 };
-export async function getDirectoryHash(c: any) {
+
+export async function getDirectoryHash(
+  c: any,
+  input: GetDirectoryHashInput,
+): Promise<GetDirectoryHashOutput> {
   try {
     const dirPath = resolve("app");
     const dirStat = await stat(dirPath);
