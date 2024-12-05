@@ -2,26 +2,18 @@
 
 import { z } from "zod";
 
-import { serverFn } from "~/lib/server-functions";
-
 export const buildRegistryDataInputSchema = z.object({
   functions: z.array(
     z.object({
       name: z.string(),
       path: z.string(),
+      exports: z.array(z.string()),
     }),
   ),
 });
 
 export const buildRegistryDataOutputSchema = z.object({
-  registry: z.record(
-    z.object({
-      name: z.string(),
-      path: z.string(),
-      inputSchema: z.any(),
-      outputSchema: z.any(),
-    }),
-  ),
+  fileContent: z.string(),
 });
 
 export type BuildRegistryDataInput = z.infer<typeof buildRegistryDataInputSchema>;
@@ -31,19 +23,93 @@ export async function buildRegistryData(
   c: any,
   input: BuildRegistryDataInput,
 ): Promise<BuildRegistryDataOutput> {
-  const registry: Record<string, any> = {};
+  const imports: string[] = [];
+  const entries: string[] = [];
+  const schemaEntries: string[] = [];
+  const outputSchemaEntries: string[] = [];
+
+  console.log("Processing functions:", input.functions);
 
   for (const func of input.functions) {
-    const name = func.name.toLowerCase();
-    if (serverFn.schemas[name] && serverFn.outputSchemas[name]) {
-      registry[name] = {
-        name: func.name,
-        path: func.path,
-        inputSchema: serverFn.schemas[name],
-        outputSchema: serverFn.outputSchemas[name],
-      };
+    const basePath = func.path.replace(/^app\//, "~/");
+    const baseImportPath = basePath.replace(".ts", "");
+
+    console.log("\nProcessing function:", func.name);
+    console.log("Original name:", func.name);
+
+    const uniqueExports = [...new Set(func.exports)];
+    console.log("Exports:", uniqueExports);
+
+    if (uniqueExports.length > 0) {
+      const mainExport = uniqueExports.find(
+        (e) =>
+          !e.includes("Schema") &&
+          !e.includes("Input") &&
+          !e.includes("Output") &&
+          e === e[0].toLowerCase() + e.slice(1),
+      );
+      const inputSchema = uniqueExports.find((e) => e.includes("InputSchema"));
+      const outputSchema = uniqueExports.find((e) => e.includes("OutputSchema"));
+      const types = uniqueExports
+        .filter((e) => e.includes("Input") && !e.includes("Schema"))
+        .map((e) => e.replace(/Input$/, "Output"));
+
+      console.log("Main export:", mainExport);
+      console.log("Input schema:", inputSchema);
+      console.log("Output schema:", outputSchema);
+
+      const allImports = [mainExport, ...types, inputSchema, outputSchema].filter(Boolean);
+      if (allImports.length > 0) {
+        imports.push(`import { ${allImports.join(", ")} } from "${baseImportPath}";`);
+      }
+
+      if (mainExport) {
+        entries.push(`  ${mainExport}: ${mainExport}`);
+      }
+
+      if (inputSchema && mainExport) {
+        // Convert PascalCase to lowercase for schema keys
+        const schemaKey = mainExport.replace(/[A-Z]/g, (letter) => letter.toLowerCase());
+        schemaEntries.push(`    ${schemaKey}: ${inputSchema}`);
+      }
+      if (outputSchema && mainExport) {
+        const schemaKey = mainExport.replace(/[A-Z]/g, (letter) => letter.toLowerCase());
+        outputSchemaEntries.push(`    ${schemaKey}: ${outputSchema}`);
+      }
     }
   }
 
-  return { registry };
+  console.log("\nGenerated entries:", entries);
+  console.log("Generated schema entries:", schemaEntries);
+
+  const fileContent = `// app/lib/server-functions.ts
+// THIS FILE IS AUTO-GENERATED - DO NOT EDIT!
+
+import { wrapServerFunction } from "./api-wrapper";
+${imports.join("\n")}
+
+export const functions = {
+${entries.join(",\n")}
+} as const;
+
+export const serverFn = {
+ ...Object.fromEntries(
+   Object.entries(functions).map(([name, fn]) => [
+     name,
+     wrapServerFunction(\`\${name}.post.server\`, fn),
+   ]),
+ ),
+ schemas: {
+${schemaEntries.join(",\n")}
+ },
+ outputSchemas: {
+${outputSchemaEntries.join(",\n")}
+ },
+} as const;
+
+// Export types
+export type { ChatInput };`;
+
+  console.log("\nGenerated file content:", fileContent);
+  return { fileContent };
 }

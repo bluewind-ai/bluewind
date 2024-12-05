@@ -10,6 +10,7 @@ export const getFunctionListOutputSchema = z.object({
     z.object({
       name: z.string(),
       path: z.string(),
+      exports: z.array(z.string()),
     }),
   ),
 });
@@ -25,10 +26,25 @@ export async function getFunctionList(
   const files = await fs.readdir(functionsDir);
   const serverFiles = files.filter((file) => file.endsWith(".server.ts"));
 
-  return {
-    functions: serverFiles.map((file) => ({
-      name: path.basename(file, ".get.server.ts").replace(/-/g, ""),
+  const functions = [];
+
+  for (const file of serverFiles) {
+    const fullPath = path.join(functionsDir, file);
+    const content = await fs.readFile(fullPath, "utf-8");
+
+    // Improved export parsing to catch functions too
+    const exportMatches =
+      content.match(/export (?:(?:async )?function|const|type|interface) (\w+)/g) || [];
+    const exports = exportMatches.map((match) =>
+      match.split(/function|const|type|interface/)[1].trim(),
+    );
+
+    functions.push({
+      name: path.basename(file, ".server.ts").replace(/-/g, ""),
       path: path.join("app", "functions", file),
-    })),
-  };
+      exports: exports,
+    });
+  }
+
+  return { functions };
 }

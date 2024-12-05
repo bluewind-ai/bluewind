@@ -8,7 +8,7 @@ import postgres from "postgres";
 import { requests } from "~/db/schema";
 import * as schema from "~/db/schema";
 import { getRequestTreeAndStoreCassette } from "~/functions/get-request-tree-and-store-cassette.server";
-import { root } from "~/functions/root.server";
+import { root } from "~/functions/root.server.post";
 import { getCurrentLocation } from "~/lib/location-tracker";
 import { handlersByPath } from "~/lib/server-function-utils";
 import { serverFn } from "~/lib/server-functions";

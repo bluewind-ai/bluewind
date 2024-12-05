@@ -18,11 +18,8 @@ export async function buildFunctionRegistry(
 ): Promise<BuildFunctionRegistryOutput> {
   try {
     const { functions } = await serverFn.getFunctionList(c);
-
-    const { registry } = await serverFn.buildRegistryData(c, { functions });
-
-    await serverFn.writeRegistry(c, { registry });
-
+    const { fileContent } = await serverFn.buildRegistryData(c, { functions });
+    await serverFn.writeRegistry(c, { fileContent });
     return { success: true };
   } catch (error) {
     console.error("Error building function registry:", error);

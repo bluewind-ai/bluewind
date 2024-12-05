@@ -5,14 +5,7 @@ import path from "path";
 import { z } from "zod";
 
 export const writeRegistryInputSchema = z.object({
-  registry: z.record(
-    z.object({
-      name: z.string(),
-      path: z.string(),
-      inputSchema: z.any(),
-      outputSchema: z.any(),
-    }),
-  ),
+  fileContent: z.string(),
 });
 
 export const writeRegistryOutputSchema = z.object({
@@ -26,7 +19,7 @@ export async function writeRegistry(
   c: any,
   input: WriteRegistryInput,
 ): Promise<WriteRegistryOutput> {
-  const registryPath = path.join(process.cwd(), "app", "functions", "registry.json");
-  await fs.writeFile(registryPath, JSON.stringify(input.registry, null, 2));
+  const filePath = path.join(process.cwd(), "app", "lib", "server-functions.ts");
+  await fs.writeFile(filePath, input.fileContent);
   return { success: true };
 }

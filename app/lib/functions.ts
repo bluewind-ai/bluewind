@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { functionCalls, serverFunctions } from "~/db/schema";
 import { FunctionCallStatus } from "~/db/schema/function-calls/schema";
 import { master } from "~/functions/master.server";
-import { root } from "~/functions/root.server";
+import { root } from "~/functions/root.server.post";
 import type { ExtendedContext } from "~/middleware";
 import { db } from "~/middleware/main";
 

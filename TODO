@@ -308,3 +308,5 @@ root should be server function
 get rid of server_functions as tables? maybe not
 get rid of success true
 try to put server function utils with the lib
+
+remove things that look like server-functions

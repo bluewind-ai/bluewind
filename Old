@@ -1,0 +1,6 @@
+// Old
+
+const schemaKey = mainExport[0].toLowerCase() + mainExport.slice(1);
+
+// New
+const schemaKey = mainExport.replace(/[A-Z]/g, letter => letter.toLowerCase());
