@@ -37,10 +37,11 @@ export async function evalNewPatientBookingFlow(c: any) {
       requestId: response5.requestId,
       input: "Monday at 10:00 AM works for me",
     });
-    // Return object directly instead of using c.json()
+
+    // Return a numeric request ID by using the current request ID from context
     return {
       success: true,
-      requestId: parseInt(response6.requestId),
+      requestId: c.requestId,
     };
   } catch (error) {
     throw error;

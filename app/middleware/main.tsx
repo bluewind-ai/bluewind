@@ -16,22 +16,6 @@ import { serverFn } from "~/lib/server-functions";
 import { createDbProxy, ExtendedContext } from ".";
 import { retrieveCache } from "./retrieve-cache";
 
-const VALIDATED_PATHS = [
-  "/api/test-new-middleware",
-  "/api/list-source-files",
-  "/api/get-directory-hash",
-  "/api/ingest-company-data",
-  "/api/load-routes",
-  "/api/setup-initialize",
-  "/api/main-flow",
-  "/api/test-route",
-  "/api/root",
-  "/api/chat",
-  "/api/eval-new-patient-booking-flow",
-  "/api/twilio",
-  "/api/replay",
-];
-
 const connectionString = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 const baseDb = drizzle(postgres(connectionString), {
   schema,
@@ -131,39 +115,43 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   if (handler) {
     let validatedPayload = parsedPayload;
 
-    // Only validate for specific paths
-    if (VALIDATED_PATHS.includes(pathname)) {
+    // Validate all API endpoints that have schemas
+    if (pathname.startsWith("/api/")) {
       const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
-      // eslint-disable-next-line
-      console.log(`[Middleware] About to validate payload for ${endpointName}:`, parsedPayload);
-      try {
-        validatedPayload = serverFn.schemas[endpointName].parse(parsedPayload);
+      if (serverFn.schemas[endpointName]) {
         // eslint-disable-next-line
-        console.log("[Middleware] Validation successful");
-      } catch (error) {
-        // eslint-disable-next-line
-        console.error("[Middleware] Validation failed:", error);
-        return c.json({ error: "Invalid request payload", details: error }, 400);
+        console.log(`[Middleware] About to validate payload for ${endpointName}:`, parsedPayload);
+        try {
+          validatedPayload = serverFn.schemas[endpointName].parse(parsedPayload);
+          // eslint-disable-next-line
+          console.log("[Middleware] Validation successful");
+        } catch (error) {
+          // eslint-disable-next-line
+          console.error("[Middleware] Validation failed:", error);
+          return c.json({ error: "Invalid request payload", details: error }, 400);
+        }
       }
     }
 
     const result = await handler(c, validatedPayload);
 
-    // Also validate output for the same paths
-    if (VALIDATED_PATHS.includes(pathname)) {
+    // Also validate output for API endpoints
+    if (pathname.startsWith("/api/")) {
       const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
-      // eslint-disable-next-line
-      console.log(`[Middleware] Validating response with ${endpointName}OutputSchema...`);
-      // eslint-disable-next-line
-      console.log(`[Middleware] Raw response before validation:`, result);
-      try {
-        serverFn.outputSchemas[endpointName].parse(result);
+      if (serverFn.outputSchemas[endpointName]) {
         // eslint-disable-next-line
-        console.log(`[Middleware] Response validation successful`);
-      } catch (error) {
+        console.log(`[Middleware] Validating response with ${endpointName}OutputSchema...`);
         // eslint-disable-next-line
-        console.error(`[Middleware] Response validation failed:`, error);
-        return c.json({ error: "Invalid response payload", details: error }, 500);
+        console.log(`[Middleware] Raw response before validation:`, result);
+        try {
+          serverFn.outputSchemas[endpointName].parse(result);
+          // eslint-disable-next-line
+          console.log(`[Middleware] Response validation successful`);
+        } catch (error) {
+          // eslint-disable-next-line
+          console.error(`[Middleware] Response validation failed:`, error);
+          return c.json({ error: "Invalid response payload", details: error }, 500);
+        }
       }
     }
 
