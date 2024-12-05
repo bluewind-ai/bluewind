@@ -21,6 +21,7 @@ const baseDb = drizzle(postgres(connectionString), {
   schema,
 });
 export const db = baseDb;
+
 export async function mainMiddleware(context: Context, next: () => Promise<void>) {
   const startTime = performance.now();
   const c = context as unknown as ExtendedContext;
@@ -107,6 +108,11 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       })
       .where(eq(requests.id, newRequest.id));
     if (pathname.startsWith("/api/")) {
+      console.log("[Middleware] Storing request tree for:", {
+        requestId: newRequest.id,
+        pathname,
+        parentRequestId,
+      });
       await getRequestTreeAndStoreCassette(newRequest.id);
     }
     return c.json(result);
@@ -154,7 +160,12 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         responseStatus: 200,
       })
       .where(eq(requests.id, newRequest.id));
-    if (pathname.startsWith("/api/") && !parentRequestId) {
+    if (pathname.startsWith("/api/")) {
+      console.log("[Middleware] Storing request tree for:", {
+        requestId: newRequest.id,
+        pathname,
+        parentRequestId,
+      });
       await getRequestTreeAndStoreCassette(newRequest.id);
     }
     return c.json(result);
@@ -209,7 +220,12 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       responseStatus: c.res.status,
     })
     .where(eq(requests.id, newRequest.id));
-  if (pathname.startsWith("/api/") && !parentRequestId) {
+  if (pathname.startsWith("/api/")) {
+    console.log("[Middleware] Storing request tree for:", {
+      requestId: newRequest.id,
+      pathname,
+      parentRequestId,
+    });
     await getRequestTreeAndStoreCassette(newRequest.id);
   }
 }

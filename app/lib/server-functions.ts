@@ -5,6 +5,11 @@ import {
   buildFunctionRegistryInputSchema,
   buildFunctionRegistryOutputSchema,
 } from "~/functions/build-function-registry.get.server";
+import {
+  buildRegistryData,
+  buildRegistryDataInputSchema,
+  buildRegistryDataOutputSchema,
+} from "~/functions/build-registry-data.get.server";
 import { chat, type ChatInput, chatInputSchema, chatOutputSchema } from "~/functions/chat.server";
 import {
   evalNewPatientBookingFlow,
@@ -16,6 +21,11 @@ import {
   getDirectoryHashInputSchema,
   getDirectoryHashOutputSchema,
 } from "~/functions/get-directory-hash.get.server";
+import {
+  getFunctionList,
+  getFunctionListInputSchema,
+  getFunctionListOutputSchema,
+} from "~/functions/get-function-list.get.server";
 import {
   ingestCompanyData,
   ingestCompanyDataInputSchema,
@@ -54,6 +64,11 @@ import {
   testRouteOutputSchema,
 } from "~/functions/test-route.get.server";
 import { twilio, twilioInputSchema, twilioOutputSchema } from "~/functions/twilio.get.server";
+import {
+  writeRegistry,
+  writeRegistryInputSchema,
+  writeRegistryOutputSchema,
+} from "~/functions/write-registry.get.server";
 
 import { wrapServerFunction } from "./api-wrapper";
 
@@ -72,6 +87,9 @@ export const functions = {
   twilio,
   replay,
   buildFunctionRegistry,
+  getFunctionList,
+  buildRegistryData,
+  writeRegistry,
 } as const;
 
 export const serverFn = {
@@ -93,6 +111,9 @@ export const serverFn = {
     root: rootInputSchema,
     twilio: twilioInputSchema,
     buildfunctionregistry: buildFunctionRegistryInputSchema,
+    getfunctionlist: getFunctionListInputSchema,
+    buildregistrydata: buildRegistryDataInputSchema,
+    writeregistry: writeRegistryInputSchema,
   },
   outputSchemas: {
     chat: chatOutputSchema,
@@ -109,6 +130,9 @@ export const serverFn = {
     root: rootOutputSchema,
     twilio: twilioOutputSchema,
     buildfunctionregistry: buildFunctionRegistryOutputSchema,
+    getfunctionlist: getFunctionListOutputSchema,
+    buildregistrydata: buildRegistryDataOutputSchema,
+    writeregistry: writeRegistryOutputSchema,
   },
 };
 

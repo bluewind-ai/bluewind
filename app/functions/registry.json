@@ -1,0 +1,966 @@
+{
+  "buildfunctionregistry": {
+    "name": "buildfunctionregistry",
+    "path": "app/functions/build-function-registry.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {},
+        "keys": []
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "success": {
+            "_def": {
+              "typeName": "ZodBoolean",
+              "coerce": false
+            }
+          }
+        },
+        "keys": [
+          "success"
+        ]
+      }
+    }
+  },
+  "buildregistrydata": {
+    "name": "buildregistrydata",
+    "path": "app/functions/build-registry-data.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "functions": {
+            "_def": {
+              "type": {
+                "_def": {
+                  "unknownKeys": "strip",
+                  "catchall": {
+                    "_def": {
+                      "typeName": "ZodNever"
+                    }
+                  },
+                  "typeName": "ZodObject"
+                },
+                "_cached": {
+                  "shape": {
+                    "name": {
+                      "_def": {
+                        "checks": [],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      }
+                    },
+                    "path": {
+                      "_def": {
+                        "checks": [],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      }
+                    }
+                  },
+                  "keys": [
+                    "name",
+                    "path"
+                  ]
+                }
+              },
+              "minLength": null,
+              "maxLength": null,
+              "exactLength": null,
+              "typeName": "ZodArray"
+            }
+          }
+        },
+        "keys": [
+          "functions"
+        ]
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "registry": {
+            "_def": {
+              "keyType": {
+                "_def": {
+                  "checks": [],
+                  "typeName": "ZodString",
+                  "coerce": false
+                }
+              },
+              "valueType": {
+                "_def": {
+                  "unknownKeys": "strip",
+                  "catchall": {
+                    "_def": {
+                      "typeName": "ZodNever"
+                    }
+                  },
+                  "typeName": "ZodObject"
+                },
+                "_cached": {
+                  "shape": {
+                    "name": {
+                      "_def": {
+                        "checks": [],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      }
+                    },
+                    "path": {
+                      "_def": {
+                        "checks": [],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      }
+                    },
+                    "inputSchema": {
+                      "_def": {
+                        "typeName": "ZodAny"
+                      },
+                      "_any": true
+                    },
+                    "outputSchema": {
+                      "_def": {
+                        "typeName": "ZodAny"
+                      },
+                      "_any": true
+                    }
+                  },
+                  "keys": [
+                    "name",
+                    "path",
+                    "inputSchema",
+                    "outputSchema"
+                  ]
+                }
+              },
+              "typeName": "ZodRecord"
+            }
+          }
+        },
+        "keys": [
+          "registry"
+        ]
+      }
+    }
+  },
+  "getdirectoryhash": {
+    "name": "getdirectoryhash",
+    "path": "app/functions/get-directory-hash.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": null
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": null
+    }
+  },
+  "getfunctionlist": {
+    "name": "getfunctionlist",
+    "path": "app/functions/get-function-list.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {},
+        "keys": []
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "functions": {
+            "_def": {
+              "type": {
+                "_def": {
+                  "unknownKeys": "strip",
+                  "catchall": {
+                    "_def": {
+                      "typeName": "ZodNever"
+                    }
+                  },
+                  "typeName": "ZodObject"
+                },
+                "_cached": {
+                  "shape": {
+                    "name": {
+                      "_def": {
+                        "checks": [],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      }
+                    },
+                    "path": {
+                      "_def": {
+                        "checks": [],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      }
+                    }
+                  },
+                  "keys": [
+                    "name",
+                    "path"
+                  ]
+                }
+              },
+              "minLength": null,
+              "maxLength": null,
+              "exactLength": null,
+              "typeName": "ZodArray"
+            }
+          }
+        },
+        "keys": [
+          "functions"
+        ]
+      }
+    }
+  },
+  "ingestcompanydata": {
+    "name": "ingestcompanydata",
+    "path": "app/functions/ingest-company-data.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {},
+        "keys": []
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "message": {
+            "_def": {
+              "checks": [],
+              "typeName": "ZodString",
+              "coerce": false
+            }
+          },
+          "directoryInfo": {
+            "_def": {
+              "unknownKeys": "strip",
+              "catchall": {
+                "_def": {
+                  "typeName": "ZodNever"
+                }
+              },
+              "typeName": "ZodObject"
+            },
+            "_cached": {
+              "shape": {
+                "path": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodString",
+                    "coerce": false
+                  }
+                },
+                "mtime": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodString",
+                    "coerce": false
+                  }
+                },
+                "ctime": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodString",
+                    "coerce": false
+                  }
+                }
+              },
+              "keys": [
+                "path",
+                "mtime",
+                "ctime"
+              ]
+            }
+          },
+          "files": {
+            "_def": {
+              "type": {
+                "_def": {
+                  "checks": [],
+                  "typeName": "ZodString",
+                  "coerce": false
+                }
+              },
+              "minLength": null,
+              "maxLength": null,
+              "exactLength": null,
+              "typeName": "ZodArray"
+            }
+          }
+        },
+        "keys": [
+          "message",
+          "directoryInfo",
+          "files"
+        ]
+      }
+    }
+  },
+  "listsourcefiles": {
+    "name": "listsourcefiles",
+    "path": "app/functions/list-source-files.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": null
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": null
+    }
+  },
+  "loadroutes": {
+    "name": "loadroutes",
+    "path": "app/functions/load-routes.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {},
+        "keys": []
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "success": {
+            "_def": {
+              "typeName": "ZodBoolean",
+              "coerce": false
+            }
+          },
+          "routes": {
+            "_def": {
+              "type": {
+                "_def": {
+                  "checks": [],
+                  "typeName": "ZodString",
+                  "coerce": false
+                }
+              },
+              "minLength": null,
+              "maxLength": null,
+              "exactLength": null,
+              "typeName": "ZodArray"
+            }
+          },
+          "routesHash": {
+            "_def": {
+              "keyType": {
+                "_def": {
+                  "checks": [],
+                  "typeName": "ZodString",
+                  "coerce": false
+                }
+              },
+              "valueType": {
+                "_def": {
+                  "checks": [],
+                  "typeName": "ZodString",
+                  "coerce": false
+                }
+              },
+              "typeName": "ZodRecord"
+            }
+          },
+          "appRoutesMap": {
+            "_def": {
+              "keyType": {
+                "_def": {
+                  "checks": [],
+                  "typeName": "ZodString",
+                  "coerce": false
+                }
+              },
+              "valueType": {
+                "_def": {
+                  "typeName": "ZodAny"
+                },
+                "_any": true
+              },
+              "typeName": "ZodRecord"
+            }
+          }
+        },
+        "keys": [
+          "success",
+          "routes",
+          "routesHash",
+          "appRoutesMap"
+        ]
+      }
+    }
+  },
+  "mainflow": {
+    "name": "mainflow",
+    "path": "app/functions/main-flow.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {},
+        "keys": []
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "bookingResult": {
+            "_def": {
+              "unknownKeys": "strip",
+              "catchall": {
+                "_def": {
+                  "typeName": "ZodNever"
+                }
+              },
+              "typeName": "ZodObject"
+            },
+            "_cached": {
+              "shape": {
+                "success": {
+                  "_def": {
+                    "typeName": "ZodBoolean",
+                    "coerce": false
+                  }
+                },
+                "requestId": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodNumber",
+                    "coerce": false
+                  }
+                }
+              },
+              "keys": [
+                "success",
+                "requestId"
+              ]
+            }
+          }
+        },
+        "keys": [
+          "bookingResult"
+        ]
+      }
+    }
+  },
+  "replay": {
+    "name": "replay",
+    "path": "app/functions/replay.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "requestId": {
+            "_def": {
+              "checks": [],
+              "typeName": "ZodNumber",
+              "coerce": false
+            }
+          }
+        },
+        "keys": [
+          "requestId"
+        ]
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "replayedRequest": {
+            "_def": {
+              "unknownKeys": "strip",
+              "catchall": {
+                "_def": {
+                  "typeName": "ZodNever"
+                }
+              },
+              "typeName": "ZodObject"
+            },
+            "_cached": {
+              "shape": {
+                "id": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodNumber",
+                    "coerce": false
+                  }
+                }
+              },
+              "keys": [
+                "id"
+              ]
+            }
+          }
+        },
+        "keys": [
+          "replayedRequest"
+        ]
+      }
+    }
+  },
+  "setupinitialize": {
+    "name": "setupinitialize",
+    "path": "app/functions/setup-initialize.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {},
+        "keys": []
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "success": {
+            "_def": {
+              "typeName": "ZodBoolean",
+              "coerce": false
+            }
+          }
+        },
+        "keys": [
+          "success"
+        ]
+      }
+    }
+  },
+  "testnewmiddleware": {
+    "name": "testnewmiddleware",
+    "path": "app/functions/test-new-middleware.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": null
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": null
+    }
+  },
+  "testroute": {
+    "name": "testroute",
+    "path": "app/functions/test-route.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {},
+        "keys": []
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "message": {
+            "_def": {
+              "checks": [],
+              "typeName": "ZodString",
+              "coerce": false
+            }
+          },
+          "directoryInfo": {
+            "_def": {
+              "unknownKeys": "strip",
+              "catchall": {
+                "_def": {
+                  "typeName": "ZodNever"
+                }
+              },
+              "typeName": "ZodObject"
+            },
+            "_cached": {
+              "shape": {
+                "path": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodString",
+                    "coerce": false
+                  }
+                },
+                "mtime": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodString",
+                    "coerce": false
+                  }
+                },
+                "ctime": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodString",
+                    "coerce": false
+                  }
+                }
+              },
+              "keys": [
+                "path",
+                "mtime",
+                "ctime"
+              ]
+            }
+          },
+          "files": {
+            "_def": {
+              "type": {
+                "_def": {
+                  "checks": [],
+                  "typeName": "ZodString",
+                  "coerce": false
+                }
+              },
+              "minLength": null,
+              "maxLength": null,
+              "exactLength": null,
+              "typeName": "ZodArray"
+            }
+          }
+        },
+        "keys": [
+          "message",
+          "directoryInfo",
+          "files"
+        ]
+      }
+    }
+  },
+  "twilio": {
+    "name": "twilio",
+    "path": "app/functions/twilio.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": null
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": null
+    }
+  },
+  "writeregistry": {
+    "name": "writeregistry",
+    "path": "app/functions/write-registry.get.server.ts",
+    "inputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "registry": {
+            "_def": {
+              "keyType": {
+                "_def": {
+                  "checks": [],
+                  "typeName": "ZodString",
+                  "coerce": false
+                }
+              },
+              "valueType": {
+                "_def": {
+                  "unknownKeys": "strip",
+                  "catchall": {
+                    "_def": {
+                      "typeName": "ZodNever"
+                    }
+                  },
+                  "typeName": "ZodObject"
+                },
+                "_cached": {
+                  "shape": {
+                    "name": {
+                      "_def": {
+                        "checks": [],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      }
+                    },
+                    "path": {
+                      "_def": {
+                        "checks": [],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      }
+                    },
+                    "inputSchema": {
+                      "_def": {
+                        "typeName": "ZodAny"
+                      },
+                      "_any": true
+                    },
+                    "outputSchema": {
+                      "_def": {
+                        "typeName": "ZodAny"
+                      },
+                      "_any": true
+                    }
+                  },
+                  "keys": [
+                    "name",
+                    "path",
+                    "inputSchema",
+                    "outputSchema"
+                  ]
+                }
+              },
+              "typeName": "ZodRecord"
+            }
+          }
+        },
+        "keys": [
+          "registry"
+        ]
+      }
+    },
+    "outputSchema": {
+      "_def": {
+        "unknownKeys": "strip",
+        "catchall": {
+          "_def": {
+            "typeName": "ZodNever"
+          }
+        },
+        "typeName": "ZodObject"
+      },
+      "_cached": {
+        "shape": {
+          "success": {
+            "_def": {
+              "typeName": "ZodBoolean",
+              "coerce": false
+            }
+          }
+        },
+        "keys": [
+          "success"
+        ]
+      }
+    }
+  }
+}
