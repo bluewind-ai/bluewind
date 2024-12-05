@@ -11,12 +11,17 @@ type CacheResult = {
   response: any;
 };
 
+function normalizePayload(payload: any): string {
+  return JSON.stringify(payload, Object.keys(payload).sort());
+}
+
 export async function retrieveCache(
   pathname: string,
   method: string,
   payload: any,
 ): Promise<CacheResult> {
-  if (!payload || Object.keys(payload).length === 0) {
+  const shouldCache = pathname.startsWith("/api/") && payload && Object.keys(payload).length > 0;
+  if (!shouldCache) {
     return { hit: false, response: null };
   }
 
@@ -33,7 +38,10 @@ export async function retrieveCache(
 
   const foundRequest = request[0];
   if (foundRequest?.response) {
-    const payloadsMatch = JSON.stringify(foundRequest.payload) === JSON.stringify(payload);
+    console.log("Previous payload:", JSON.stringify(foundRequest.payload));
+    console.log("Current payload:", JSON.stringify(payload));
+
+    const payloadsMatch = normalizePayload(foundRequest.payload) === normalizePayload(payload);
 
     if (payloadsMatch) {
       console.log("[Cache] Hit!");

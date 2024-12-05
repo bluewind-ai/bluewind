@@ -33,6 +33,7 @@ interface RequestFlowVisualizationProps {
         createdAt: string;
         response: any;
         payload: any;
+        nodeColor: string;
       };
     }>;
     edges: Array<{
@@ -67,7 +68,12 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
       <div className="relative flex w-full h-[600px]">
         <div className="flex-1">
           <ReactFlow
-            nodes={data.nodes || []}
+            nodes={
+              data.nodes.map((node) => ({
+                ...node,
+                style: { backgroundColor: node.data.nodeColor },
+              })) || []
+            }
             edges={data.edges || []}
             fitView
             fitViewOptions={{ padding: 0.2 }}
@@ -94,6 +100,7 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
             </Panel>
           </ReactFlow>
         </div>
+        {/* Rest of the component stays the same */}
         {selectedNode && (
           <div className="absolute right-0 top-0 h-full w-[800px] p-4 border-l border-gray-200 bg-white overflow-auto shadow-lg">
             <div className="flex justify-between items-center mb-4">

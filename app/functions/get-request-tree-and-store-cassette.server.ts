@@ -1,4 +1,5 @@
 // app/functions/get-request-tree-and-store-cassette.server.ts
+
 import { eq } from "drizzle-orm";
 import { writeFile } from "fs/promises";
 import { join } from "path";
@@ -29,6 +30,7 @@ type XYFlowNode = {
     payload: any;
   };
 };
+
 type XYFlowEdge = {
   id: string;
   source: string;
@@ -36,17 +38,27 @@ type XYFlowEdge = {
   type: "smoothstep";
   animated: boolean;
 };
+
 type XYFlowTree = {
   nodes: XYFlowNode[];
   edges: XYFlowEdge[];
 };
+
 const getDurationRange = (ms: number): string => {
   return ms <= 1000 ? "< 1000" : "1001+";
 };
+
 const getBytesRange = (bytes: number): string => {
   const MB = 1024 * 1024;
   return bytes < MB ? "< 1 MB" : "1 MB+";
 };
+
+const getNodeColor = (cacheStatus: string, responseStatus: number | null): string => {
+  if (cacheStatus === "HIT") return "#808080"; // Grey
+  if (!responseStatus || responseStatus >= 400) return "#ff0000"; // Red
+  return "#00ff00"; // Green
+};
+
 const createDebugAsciiTree = (tree: any): string => {
   const processNode = (node: any, prefix: string = "", isLast: boolean = true) => {
     let result = prefix + (isLast ? "└─" : "├─") + node.pathname + "\n";
@@ -69,6 +81,7 @@ const createDebugAsciiTree = (tree: any): string => {
       .join("")
   );
 };
+
 const createEdge = (source: string, target: string): XYFlowEdge => ({
   id: `e${source}-${target}`,
   source,
@@ -76,10 +89,12 @@ const createEdge = (source: string, target: string): XYFlowEdge => ({
   type: "smoothstep",
   animated: true,
 });
+
 const createXYFlowTree = (requestTree: any): XYFlowTree => {
   const nodes: XYFlowNode[] = [];
   const edges: XYFlowEdge[] = [];
   const nodesByParent: Map<number | null, any[]> = new Map();
+
   const groupNodes = (node: any) => {
     const parentId = node.parentId;
     if (!nodesByParent.has(parentId)) {
@@ -90,10 +105,14 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
       node.children.forEach(groupNodes);
     }
   };
+
   groupNodes(requestTree);
   let currentY = 0;
+
   const processNode = (node: any, level: number) => {
     const currentNodeId = node.id.toString();
+    const nodeColor = getNodeColor(node.cacheStatus, node.responseStatus);
+
     nodes.push({
       id: currentNodeId,
       type: "default",
@@ -115,15 +134,19 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
         objects: node.objects || [],
         response: node.response,
         payload: node.payload,
+        nodeColor: nodeColor,
       },
     });
+
     currentY += 100;
+
     const siblings = nodesByParent.get(node.parentId) || [];
     const siblingIndex = siblings.findIndex((s) => s.id === node.id);
     if (siblingIndex < siblings.length - 1) {
       const nextSibling = siblings[siblingIndex + 1];
       edges.push(createEdge(currentNodeId, nextSibling.id.toString()));
     }
+
     if (node.children && node.children.length > 0) {
       const firstChild = node.children.sort((a, b) => a.id - b.id)[0];
       edges.push(createEdge(currentNodeId, firstChild.id.toString()));
@@ -134,9 +157,11 @@ const createXYFlowTree = (requestTree: any): XYFlowTree => {
         });
     }
   };
+
   processNode(requestTree, 0);
   return { nodes, edges };
 };
+
 const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
   return {
     nodes: xyFlowTree.nodes.map((node) => ({
@@ -163,6 +188,7 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
         response: "[MASKED]",
         duration: "[MASKED]",
         payload: "[MASKED]",
+        nodeColor: node.data.nodeColor,
       },
     })),
     edges: xyFlowTree.edges.map((edge) => ({
@@ -174,22 +200,27 @@ const createMaskedXYFlowTree = (xyFlowTree: XYFlowTree): XYFlowTree => {
     })),
   };
 };
+
 export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
   async function buildRequestTree(requestId: number) {
     const allRequests = await db.select().from(requests);
     const requestMap = new Map(allRequests.map((r) => [r.id, r]));
+
     const buildTree = (currentId: number): any => {
       const current = requestMap.get(currentId);
       if (!current) return null;
+
       const children = allRequests
         .filter((r) => r.parentId === currentId)
         .sort((a, b) => a.id - b.id)
         .map((r) => buildTree(r.id))
         .filter((r) => r !== null);
+
       let response = null;
       try {
         response = current.response ? JSON.parse(current.response) : null;
       } catch (e) {}
+
       return {
         id: current.id,
         pathname: current.pathname,
@@ -205,22 +236,29 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
         parentId: current.parentId,
         children,
         objects: [],
+        nodeColor: current.nodeColor,
       };
     };
+
     return buildTree(requestId);
   }
+
   const tree = await buildRequestTree(rootRequestId);
   if (!tree) return null;
+
   const asciiTree = createDebugAsciiTree(tree);
   const xyFlowTree = createXYFlowTree(tree);
   const maskedTree = createMaskedXYFlowTree(xyFlowTree);
+
   const request = await db
     .select()
     .from(requests)
     .where(eq(requests.id, rootRequestId))
     .limit(1)
     .then((rows) => rows[0]);
+
   if (!request) return null;
+
   const cassette = {
     id: "[MASKED]",
     parentId: "[MASKED]",
@@ -234,7 +272,9 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
     createdAt: "[MASKED]",
     durationMs: "[MASKED]",
     responseStatus: request.responseStatus,
+    nodeColor: request.nodeColor,
   };
+
   if (request.pathname === "/api/root") {
     await writeFile(
       join(process.cwd(), "cassette.json"),
@@ -242,16 +282,20 @@ export async function getRequestTreeAndStoreCassette(rootRequestId: number) {
       "utf-8",
     );
   }
+
   await db
     .update(requests)
     .set({
       nodes: xyFlowTree.nodes,
       edges: xyFlowTree.edges,
+      nodeColor: cassette.nodeColor,
     })
     .where(eq(requests.id, rootRequestId));
+
   return {
     ...request,
     nodes: xyFlowTree.nodes,
     edges: xyFlowTree.edges,
+    nodeColor: cassette.nodeColor,
   };
 }
