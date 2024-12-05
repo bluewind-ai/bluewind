@@ -119,6 +119,11 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   }
   const handler = handlersByPath[pathname];
   if (handler) {
+    // Check if this is a POST request but handler is for GET
+    if (c.req.method === "POST" && pathname.includes(".get.")) {
+      return c.json({ error: "Method Not Allowed" }, 405);
+    }
+
     let validatedPayload = parsedPayload;
     // Validate all API endpoints that have schemas
     if (pathname.startsWith("/api/")) {

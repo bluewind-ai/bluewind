@@ -1,4 +1,6 @@
-// app/functions/test-route.get.server.ts
+
+// app/functions/test-route.post.server.ts
+
 import { z } from "zod";
 
 import { serverFn } from "~/lib/server-functions";

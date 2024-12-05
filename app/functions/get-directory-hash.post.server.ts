@@ -1,4 +1,6 @@
-// app/functions/get-directory-hash.get.server.ts
+
+
+// app/functions/get-directory-hash.post.server.ts
 
 import { stat } from "fs/promises";
 import { z } from "zod";

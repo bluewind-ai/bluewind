@@ -1,4 +1,6 @@
-// app/functions/ingest-company-data.get.server.ts
+
+
+// app/functions/ingest-company-data.post.server.ts
 
 import { readdir, stat } from "fs/promises";
 import { z } from "zod";
@@ -23,7 +25,7 @@ export async function ingestCompanyData(
   input: IngestCompanyDataInput,
 ): Promise<IngestCompanyDataOutput> {
   try {
-    const directory = "app/functions"; // Changed to use an existing directory
+    const directory = "app/functions"; 
     const stats = await stat(directory);
     const files = await readdir(directory);
 
@@ -37,7 +39,7 @@ export async function ingestCompanyData(
       files,
     };
   } catch (error) {
-    // Handle potential fs errors gracefully
+    
     return {
       message: "Failed to ingest company data",
       directoryInfo: {

@@ -1,4 +1,4 @@
-// app/functions/build-function-registry.get.server.ts
+// app/functions/build-function-registry.post.server.ts
 
 import { z } from "zod";
 
@@ -17,13 +17,10 @@ export async function buildFunctionRegistry(
   input: BuildFunctionRegistryInput,
 ): Promise<BuildFunctionRegistryOutput> {
   try {
-    // Step 1: Get list of functions
     const { functions } = await serverFn.getFunctionList(c);
 
-    // Step 2: Build registry data
     const { registry } = await serverFn.buildRegistryData(c, { functions });
 
-    // Step 3: Write registry to file
     await serverFn.writeRegistry(c, { registry });
 
     return { success: true };

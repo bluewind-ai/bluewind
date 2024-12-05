@@ -1,4 +1,6 @@
-// app/functions/load-routes.get.server.ts
+
+
+// app/functions/load-routes.post.server.ts
 
 import { readdir } from "fs/promises";
 import { z } from "zod";

@@ -1,4 +1,6 @@
-// app/functions/build-registry-data.get.server.ts
+
+
+// app/functions/build-registry-data.post.server.ts
 
 import { z } from "zod";
 

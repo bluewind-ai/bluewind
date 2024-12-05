@@ -1,4 +1,6 @@
-// app/functions/replay.get.server.ts
+
+
+// app/functions/replay.post.server.ts
 
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -23,7 +25,7 @@ export type ReplayOutput = z.infer<typeof replayOutputSchema>;
 export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> {
   console.log("[Replay] Starting replay for request:", input.requestId);
 
-  // Get the original request
+  
   const originalRequest = await db
     .select()
     .from(requests)
@@ -42,13 +44,13 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     throw new Error("Original request not found");
   }
 
-  // Extract function name from pathname and normalize it
+  
   const pathFunctionName = originalRequest.pathname
     .replace("/api/", "")
     .replace(/-/g, "")
     .toLowerCase();
 
-  // Find the actual function name from functions object that matches (case-sensitive)
+  
   const functionName = Object.keys(serverFn).find((key) => key.toLowerCase() === pathFunctionName);
 
   console.log("[Replay] Looking up function:", {
@@ -57,7 +59,7 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     availableFunctions: Object.keys(serverFn),
   });
 
-  // Validate input schema if it exists
+  
   let validatedPayload = originalRequest.payload;
   if (serverFn.schemas[pathFunctionName]) {
     try {
@@ -69,11 +71,11 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     }
   }
 
-  // Execute the original function
+  
   if (functionName && serverFn[functionName]) {
     const result = await serverFn[functionName](c, validatedPayload);
 
-    // Validate output schema if it exists
+    
     if (serverFn.outputSchemas[pathFunctionName]) {
       try {
         serverFn.outputSchemas[pathFunctionName].parse(result);
@@ -90,7 +92,7 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     throw new Error(`Function not found: ${pathFunctionName}`);
   }
 
-  // Create a new request entry with a new ID
+  
   const newRequest = await db
     .insert(requests)
     .values({
