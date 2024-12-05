@@ -246,14 +246,14 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "responseStatus": 200,
-        "cacheStatus": "SKIP",
+        "cacheStatus": "HIT",
         "createdAt": "[MASKED]",
         "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
         "payload": "[MASKED]",
-        "nodeColor": "#00ff00"
+        "nodeColor": "#808080"
       }
     },
     {
@@ -346,14 +346,14 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "responseStatus": 200,
-        "cacheStatus": "SKIP",
+        "cacheStatus": "HIT",
         "createdAt": "[MASKED]",
         "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
         "payload": "[MASKED]",
-        "nodeColor": "#00ff00"
+        "nodeColor": "#808080"
       }
     },
     {
@@ -421,14 +421,14 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "responseStatus": 200,
-        "cacheStatus": "HIT",
+        "cacheStatus": "SKIP",
         "createdAt": "[MASKED]",
         "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
         "payload": "[MASKED]",
-        "nodeColor": "#808080"
+        "nodeColor": "#00ff00"
       }
     },
     {
@@ -446,18 +446,178 @@
         "requestSizeBytesRange": "< 1 MB",
         "responseSizeBytesRange": "< 1 MB",
         "responseStatus": 200,
-        "cacheStatus": "HIT",
+        "cacheStatus": "SKIP",
         "createdAt": "[MASKED]",
         "parentId": "[MASKED]",
         "objects": [],
         "response": "[MASKED]",
         "duration": "[MASKED]",
         "payload": "[MASKED]",
-        "nodeColor": "#808080"
+        "nodeColor": "#00ff00"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 400,
+        "y": 1800
+      },
+      "data": {
+        "label": "/api/playground",
+        "pathname": "/api/playground",
+        "createdLocation": "middleware/main.tsx:76:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "N/A",
+        "responseStatus": null,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]",
+        "nodeColor": "#ff0000"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 600,
+        "y": 1900
+      },
+      "data": {
+        "label": "/api/new-build-function-registry",
+        "pathname": "/api/new-build-function-registry",
+        "createdLocation": "middleware/main.tsx:76:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]",
+        "nodeColor": "#00ff00"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 800,
+        "y": 2000
+      },
+      "data": {
+        "label": "/api/new-get-function-list",
+        "pathname": "/api/new-get-function-list",
+        "createdLocation": "middleware/main.tsx:76:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]",
+        "nodeColor": "#00ff00"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 800,
+        "y": 2100
+      },
+      "data": {
+        "label": "/api/new-build-registry-data",
+        "pathname": "/api/new-build-registry-data",
+        "createdLocation": "middleware/main.tsx:76:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]",
+        "nodeColor": "#00ff00"
+      }
+    },
+    {
+      "id": "[MASKED]",
+      "type": "default",
+      "position": {
+        "x": 800,
+        "y": 2200
+      },
+      "data": {
+        "label": "/api/hash-functions",
+        "pathname": "/api/hash-functions",
+        "createdLocation": "middleware/main.tsx:76:44",
+        "durationMsRange": "< 1000",
+        "requestSizeBytesRange": "< 1 MB",
+        "responseSizeBytesRange": "< 1 MB",
+        "responseStatus": 200,
+        "cacheStatus": "SKIP",
+        "createdAt": "[MASKED]",
+        "parentId": "[MASKED]",
+        "objects": [],
+        "response": "[MASKED]",
+        "duration": "[MASKED]",
+        "payload": "[MASKED]",
+        "nodeColor": "#00ff00"
       }
     }
   ],
   "edges": [
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "e[MASKED]-[MASKED]",
+      "source": "[MASKED]",
+      "target": "[MASKED]",
+      "type": "smoothstep",
+      "animated": true
+    },
     {
       "id": "e[MASKED]-[MASKED]",
       "source": "[MASKED]",

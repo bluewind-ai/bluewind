@@ -31,5 +31,6 @@ export async function mainFlow(c: any, input: MainFlowInput): Promise<MainFlowOu
     await serverFn.replay(c, { requestId: lastBookingRequest.id });
   }
   await serverFn.buildFunctionRegistry(c);
+  await serverFn.playground(c);
   return { bookingResult };
 }
