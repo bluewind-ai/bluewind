@@ -1,11 +1,9 @@
 // app/functions/ingest-company-data.get.server.ts
-
 import { z } from "zod";
 
 import { serverFn } from "~/lib/server-functions";
 
 export const ingestCompanyDataInputSchema = z.object({});
-
 export const ingestCompanyDataOutputSchema = z.object({
   message: z.string(),
   directoryInfo: z.object({
@@ -15,10 +13,8 @@ export const ingestCompanyDataOutputSchema = z.object({
   }),
   files: z.array(z.string()),
 });
-
 export type IngestCompanyDataInput = z.infer<typeof ingestCompanyDataInputSchema>;
 export type IngestCompanyDataOutput = z.infer<typeof ingestCompanyDataOutputSchema>;
-
 export async function ingestCompanyData(
   c: any,
   input: IngestCompanyDataInput,

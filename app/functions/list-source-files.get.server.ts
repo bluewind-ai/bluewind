@@ -1,5 +1,4 @@
 // app/functions/list-source-files.get.server.ts
-
 import { relative, resolve } from "node:path";
 
 import { z } from "zod";
@@ -7,15 +6,12 @@ import { z } from "zod";
 import { readdir } from "~/lib/intercepted-fs";
 
 export const listSourceFilesInputSchema = z.object({});
-
 export const listSourceFilesOutputSchema = z.object({
   files: z.array(z.string()),
   directory: z.string(),
 });
-
 export type ListSourceFilesInput = z.infer<typeof listSourceFilesInputSchema>;
 export type ListSourceFilesOutput = z.infer<typeof listSourceFilesOutputSchema>;
-
 export async function listSourceFiles(
   c: any,
   input: ListSourceFilesInput,

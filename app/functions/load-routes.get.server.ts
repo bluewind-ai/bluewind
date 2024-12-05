@@ -1,5 +1,4 @@
 // app/functions/load-routes.get.server.ts
-
 import { createHash } from "node:crypto";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative } from "node:path";
@@ -15,17 +14,14 @@ import { db } from "~/middleware/main";
 import { appRoutes } from "../api/register-routes";
 
 export const loadRoutesInputSchema = z.object({});
-
 export const loadRoutesOutputSchema = z.object({
   success: z.boolean(),
   routes: z.array(z.string()),
   routesHash: z.record(z.string()),
   appRoutesMap: z.record(z.any()),
 });
-
 export type LoadRoutesInput = z.infer<typeof loadRoutesInputSchema>;
 export type LoadRoutesOutput = z.infer<typeof loadRoutesOutputSchema>;
-
 async function generateHashFromFile(filePath: string): Promise<string> {
   try {
     const content = await readFile(filePath, "utf-8");
@@ -35,14 +31,12 @@ async function generateHashFromFile(filePath: string): Promise<string> {
     throw error;
   }
 }
-
 export async function loadRoutes(c: any, input: LoadRoutesInput): Promise<LoadRoutesOutput> {
   const apiPath = join(process.cwd(), "app/api");
   // Get all entries in the api directory
   const entries = await readdir(apiPath);
   const routePaths: string[] = [];
   const routeHashes = new Map<string, string>();
-
   // Process each entry
   for (const entry of entries) {
     if (entry === "node_modules" || entry.startsWith(".")) {
@@ -64,7 +58,6 @@ export async function loadRoutes(c: any, input: LoadRoutesInput): Promise<LoadRo
       }
     } catch (error) {}
   }
-
   // For each route, create or update both server function and route
   for (const routePath of routePaths) {
     const newHash = routeHashes.get(routePath)!;
@@ -98,7 +91,6 @@ export async function loadRoutes(c: any, input: LoadRoutesInput): Promise<LoadRo
         })
         .where(eq(serverFunctions.name, routePath));
     }
-
     // Check if route exists
     const existingRoute = await db
       .select()
@@ -130,7 +122,6 @@ export async function loadRoutes(c: any, input: LoadRoutesInput): Promise<LoadRo
         .where(eq(routesTable.name, routePath));
     }
   }
-
   return {
     success: true,
     routes: routePaths,

@@ -1,5 +1,4 @@
 // app/lib/server-functions.ts
-
 import { chat, type ChatInput, chatInputSchema, chatOutputSchema } from "~/functions/chat.server";
 import {
   evalNewPatientBookingFlow,
@@ -67,7 +66,6 @@ export const functions = {
   twilio,
   replay,
 } as const;
-
 export const serverFn = {
   ...Object.fromEntries(
     Object.entries(functions).map(([name, fn]) => [name, wrapServerFunction(name, fn)]),
@@ -103,6 +101,5 @@ export const serverFn = {
     twilio: twilioOutputSchema,
   },
 };
-
 // Export types
 export type { ChatInput };

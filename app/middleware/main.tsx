@@ -1,5 +1,4 @@
 // app/middleware/main.tsx
-
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -114,42 +113,33 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   const handler = handlersByPath[pathname];
   if (handler) {
     let validatedPayload = parsedPayload;
-
     // Validate all API endpoints that have schemas
     if (pathname.startsWith("/api/")) {
       const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
       if (serverFn.schemas[endpointName]) {
-        console.log(`[Middleware] About to validate payload for ${endpointName}:`, parsedPayload);
         try {
           validatedPayload = serverFn.schemas[endpointName].parse(parsedPayload);
           // eslint-disable-next-line
           console.log("[Middleware] Validation successful");
         } catch (error) {
-          console.error("[Middleware] Validation failed:", error);
           return c.json({ error: "Invalid request payload", details: error }, 400);
         }
       }
     }
-
     const result = await handler(c, validatedPayload);
-
     // Also validate output for API endpoints
     if (pathname.startsWith("/api/")) {
       const endpointName = pathname.replace(/^\/api\//, "").replace(/-/g, "");
       if (serverFn.outputSchemas[endpointName]) {
-        console.log(`[Middleware] Validating response with ${endpointName}OutputSchema...`);
-        console.log(`[Middleware] Raw response before validation:`, result);
         try {
           serverFn.outputSchemas[endpointName].parse(result);
           // eslint-disable-next-line
           console.log(`[Middleware] Response validation successful`);
         } catch (error) {
-          console.error(`[Middleware] Response validation failed:`, error);
           return c.json({ error: "Invalid response payload", details: error }, 500);
         }
       }
     }
-
     const endTime = performance.now();
     const durationMs = Math.round(endTime - startTime);
     const resultText = JSON.stringify(result);

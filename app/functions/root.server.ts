@@ -1,5 +1,4 @@
 // app/functions/root.server.ts
-
 import { createHash } from "node:crypto";
 
 import { eq } from "drizzle-orm";
@@ -11,19 +10,15 @@ import { serverFn } from "~/lib/server-functions";
 import { db } from "~/middleware/main";
 
 export const rootInputSchema = z.object({});
-
 export const rootOutputSchema = z.object({
   success: z.boolean(),
   requestId: z.number(),
 });
-
 export type RootInput = z.infer<typeof rootInputSchema>;
 export type RootOutput = z.infer<typeof rootOutputSchema>;
-
 function generateHash(route: string): string {
   return createHash("sha256").update(route).digest("hex");
 }
-
 export async function root(c: any, input: RootInput): Promise<RootOutput> {
   const existingRoute = await db.select().from(routes).where(eq(routes.name, "root")).limit(1);
   if (existingRoute.length === 0) {

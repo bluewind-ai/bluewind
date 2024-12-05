@@ -1,5 +1,4 @@
 // app/functions/setup-initialize.get.server.ts
-
 import { createHash } from "node:crypto";
 
 import { eq } from "drizzle-orm";
@@ -14,18 +13,14 @@ import { serverFn } from "~/lib/server-functions";
 import { db } from "~/middleware/main";
 
 export const setupInitializeInputSchema = z.object({});
-
 export const setupInitializeOutputSchema = z.object({
   success: z.boolean(),
 });
-
 export type SetupInitializeInput = z.infer<typeof setupInitializeInputSchema>;
 export type SetupInitializeOutput = z.infer<typeof setupInitializeOutputSchema>;
-
 function generateHash(route: string): string {
   return createHash("sha256").update(route).digest("hex");
 }
-
 export async function setupInitialize(
   c: any,
   input: SetupInitializeInput,

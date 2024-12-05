@@ -1,5 +1,4 @@
 // app/functions/main-flow.get.server.ts
-
 import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -8,17 +7,14 @@ import { serverFn } from "~/lib/server-functions";
 import { db } from "~/middleware/main";
 
 export const mainFlowInputSchema = z.object({});
-
 export const mainFlowOutputSchema = z.object({
   bookingResult: z.object({
     success: z.boolean(),
     requestId: z.number(),
   }),
 });
-
 export type MainFlowInput = z.infer<typeof mainFlowInputSchema>;
 export type MainFlowOutput = z.infer<typeof mainFlowOutputSchema>;
-
 export async function mainFlow(c: any, input: MainFlowInput): Promise<MainFlowOutput> {
   await serverFn.setupInitialize(c);
   await serverFn.ingestCompanyData(c);

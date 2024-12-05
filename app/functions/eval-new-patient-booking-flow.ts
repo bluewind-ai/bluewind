@@ -1,16 +1,13 @@
 // app/functions/eval-new-patient-booking-flow.ts
-
 import { z } from "zod";
 
 import { serverFn } from "~/lib/server-functions";
-
 // Schemas for the function
 export const evalNewPatientBookingFlowInputSchema = z.object({});
 export const evalNewPatientBookingFlowOutputSchema = z.object({
   success: z.boolean(),
   requestId: z.number(),
 });
-
 export async function evalNewPatientBookingFlow(c: any) {
   try {
     // Each chat call gets back a requestId that we need to pass to the next call
@@ -37,7 +34,6 @@ export async function evalNewPatientBookingFlow(c: any) {
       requestId: response5.requestId,
       input: "Monday at 10:00 AM works for me",
     });
-
     // Return a numeric request ID by using the current request ID from context
     return {
       success: true,
