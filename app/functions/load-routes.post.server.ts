@@ -1,5 +1,3 @@
-
-
 // app/functions/load-routes.post.server.ts
 
 import { readdir } from "fs/promises";

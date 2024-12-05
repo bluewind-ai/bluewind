@@ -1,5 +1,3 @@
-
-
 // app/functions/replay.post.server.ts
 
 import { eq } from "drizzle-orm";
@@ -14,9 +12,8 @@ export const replayInputSchema = z.object({
 });
 
 export const replayOutputSchema = z.object({
-  replayedRequest: z.object({
-    id: z.number(),
-  }),
+  success: z.boolean(),
+  requestId: z.number(),
 });
 
 export type ReplayInput = z.infer<typeof replayInputSchema>;
@@ -25,7 +22,6 @@ export type ReplayOutput = z.infer<typeof replayOutputSchema>;
 export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> {
   console.log("[Replay] Starting replay for request:", input.requestId);
 
-  
   const originalRequest = await db
     .select()
     .from(requests)
@@ -44,13 +40,11 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     throw new Error("Original request not found");
   }
 
-  
   const pathFunctionName = originalRequest.pathname
     .replace("/api/", "")
     .replace(/-/g, "")
     .toLowerCase();
 
-  
   const functionName = Object.keys(serverFn).find((key) => key.toLowerCase() === pathFunctionName);
 
   console.log("[Replay] Looking up function:", {
@@ -59,7 +53,6 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     availableFunctions: Object.keys(serverFn),
   });
 
-  
   let validatedPayload = originalRequest.payload;
   if (serverFn.schemas[pathFunctionName]) {
     try {
@@ -71,11 +64,9 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     }
   }
 
-  
   if (functionName && serverFn[functionName]) {
     const result = await serverFn[functionName](c, validatedPayload);
 
-    
     if (serverFn.outputSchemas[pathFunctionName]) {
       try {
         serverFn.outputSchemas[pathFunctionName].parse(result);
@@ -87,31 +78,10 @@ export async function replay(c: any, input: ReplayInput): Promise<ReplayOutput> 
     }
 
     console.log("[Replay] Function execution result:", result);
+
+    return { success: true, requestId: c.requestId };
   } else {
     console.error("[Replay] Function not found:", { pathFunctionName, functionName });
     throw new Error(`Function not found: ${pathFunctionName}`);
   }
-
-  
-  const newRequest = await db
-    .insert(requests)
-    .values({
-      ...originalRequest,
-      id: undefined,
-      parentId: c.requestId,
-      createdAt: new Date(),
-    })
-    .returning()
-    .then((rows) => rows[0]);
-
-  console.log("[Replay] Created new request:", {
-    id: newRequest?.id,
-    parentId: newRequest?.parentId,
-    payload: newRequest?.payload,
-    pathname: newRequest?.pathname,
-  });
-
-  return {
-    replayedRequest: newRequest,
-  };
 }

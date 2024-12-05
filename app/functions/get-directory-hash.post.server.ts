@@ -1,5 +1,3 @@
-
-
 // app/functions/get-directory-hash.post.server.ts
 
 import { stat } from "fs/promises";

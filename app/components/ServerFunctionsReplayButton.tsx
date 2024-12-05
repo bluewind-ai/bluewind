@@ -1,4 +1,5 @@
 // app/components/ServerFunctionsReplayButton.tsx
+
 import { useNavigate } from "@remix-run/react";
 
 import { Button } from "~/components/ui/button";
@@ -19,10 +20,10 @@ export function ServerFunctionsReplayButton({ requestId }: ServerFunctionsReplay
         body: JSON.stringify({ requestId }),
       });
       const data = await response.json();
-      if (data.replayedRequest?.id) {
+      if (data.requestId) {
         // Add small delay before navigation
         setTimeout(() => {
-          window.location.href = `/requests/${data.replayedRequest.id}`;
+          window.location.href = `/requests/${data.requestId}`;
         }, 100);
       }
     } catch (error) {}

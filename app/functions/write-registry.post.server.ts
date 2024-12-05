@@ -1,5 +1,3 @@
-
-
 // app/functions/write-registry.post.server.ts
 
 import { promises as fs } from "fs";

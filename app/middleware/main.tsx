@@ -22,6 +22,22 @@ const baseDb = drizzle(postgres(connectionString), {
 });
 export const db = baseDb;
 
+async function isPartOfReplay(requestId: number, parentId: string | null): Promise<boolean> {
+  if (!parentId) return false;
+
+  const parentRequest = await db
+    .select()
+    .from(requests)
+    .where(eq(requests.id, parseInt(parentId)))
+    .then((rows) => rows[0]);
+
+  if (!parentRequest) return false;
+  return (
+    parentRequest.pathname === "/api/replay" ||
+    (await isPartOfReplay(requestId, parentRequest.parentId?.toString()))
+  );
+}
+
 export async function mainMiddleware(context: Context, next: () => Promise<void>) {
   const startTime = performance.now();
   const c = context as unknown as ExtendedContext;
@@ -108,22 +124,20 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       })
       .where(eq(requests.id, newRequest.id));
     if (pathname.startsWith("/api/")) {
-      console.log("[Middleware] Storing request tree for:", {
-        requestId: newRequest.id,
-        pathname,
-        parentRequestId,
-      });
-      await getRequestTreeAndStoreCassette(newRequest.id);
+      const isReplay = await isPartOfReplay(newRequest.id, parentRequestId);
+      if (!isReplay) {
+        console.log("[Middleware] Storing request tree for:", {
+          requestId: newRequest.id,
+          pathname,
+          parentRequestId,
+        });
+        await getRequestTreeAndStoreCassette(newRequest.id);
+      }
     }
     return c.json(result);
   }
   const handler = handlersByPath[pathname];
   if (handler) {
-    // Check if this is a POST request but handler is for GET
-    if (c.req.method === "POST" && pathname.includes(".get.")) {
-      return c.json({ error: "Method Not Allowed" }, 405);
-    }
-
     let validatedPayload = parsedPayload;
     // Validate all API endpoints that have schemas
     if (pathname.startsWith("/api/")) {
@@ -166,12 +180,15 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       })
       .where(eq(requests.id, newRequest.id));
     if (pathname.startsWith("/api/")) {
-      console.log("[Middleware] Storing request tree for:", {
-        requestId: newRequest.id,
-        pathname,
-        parentRequestId,
-      });
-      await getRequestTreeAndStoreCassette(newRequest.id);
+      const isReplay = await isPartOfReplay(newRequest.id, parentRequestId);
+      if (!isReplay) {
+        console.log("[Middleware] Storing request tree for:", {
+          requestId: newRequest.id,
+          pathname,
+          parentRequestId,
+        });
+        await getRequestTreeAndStoreCassette(newRequest.id);
+      }
     }
     return c.json(result);
   }
@@ -226,11 +243,14 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     })
     .where(eq(requests.id, newRequest.id));
   if (pathname.startsWith("/api/")) {
-    console.log("[Middleware] Storing request tree for:", {
-      requestId: newRequest.id,
-      pathname,
-      parentRequestId,
-    });
-    await getRequestTreeAndStoreCassette(newRequest.id);
+    const isReplay = await isPartOfReplay(newRequest.id, parentRequestId);
+    if (!isReplay) {
+      console.log("[Middleware] Storing request tree for:", {
+        requestId: newRequest.id,
+        pathname,
+        parentRequestId,
+      });
+      await getRequestTreeAndStoreCassette(newRequest.id);
+    }
   }
 }

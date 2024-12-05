@@ -1,4 +1,3 @@
-
 // app/functions/setup-initialize.post.server.ts
 
 import { createHash } from "node:crypto";
