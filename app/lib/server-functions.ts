@@ -1,4 +1,10 @@
 // app/lib/server-functions.ts
+
+import {
+  buildFunctionRegistry,
+  buildFunctionRegistryInputSchema,
+  buildFunctionRegistryOutputSchema,
+} from "~/functions/build-function-registry.get.server";
 import { chat, type ChatInput, chatInputSchema, chatOutputSchema } from "~/functions/chat.server";
 import {
   evalNewPatientBookingFlow,
@@ -65,7 +71,9 @@ export const functions = {
   evalNewPatientBookingFlow,
   twilio,
   replay,
+  buildFunctionRegistry,
 } as const;
+
 export const serverFn = {
   ...Object.fromEntries(
     Object.entries(functions).map(([name, fn]) => [name, wrapServerFunction(name, fn)]),
@@ -84,6 +92,7 @@ export const serverFn = {
     testroute: testRouteInputSchema,
     root: rootInputSchema,
     twilio: twilioInputSchema,
+    buildfunctionregistry: buildFunctionRegistryInputSchema,
   },
   outputSchemas: {
     chat: chatOutputSchema,
@@ -99,7 +108,9 @@ export const serverFn = {
     testroute: testRouteOutputSchema,
     root: rootOutputSchema,
     twilio: twilioOutputSchema,
+    buildfunctionregistry: buildFunctionRegistryOutputSchema,
   },
 };
+
 // Export types
 export type { ChatInput };

@@ -1,4 +1,5 @@
 // app/functions/main-flow.get.server.ts
+
 import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -30,5 +31,6 @@ export async function mainFlow(c: any, input: MainFlowInput): Promise<MainFlowOu
   if (lastBookingRequest) {
     await serverFn.replay(c, { requestId: lastBookingRequest.id });
   }
+  await serverFn.buildFunctionRegistry(c);
   return { bookingResult };
 }
