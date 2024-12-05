@@ -1,4 +1,5 @@
 // app/components/RequestFlowVisualization.tsx
+
 import "@xyflow/react/dist/style.css";
 
 import { Background, Controls, Node, Panel, ReactFlow } from "@xyflow/react";
@@ -48,15 +49,19 @@ interface RequestFlowVisualizationProps {
     responseSizeBytes: number | null;
   };
 }
+
 type NodeData = RequestFlowVisualizationProps["data"]["nodes"][0]["data"];
 type FlowNode = Node<NodeData>;
+
 const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
   const [selectedNode, setSelectedNode] = useState<FlowNode | null>(null);
+
   const onNodeClick = useCallback((event: React.MouseEvent, node: FlowNode) => {
     event.preventDefault();
     event.stopPropagation();
     setSelectedNode((current) => (current?.id === node.id ? null : node));
   }, []);
+
   try {
     return (
       <div className="relative flex w-full h-[600px]">
@@ -90,7 +95,7 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
           </ReactFlow>
         </div>
         {selectedNode && (
-          <div className="absolute right-0 top-0 h-full w-80 p-4 border-l border-gray-200 bg-white overflow-auto shadow-lg">
+          <div className="absolute right-0 top-0 h-full w-[800px] p-4 border-l border-gray-200 bg-white overflow-auto shadow-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg">{selectedNode.data.pathname}</h3>
               <button
@@ -148,4 +153,5 @@ const RequestFlowVisualization = ({ data }: RequestFlowVisualizationProps) => {
     return <div>Error rendering flow: {String(error)}</div>;
   }
 };
+
 export default RequestFlowVisualization;

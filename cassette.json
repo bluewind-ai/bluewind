@@ -206,128 +206,8 @@
         "y": 800
       },
       "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 600,
-        "y": 900
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 600,
-        "y": 1000
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 600,
-        "y": 1100
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 600,
-        "y": 1200
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 600,
-        "y": 1300
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
+        "label": "/api/twilio",
+        "pathname": "/api/twilio",
         "createdLocation": "middleware/main.tsx:73:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
@@ -347,7 +227,7 @@
       "type": "default",
       "position": {
         "x": 400,
-        "y": 1400
+        "y": 900
       },
       "data": {
         "label": "/api/replay",
@@ -371,7 +251,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 1500
+        "y": 1000
       },
       "data": {
         "label": "/api/eval-new-patient-booking-flow",
@@ -395,131 +275,11 @@
       "type": "default",
       "position": {
         "x": 800,
-        "y": 1600
+        "y": 1100
       },
       "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 800,
-        "y": 1700
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 800,
-        "y": 1800
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 800,
-        "y": 1900
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 800,
-        "y": 2000
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
-        "createdLocation": "middleware/main.tsx:73:44",
-        "durationMsRange": "< 1000",
-        "requestSizeBytesRange": "< 1 MB",
-        "responseSizeBytesRange": "< 1 MB",
-        "responseStatus": 200,
-        "cacheStatus": "SKIP",
-        "createdAt": "[MASKED]",
-        "parentId": "[MASKED]",
-        "objects": [],
-        "response": "[MASKED]",
-        "duration": "[MASKED]",
-        "payload": "[MASKED]"
-      }
-    },
-    {
-      "id": "[MASKED]",
-      "type": "default",
-      "position": {
-        "x": 800,
-        "y": 2100
-      },
-      "data": {
-        "label": "/api/chat",
-        "pathname": "/api/chat",
+        "label": "/api/twilio",
+        "pathname": "/api/twilio",
         "createdLocation": "middleware/main.tsx:73:44",
         "durationMsRange": "< 1000",
         "requestSizeBytesRange": "< 1 MB",
@@ -539,7 +299,7 @@
       "type": "default",
       "position": {
         "x": 400,
-        "y": 2200
+        "y": 1200
       },
       "data": {
         "label": "/api/build-function-registry",
@@ -563,7 +323,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 2300
+        "y": 1300
       },
       "data": {
         "label": "/api/get-function-list",
@@ -587,7 +347,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 2400
+        "y": 1400
       },
       "data": {
         "label": "/api/build-registry-data",
@@ -611,7 +371,7 @@
       "type": "default",
       "position": {
         "x": 600,
-        "y": 2500
+        "y": 1500
       },
       "data": {
         "label": "/api/write-registry",
@@ -632,76 +392,6 @@
     }
   ],
   "edges": [
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
-    {
-      "id": "e[MASKED]-[MASKED]",
-      "source": "[MASKED]",
-      "target": "[MASKED]",
-      "type": "smoothstep",
-      "animated": true
-    },
     {
       "id": "e[MASKED]-[MASKED]",
       "source": "[MASKED]",
