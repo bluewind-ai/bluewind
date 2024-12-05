@@ -1,18 +1,51 @@
 // app/middleware/retrieve-cache.ts
-import { eq } from "drizzle-orm";
+
+import { desc, eq } from "drizzle-orm";
 
 import { requests } from "~/db/schema";
 
 import { db } from "./main";
 
-export async function retrieveCache(pathname: string) {
-  const existingRequest = await db
+type CacheResult = {
+  hit: boolean;
+  response: any;
+};
+
+export async function retrieveCache(
+  pathname: string,
+  method: string,
+  payload: any,
+): Promise<CacheResult> {
+  if (!payload || Object.keys(payload).length === 0) {
+    return { hit: false, response: null };
+  }
+
+  console.log("[Cache] Looking for:", { pathname, method, payload });
+
+  const request = await db
     .select()
     .from(requests)
     .where(eq(requests.pathname, pathname))
+    .orderBy(desc(requests.id))
     .limit(1);
-  if (existingRequest.length > 0 && existingRequest[0].response) {
-    return JSON.parse(existingRequest[0].response);
+
+  console.log("[Cache] Found:", request[0] || "none");
+
+  const foundRequest = request[0];
+  if (foundRequest?.response) {
+    const payloadsMatch = JSON.stringify(foundRequest.payload) === JSON.stringify(payload);
+
+    if (payloadsMatch) {
+      console.log("[Cache] Hit!");
+      return {
+        hit: true,
+        response: JSON.parse(foundRequest.response),
+      };
+    }
   }
-  return null;
+  console.log("[Cache] Miss");
+  return {
+    hit: false,
+    response: null,
+  };
 }

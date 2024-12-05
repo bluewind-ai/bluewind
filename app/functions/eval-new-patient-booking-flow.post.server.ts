@@ -11,11 +11,14 @@ export const evalNewPatientBookingFlowOutputSchema = z.object({
 });
 
 export async function evalNewPatientBookingFlow(c: any) {
-  const result = await serverFn.twilio(c, {
-    to: process.env.BACKEND_PHONE_NUMBER!,
-    from: process.env.USER_PHONE_NUMBER!,
-    body: "Hello from your app!",
+  const response1 = await serverFn.chat(c, {
+    input: "Hi, I'd like to book an appointment",
   });
+  // const result = await serverFn.twilio(c, {
+  //   to: process.env.BACKEND_PHONE_NUMBER!,
+  //   from: process.env.USER_PHONE_NUMBER!,
+  //   body: "Hello from your app!",
+  // });
 
   return {
     success: true,

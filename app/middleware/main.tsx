@@ -1,4 +1,5 @@
 // app/middleware/main.tsx
+
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -59,23 +60,23 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   if (pathname.startsWith("/api/") && pathname !== "/api/root" && !parentRequestId) {
     throw new Error("No parent request ID provided");
   }
-  const shouldUseCache = c.req.header("Cache-Control") === "only-if-cached";
-  const cachedResponse = shouldUseCache ? await retrieveCache(pathname) : null;
+
+  const cacheResult = await retrieveCache(pathname, c.req.method, parsedPayload);
   // eslint-disable-next-line
   console.log(`[Middleware] Creating request for ${pathname} with cache settings:`, {
-    shouldUseCache,
-    hasCachedResponse: !!cachedResponse,
-    willSetCacheStatus: cachedResponse ? "HIT" : shouldUseCache ? "MISS" : "SKIP",
+    hasCachedResponse: cacheResult.hit,
+    willSetCacheStatus: cacheResult.hit ? "HIT" : "SKIP",
   });
+
   const [newRequest] = await db
     .insert(requests)
     .values({
       parentId: parentRequestId ? parseInt(parentRequestId) : null,
       pathname,
       createdLocation: getCurrentLocation(),
-      response: cachedResponse ? JSON.stringify(cachedResponse) : null,
+      response: cacheResult.hit ? JSON.stringify(cacheResult.response) : null,
       payload: parsedPayload,
-      cacheStatus: cachedResponse ? "HIT" : shouldUseCache ? "MISS" : "SKIP",
+      cacheStatus: cacheResult.hit ? "HIT" : "SKIP",
       durationMs: 0,
       requestSizeBytes,
       responseStatus: null,
@@ -87,10 +88,10 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     newRequest.cacheStatus,
   );
   c.requestId = newRequest.id;
-  if (cachedResponse) {
+  if (cacheResult.hit) {
     const endTime = performance.now();
     const durationMs = Math.round(endTime - startTime);
-    const responseSizeBytes = new TextEncoder().encode(JSON.stringify(cachedResponse)).length;
+    const responseSizeBytes = new TextEncoder().encode(JSON.stringify(cacheResult.response)).length;
     await db
       .update(requests)
       .set({
@@ -99,7 +100,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         responseStatus: 200,
       })
       .where(eq(requests.id, newRequest.id));
-    return new Response(JSON.stringify(cachedResponse), {
+    return new Response(JSON.stringify(cacheResult.response), {
       headers: { "Content-Type": "application/json" },
     });
   }
