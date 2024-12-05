@@ -1,10 +1,8 @@
 // app/functions/ingest-company-data.post.server.ts
-
 import { readdir, stat } from "fs/promises";
 import { z } from "zod";
 
 export const ingestCompanyDataInputSchema = z.object({});
-
 export const ingestCompanyDataOutputSchema = z.object({
   message: z.string(),
   directoryInfo: z.object({
@@ -14,10 +12,8 @@ export const ingestCompanyDataOutputSchema = z.object({
   }),
   files: z.array(z.string()),
 });
-
 export type IngestCompanyDataInput = z.infer<typeof ingestCompanyDataInputSchema>;
 export type IngestCompanyDataOutput = z.infer<typeof ingestCompanyDataOutputSchema>;
-
 export async function ingestCompanyData(
   c: any,
   input: IngestCompanyDataInput,
@@ -26,7 +22,6 @@ export async function ingestCompanyData(
     const directory = "app/functions";
     const stats = await stat(directory);
     const files = await readdir(directory);
-
     return {
       message: "Company data ingested successfully",
       directoryInfo: {

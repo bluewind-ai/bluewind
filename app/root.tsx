@@ -40,7 +40,6 @@ export interface LoaderData {
     };
   }>;
 }
-
 function LoadingUI() {
   return (
     <div className="flex h-full items-center justify-center">

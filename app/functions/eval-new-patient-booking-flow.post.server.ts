@@ -1,5 +1,4 @@
 // app/functions/eval-new-patient-booking-flow.post.server.ts
-
 import { z } from "zod";
 
 import { serverFn } from "~/lib/server-functions";
@@ -34,7 +33,6 @@ export async function evalNewPatientBookingFlow(c: any) {
       requestId: response5.requestId,
       input: "Monday at 10:00 AM works for me",
     });
-
     return {
       success: true,
       requestId: c.requestId,

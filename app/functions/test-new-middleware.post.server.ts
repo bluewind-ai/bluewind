@@ -1,5 +1,4 @@
 // app/functions/test-new-middleware.post.server.ts
-
 import { z } from "zod";
 
 export const testNewMiddlewareInputSchema = z.object({});

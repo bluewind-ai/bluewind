@@ -1,5 +1,4 @@
 // app/middleware/main.tsx
-
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -21,23 +20,19 @@ const baseDb = drizzle(postgres(connectionString), {
   schema,
 });
 export const db = baseDb;
-
 async function isPartOfReplay(requestId: number, parentId: string | null): Promise<boolean> {
   if (!parentId) return false;
-
   const parentRequest = await db
     .select()
     .from(requests)
     .where(eq(requests.id, parseInt(parentId)))
     .then((rows) => rows[0]);
-
   if (!parentRequest) return false;
   return (
     parentRequest.pathname === "/api/replay" ||
     (await isPartOfReplay(requestId, parentRequest.parentId?.toString()))
   );
 }
-
 export async function mainMiddleware(context: Context, next: () => Promise<void>) {
   const startTime = performance.now();
   const c = context as unknown as ExtendedContext;
@@ -126,11 +121,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     if (pathname.startsWith("/api/")) {
       const isReplay = await isPartOfReplay(newRequest.id, parentRequestId);
       if (!isReplay) {
-        console.log("[Middleware] Storing request tree for:", {
-          requestId: newRequest.id,
-          pathname,
-          parentRequestId,
-        });
         await getRequestTreeAndStoreCassette(newRequest.id);
       }
     }
@@ -182,11 +172,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
     if (pathname.startsWith("/api/")) {
       const isReplay = await isPartOfReplay(newRequest.id, parentRequestId);
       if (!isReplay) {
-        console.log("[Middleware] Storing request tree for:", {
-          requestId: newRequest.id,
-          pathname,
-          parentRequestId,
-        });
         await getRequestTreeAndStoreCassette(newRequest.id);
       }
     }
@@ -245,11 +230,6 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
   if (pathname.startsWith("/api/")) {
     const isReplay = await isPartOfReplay(newRequest.id, parentRequestId);
     if (!isReplay) {
-      console.log("[Middleware] Storing request tree for:", {
-        requestId: newRequest.id,
-        pathname,
-        parentRequestId,
-      });
       await getRequestTreeAndStoreCassette(newRequest.id);
     }
   }

@@ -1,5 +1,4 @@
 // app/functions/build-registry-data.post.server.ts
-
 import { z } from "zod";
 
 export const buildRegistryDataInputSchema = z.object({
@@ -11,14 +10,11 @@ export const buildRegistryDataInputSchema = z.object({
     }),
   ),
 });
-
 export const buildRegistryDataOutputSchema = z.object({
   fileContent: z.string(),
 });
-
 export type BuildRegistryDataInput = z.infer<typeof buildRegistryDataInputSchema>;
 export type BuildRegistryDataOutput = z.infer<typeof buildRegistryDataOutputSchema>;
-
 export async function buildRegistryData(
   c: any,
   input: BuildRegistryDataInput,
@@ -27,19 +23,10 @@ export async function buildRegistryData(
   const entries: string[] = [];
   const schemaEntries: string[] = [];
   const outputSchemaEntries: string[] = [];
-
-  console.log("Processing functions:", input.functions);
-
   for (const func of input.functions) {
     const basePath = func.path.replace(/^app\//, "~/");
     const baseImportPath = basePath.replace(".ts", "");
-
-    console.log("\nProcessing function:", func.name);
-    console.log("Original name:", func.name);
-
     const uniqueExports = [...new Set(func.exports)];
-    console.log("Exports:", uniqueExports);
-
     if (uniqueExports.length > 0) {
       const mainExport = uniqueExports.find(
         (e) =>
@@ -53,20 +40,13 @@ export async function buildRegistryData(
       const types = uniqueExports
         .filter((e) => e.includes("Input") && !e.includes("Schema"))
         .map((e) => e.replace(/Input$/, "Output"));
-
-      console.log("Main export:", mainExport);
-      console.log("Input schema:", inputSchema);
-      console.log("Output schema:", outputSchema);
-
       const allImports = [mainExport, ...types, inputSchema, outputSchema].filter(Boolean);
       if (allImports.length > 0) {
         imports.push(`import { ${allImports.join(", ")} } from "${baseImportPath}";`);
       }
-
       if (mainExport) {
         entries.push(`  ${mainExport}: ${mainExport}`);
       }
-
       if (inputSchema && mainExport) {
         // Convert PascalCase to lowercase for schema keys
         const schemaKey = mainExport.replace(/[A-Z]/g, (letter) => letter.toLowerCase());
@@ -78,10 +58,6 @@ export async function buildRegistryData(
       }
     }
   }
-
-  console.log("\nGenerated entries:", entries);
-  console.log("Generated schema entries:", schemaEntries);
-
   const fileContent = `// app/lib/server-functions.ts
 // THIS FILE IS AUTO-GENERATED - DO NOT EDIT!
 
@@ -109,7 +85,5 @@ ${outputSchemaEntries.join(",\n")}
 
 // Export types
 export type { ChatInput };`;
-
-  console.log("\nGenerated file content:", fileContent);
   return { fileContent };
 }
