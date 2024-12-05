@@ -1,4 +1,5 @@
 // app/middleware/main.tsx
+
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { Context } from "hono";
@@ -153,7 +154,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
         responseStatus: 200,
       })
       .where(eq(requests.id, newRequest.id));
-    if (pathname.startsWith("/api/")) {
+    if (pathname.startsWith("/api/") && !parentRequestId) {
       await getRequestTreeAndStoreCassette(newRequest.id);
     }
     return c.json(result);
@@ -208,7 +209,7 @@ export async function mainMiddleware(context: Context, next: () => Promise<void>
       responseStatus: c.res.status,
     })
     .where(eq(requests.id, newRequest.id));
-  if (pathname.startsWith("/api/")) {
+  if (pathname.startsWith("/api/") && !parentRequestId) {
     await getRequestTreeAndStoreCassette(newRequest.id);
   }
 }
